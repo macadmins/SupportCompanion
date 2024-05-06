@@ -40,7 +40,9 @@ you have any suggestions or issues.
 
 ## Installation
 
-1. Obtain the latest PKG installer
+For now this app is not signed as I do not have access to an Apple Developer Certificate.
+
+1. Obtain the latest PKG installer from [releases](https://github.com/almenscorner/SupportCompanion/releases).
 2. Run the PKG installer.
 
 ## Installed files
