@@ -171,3 +171,6 @@ Many aspects of the app can be configured using MDM profiles, the folloing keys 
 ### Notifications
 ![SCNotification](https://github.com/almenscorner/SupportCompanion/assets/78877636/414a7d55-2925-4312-bd9c-9f11ac450e23)
 
+## Credits
+- [AvoloniaUI](https://avaloniaui.net/)
+- [SukiUI](https://github.com/kikipoulet/SukiUI)
