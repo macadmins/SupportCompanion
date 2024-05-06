@@ -1,0 +1,34 @@
+# ignore Rider stuff
+.idea
+.idea.old
+
+# ignore build output
+Build/build
+Build/payload/Applications/Utilities/*.app
+
+# ignore macOS files
+.DS_Store
+
+# ignore C# build files
+**/bin/
+**/obj/
+
+# ignore Python files
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# ignore C build files
+*.o
+*.out
+
+# ignore log files
+*.log
+
+# ignore user-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.sln.DotSettings.user

@@ -1,0 +1,45 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <ApplicationId>com.almenscorner.supportcompanion</ApplicationId>
+        <RuntimeIdentifiers>osx-x64;osx-arm64</RuntimeIdentifiers>
+        <Entitlements Condition="'$(Configuration)' == 'Release'">Entitlements.plist</Entitlements>
+        <TargetFramework>net8.0-macos</TargetFramework>
+        <OutputType>Exe</OutputType>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>true</ImplicitUsings>
+        <SupportedOSPlatformVersion>10.15</SupportedOSPlatformVersion>
+        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <NSPrincipalClass>NSApplication</NSPrincipalClass>
+        <NSHighResolutionCapable>true</NSHighResolutionCapable>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <readyToRun>true</readyToRun>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <AvaloniaResource Include="Assets\**"/>
+        <AvaloniaResource Include="LaunchAgentExample\com.almenscorner.supportcompanion-runner.plist"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="Assets/logger.dylib" CopyToOutputDirectory="Always" Link="logger.dylib"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="11.0.10"/>
+        <PackageReference Include="Avalonia.Desktop" Version="11.0.10"/>
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.10"/>
+        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.10"/>
+        <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.10"/>
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2"/>
+        <PackageReference Include="Material.Icons.Avalonia" Version="2.1.9"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0"/>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
+        <PackageReference Include="PropertyList" Version="1.1.0"/>
+        <PackageReference Include="SukiUI" Version="6.0.0-beta4"/>
+        <PackageReference Include="Dotnet.Bundle" Version="0.9.13"/>
+    </ItemGroup>
+
+</Project>

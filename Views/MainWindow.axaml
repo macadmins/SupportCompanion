@@ -1,0 +1,57 @@
+<controls:SukiWindow xmlns="https://github.com/avaloniaui"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:vm="using:SupportCompanion.ViewModels"
+                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     xmlns:views="clr-namespace:SupportCompanion.Views"
+                     xmlns:controls="clr-namespace:SukiUI.Controls;assembly=SukiUI"
+                     xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+                     mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="720"
+                     x:Class="SupportCompanion.Views.MainWindow"
+                     x:DataType="vm:MainWindowViewModel"
+                     Title=""
+                     Width="1250" Height="765"
+                     MinWidth="1250" MaxWidth="1250"
+                     MinHeight="765" MaxHeight="765"
+                     controls:SukiHost.ToastLocation="BottomRight"
+                     controls:SukiHost.ToastLimit="4"
+                     ExtendClientAreaToDecorationsHint="False"
+                     IsTitleBarVisible="False"
+                     WindowStartupLocation="CenterScreen">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+    <controls:SukiSideMenu>
+        <controls:SukiSideMenu.HeaderContent>
+            <TextBlock Text="{Binding BrandName}"
+                       FontSize="20"
+                       FontWeight="Bold"
+                       Foreground="White"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,10"
+                       IsVisible="{Binding ShowHeader}" />
+        </controls:SukiSideMenu.HeaderContent>
+        <controls:SukiSideMenu.Items>
+            <controls:SukiSideMenuItem Header="Home">
+                <controls:SukiSideMenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Home" />
+                </controls:SukiSideMenuItem.Icon>
+                <controls:SukiSideMenuItem.PageContent>
+                    <views:HomeView />
+                </controls:SukiSideMenuItem.PageContent>
+            </controls:SukiSideMenuItem>
+            <controls:SukiSideMenuItem Header="Applications">
+                <controls:SukiSideMenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="Application" />
+                </controls:SukiSideMenuItem.Icon>
+                <controls:SukiSideMenuItem.PageContent>
+                    <views:Applications />
+                </controls:SukiSideMenuItem.PageContent>
+            </controls:SukiSideMenuItem>
+        </controls:SukiSideMenu.Items>
+    </controls:SukiSideMenu>
+</controls:SukiWindow>

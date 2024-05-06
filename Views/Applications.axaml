@@ -1,0 +1,57 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:SukiUI.Controls;assembly=SukiUI"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:vm="clr-namespace:SupportCompanion.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="SupportCompanion.Views.Applications"
+             x:DataType="vm:ApplicationsViewModel">
+    <UserControl.Styles>
+        <Style Selector="Button[IsEnabled=False]">
+            <Setter Property="Background" Value="DarkGray" />
+            <Setter Property="Foreground" Value="Gray" />
+            <Setter Property="Opacity" Value="0.2" />
+        </Style>
+    </UserControl.Styles>
+    <Grid Margin="30">
+        <controls:GlassCard CornerRadius="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Grid Margin="15">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Margin="15">
+                    <avalonia:MaterialIcon Kind="CheckboxMarked" Width="20" Height="20" />
+                    <Run Text="Installed Apps" FontWeight="DemiBold" FontSize="16" />
+                </TextBlock>
+                <DataGrid Grid.Row="1" Margin="15"
+                          VerticalAlignment="Stretch"
+                          HorizontalAlignment="Stretch"
+                          IsReadOnly="True"
+                          Name="ApplicationsTable"
+                          ItemsSource="{Binding InstalledApps}"
+                          GridLinesVisibility="None"
+                          ColumnWidth="*">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
+                        <DataGridTextColumn Header="Version" Binding="{Binding Version}" />
+                        <DataGridTemplateColumn Header="Actions">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button
+                                        Command="{Binding #ApplicationsTable.((vm:ApplicationsViewModel)DataContext).ManageAppClick}"
+                                        CommandParameter="{Binding Action}"
+                                        Content="Manage"
+                                        Classes="Flat"
+                                        IsEnabled="{Binding IsSelfServe}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </controls:GlassCard>
+    </Grid>
+</UserControl>

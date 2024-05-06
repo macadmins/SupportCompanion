@@ -1,0 +1,11 @@
+#!/bin/bash
+
+LDName="com.almenscorner.supportcompanion.plist"
+LDPath="/Library/LaunchDaemons/$LDName"
+
+if [[ -z $( sudo launchctl list | grep "$LDName" ) ]]; then
+    chmod 755 "$LDPath"
+    launchctl load "$LDPath"
+fi
+
+exit 0

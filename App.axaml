@@ -1,0 +1,33 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="SupportCompanion.App"
+             x:DataType="vm:MainWindowViewModel"
+             Name="Support Companion"
+             xmlns:local="using:SupportCompanion"
+             xmlns:sukiUi="clr-namespace:SukiUI;assembly=SukiUI"
+             xmlns:vm="clr-namespace:SupportCompanion.ViewModels"
+             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             RequestedThemeVariant="Default">
+
+    <Application.DataTemplates>
+        <local:ViewLocator />
+    </Application.DataTemplates>
+    <TrayIcon.Icons>
+        <TrayIcons>
+            <TrayIcon Icon="/Assets/appicon.png" ToolTipText="Support Companion">
+                <TrayIcon.Menu>
+                    <NativeMenu>
+                        <NativeMenuItem Header="Open Support Companion 🚀" Command="{Binding OpenApp}" />
+                        <NativeMenuItem Header="Software Updates 🔄" Command="{Binding OpenSystemUpdates}" />
+                        <NativeMenuItemSeparator />
+                        <NativeMenuItem Header="Exit" Command="{Binding QuitApp}" />
+                    </NativeMenu>
+                </TrayIcon.Menu>
+            </TrayIcon>
+        </TrayIcons>
+    </TrayIcon.Icons>
+    <Application.Styles>
+        <sukiUi:SukiTheme ThemeColor="Blue" />
+        <materialIcons:MaterialIconStyles />
+    </Application.Styles>
+</Application>

@@ -1,0 +1,54 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:SupportCompanion.ViewModels"
+             xmlns:controls="clr-namespace:SukiUI.Controls;assembly=SukiUI"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="SupportCompanion.Views.StorageWidget"
+             x:DataType="vm:StorageViewModel">
+    <Grid Margin="10">
+        <controls:GlassCard CornerRadius="10" Width="300">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <DockPanel Grid.Row="0">
+                    <TextBlock DockPanel.Dock="Left" Margin="10">
+                        <avalonia:MaterialIcon Kind="Harddisk" Width="20" Height="20" VerticalAlignment="Top" />
+                        <Run Text="Storage" FontWeight="DemiBold" FontSize="16" />
+                    </TextBlock>
+                    <Button DockPanel.Dock="Right"
+                            HorizontalAlignment="Right"
+                            Classes="Basic"
+                            Margin="10,0,10,10"
+                            ToolTip.Tip="Open System Preferences > Storage Panel"
+                            IsVisible="{Binding ShowManageStorageButton}"
+                            Command="{Binding OpenStoragePanel}">
+                        <avalonia:MaterialIcon Kind="OpenInNew" Width="20" Height="20" />
+                    </Button>
+                </DockPanel>
+                <StackPanel Grid.Row="1" Margin="10">
+                    <TextBlock Margin="0,0,0,5">
+                        <Run Text="Name: " FontWeight="Bold" />
+                        <Run Text="{Binding StorageInfo.VolumeName}" />
+                    </TextBlock>
+                    <TextBlock Margin="0,0,0,5">
+                        <Run Text="FileVault: " FontWeight="Bold" />
+                        <Run Text="{Binding StorageInfo.FileVaultEnabled}"
+                             Foreground="{Binding StorageInfo.IsEncryptedColor}" />
+                    </TextBlock>
+                    <TextBlock Margin="0,0,0,5">
+                        <Run Text="Usage: " FontWeight="Bold" />
+                        <Run Text="{Binding StorageInfo.VolumeUsedPercentage}"
+                             Foreground="{Binding StorageInfo.VolumeUsedPercentageColor}" />
+                        <Run Text="%" />
+                    </TextBlock>
+                    <ProgressBar Value="{Binding StorageInfo.VolumeUsedPercentage}" />
+                </StackPanel>
+            </Grid>
+        </controls:GlassCard>
+    </Grid>
+</UserControl>
