@@ -156,3 +156,15 @@ Many aspects of the app can be configured using MDM profiles, the folloing keys 
 </plist>
 
 ```
+
+## Overview
+
+### Home
+![SCHome](https://github.com/almenscorner/SupportCompanion/assets/78877636/1ee4cbb2-8291-4755-b498-a329f207c649)
+### Apps
+![SCApps](https://github.com/almenscorner/SupportCompanion/assets/78877636/b63afaf6-e76a-4412-9a54-1af252e4f9b1)
+### Support Info
+![SCSupportInfo](https://github.com/almenscorner/SupportCompanion/assets/78877636/58ea4438-3de7-46d7-9f67-9de8c6e01a46)
+### Notifications
+![SCNotification](https://github.com/almenscorner/SupportCompanion/assets/78877636/414a7d55-2925-4312-bd9c-9f11ac450e23)
+
