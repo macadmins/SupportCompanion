@@ -1,5 +1,8 @@
 # Support Companion
 
+<img width="256" alt="appicon" src="https://github.com/almenscorner/SupportCompanion/assets/78877636/159af7d0-df70-414b-9973-0ab5b6a068e4">
+
+
 ## Description
 
 Support Companion is a macOS helper application, designed to empower end-users by providing them with
