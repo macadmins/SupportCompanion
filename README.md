@@ -10,17 +10,15 @@ quick and easy access to crucial information and actions. This application is bu
 tasks, eliminating the need for extensive searching and complex navigation. Support Companion is equipped with a range
 of features that enhance user productivity.
 
-It integrates with Munki for application information and updates, and with
+It integrates with Munki and Intune for application information and updates, and with
 Intune for MDM information, providing a unified platform for managing these services. Users can view system information
 such as macOS version, model, and serial number at a glance, and perform actions such as changing passwords, rebooting,
 and more with just a few clicks.
 
-This initial version relies on Munki for application information and updates, and Intune for some MDM actions. If you are
+This initial version relies on Munki and/or Intune for application information and updates, and Intune for some MDM actions. If you are
 not using Munki or Intune, this app may not provide much information and actions at the moment.
-If any improvements are made from Microsoft on getting this kind of information using CLI or locally stored data, I will
-consider adding it to the app.
 
-Additionally, if there are wishes to add other MDM specific actions and information, please let me know. I am open to
+If there are wishes to add other MDM specific actions and information, please let me know. I am open to
 adding more MDM providers in the future if there is a demand for it.
 I am only able to test with Intune, so if you have another MDM provider, I would appreciate your help in testing.
 
@@ -38,8 +36,9 @@ you have any suggestions or issues.
 - **Battery**: View battery information such as cycle count and health.
 - **MDM**: View MDM information such as enrollment status and enrollment date.
 - **Disk**: View disk information such as disk space and FileVault status.
-- **Application Patching Progress**: View the progress of patching applications (Based on Munki).
-- **Pending Updates**: View pending updates for applications (Based on Munki).
+- **Application Patching Progress**: View the progress of patching applications.
+- **Pending Updates**: View pending updates for applications.
+- **Applications**: View installed applications and their versions.
 
 ## Installation
 
@@ -89,7 +88,7 @@ Many aspects of the app can be configured using MDM profiles, the folloing keys 
 | `ChangePasswordMode` | String | local | False | Configures the mode for the Change Password button, available modes are: `local`, `SSOExtension`, `Url` |
 | `SupportEmail` | String | None | False | Configures the email address shown when the user clicks on the Support Info button |
 | `SupportPhone` | String | None | False | Configures the phone number shown when the user clicks on the Support Info button |
-| `HiddenWidgets` | Array | None | False | Configures which widgets to hide, available widgets are: `DeviceInfo`, `MunkiPendingApps`, `MunkiUpdates`, `Storage`, `MdmStatus`, `Actions`, `Battery`, `EvergreenInfo` |
+| `HiddenWidgets` | Array | None | False | Configures which widgets to hide, available widgets are: `DeviceInfo`, `MunkiPendingApps`, `MunkiUpdates`, `IntunePendingApps`, `IntuneUpdates`, `Storage`, `MdmStatus`, `Actions`, `Battery`, `EvergreenInfo` |
 | `HiddenActions` | Array | None | False | Configures which actions to hide, available actions are: `Support`, `ManagedSoftwareCenter`, `ChangePassword`, `Reboot`, `KillAgent`, `SoftwareUpdates` |
 | `NotificationInterval` | String | 4 | False | Configures the interval for notifications in hours for Application Updates notifications |
 | `NotificationTitle` | String | Support Companion | False | Configures the title for notifications for notifications |
@@ -99,8 +98,15 @@ Many aspects of the app can be configured using MDM profiles, the folloing keys 
 | `AppUpdateNotificationMessage` | String | You have app updates available. Take action now! \ud83c\udf89 | False | Configures the message for notifications for App Updates notifications |
 | `AppUpdateNotificationButtonText` | String | Details \ud83d\udc40 | False | Configures the button text for notifications for App Updates notifications |
 | `CustomColors` | Array | None | False | Configures custom colors for the app, should be specified in hex format, see example below. Do not use `BrandColor` in conjunction with this key |
+| `IntuneMode` | bool | False | False | Configures the app to use Intune for application information. Only supports PKG and DMG type apps, not LOB. |
 
 ### Example Configuration
+
+To switch from Munki to Intune for application information, add the following key to the profile:
+```xml
+<key>IntuneMode</key>
+<true/>
+```
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
