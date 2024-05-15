@@ -22,7 +22,8 @@ public class MunkiUpdatesViewModel : ViewModelBase
 
     private async void MunkiUpdatesCallback(object state)
     {
-        await GetInstallPercentage();
+        if (App.Config.MunkiMode)
+            await GetInstallPercentage();
     }
 
     private async Task GetMunkiUpdatesCount()

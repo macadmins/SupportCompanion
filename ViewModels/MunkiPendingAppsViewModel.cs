@@ -12,8 +12,8 @@ public class MunkiPendingAppsViewModel : IDisposable
     private const string OpenMmcUpdates = "open munki://updates.html";
     private readonly MunkiAppsService _munkiApps;
     private readonly NotificationService _notification;
-    private IList _pendingAppsList = new List<string>();
     private readonly Timer _timer;
+    private IList _pendingAppsList = new List<string>();
 
     public MunkiPendingAppsViewModel(MunkiAppsService munkiApps, NotificationService notification)
     {
@@ -24,7 +24,7 @@ public class MunkiPendingAppsViewModel : IDisposable
         _timer = new Timer(NotificationCallback, null, 0, interval);
     }
 
-    public ObservableCollection<PendingApp> PendingApps { get; } = new();
+    public ObservableCollection<MunkiPendingApp> PendingApps { get; } = new();
 
     public void Dispose()
     {
@@ -33,19 +33,21 @@ public class MunkiPendingAppsViewModel : IDisposable
 
     private async void MunkiPendingAppsCallback(object state)
     {
-        await GetPendingApps();
+        if (App.Config.MunkiMode)
+            await GetPendingApps();
     }
 
     private async void NotificationCallback(object state)
     {
-        await SendNotification();
+        if (App.Config.MunkiMode)
+            await SendNotification();
     }
 
     private async Task GetPendingApps()
     {
         Logger.LogWithSubsystem("MunkiPendingAppsViewModel", "Getting pending apps list.", 1);
         _pendingAppsList = await _munkiApps.GetPendingUpdatesList();
-        var pendingAppsList = new List<PendingApp>();
+        var pendingAppsList = new List<MunkiPendingApp>();
         await Dispatcher.UIThread.InvokeAsync(() =>
         {
             PendingApps.Clear();
@@ -54,7 +56,7 @@ public class MunkiPendingAppsViewModel : IDisposable
                 var appDict = (IDictionary<string, object>)app;
                 var name = appDict["display_name"].ToString();
                 var version = appDict["version_to_install"].ToString();
-                PendingApps.Add(new PendingApp(name, version));
+                PendingApps.Add(new MunkiPendingApp(name, version));
             }
         });
     }

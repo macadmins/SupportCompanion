@@ -18,8 +18,8 @@ public partial class ActionsViewModel : ObservableObject, IDisposable
     private const string SystemUpdatesBelowVentura = "open /System/Library/PreferencePanes/SoftwareUpdate.prefPane";
     private readonly ActionsService _actionsService;
     private readonly NotificationService _notification;
-    [ObservableProperty] private bool _hasUpdates;
     private readonly Timer _timer;
+    [ObservableProperty] private bool _hasUpdates;
     [ObservableProperty] private string _updateCount = "0";
 
     public ActionsViewModel(ActionsService actionsService, NotificationService notification)
@@ -27,7 +27,7 @@ public partial class ActionsViewModel : ObservableObject, IDisposable
         _actionsService = actionsService;
         _notification = notification;
         HideSupportButton = !App.Config.HiddenActions.Contains("Support");
-        HideMmcButton = !App.Config.HiddenActions.Contains("ManagedSoftwareCenter");
+        HideMmcButton = !App.Config.HiddenActions.Contains("ManagedSoftwareCenter") && App.Config.MunkiMode;
         HideChangePasswordButton = !App.Config.HiddenActions.Contains("ChangePassword");
         HideRebootButton = !App.Config.HiddenActions.Contains("Reboot");
         HideKillAgentButton = !App.Config.HiddenActions.Contains("KillAgent");

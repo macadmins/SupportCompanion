@@ -12,7 +12,8 @@ public class EvergreenWidgetViewModel : ViewModelBase
     {
         _catalogsService = catalogs;
         EvergreenInfo = new EvergreenInfoModel();
-        InitializeAsync();
+        if (App.Config.MunkiMode)
+            InitializeAsync();
     }
 
     public EvergreenInfoModel EvergreenInfo { get; }

@@ -11,9 +11,9 @@ public partial class MunkiUpdatesModel : ObservableObject
     [ObservableProperty] private List<string> _pendingUpdatesList = new();
 }
 
-public class PendingApp
+public class MunkiPendingApp
 {
-    public PendingApp(string name, string version)
+    public MunkiPendingApp(string name, string version)
     {
         Name = name;
         Version = version;
@@ -21,20 +21,4 @@ public class PendingApp
 
     public string Name { get; set; }
     public string Version { get; set; }
-}
-
-public class InstalledApp
-{
-    public InstalledApp(string name, string version, string action, bool isSelfServe = false)
-    {
-        Name = name;
-        Version = version;
-        Action = action;
-        IsSelfServe = isSelfServe;
-    }
-
-    public string Name { get; set; }
-    public string Version { get; set; }
-    public string Action { get; set; }
-    public bool IsSelfServe { get; set; }
 }
