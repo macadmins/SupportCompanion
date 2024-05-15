@@ -37,7 +37,7 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
                         <DataGridTextColumn Header="Version" Binding="{Binding Version}" />
-                        <DataGridTemplateColumn Header="Actions">
+                        <DataGridTemplateColumn Header="Actions" IsVisible="{Binding ShowActionButton}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Button

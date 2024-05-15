@@ -10,7 +10,8 @@ public class AppConfiguration
         "BrandName", "CustomColors", "BrandColor", "HiddenWidgets", "SupportUrl", "ChangePasswordUrl",
         "ChangePasswordMode", "SupportEmail", "SupportPhone", "HiddenActions", "NotificationInterval",
         "NotificationTitle", "NotificationImage", "SoftwareUpdateNotificationMessage",
-        "SoftwareUpdateNotificationButtonText", "AppUpdateNotificationMessage", "AppUpdateNotificationButtonText"
+        "SoftwareUpdateNotificationButtonText", "AppUpdateNotificationMessage", "AppUpdateNotificationButtonText",
+        "MunkiMode", "IntuneMode"
     };
 
     public string BrandName { get; set; } = string.Empty;
@@ -37,4 +38,5 @@ public class AppConfiguration
     public string AppUpdateNotificationButtonText { get; set; } = "Details \ud83d\udc40";
     public Dictionary<string, string> CustomColors { get; set; } = new();
     public bool MunkiMode { get; set; } = true;
+    public bool IntuneMode { get; set; }
 }

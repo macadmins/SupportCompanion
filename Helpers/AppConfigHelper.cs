@@ -100,6 +100,9 @@ public class AppConfigHelper
                     }
 
                     break;
+                case "IntuneMode":
+                    Config.IntuneMode = (bool)pref.Value;
+                    break;
             }
 
         if (!string.IsNullOrEmpty(Config.BrandColor))

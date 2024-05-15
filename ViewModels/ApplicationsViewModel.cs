@@ -11,16 +11,20 @@ namespace SupportCompanion.ViewModels;
 public class ApplicationsViewModel : ViewModelBase, IDisposable
 {
     private readonly ActionsService _actions;
+    private readonly IntuneAppsService _intuneApps;
+    private readonly Timer _timer;
     private IList _installedAppsList = new List<string>();
     private IList _selfServeAppsList = new List<string>();
-    private readonly Timer _timer;
 
-    public ApplicationsViewModel(ActionsService actions)
+    public ApplicationsViewModel(ActionsService actions, IntuneAppsService intuneApps)
     {
         _actions = actions;
-        GetInstalledApps();
+        _intuneApps = intuneApps;
         _timer = new Timer(ApplicationsCallback, null, 0, 300000);
+        ShowActionButton = App.Config.MunkiMode;
     }
+
+    public bool ShowActionButton { get; }
 
     public ObservableCollection<InstalledApp> InstalledApps { get; } = new();
 
@@ -31,13 +35,15 @@ public class ApplicationsViewModel : ViewModelBase, IDisposable
 
     private async void ApplicationsCallback(object state)
     {
-        await GetInstalledApps();
+        if (App.Config.MunkiMode)
+            await GetInstalledApps();
+        else if (App.Config.IntuneMode)
+            await GetIntuneInstalledApps();
     }
 
     public async Task ManageAppClick(string action)
     {
         await _actions.RunCommandWithoutOutput(action);
-        Console.WriteLine(action);
     }
 
     private async Task GetInstalledApps()
@@ -70,6 +76,24 @@ public class ApplicationsViewModel : ViewModelBase, IDisposable
 
                     InstalledApps.Add(new InstalledApp(name, version, action, isSelfServe));
                 }
+            }
+        });
+    }
+
+    private async Task GetIntuneInstalledApps()
+    {
+        var policies = await _intuneApps.GetIntuneApps();
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            InstalledApps.Clear();
+            foreach (var app in policies)
+            {
+                if (app.Value.ComplianceStateMessage.Applicability == 0
+                    && app.Value.EnforcementStateMessage.EnforcementState != 1000)
+                    continue;
+                var name = app.Value.ApplicationName;
+                var version = app.Value.ComplianceStateMessage.ProductVersion;
+                InstalledApps.Add(new InstalledApp(name, version, string.Empty));
             }
         });
     }

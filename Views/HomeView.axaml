@@ -37,7 +37,9 @@
                 </StackPanel>
                 <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
                     <views:MunkiUpdatesWidget IsVisible="{Binding ShowMunkiUpdates}" />
+                    <views:IntuneUpdatesView IsVisible="{Binding ShowIntuneUpdates}" />
                     <views:MunkiPendingAppsWidget IsVisible="{Binding ShowMunkiPendingApps}" />
+                    <views:IntunePendingAppsWidget IsVisible="{Binding ShowIntunePendingApps}" />
                 </StackPanel>
             </Grid>
         </ScrollViewer>

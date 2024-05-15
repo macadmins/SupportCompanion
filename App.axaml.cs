@@ -16,6 +16,7 @@ public class App : Application
     public IServiceProvider ServiceProvider { get; private set; }
     public ActionsViewModel ActionsViewModel { get; private set; }
     public MunkiPendingAppsViewModel MunkiPendingAppsViewModel { get; private set; }
+    public IntunePendingAppsViewModel IntunePendingAppsViewModel { get; private set; }
 
     public override void Initialize()
     {
@@ -44,6 +45,12 @@ public class App : Application
                 ActionsViewModel = ServiceProvider.GetRequiredService<ActionsViewModel>();
             if (!Config.HiddenWidgets.Contains("MunkiPendingApps"))
                 MunkiPendingAppsViewModel = ServiceProvider.GetRequiredService<MunkiPendingAppsViewModel>();
+            if (Config.IntuneMode)
+            {
+                Config.MunkiMode = false;
+                if (!Config.HiddenWidgets.Contains("IntunePendingApps"))
+                    IntunePendingAppsViewModel = ServiceProvider.GetRequiredService<IntunePendingAppsViewModel>();
+            }
         }
 
         DataContext = ServiceProvider.GetRequiredService<MainWindowViewModel>();
@@ -65,6 +72,7 @@ public class App : Application
         serviceCollection.AddSingleton<ActionsService>();
         serviceCollection.AddSingleton<ClipboardService>();
         serviceCollection.AddSingleton<NotificationService>();
+        serviceCollection.AddSingleton<IntuneAppsService>();
 
         // Register view models
         serviceCollection.AddTransient<DeviceWidgetViewModel>();
@@ -78,6 +86,8 @@ public class App : Application
         serviceCollection.AddTransient<ApplicationsViewModel>();
         serviceCollection.AddTransient<MainWindowViewModel>();
         serviceCollection.AddTransient<SupportDialogViewModel>();
+        serviceCollection.AddTransient<IntuneUpdatesViewModel>();
+        serviceCollection.AddTransient<IntunePendingAppsViewModel>();
 
         ServiceProvider = serviceCollection.BuildServiceProvider();
     }

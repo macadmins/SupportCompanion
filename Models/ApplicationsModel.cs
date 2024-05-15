@@ -9,3 +9,19 @@ public partial class ApplicationsModel : ObservableObject
     [ObservableProperty] private bool _isInstalled;
     [ObservableProperty] private string _versionToInstall = string.Empty;
 }
+
+public class InstalledApp
+{
+    public InstalledApp(string name, string version, string action, bool isSelfServe = false)
+    {
+        Name = name;
+        Version = version;
+        Action = action;
+        IsSelfServe = isSelfServe;
+    }
+
+    public string Name { get; set; }
+    public string Version { get; set; }
+    public string Action { get; set; }
+    public bool IsSelfServe { get; set; }
+}
