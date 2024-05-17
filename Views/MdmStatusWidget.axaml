@@ -21,7 +21,7 @@
                 </TextBlock>
                 <StackPanel Grid.Row="1" Margin="10">
                     <TextBlock Margin="0,0,0,5">
-                        <Run Text="Apple Business Manger: " FontWeight="Bold" />
+                        <Run Text="Apple Business Manager: " FontWeight="Bold" />
                         <Run Text="{Binding MdmStatusInfo.Abm}" />
                     </TextBlock>
                     <TextBlock Margin="0,0,0,5">
