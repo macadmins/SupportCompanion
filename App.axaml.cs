@@ -73,6 +73,7 @@ public class App : Application
         serviceCollection.AddSingleton<ClipboardService>();
         serviceCollection.AddSingleton<NotificationService>();
         serviceCollection.AddSingleton<IntuneAppsService>();
+        serviceCollection.AddSingleton<MacPasswordService>();
 
         // Register view models
         serviceCollection.AddTransient<DeviceWidgetViewModel>();
@@ -88,6 +89,8 @@ public class App : Application
         serviceCollection.AddTransient<SupportDialogViewModel>();
         serviceCollection.AddTransient<IntuneUpdatesViewModel>();
         serviceCollection.AddTransient<IntunePendingAppsViewModel>();
+        serviceCollection.AddTransient<UserViewModel>();
+        serviceCollection.AddTransient<MacPasswordViewModel>();
 
         ServiceProvider = serviceCollection.BuildServiceProvider();
     }
