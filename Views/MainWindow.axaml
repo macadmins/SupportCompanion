@@ -52,6 +52,14 @@
                     <views:Applications />
                 </controls:SukiSideMenuItem.PageContent>
             </controls:SukiSideMenuItem>
+            <controls:SukiSideMenuItem Header="Identity">
+                <controls:SukiSideMenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="IdentificationCard" />
+                </controls:SukiSideMenuItem.Icon>
+                <controls:SukiSideMenuItem.PageContent>
+                    <views:IdentityView />
+                </controls:SukiSideMenuItem.PageContent>
+            </controls:SukiSideMenuItem>
         </controls:SukiSideMenu.Items>
     </controls:SukiSideMenu>
 </controls:SukiWindow>
