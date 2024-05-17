@@ -39,7 +39,7 @@ you have any suggestions or issues.
 - **Application Patching Progress**: View the progress of patching applications.
 - **Pending Updates**: View pending updates for applications.
 - **Applications**: View installed applications and their versions.
-- **Identity**: View the current user's profile information and Kerberos SSO or Platinum SSO information.
+- **Identity**: View the current user's profile information and Kerberos SSO or Platform SSO information.
 
 ## Installation
 
