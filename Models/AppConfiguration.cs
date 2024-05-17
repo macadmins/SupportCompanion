@@ -11,7 +11,7 @@ public class AppConfiguration
         "ChangePasswordMode", "SupportEmail", "SupportPhone", "HiddenActions", "NotificationInterval",
         "NotificationTitle", "NotificationImage", "SoftwareUpdateNotificationMessage",
         "SoftwareUpdateNotificationButtonText", "AppUpdateNotificationMessage", "AppUpdateNotificationButtonText",
-        "MunkiMode", "IntuneMode"
+        "MunkiMode", "IntuneMode", "LogFolders"
     };
 
     public string BrandName { get; set; } = string.Empty;
@@ -23,6 +23,7 @@ public class AppConfiguration
     public string SupportPhone { get; set; } = string.Empty;
     public List<string> HiddenWidgets { get; set; } = new() { "" };
     public List<string> HiddenActions { get; set; } = new() { "" };
+    public List<string> LogFolders { get; set; } = new() { "/Library/Logs/Microsoft" };
     public int NotificationInterval { get; set; } = 4;
     public string NotificationTitle { get; set; } = "Support Companion \ud83d\udc4b";
     public string NotificationImage { get; set; } = string.Empty;
