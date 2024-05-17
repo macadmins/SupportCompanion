@@ -1,8 +1,10 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System.Net;
 using System.Net.NetworkInformation;
 using System.Text.Json;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SukiUI.Controls;
 using SupportCompanion.Helpers;
@@ -16,6 +18,7 @@ public partial class ActionsViewModel : ObservableObject, IDisposable
         "open x-apple.systempreferences:com.apple.preferences.softwareupdate";
 
     private const string SystemUpdatesBelowVentura = "open /System/Library/PreferencePanes/SoftwareUpdate.prefPane";
+    private const string SoftwareUpdateCacheName = "last_software_update_notification.txt";
     private readonly ActionsService _actionsService;
     private readonly NotificationService _notification;
     private readonly Timer _timer;
@@ -32,9 +35,13 @@ public partial class ActionsViewModel : ObservableObject, IDisposable
         HideRebootButton = !App.Config.HiddenActions.Contains("Reboot");
         HideKillAgentButton = !App.Config.HiddenActions.Contains("KillAgent");
         HideSoftwareUpdatesButton = !App.Config.HiddenActions.Contains("SoftwareUpdates");
-        var interval = (int)TimeSpan.FromHours(4).TotalMilliseconds;
+        HideGatherLogsButton = !App.Config.HiddenActions.Contains("GatherLogs");
+        var interval = (int)TimeSpan.FromHours(App.Config.NotificationInterval).TotalMilliseconds;
         if (!App.Config.HiddenActions.Contains("SoftwareUpdates"))
+        {
+            CheckForUpdates().ConfigureAwait(false);
             _timer = new Timer(UpdatesCallback, null, 0, interval);
+        }
     }
 
     public bool HideSupportButton { get; private set; }
@@ -42,6 +49,7 @@ public partial class ActionsViewModel : ObservableObject, IDisposable
     public bool HideMmcButton { get; private set; }
     public bool HideRebootButton { get; private set; }
     public bool HideKillAgentButton { get; private set; }
+    public bool HideGatherLogsButton { get; private set; }
     public bool HideSoftwareUpdatesButton { get; }
 
     public void Dispose()
@@ -51,29 +59,24 @@ public partial class ActionsViewModel : ObservableObject, IDisposable
 
     private async void UpdatesCallback(object state)
     {
-        await CheckForUpdates();
+        await CheckAndSendUpdateNotification().ConfigureAwait(false);
     }
 
-    private static bool CheckForInternetConnection(int timeoutMs = 10000, string url = null)
+    private static async Task<bool> CheckForInternetConnection(int timeoutMs = 10000)
     {
+        var url = CultureInfo.InstalledUICulture switch
+        {
+            { Name: var n } when n.StartsWith("fa") => "http://www.aparat.com", // Iran
+            { Name: var n } when n.StartsWith("zh") => "http://www.baidu.com", // China
+            _ => "http://www.gstatic.com/generate_204"
+        };
+
         try
         {
-            url ??= CultureInfo.InstalledUICulture switch
+            using (var client = new HttpClient { Timeout = TimeSpan.FromMilliseconds(timeoutMs) })
             {
-                { Name: var n } when n.StartsWith("fa") => // Iran
-                    "http://www.aparat.com",
-                { Name: var n } when n.StartsWith("zh") => // China
-                    "http://www.baidu.com",
-                _ =>
-                    "http://www.gstatic.com/generate_204"
-            };
-
-            var request = (HttpWebRequest)WebRequest.Create(url);
-            request.KeepAlive = false;
-            request.Timeout = timeoutMs;
-            using (var response = (HttpWebResponse)request.GetResponse())
-            {
-                return true;
+                var response = await client.GetAsync(url);
+                return response.IsSuccessStatusCode;
             }
         }
         catch
@@ -125,7 +128,7 @@ public partial class ActionsViewModel : ObservableObject, IDisposable
         else if (App.Config.ChangePasswordMode == "url" || App.Config.ChangePasswordMode == "SSOExtension")
         {
             // Do we have a network connection?
-            if (!CheckForInternetConnection())
+            if (!await CheckForInternetConnection())
             {
                 await SukiHost.ShowToast("Change Password",
                     "No network connection",
@@ -172,17 +175,65 @@ public partial class ActionsViewModel : ObservableObject, IDisposable
         }
     }
 
+    public async Task GatherLogs()
+    {
+        var archivePath = "/tmp/supportcompanion_logs.zip";
+        var command = $"/usr/bin/zip -r {archivePath}";
+
+        foreach (var folder in App.Config.LogFolders)
+            // Ensure each folder path is quoted to handle spaces
+            command += $" \'{folder}\'";
+        await _actionsService.RunCommandWithoutOutput(command);
+        // Check if the zip command was successful
+        if (!File.Exists(archivePath))
+        {
+            await SukiHost.ShowToast("Gather Logs",
+                "Failed to gather logs",
+                TimeSpan.FromSeconds(5));
+            return;
+        }
+
+        // Prompt the user for a file save location
+        var saveFileDialog = new SaveFileDialog
+        {
+            Title = "Save Logs",
+            InitialFileName = "supportcompanion_logs.zip",
+            Filters = new List<FileDialogFilter>
+            {
+                new() { Name = "Zip Files", Extensions = new List<string> { "zip" } }
+            }
+        };
+        var mainWindow = Application.Current.ApplicationLifetime is ClassicDesktopStyleApplicationLifetime desktop
+            ? desktop.MainWindow
+            : null;
+        var savePath = await saveFileDialog.ShowAsync(mainWindow);
+        if (savePath != null)
+        {
+            File.Move(archivePath, savePath);
+            await SukiHost.ShowToast("Gather Logs",
+                "Logs saved successfully",
+                TimeSpan.FromSeconds(5));
+        }
+        else
+        {
+            await SukiHost.ShowToast("Gather Logs",
+                "Logs not saved",
+                TimeSpan.FromSeconds(5));
+        }
+    }
+
     public void ShowSupportInfoDialog()
     {
         SukiHost.ShowDialog(new SupportDialogViewModel(), allowBackgroundClose: true);
     }
 
-    private async Task CheckForUpdates()
+    private async Task<bool> CheckForUpdates()
     {
         Logger.LogWithSubsystem("ActionsViewModel", "Checking for software updates...", 1);
         var result = await _actionsService.RunCommandWithOutput("/usr/sbin/softwareupdate -l");
         var lines = result.Split('\n');
         var updates = new ObservableCollection<string>();
+
         foreach (var line in lines)
             if (line.Contains("*"))
                 updates.Add(line);
@@ -191,10 +242,30 @@ public partial class ActionsViewModel : ObservableObject, IDisposable
         {
             HasUpdates = true;
             UpdateCount = updates.Count.ToString();
+            return true; // Updates are available
+        }
+
+        return false; // No updates available
+    }
+
+    private async Task CheckAndSendUpdateNotification()
+    {
+        var lastNotificationTime = NotificationTimeStamp.ReadLastNotificationTime(SoftwareUpdateCacheName);
+        if (lastNotificationTime.HasValue &&
+            (DateTime.Now - lastNotificationTime.Value).TotalHours <
+            App.Config.NotificationInterval) return; // Skip sending notification if it's been less than 4 hours
+
+        var updatesAvailable = await CheckForUpdates().ConfigureAwait(false);
+
+        if (updatesAvailable)
+        {
             _notification.SendNotification(
                 App.Config.SoftwareUpdateNotificationMessage,
                 App.Config.SoftwareUpdateNotificationButtonText,
                 SystemUpdatesVenturaAndAbove);
+
+            // Update the last notification time
+            NotificationTimeStamp.WriteLastNotificationTime(DateTime.Now, SoftwareUpdateCacheName);
         }
     }
 }
