@@ -101,7 +101,7 @@ Many aspects of the app can be configured using MDM profiles, the folloing keys 
 | `AppUpdateNotificationButtonText` | String | Details \ud83d\udc40 | False | Configures the button text for notifications for App Updates notifications |
 | `CustomColors` | Array | None | False | Configures custom colors for the app, should be specified in hex format, see example below. Do not use `BrandColor` in conjunction with this key |
 | `IntuneMode` | bool | False | False | Configures the app to use Intune for application information. Only supports PKG and DMG type apps, not LOB. |
-| `LogFolders` | array | False | /Library/Logs/Microsoft | False | Configures the log folders to gather logs from. Only used when gathering logs. |
+| `LogFolders` | array | /Library/Logs/Microsoft | False | Configures the log folders to gather logs from. Only used when gathering logs. |
 
 ### Example Configuration
 
