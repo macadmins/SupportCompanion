@@ -4,51 +4,58 @@ namespace SupportCompanion.Helpers;
 
 public class StartProcess
 {
-    private string Result { get; set; } = string.Empty;
+    private static readonly ProcessStartInfo DefaultStartInfo = new()
+    {
+        FileName = "/bin/bash",
+        UseShellExecute = false,
+        CreateNoWindow = true,
+        RedirectStandardOutput = true,
+        RedirectStandardError = true
+    };
+
+    private ProcessStartInfo CreateStartInfo(string command)
+    {
+        return new ProcessStartInfo
+        {
+            FileName = DefaultStartInfo.FileName,
+            Arguments = $"-c \"{command}\"",
+            UseShellExecute = DefaultStartInfo.UseShellExecute,
+            CreateNoWindow = DefaultStartInfo.CreateNoWindow,
+            RedirectStandardOutput = DefaultStartInfo.RedirectStandardOutput,
+            RedirectStandardError = DefaultStartInfo.RedirectStandardError
+        };
+    }
 
     public async Task<string> RunCommand(string command)
     {
         if (string.IsNullOrWhiteSpace(command))
-            throw new ArgumentException("Value cannot be null or whitespace.", nameof(command));
-        var startInfo = new ProcessStartInfo
-        {
-            FileName = "/bin/bash",
-            Arguments = $"-c \"{command}\"",
-            UseShellExecute = false,
-            CreateNoWindow = true,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true
-        };
+            Logger.LogWithSubsystem("StartProcess", "Command must not be null or whitespace", 2);
+
+        var startInfo = CreateStartInfo(command);
         using var process = new Process { StartInfo = startInfo };
 
         process.Start();
-        Result = await process.StandardOutput.ReadToEndAsync();
+
+        var output = await Task.WhenAll(
+            process.StandardOutput.ReadToEndAsync(),
+            process.StandardError.ReadToEndAsync()
+        );
+
         await process.WaitForExitAsync();
 
         if (process.ExitCode != 0)
-        {
-            Logger.LogWithSubsystem("StartProcess", $"Command {command} failed with exit code {process.ExitCode}", 2);
-            throw new Exception($"Command {command} failed with exit code {process.ExitCode}");
-        }
+            Logger.LogWithSubsystem("StartProcess",
+                $"Command {command} failed with exit code {process.ExitCode}\nError: {output[1]}", 2);
 
-        return Result.Trim();
+        return output[0].Trim();
     }
 
     public async Task RunCommandWithoutOutput(string command)
     {
         if (string.IsNullOrWhiteSpace(command))
-            throw new ArgumentException("Command must not be null or whitespace", nameof(command));
+            Logger.LogWithSubsystem("StartProcess", "Command must not be null or whitespace", 2);
 
-        var startInfo = new ProcessStartInfo
-        {
-            FileName = "/bin/bash",
-            Arguments = $"-c \"{command}\"",
-            UseShellExecute = false,
-            CreateNoWindow = true,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true
-        };
-
+        var startInfo = CreateStartInfo(command);
         using var process = new Process { StartInfo = startInfo };
 
         process.Start();
@@ -56,8 +63,9 @@ public class StartProcess
 
         if (process.ExitCode != 0)
         {
-            Logger.LogWithSubsystem("StartProcess", $"Command {command} failed with exit code {process.ExitCode}", 2);
-            throw new Exception($"Command {command} failed with exit code {process.ExitCode}");
+            var error = await process.StandardError.ReadToEndAsync();
+            Logger.LogWithSubsystem("StartProcess",
+                $"Command {command} failed with exit code {process.ExitCode}\nError: {error}", 2);
         }
     }
 }

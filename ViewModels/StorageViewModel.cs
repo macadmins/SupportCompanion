@@ -23,17 +23,17 @@ public class StorageViewModel : ViewModelBase, IDisposable
 
     public void Dispose()
     {
-        _timer.Dispose();
+        _timer?.Dispose();
     }
 
     private async void StorageCallback(object state)
     {
-        await GetStorageInfo();
+        await GetStorageInfo().ConfigureAwait(false);
     }
 
     private async void InitializeAsync()
     {
-        await GetStorageInfo();
+        await GetStorageInfo().ConfigureAwait(false);
     }
 
     private async Task GetStorageInfo()
@@ -48,11 +48,7 @@ public class StorageViewModel : ViewModelBase, IDisposable
         StorageInfo.VolumeUsedPercentage = Convert.ToDouble(storageInfo["VolumeUsedPercentage"]);
         StorageInfo.IsEncrypted = Convert.ToBoolean(storageInfo["IsEncrypted"]);
         StorageInfo.FileVaultEnabled = Convert.ToBoolean(storageInfo["FileVaultEnabled"]);
-
-        if (StorageInfo.IsEncrypted == false)
-            StorageInfo.IsEncryptedColor = "#FF4F44";
-        else
-            StorageInfo.IsEncryptedColor = "LightGreen";
+        StorageInfo.IsEncryptedColor = StorageInfo.FileVaultEnabled ? "LightGreen" : "#FF4F44";
 
         StorageInfo.VolumeUsedPercentageColor = StorageInfo.VolumeUsedPercentage switch
         {

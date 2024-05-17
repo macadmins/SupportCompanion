@@ -16,6 +16,7 @@ public class HomeViewModel : ViewModelBase
         ShowEvergreenInfo = !App.Config.HiddenWidgets.Contains("EvergreenInfo");
     }
 
+
     public bool ShowDeviceWidget { get; private set; }
     public bool ShowMunkiPendingApps { get; private set; }
     public bool ShowIntunePendingApps { get; private set; }

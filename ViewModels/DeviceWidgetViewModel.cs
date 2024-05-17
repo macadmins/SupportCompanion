@@ -5,12 +5,11 @@ using SupportCompanion.Services;
 
 namespace SupportCompanion.ViewModels;
 
-public class DeviceWidgetViewModel : ViewModelBase, IDisposable
+public class DeviceWidgetViewModel : ViewModelBase
 {
     private readonly ClipboardService _clipboard;
     private readonly IOKitService _iioKit;
     private readonly SystemInfoService _systemInfo;
-    private readonly Timer _timer;
 
     public DeviceWidgetViewModel(IOKitService iioKit, SystemInfoService systemInfo,
         ClipboardService clipboard)
@@ -20,8 +19,6 @@ public class DeviceWidgetViewModel : ViewModelBase, IDisposable
         _clipboard = clipboard;
         DeviceInfo = new DeviceInfoModel();
         Initialization = InitializeAsync();
-        var interval = (int)TimeSpan.FromHours(24).TotalMilliseconds;
-        _timer = new Timer(LastBootCallback, null, 0, interval);
     }
 
     public DeviceInfoModel DeviceInfo { get; }
@@ -39,83 +36,32 @@ public class DeviceWidgetViewModel : ViewModelBase, IDisposable
     public string RebootToolTip =>
         "Regularly rebooting your device can enhance its performance and longevity\nby clearing temporary files and freeing up system resources.";
 
-    public void Dispose()
-    {
-        _timer?.Dispose();
-    }
 
     private async Task InitializeAsync()
     {
-        await SerialNumber();
-        await Ip();
-        await OSversion();
-        await OSBuild();
-        await HostName();
-        await Model();
-        await Processor();
-        await MemSize();
-        await LastBootTime();
+        await GatherSystemInfo().ConfigureAwait(false);
     }
 
-    private async void LastBootCallback(object state)
-    {
-        await LastBootTime();
-    }
-
-    private async Task SerialNumber()
+    private async Task GatherSystemInfo()
     {
         SerialNumberValue = _iioKit.GetSerialNumber();
         DeviceInfo.SerialNumber = SerialNumberValue;
-    }
-
-    private async Task Ip()
-    {
         IpValue = await _systemInfo.GetIPAddress();
         DeviceInfo.IpAddress = IpValue;
-    }
-
-    private async Task OSversion()
-    {
         OSVersionValue = _systemInfo.GetOSVersion();
         DeviceInfo.OsVersion = OSVersionValue;
-    }
-
-    private async Task OSBuild()
-    {
         OSBuildValue = _systemInfo.GetOSBuild();
         DeviceInfo.OsBuild = OSBuildValue;
-    }
-
-    private async Task HostName()
-    {
         HostNameValue = SystemInfo.GetSystemInfo("kern.hostname");
         DeviceInfo.HostName = HostNameValue;
-    }
-
-    private async Task Model()
-    {
         var productName = _iioKit.GetProductName();
         ModelValue = productName ?? _systemInfo.GetModel();
         DeviceInfo.Model = ModelValue;
-    }
-
-    private async Task Processor()
-    {
         ProcessorValue = _systemInfo.GetProcessor();
         DeviceInfo.Processor = ProcessorValue;
-    }
-
-    private async Task MemSize()
-    {
         DeviceInfo.MemSize = _systemInfo.GetMemSize();
-    }
-
-    private async Task LastBootTime()
-    {
-        Logger.LogWithSubsystem("DeviceWidgetViewModel", "Getting Last Boot Time...", 1);
         LastBootTimeValue = await _systemInfo.GetLastBootTime();
         DeviceInfo.LastBootTime = LastBootTimeValue;
-
         DeviceInfo.LastBootTimeColor = LastBootTimeValue switch
         {
             < 7 => "LightGreen",

@@ -27,7 +27,7 @@ public partial class IntuneUpdatesViewModel : ObservableObject, IDisposable
     private async void IntuneUpdatesCallback(object state)
     {
         if (App.Config.IntuneMode)
-            await GetInstallPercentage();
+            await GetInstallPercentage().ConfigureAwait(false);
     }
 
     private async Task GetInstallPercentage()

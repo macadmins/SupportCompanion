@@ -4,12 +4,12 @@ using SupportCompanion.Services;
 
 namespace SupportCompanion.ViewModels;
 
-public class MunkiUpdatesViewModel : ViewModelBase
+public class MunkiUpdatesViewModel : ViewModelBase, IDisposable
 {
     private readonly MunkiAppsService _munkiApps;
+    private readonly Timer _timer;
     private int _installedAppsCount;
     private int _munkiUpdatesCount;
-    private Timer _timer;
 
     public MunkiUpdatesViewModel(MunkiAppsService munkiApps)
     {
@@ -20,10 +20,15 @@ public class MunkiUpdatesViewModel : ViewModelBase
 
     public MunkiUpdatesModel MunkiUpdatesInfo { get; }
 
+    public void Dispose()
+    {
+        _timer?.Dispose();
+    }
+
     private async void MunkiUpdatesCallback(object state)
     {
         if (App.Config.MunkiMode)
-            await GetInstallPercentage();
+            await GetInstallPercentage().ConfigureAwait(false);
     }
 
     private async Task GetMunkiUpdatesCount()

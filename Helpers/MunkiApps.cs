@@ -8,7 +8,7 @@ public class MunkiApps
     private readonly string _managedInstallsReportPlist = "/Library/Managed Installs/ManagedInstallReport.plist";
     private readonly string _selfServeManifest = "/Library/Managed Installs/manifests/SelfServeManifest";
 
-    private static async Task<Stream> ReadFileWithRetry(string filePath, int maxRetries = 3,
+    private static async Task<Stream?> ReadFileWithRetry(string filePath, int maxRetries = 3,
         int delayMilliseconds = 20000)
     {
         for (var i = 0; i < maxRetries; i++)
@@ -66,14 +66,11 @@ public class MunkiApps
 
         var plistReader = new PlistReader();
         var plist = plistReader.Read(reader);
-        if (!plist.ContainsKey("ItemsToInstall"))
-        {
-            Logger.LogWithSubsystem("MunkiApps:GetPendingUpdates", "ItemsToInstall key not found", 1);
-            return 0;
-        }
+        if (plist.TryGetValue("ItemsToInstall", out var pendingApps))
+            return ((IList)pendingApps).Count;
 
-        var pendingApps = (IList)plist["ItemsToInstall"];
-        return pendingApps.Count;
+        Logger.LogWithSubsystem("MunkiApps:GetPendingUpdates", "ItemsToInstall key not found", 1);
+        return 0;
     }
 
     public async Task<int> GetInstalledAppsCount()
@@ -88,14 +85,11 @@ public class MunkiApps
 
         var plistReader = new PlistReader();
         var plist = plistReader.Read(reader);
-        if (!plist.ContainsKey("InstalledItems"))
-        {
-            Logger.LogWithSubsystem("MunkiApps:GetInstalledAppCount", "InstalledItems key not found", 1);
-            return 0;
-        }
+        if (plist.TryGetValue("InstalledItems", out var installedApps))
+            return ((IList)installedApps).Count;
 
-        var installedApps = (IList)plist["InstalledItems"];
-        return installedApps.Count;
+        Logger.LogWithSubsystem("MunkiApps:GetInstalledAppCount", "InstalledItems key not found", 1);
+        return 0;
     }
 
     public async Task<IList> GetPendingUpdatesList()
@@ -110,14 +104,11 @@ public class MunkiApps
 
         var plistReader = new PlistReader();
         var plist = plistReader.Read(reader);
-        if (!plist.ContainsKey("ItemsToInstall"))
-        {
-            Logger.LogWithSubsystem("MunkiApps:GetPendingUpdatesList", "ItemsToInstall key not found", 1);
-            return new List<string>();
-        }
+        if (plist.TryGetValue("ItemsToInstall", out var pendingApps))
+            return (IList)pendingApps;
 
-        var pendingApps = (IList)plist["ItemsToInstall"];
-        return pendingApps;
+        Logger.LogWithSubsystem("MunkiApps:GetPendingUpdatesList", "ItemsToInstall key not found", 1);
+        return new List<string>();
     }
 
     public async Task<IList> GetInstalledAppsList()
@@ -132,14 +123,11 @@ public class MunkiApps
 
         var plistReader = new PlistReader();
         var plist = plistReader.Read(reader);
-        if (!plist.ContainsKey("ManagedInstalls"))
-        {
-            Logger.LogWithSubsystem("MunkiApps:GetInstalledAppsList", "ManagedInstalls key not found", 1);
-            return new List<string>();
-        }
+        if (plist.TryGetValue("ManagedInstalls", out var installedApps))
+            return (IList)installedApps;
 
-        var installedApps = (IList)plist["ManagedInstalls"];
-        return installedApps;
+        Logger.LogWithSubsystem("MunkiApps:GetInstalledAppsList", "ManagedInstalls key not found", 1);
+        return new List<string>();
     }
 
     public async Task<IList> GetSelfServeAppsList()
@@ -154,13 +142,10 @@ public class MunkiApps
 
         var plistReader = new PlistReader();
         var plist = plistReader.Read(reader);
-        if (!plist.ContainsKey("managed_installs"))
-        {
-            Logger.LogWithSubsystem("MunkiApps:GetSelfServeAppsList", "managed_installs key not found", 1);
-            return new List<string>();
-        }
+        if (plist.TryGetValue("managed_installs", out var selfServeApps))
+            return (IList)selfServeApps;
 
-        var selfServeApps = (IList)plist["managed_installs"];
-        return selfServeApps;
+        Logger.LogWithSubsystem("MunkiApps:GetSelfServeAppsList", "managed_installs key not found", 1);
+        return new List<string>();
     }
 }

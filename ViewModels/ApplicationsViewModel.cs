@@ -20,7 +20,8 @@ public class ApplicationsViewModel : ViewModelBase, IDisposable
     {
         _actions = actions;
         _intuneApps = intuneApps;
-        _timer = new Timer(ApplicationsCallback, null, 0, 300000);
+        var interval = (int)TimeSpan.FromMinutes(10).TotalMilliseconds;
+        _timer = new Timer(ApplicationsCallback, null, 0, interval);
         ShowActionButton = App.Config.MunkiMode;
     }
 
@@ -51,7 +52,6 @@ public class ApplicationsViewModel : ViewModelBase, IDisposable
         Logger.LogWithSubsystem("ApplicationsViewModel", "Getting installed apps list", 1);
         _selfServeAppsList = await new MunkiApps().GetSelfServeAppsList();
         _installedAppsList = await new MunkiApps().GetInstalledAppsList();
-        var installedAppsList = new List<InstalledApp>();
         await Dispatcher.UIThread.InvokeAsync(() =>
         {
             InstalledApps.Clear();

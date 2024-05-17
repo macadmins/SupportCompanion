@@ -16,7 +16,7 @@ public class Storage
             var StorageInfo = await new StartProcess().RunCommand(_storageCommand);
             // Parse the plist output and return the StorageInfo
             var PlistReader = new PlistReader();
-            var stream = new MemoryStream(Encoding.UTF8.GetBytes(StorageInfo));
+            using var stream = new MemoryStream(Encoding.UTF8.GetBytes(StorageInfo));
             var Plist = PlistReader.Read(stream);
             var storageInfo = (IDictionary)Plist;
             // Get storage total and used space

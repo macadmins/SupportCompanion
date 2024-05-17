@@ -20,7 +20,7 @@ public class MdmStatusViewModel : ViewModelBase
 
     private async Task InitializeAsync()
     {
-        await GetMdmDetails();
+        await GetMdmDetails().ConfigureAwait(false);
     }
 
     private async Task GetMdmDetails()

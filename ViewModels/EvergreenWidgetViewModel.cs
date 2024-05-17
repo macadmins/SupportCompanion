@@ -20,7 +20,7 @@ public class EvergreenWidgetViewModel : ViewModelBase
 
     private async void InitializeAsync()
     {
-        await DeviceCatalogs();
+        await DeviceCatalogs().ConfigureAwait(false);
     }
 
     private async Task DeviceCatalogs()
