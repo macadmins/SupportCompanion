@@ -1,3 +1,4 @@
+current_user=$(ls -l /dev/console | awk '{print $3}')
 # Kill the process
 echo "Killing the process..."
 pkill -f SupportCompanion
@@ -13,6 +14,9 @@ rm -rf /Applications/Utilities/SupportCompanion.app
 # Remove the scripts
 echo "Removing the scripts..."
 rm -rf /usr/local/supportcompanion
+# Remove app data
+echo "Removing app data..."
+rm -rf "/Users/$current_user/Library/Application Support/SupportCompanion"
 # Forget the package
 echo "Forgetting the package..."
 pkgutil --forget com.almenscorner.supportcompanion
