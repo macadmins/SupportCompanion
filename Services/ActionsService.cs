@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using SukiUI.Controls;
 using SupportCompanion.Helpers;
@@ -90,5 +91,22 @@ public class ActionsService : IActions
         var helper = new StartProcess();
         var result = await helper.RunCommand(command);
         return result;
+    }
+
+    public async Task<(bool, string)> CheckForUpdates()
+    {
+        Logger.LogWithSubsystem("ActionsViewModel", "Checking for software updates...", 1);
+        var helper = new StartProcess();
+        var result = await helper.RunCommand("/usr/sbin/softwareupdate -l");
+        var lines = result.Split('\n');
+        var updates = new ObservableCollection<string>();
+
+        foreach (var line in lines)
+            if (line.Contains("*"))
+                updates.Add(line);
+
+        if (updates.Count > 0) return (true, updates.Count.ToString()); // Updates are available
+
+        return (false, string.Empty); // No updates available
     }
 }

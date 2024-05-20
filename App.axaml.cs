@@ -14,9 +14,6 @@ public class App : Application
 {
     public static AppConfiguration Config { get; private set; }
     public IServiceProvider ServiceProvider { get; private set; }
-    public ActionsViewModel ActionsViewModel { get; private set; }
-    public MunkiPendingAppsViewModel MunkiPendingAppsViewModel { get; private set; }
-    public IntunePendingAppsViewModel IntunePendingAppsViewModel { get; private set; }
 
     public override void Initialize()
     {
@@ -32,25 +29,11 @@ public class App : Application
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            // Check if the main window is null or closed
-            /*if (desktop.MainWindow == null || (desktop.MainWindow as MainWindow)?.IsClosed == true)
-                // If the main window is null or closed, create a new one
-                desktop.MainWindow = new MainWindow
-                {
-                    DataContext = ServiceProvider.GetRequiredService<MainWindowViewModel>()
-                };*/
             DataContext = ServiceProvider.GetRequiredService<MainWindowViewModel>();
             desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
-            if (!Config.HiddenActions.Contains("SoftwareUpdates"))
-                ActionsViewModel = ServiceProvider.GetRequiredService<ActionsViewModel>();
-            if (!Config.HiddenWidgets.Contains("MunkiPendingApps"))
-                MunkiPendingAppsViewModel = ServiceProvider.GetRequiredService<MunkiPendingAppsViewModel>();
             if (Config.IntuneMode)
-            {
                 Config.MunkiMode = false;
-                if (!Config.HiddenWidgets.Contains("IntunePendingApps"))
-                    IntunePendingAppsViewModel = ServiceProvider.GetRequiredService<IntunePendingAppsViewModel>();
-            }
+            var updateNotifications = ServiceProvider.GetRequiredService<UpdateNotifications>();
         }
 
         DataContext = ServiceProvider.GetRequiredService<MainWindowViewModel>();
@@ -74,6 +57,7 @@ public class App : Application
         serviceCollection.AddSingleton<NotificationService>();
         serviceCollection.AddSingleton<IntuneAppsService>();
         serviceCollection.AddSingleton<MacPasswordService>();
+        serviceCollection.AddSingleton<UpdateNotifications>();
 
         // Register view models
         serviceCollection.AddTransient<DeviceWidgetViewModel>();

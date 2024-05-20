@@ -20,9 +20,15 @@ public partial class MainWindow : SukiWindow
         DataContext = ((App)Application.Current).ServiceProvider.GetRequiredService<MainWindowViewModel>();
     }
 
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnDetachedFromVisualTree(e);
+        DataContext = null;
+    }
+
     protected override void OnClosed(EventArgs e)
     {
-        IsClosed = true;
         base.OnClosed(e);
+        IsClosed = true;
     }
 }
