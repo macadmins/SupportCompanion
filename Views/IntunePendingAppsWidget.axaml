@@ -9,6 +9,11 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="SupportCompanion.Views.IntunePendingAppsWidget"
              x:DataType="vm:IntunePendingAppsViewModel">
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:IntunePendingAppsViewModel />
+    </Design.DataContext>
     <UserControl.Resources>
         <DataTemplate x:Key="InfoIconTemplate" x:DataType="models:IntunePendingApp">
             <Border Background="Transparent" Padding="10,0,10,0">
