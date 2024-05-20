@@ -2,8 +2,8 @@ using System.Globalization;
 using System.Net.NetworkInformation;
 using System.Text.Json;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SukiUI.Controls;
 using SupportCompanion.Helpers;
@@ -188,31 +188,39 @@ public partial class ActionsViewModel : ObservableObject, IDisposable
         }
 
         // Prompt the user for a file save location
-        var saveFileDialog = new SaveFileDialog
-        {
-            Title = "Save Logs",
-            InitialFileName = "supportcompanion_logs.zip",
-            Filters = new List<FileDialogFilter>
-            {
-                new() { Name = "Zip Files", Extensions = new List<string> { "zip" } }
-            }
-        };
         var mainWindow = Application.Current.ApplicationLifetime is ClassicDesktopStyleApplicationLifetime desktop
             ? desktop.MainWindow
             : null;
-        var savePath = await saveFileDialog.ShowAsync(mainWindow);
-        if (savePath != null)
+
+        if (mainWindow != null)
         {
-            File.Move(archivePath, savePath);
-            await SukiHost.ShowToast("Gather Logs",
-                "Logs saved successfully",
-                TimeSpan.FromSeconds(5));
-        }
-        else
-        {
-            await SukiHost.ShowToast("Gather Logs",
-                "Logs not saved",
-                TimeSpan.FromSeconds(5));
+            var storageFile = await mainWindow.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+            {
+                Title = "Save Logs",
+                SuggestedFileName = "supportcompanion_logs.zip",
+                DefaultExtension = "zip"
+            });
+
+            if (storageFile != null)
+            {
+                await using (var sourceStream = new FileStream(archivePath, FileMode.Open, FileAccess.Read))
+                await using (var destinationStream = await storageFile.OpenWriteAsync())
+                {
+                    await sourceStream.CopyToAsync(destinationStream);
+                }
+
+                File.Delete(archivePath); // Delete the source file after successful copy
+
+                await SukiHost.ShowToast("Gather Logs",
+                    "Logs saved successfully",
+                    TimeSpan.FromSeconds(5));
+            }
+            else
+            {
+                await SukiHost.ShowToast("Gather Logs",
+                    "Logs not saved",
+                    TimeSpan.FromSeconds(5));
+            }
         }
     }
 
