@@ -172,11 +172,15 @@ To switch from Munki to Intune for application information, add the following ke
 ## Overview
 
 ### Home
-![SCHome](https://github.com/almenscorner/SupportCompanion/assets/78877636/1ee4cbb2-8291-4755-b498-a329f207c649)
+![SCHome](https://github.com/almenscorner/SupportCompanion/assets/78877636/d908bb6a-d7ed-42a6-a5d1-5f500ea24a9c)
 ### Apps
 ![SCApps](https://github.com/almenscorner/SupportCompanion/assets/78877636/b63afaf6-e76a-4412-9a54-1af252e4f9b1)
+### Identity
+![SCIdentity](https://github.com/almenscorner/SupportCompanion/assets/78877636/c88849fb-3092-47f4-99a2-69c6cd8f9923)
 ### Support Info
 ![SCSupportInfo](https://github.com/almenscorner/SupportCompanion/assets/78877636/58ea4438-3de7-46d7-9f67-9de8c6e01a46)
+### Gather logs
+![SCLogs102](https://github.com/almenscorner/SupportCompanion/assets/78877636/8cdc3405-8268-4ac8-9210-fd0d5b8c1b85)
 ### Notifications
 ![SCNotification](https://github.com/almenscorner/SupportCompanion/assets/78877636/414a7d55-2925-4312-bd9c-9f11ac450e23)
 
