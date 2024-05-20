@@ -23,7 +23,11 @@ public partial class MunkiPendingAppsWidget : UserControl
 
     private void Window_Closed(object sender, EventArgs e)
     {
-        if (DataContext is MunkiPendingAppsViewModel viewModel) viewModel.Dispose();
+        if (DataContext is MunkiPendingAppsViewModel viewModel)
+        {
+            viewModel.StopTimer();
+            viewModel.Dispose();
+        }
         DataContext = null;
 
         var window = sender as Window;

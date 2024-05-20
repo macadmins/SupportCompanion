@@ -23,7 +23,11 @@ public partial class IntunePendingAppsWidget : UserControl
 
     private void Window_Closed(object sender, EventArgs e)
     {
-        if (DataContext is IntunePendingAppsViewModel viewModel) viewModel.Dispose();
+        if (DataContext is IntunePendingAppsViewModel viewModel)
+        {
+            viewModel.StopTimer();
+            viewModel.Dispose();
+        }
         DataContext = null;
 
         var window = sender as Window;

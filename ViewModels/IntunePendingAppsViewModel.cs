@@ -30,6 +30,16 @@ public class IntunePendingAppsViewModel : IDisposable
         Dispose(true);
         GC.SuppressFinalize(this);
     }
+    
+    public void StopTimer()
+    {
+       if (_pendingAppsTimer != null)
+       {
+            _pendingAppsTimer.Change(Timeout.Infinite, 0);
+            _pendingAppsTimer.Dispose();
+            _pendingAppsTimer = null;
+       }
+    }
 
     private async void IntunePendingAppsCallback(object state)
     {
@@ -67,12 +77,7 @@ public class IntunePendingAppsViewModel : IDisposable
     private void CleanUp()
     {
         PendingApps.Clear();
-        if (_pendingAppsTimer != null)
-        {
-            _pendingAppsTimer.Change(Timeout.Infinite, 0);
-            _pendingAppsTimer.Dispose();
-            _pendingAppsTimer = null;
-        }
+        StopTimer();
     }
 
     protected virtual void Dispose(bool disposing)

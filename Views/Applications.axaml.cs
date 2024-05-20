@@ -23,7 +23,11 @@ public partial class Applications : UserControl
 
     private void Window_Closed(object sender, EventArgs e)
     {
-        if (DataContext is ApplicationsViewModel viewModel) viewModel.Dispose();
+        if (DataContext is ApplicationsViewModel viewModel)
+        {
+            viewModel.StopTimer();
+            viewModel.Dispose();
+        }
         DataContext = null;
 
         var window = sender as Window;

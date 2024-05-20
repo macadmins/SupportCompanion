@@ -29,6 +29,16 @@ public class MunkiPendingAppsViewModel : IDisposable
         Dispose(true);
         GC.SuppressFinalize(this);
     }
+    
+    public void StopTimer()
+    {
+        if (_pendingAppsTimer != null)
+        {
+            _pendingAppsTimer.Change(Timeout.Infinite, 0);
+            _pendingAppsTimer.Dispose();
+            _pendingAppsTimer = null;
+        }
+    }
 
     private async void MunkiPendingAppsCallback(object state)
     {
@@ -62,12 +72,7 @@ public class MunkiPendingAppsViewModel : IDisposable
     private void CleanUp()
     {
         PendingApps.Clear();
-        if (_pendingAppsTimer != null)
-        {
-            _pendingAppsTimer.Change(Timeout.Infinite, 0);
-            _pendingAppsTimer.Dispose();
-            _pendingAppsTimer = null;
-        }
+        StopTimer();
     }
 
     protected virtual void Dispose(bool disposing)

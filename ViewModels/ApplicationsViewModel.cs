@@ -35,6 +35,16 @@ public class ApplicationsViewModel : ViewModelBase, IDisposable
         Dispose(true);
         GC.SuppressFinalize(this);
     }
+    
+    public void StopTimer()
+    {
+        if (_timer != null)
+        {
+            _timer.Change(Timeout.Infinite, 0);
+            _timer.Dispose();
+            _timer = null;
+        }
+    }
 
     private async void ApplicationsCallback(object state)
     {
@@ -103,12 +113,7 @@ public class ApplicationsViewModel : ViewModelBase, IDisposable
     private void CleanUp()
     {
         InstalledApps.Clear();
-        if (_timer != null)
-        {
-            _timer.Change(Timeout.Infinite, 0);
-            _timer.Dispose();
-            _timer = null;
-        }
+        StopTimer();
     }
 
     protected virtual void Dispose(bool disposing)

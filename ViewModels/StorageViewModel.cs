@@ -15,7 +15,6 @@ public class StorageViewModel : ViewModelBase, IDisposable
         _storage = storage;
         StorageInfo = new StorageModel();
         ShowManageStorageButton = Environment.OSVersion.Version.Major >= 13;
-        InitializeAsync();
         _timer = new Timer(StorageCallback, null, 0, 300000);
     }
 
@@ -27,13 +26,18 @@ public class StorageViewModel : ViewModelBase, IDisposable
         Dispose(true);
         GC.SuppressFinalize(this);
     }
-
-    private async void StorageCallback(object? state)
+    
+    public void StopTimer()
     {
-        await GetStorageInfo().ConfigureAwait(false);
+        if (_timer != null)
+        {
+            _timer?.Change(Timeout.Infinite, 0);
+            _timer?.Dispose();
+            _timer = null;
+        }
     }
 
-    private async void InitializeAsync()
+    private async void StorageCallback(object? state)
     {
         await GetStorageInfo().ConfigureAwait(false);
     }
@@ -75,12 +79,7 @@ public class StorageViewModel : ViewModelBase, IDisposable
     private void CleanUp()
     {
         StorageInfo = null;
-        if (_timer != null)
-        {
-            _timer?.Change(Timeout.Infinite, 0);
-            _timer?.Dispose();
-            _timer = null;
-        }
+        StopTimer();
     }
 
     protected virtual void Dispose(bool disposing)
