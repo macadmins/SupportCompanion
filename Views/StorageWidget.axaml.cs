@@ -28,6 +28,7 @@ public partial class StorageWidget : UserControl
             viewModel.StopTimer();
             viewModel.Dispose();
         }
+
         DataContext = null;
 
         var window = sender as Window;

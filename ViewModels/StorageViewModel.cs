@@ -26,7 +26,7 @@ public class StorageViewModel : ViewModelBase, IDisposable
         Dispose(true);
         GC.SuppressFinalize(this);
     }
-    
+
     public void StopTimer()
     {
         if (_timer != null)

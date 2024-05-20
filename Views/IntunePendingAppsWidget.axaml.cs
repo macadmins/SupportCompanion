@@ -28,6 +28,7 @@ public partial class IntunePendingAppsWidget : UserControl
             viewModel.StopTimer();
             viewModel.Dispose();
         }
+
         DataContext = null;
 
         var window = sender as Window;

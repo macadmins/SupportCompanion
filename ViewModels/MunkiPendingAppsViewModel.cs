@@ -29,7 +29,7 @@ public class MunkiPendingAppsViewModel : IDisposable
         Dispose(true);
         GC.SuppressFinalize(this);
     }
-    
+
     public void StopTimer()
     {
         if (_pendingAppsTimer != null)
