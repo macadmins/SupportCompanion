@@ -6,10 +6,19 @@ using Microsoft.Win32.SafeHandles;
 
 namespace SupportCompanion.Helpers;
 
-public class IOKit
+public class IOKit : IDisposable
 {
     private const string kIOPlatformSerialNumberKey = "IOPlatformSerialNumber";
     private const string kIOProductNameKey = "product-name";
+
+    private bool disposed;
+
+    // Implementing IDisposable to ensure resources are released.
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
     [DllImport("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
     private static extern uint CFDataGetTypeID();
@@ -30,8 +39,8 @@ public class IOKit
     private static extern IntPtr IOServiceMatching(string name);
 
     [DllImport("/System/Library/Frameworks/IOKit.framework/IOKit")]
-    private static extern IntPtr
-        IORegistryEntryCreateCFProperty(uint device, IntPtr key, IntPtr allocator, uint options);
+    private static extern IntPtr IORegistryEntryCreateCFProperty(uint device, IntPtr key, IntPtr allocator,
+        uint options);
 
     [DllImport("/System/Library/Frameworks/IOKit.framework/IOKit")]
     private static extern uint IOServiceGetMatchingService(uint masterPort, IntPtr matching);
@@ -54,135 +63,106 @@ public class IOKit
     [DllImport("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
     private static extern void CFRelease(IntPtr cf);
 
-    public static string GetProductName()
+    public string GetProductName()
     {
-        var productName = string.Empty;
-        var product = IOServiceGetMatchingService(0, IOServiceNameMatching("product"));
-        if (product != 0)
-        {
-            productName = GetPropertyStringValue(product, kIOProductNameKey);
-            IOObjectRelease(product);
-        }
-
-        return productName;
+        return GetPropertyValue(kIOProductNameKey, "product");
     }
 
-    public static string GetSerialNumber()
+    public string GetSerialNumber()
     {
-        var serial = string.Empty;
-        var platformExpert = IOServiceGetMatchingService(0, IOServiceMatching("IOPlatformExpertDevice"));
-        if (platformExpert != 0)
-        {
-            serial = GetPropertyStringValue(platformExpert, kIOPlatformSerialNumberKey);
-            IOObjectRelease(platformExpert);
-        }
-
-        return serial;
+        return GetPropertyValue("IOPlatformSerialNumber", "IOPlatformExpertDevice");
     }
 
-    public static int GetBatteryDesignCapacity()
+    public int GetBatteryDesignCapacity()
     {
-        var designCapacity = 0;
-        var battery = IOServiceGetMatchingService(0, IOServiceMatching("AppleSmartBattery"));
-        if (battery != 0)
-        {
-            designCapacity = GetPropertyIntValue(battery, "DesignCapacity");
-            IOObjectRelease(battery);
-        }
-
-        return designCapacity;
+        return GetPropertyIntValue("DesignCapacity", "AppleSmartBattery");
     }
 
-    public static int GetBatteryMaxCapacity()
+    public int GetBatteryMaxCapacity()
     {
-        var maxCapacity = 0;
-        var battery = IOServiceGetMatchingService(0, IOServiceMatching("AppleSmartBattery"));
-        if (battery != 0)
-        {
-            maxCapacity = GetPropertyIntValue(battery, "AppleRawMaxCapacity");
-            IOObjectRelease(battery);
-        }
-
-        return maxCapacity;
+        return GetPropertyIntValue("AppleRawMaxCapacity", "AppleSmartBattery");
     }
 
-    public static int GetBatteryCycleCount()
+    public int GetBatteryCycleCount()
     {
-        var cycleCount = 0;
-        var battery = IOServiceGetMatchingService(0, IOServiceMatching("AppleSmartBattery"));
-        if (battery != 0)
-        {
-            cycleCount = GetPropertyIntValue(battery, "CycleCount");
-            IOObjectRelease(battery);
-        }
-
-        return cycleCount;
+        return GetPropertyIntValue("CycleCount", "AppleSmartBattery");
     }
 
-    private static string GetPropertyStringValue(uint device, string propertyName)
+    private string GetPropertyValue(string propertyName, string serviceName)
     {
-        var returnStr = string.Empty;
-
+        var result = string.Empty;
         var propertyPointer = IntPtr.Zero;
-        try
-        {
-            using (var key = CFStringCreateWithCharacters(IntPtr.Zero, Marshal.StringToHGlobalUni(propertyName),
-                       propertyName.Length))
+        var service = IOServiceGetMatchingService(0, IOServiceMatching(serviceName));
+        if (service == 0)
+            service = IOServiceGetMatchingService(0, IOServiceNameMatching(serviceName));
+
+        if (service != 0)
+            try
             {
-                if (key.IsInvalid)
-                    throw new InvalidOperationException("Failed to create CFString key.");
-
-                propertyPointer = IORegistryEntryCreateCFProperty(device, key.DangerousGetHandle(), IntPtr.Zero, 0);
-
-                if (propertyPointer != IntPtr.Zero)
+                using (var key = CFStringCreateWithCharacters(IntPtr.Zero, Marshal.StringToHGlobalUni(propertyName),
+                           propertyName.Length))
                 {
-                    var propertyType = CFGetTypeID(propertyPointer);
-                    if (propertyType == CFStringGetTypeID())
+                    if (key.IsInvalid)
+                        throw new InvalidOperationException("Failed to create CFString key.");
+
+                    propertyPointer =
+                        IORegistryEntryCreateCFProperty(service, key.DangerousGetHandle(), IntPtr.Zero, 0);
+
+                    if (propertyPointer != IntPtr.Zero)
                     {
-                        returnStr = CFString.FromHandle(propertyPointer);
-                    }
-                    else if (propertyType == CFDataGetTypeID())
-                    {
-                        var length = CFDataGetLength(propertyPointer);
-                        var bytes = CFDataGetBytePtr(propertyPointer);
-                        var buffer = new byte[length];
-                        Marshal.Copy(bytes, buffer, 0, buffer.Length);
-                        returnStr = Encoding.UTF8.GetString(buffer);
-                        // Remove non-printable characters
-                        returnStr = Regex.Replace(returnStr, @"[^\u0020-\u007E]", string.Empty, RegexOptions.Compiled);
+                        var propertyType = CFGetTypeID(propertyPointer);
+                        if (propertyType == CFStringGetTypeID())
+                        {
+                            result = CFString.FromHandle(propertyPointer);
+                        }
+                        else if (propertyType == CFDataGetTypeID())
+                        {
+                            var length = CFDataGetLength(propertyPointer);
+                            var bytes = CFDataGetBytePtr(propertyPointer);
+                            var buffer = new byte[length];
+                            Marshal.Copy(bytes, buffer, 0, buffer.Length);
+                            result = Encoding.UTF8.GetString(buffer);
+                            result = Regex.Replace(result, @"[^\u0020-\u007E]", string.Empty, RegexOptions.Compiled);
+                        }
                     }
                 }
             }
-        }
-        finally
-        {
-            if (propertyPointer != IntPtr.Zero) CFRelease(propertyPointer);
-        }
+            finally
+            {
+                if (propertyPointer != IntPtr.Zero)
+                    CFRelease(propertyPointer);
 
-        return returnStr;
+                IOObjectRelease(service);
+            }
+
+        return result;
     }
 
-    private static int GetPropertyIntValue(uint device, string propertyName)
+    private int GetPropertyIntValue(string propertyName, string serviceName)
     {
-        var returnInt = 0;
+        var result = 0;
+        var propertyPointer = IntPtr.Zero;
 
-        try
-        {
-            using (var key = CFStringCreateWithCharacters(IntPtr.Zero, Marshal.StringToHGlobalUni(propertyName),
-                       propertyName.Length))
+        var service = IOServiceGetMatchingService(0, IOServiceNameMatching(serviceName));
+        if (service != 0)
+            try
             {
-                if (key.IsInvalid)
-                    throw new InvalidOperationException("Failed to create CFString key.");
+                using (var key = CFStringCreateWithCharacters(IntPtr.Zero, Marshal.StringToHGlobalUni(propertyName),
+                           propertyName.Length))
+                {
+                    if (key.IsInvalid)
+                        throw new InvalidOperationException("Failed to create CFString key.");
 
-                var propertyPointer = IORegistryEntryCreateCFProperty(device, key.DangerousGetHandle(), IntPtr.Zero, 0);
-                if (propertyPointer != IntPtr.Zero)
-                    try
+                    propertyPointer =
+                        IORegistryEntryCreateCFProperty(service, key.DangerousGetHandle(), IntPtr.Zero, 0);
+
+                    if (propertyPointer != IntPtr.Zero)
                     {
                         var propertyType = CFGetTypeID(propertyPointer);
 
                         if (propertyType == CFStringGetTypeID())
                         {
-                            int.TryParse(CFString.FromHandle(propertyPointer), out returnInt);
+                            int.TryParse(CFString.FromHandle(propertyPointer), out result);
                         }
                         else if (propertyType == CFDataGetTypeID())
                         {
@@ -192,33 +172,42 @@ public class IOKit
                             Marshal.Copy(bytes, buffer, 0, buffer.Length);
                             if (length == 4) // int32
                             {
-                                returnInt = BitConverter.ToInt32(buffer, 0);
+                                result = BitConverter.ToInt32(buffer, 0);
                             }
                             else if (length == 8) // int64
                             {
                                 var longValue = BitConverter.ToInt64(buffer, 0);
-                                returnInt = (int)longValue;
+                                result = (int)longValue;
                             }
                         }
                         else if (propertyType == CFNumberGetTypeID())
                         {
-                            CFNumberGetValue(propertyPointer, CFNumberType.kCFNumberSInt32Type, out returnInt);
+                            CFNumberGetValue(propertyPointer, CFNumberType.kCFNumberSInt32Type, out result);
                         }
                     }
-                    finally
-                    {
-                        CFRelease(propertyPointer);
-                    }
-                else
-                    Logger.LogWithSubsystem("IOKit", $"Property Pointer for {propertyName} is zero", 1);
+                }
             }
-        }
-        catch (Exception ex)
-        {
-            Logger.LogWithSubsystem("IOKit", $"Exception in GetPropertyIntValue: {ex.Message}", 1);
-        }
+            finally
+            {
+                if (propertyPointer != IntPtr.Zero)
+                    CFRelease(propertyPointer);
 
-        return returnInt;
+                IOObjectRelease(service);
+            }
+
+        return result;
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposed)
+            // Release any unmanaged resources here.
+            disposed = true;
+    }
+
+    ~IOKit()
+    {
+        Dispose(false);
     }
 
     private enum CFNumberType
@@ -228,12 +217,10 @@ public class IOKit
 
     private sealed class SafeCFStringHandle : SafeHandleZeroOrMinusOneIsInvalid
     {
-        // Default constructor for P/Invoke
         private SafeCFStringHandle() : base(true)
         {
         }
 
-        // Constructor to wrap an existing IntPtr
         public SafeCFStringHandle(IntPtr handle) : base(true)
         {
             SetHandle(handle);

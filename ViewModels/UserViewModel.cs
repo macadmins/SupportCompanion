@@ -11,6 +11,7 @@ public class UserViewModel : ViewModelBase
     private const string HomeDirPattern = @"Directory:\s+(\S+)";
     private const string ShellPattern = @"Shell:\s+(\S+)";
     private readonly ActionsService _actionsService;
+    private bool _disposed;
 
     public UserViewModel(ActionsService actionsService)
     {
@@ -19,7 +20,7 @@ public class UserViewModel : ViewModelBase
         InitializeAsync();
     }
 
-    public UserModel User { get; }
+    public UserModel? User { get; private set; }
 
     private async void InitializeAsync()
     {
@@ -34,5 +35,31 @@ public class UserViewModel : ViewModelBase
         User.Name = Regex.Match(userOutput, NamePattern).Groups[1].Value;
         User.HomeDir = Regex.Match(userOutput, HomeDirPattern).Groups[1].Value;
         User.Shell = Regex.Match(userOutput, ShellPattern).Groups[1].Value;
+    }
+
+    private void CleanUp()
+    {
+        User = null;
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing) CleanUp();
+
+            _disposed = true;
+        }
+    }
+
+    ~UserViewModel()
+    {
+        Dispose(false);
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
 }

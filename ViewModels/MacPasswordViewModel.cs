@@ -9,6 +9,7 @@ public class MacPasswordViewModel : ViewModelBase
 {
     private readonly ActionsService _actionsService;
     private readonly MacPasswordService _macPasswordService;
+    private bool _disposed;
 
     public MacPasswordViewModel(ActionsService actionsService, MacPasswordService macPasswordService)
     {
@@ -19,8 +20,8 @@ public class MacPasswordViewModel : ViewModelBase
         InitializeAsync();
     }
 
-    public KerberosSSOModel KerberosSSO { get; }
-    public PlatformSSOModel PlatformSSO { get; }
+    public KerberosSSOModel? KerberosSSO { get; private set; }
+    public PlatformSSOModel? PlatformSSO { get; private set; }
 
     private async void InitializeAsync()
     {
@@ -122,5 +123,31 @@ public class MacPasswordViewModel : ViewModelBase
                 UpdatePlatformSSOModel(deviceConfig, userConfig);
             }
         }
+    }
+
+    private void CleanUp()
+    {
+        KerberosSSO = null;
+        PlatformSSO = null;
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing) CleanUp();
+            _disposed = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    ~MacPasswordViewModel()
+    {
+        Dispose(false);
     }
 }

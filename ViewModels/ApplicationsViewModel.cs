@@ -12,9 +12,10 @@ public class ApplicationsViewModel : ViewModelBase, IDisposable
 {
     private readonly ActionsService _actions;
     private readonly IntuneAppsService _intuneApps;
-    private readonly Timer _timer;
+    private bool _disposed;
     private IList _installedAppsList = new List<string>();
     private IList _selfServeAppsList = new List<string>();
+    private Timer? _timer;
 
     public ApplicationsViewModel(ActionsService actions, IntuneAppsService intuneApps)
     {
@@ -31,7 +32,8 @@ public class ApplicationsViewModel : ViewModelBase, IDisposable
 
     public void Dispose()
     {
-        _timer?.Dispose();
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
 
     private async void ApplicationsCallback(object state)
@@ -96,5 +98,31 @@ public class ApplicationsViewModel : ViewModelBase, IDisposable
                 InstalledApps.Add(new InstalledApp(name, version, string.Empty));
             }
         });
+    }
+
+    private void CleanUp()
+    {
+        InstalledApps.Clear();
+        if (_timer != null)
+        {
+            _timer.Change(Timeout.Infinite, 0);
+            _timer.Dispose();
+            _timer = null;
+        }
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing) CleanUp();
+
+            _disposed = true;
+        }
+    }
+
+    ~ApplicationsViewModel()
+    {
+        Dispose(false);
     }
 }

@@ -16,5 +16,27 @@ public partial class IntuneUpdatesView : UserControl
     {
         base.OnAttachedToVisualTree(e);
         DataContext = ((App)Application.Current).ServiceProvider.GetRequiredService<IntuneUpdatesViewModel>();
+
+        var window = VisualRoot as Window;
+        if (window != null) window.Closed += Window_Closed;
+    }
+
+    private void Window_Closed(object sender, EventArgs e)
+    {
+        if (App.Config.IntuneMode)
+        {
+            if (DataContext is IntuneUpdatesViewModel viewModel) viewModel.Dispose();
+            DataContext = null;
+        }
+
+        var window = sender as Window;
+        if (window != null) window.Closed -= Window_Closed;
+    }
+
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnDetachedFromVisualTree(e);
+        var window = VisualRoot as Window;
+        if (window != null) window.Closed -= Window_Closed;
     }
 }

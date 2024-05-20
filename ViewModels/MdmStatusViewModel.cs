@@ -6,6 +6,7 @@ namespace SupportCompanion.ViewModels;
 public class MdmStatusViewModel : ViewModelBase
 {
     private readonly MdmStatusService _mdmStatusService;
+    private bool _disposed;
     private Dictionary<string, string> _mdmStatus = new();
 
     public MdmStatusViewModel(MdmStatusService mdmStatus)
@@ -30,5 +31,30 @@ public class MdmStatusViewModel : ViewModelBase
         MdmStatusInfo.Abm = _mdmStatus["ABM"];
         MdmStatusInfo.Enrolled = _mdmStatus["enrolled"];
         MdmStatusInfo.EnrollmentDate = _mdmStatus["enrollmentDate"];
+    }
+
+    private void CleanUp()
+    {
+        _mdmStatus.Clear();
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing) CleanUp();
+            _disposed = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    ~MdmStatusViewModel()
+    {
+        Dispose(false);
     }
 }

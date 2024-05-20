@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Net.NetworkInformation;
 using System.Text.Json;
@@ -18,17 +17,14 @@ public partial class ActionsViewModel : ObservableObject, IDisposable
         "open x-apple.systempreferences:com.apple.preferences.softwareupdate";
 
     private const string SystemUpdatesBelowVentura = "open /System/Library/PreferencePanes/SoftwareUpdate.prefPane";
-    private const string SoftwareUpdateCacheName = "last_software_update_notification.txt";
     private readonly ActionsService _actionsService;
-    private readonly NotificationService _notification;
-    private readonly Timer _timer;
+    private bool _disposed;
     [ObservableProperty] private bool _hasUpdates;
     [ObservableProperty] private string _updateCount = "0";
 
-    public ActionsViewModel(ActionsService actionsService, NotificationService notification)
+    public ActionsViewModel(ActionsService actionsService)
     {
         _actionsService = actionsService;
-        _notification = notification;
         HideSupportButton = !App.Config.HiddenActions.Contains("Support");
         HideMmcButton = !App.Config.HiddenActions.Contains("ManagedSoftwareCenter") && App.Config.MunkiMode;
         HideChangePasswordButton = !App.Config.HiddenActions.Contains("ChangePassword");
@@ -36,12 +32,7 @@ public partial class ActionsViewModel : ObservableObject, IDisposable
         HideKillAgentButton = !App.Config.HiddenActions.Contains("KillAgent");
         HideSoftwareUpdatesButton = !App.Config.HiddenActions.Contains("SoftwareUpdates");
         HideGatherLogsButton = !App.Config.HiddenActions.Contains("GatherLogs");
-        var interval = (int)TimeSpan.FromHours(App.Config.NotificationInterval).TotalMilliseconds;
-        if (!App.Config.HiddenActions.Contains("SoftwareUpdates"))
-        {
-            CheckForUpdates().ConfigureAwait(false);
-            _timer = new Timer(UpdatesCallback, null, 0, interval);
-        }
+        if (!App.Config.HiddenActions.Contains("SoftwareUpdates")) CheckSoftwareUpdates().ConfigureAwait(false);
     }
 
     public bool HideSupportButton { get; private set; }
@@ -54,12 +45,15 @@ public partial class ActionsViewModel : ObservableObject, IDisposable
 
     public void Dispose()
     {
-        _timer?.Dispose();
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
 
-    private async void UpdatesCallback(object state)
+    private async Task CheckSoftwareUpdates()
     {
-        await CheckAndSendUpdateNotification().ConfigureAwait(false);
+        var (hasUpdates, updateCount) = await _actionsService.CheckForUpdates();
+        HasUpdates = hasUpdates;
+        UpdateCount = updateCount;
     }
 
     private static async Task<bool> CheckForInternetConnection(int timeoutMs = 10000)
@@ -227,45 +221,22 @@ public partial class ActionsViewModel : ObservableObject, IDisposable
         SukiHost.ShowDialog(new SupportDialogViewModel(), allowBackgroundClose: true);
     }
 
-    private async Task<bool> CheckForUpdates()
+    private void CleanUp()
     {
-        Logger.LogWithSubsystem("ActionsViewModel", "Checking for software updates...", 1);
-        var result = await _actionsService.RunCommandWithOutput("/usr/sbin/softwareupdate -l");
-        var lines = result.Split('\n');
-        var updates = new ObservableCollection<string>();
-
-        foreach (var line in lines)
-            if (line.Contains("*"))
-                updates.Add(line);
-
-        if (updates.Count > 0)
-        {
-            HasUpdates = true;
-            UpdateCount = updates.Count.ToString();
-            return true; // Updates are available
-        }
-
-        return false; // No updates available
+        // No cleanup needed
     }
 
-    private async Task CheckAndSendUpdateNotification()
+    protected virtual void Dispose(bool disposing)
     {
-        var lastNotificationTime = NotificationTimeStamp.ReadLastNotificationTime(SoftwareUpdateCacheName);
-        if (lastNotificationTime.HasValue &&
-            (DateTime.Now - lastNotificationTime.Value).TotalHours <
-            App.Config.NotificationInterval) return; // Skip sending notification if it's been less than 4 hours
-
-        var updatesAvailable = await CheckForUpdates().ConfigureAwait(false);
-
-        if (updatesAvailable)
+        if (!_disposed)
         {
-            _notification.SendNotification(
-                App.Config.SoftwareUpdateNotificationMessage,
-                App.Config.SoftwareUpdateNotificationButtonText,
-                SystemUpdatesVenturaAndAbove);
-
-            // Update the last notification time
-            NotificationTimeStamp.WriteLastNotificationTime(DateTime.Now, SoftwareUpdateCacheName);
+            if (disposing) CleanUp();
+            _disposed = true;
         }
+    }
+
+    ~ActionsViewModel()
+    {
+        Dispose(false);
     }
 }

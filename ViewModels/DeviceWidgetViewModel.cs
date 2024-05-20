@@ -5,11 +5,12 @@ using SupportCompanion.Services;
 
 namespace SupportCompanion.ViewModels;
 
-public class DeviceWidgetViewModel : ViewModelBase
+public class DeviceWidgetViewModel : ViewModelBase, IDisposable
 {
     private readonly ClipboardService _clipboard;
     private readonly IOKitService _iioKit;
     private readonly SystemInfoService _systemInfo;
+    private bool _disposed;
 
     public DeviceWidgetViewModel(IOKitService iioKit, SystemInfoService systemInfo,
         ClipboardService clipboard)
@@ -18,51 +19,39 @@ public class DeviceWidgetViewModel : ViewModelBase
         _systemInfo = systemInfo;
         _clipboard = clipboard;
         DeviceInfo = new DeviceInfoModel();
-        Initialization = InitializeAsync();
+        InitializeAsync();
     }
 
-    public DeviceInfoModel DeviceInfo { get; }
-
-    private string SerialNumberValue { get; set; } = string.Empty;
-    private string IpValue { get; set; } = string.Empty;
-    private string OSVersionValue { get; set; } = string.Empty;
-    private string OSBuildValue { get; set; } = string.Empty;
-    private string HostNameValue { get; set; } = string.Empty;
+    public DeviceInfoModel? DeviceInfo { get; private set; }
     private string ModelValue { get; set; } = string.Empty;
-    private string ProcessorValue { get; set; } = string.Empty;
-    private int LastBootTimeValue { get; set; }
-    public Task Initialization { get; private set; }
 
     public string RebootToolTip =>
         "Regularly rebooting your device can enhance its performance and longevity\nby clearing temporary files and freeing up system resources.";
 
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
-    private async Task InitializeAsync()
+    private async void InitializeAsync()
     {
         await GatherSystemInfo().ConfigureAwait(false);
     }
 
     private async Task GatherSystemInfo()
     {
-        SerialNumberValue = _iioKit.GetSerialNumber();
-        DeviceInfo.SerialNumber = SerialNumberValue;
-        IpValue = await _systemInfo.GetIPAddress();
-        DeviceInfo.IpAddress = IpValue;
-        OSVersionValue = _systemInfo.GetOSVersion();
-        DeviceInfo.OsVersion = OSVersionValue;
-        OSBuildValue = _systemInfo.GetOSBuild();
-        DeviceInfo.OsBuild = OSBuildValue;
-        HostNameValue = SystemInfo.GetSystemInfo("kern.hostname");
-        DeviceInfo.HostName = HostNameValue;
-        var productName = _iioKit.GetProductName();
-        ModelValue = productName ?? _systemInfo.GetModel();
+        DeviceInfo.SerialNumber = _iioKit.GetSerialNumber();
+        DeviceInfo.IpAddress = await _systemInfo.GetIPAddress();
+        DeviceInfo.OsVersion = _systemInfo.GetOSVersion();
+        DeviceInfo.OsBuild = _systemInfo.GetOSBuild();
+        DeviceInfo.HostName = SystemInfo.GetSystemInfo("kern.hostname");
+        ModelValue = _iioKit.GetProductName() ?? _systemInfo.GetModel();
         DeviceInfo.Model = ModelValue;
-        ProcessorValue = _systemInfo.GetProcessor();
-        DeviceInfo.Processor = ProcessorValue;
+        DeviceInfo.Processor = _systemInfo.GetProcessor();
         DeviceInfo.MemSize = _systemInfo.GetMemSize();
-        LastBootTimeValue = await _systemInfo.GetLastBootTime();
-        DeviceInfo.LastBootTime = LastBootTimeValue;
-        DeviceInfo.LastBootTimeColor = LastBootTimeValue switch
+        DeviceInfo.LastBootTime = await _systemInfo.GetLastBootTime();
+        DeviceInfo.LastBootTimeColor = DeviceInfo.LastBootTime switch
         {
             < 7 => "LightGreen",
             < 14 => "#FCE100",
@@ -72,14 +61,14 @@ public class DeviceWidgetViewModel : ViewModelBase
 
     public async Task CopyToClipboard()
     {
-        var systemInfo = $"Host Name: {HostNameValue}\n" +
-                         $"Serial Number: {SerialNumberValue}\n" +
-                         $"Model: {ModelValue}\n" +
-                         $"Processor: {ProcessorValue}\n" +
+        var systemInfo = $"Host Name: {DeviceInfo.HostName}\n" +
+                         $"Serial Number: {DeviceInfo.SerialNumber}\n" +
+                         $"Model: {DeviceInfo.Model}\n" +
+                         $"Processor: {DeviceInfo.Processor}\n" +
                          $"Memory: {DeviceInfo.MemSize} GB\n" +
-                         $"OS Version: {OSVersionValue}\n" +
-                         $"OS Build: {OSBuildValue}\n" +
-                         $"IP Address: {IpValue}\n" +
+                         $"OS Version: {DeviceInfo.OsVersion}\n" +
+                         $"OS Build: {DeviceInfo.OsBuild}\n" +
+                         $"IP Address: {DeviceInfo.IpAddress}\n" +
                          $"Last Boot Time: {DeviceInfo.LastBootTime} days ago";
 
         try
@@ -91,5 +80,25 @@ public class DeviceWidgetViewModel : ViewModelBase
         {
             await SukiHost.ShowToast("Copy System Info", "Failed to copy System Info", TimeSpan.FromSeconds(5));
         }
+    }
+
+    private void CleanUp()
+    {
+        DeviceInfo = null;
+        _iioKit.Dispose();
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing) CleanUp();
+            _disposed = true;
+        }
+    }
+
+    ~DeviceWidgetViewModel()
+    {
+        Dispose(false);
     }
 }
