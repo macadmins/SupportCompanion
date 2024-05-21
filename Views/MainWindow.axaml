@@ -18,7 +18,6 @@
                      ExtendClientAreaToDecorationsHint="False"
                      IsTitleBarVisible="False"
                      WindowStartupLocation="CenterScreen">
-
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
@@ -50,6 +49,14 @@
                 </controls:SukiSideMenuItem.Icon>
                 <controls:SukiSideMenuItem.PageContent>
                     <views:Applications />
+                </controls:SukiSideMenuItem.PageContent>
+            </controls:SukiSideMenuItem>
+            <controls:SukiSideMenuItem Header="Identity">
+                <controls:SukiSideMenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="IdentificationCard" />
+                </controls:SukiSideMenuItem.Icon>
+                <controls:SukiSideMenuItem.PageContent>
+                    <views:IdentityView />
                 </controls:SukiSideMenuItem.PageContent>
             </controls:SukiSideMenuItem>
         </controls:SukiSideMenu.Items>

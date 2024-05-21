@@ -8,6 +8,11 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="SupportCompanion.Views.Applications"
              x:DataType="vm:ApplicationsViewModel">
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:ApplicationsViewModel />
+    </Design.DataContext>
     <UserControl.Styles>
         <Style Selector="Button[IsEnabled=False]">
             <Setter Property="Background" Value="DarkGray" />
@@ -37,7 +42,7 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
                         <DataGridTextColumn Header="Version" Binding="{Binding Version}" />
-                        <DataGridTemplateColumn Header="Actions">
+                        <DataGridTemplateColumn Header="Actions" IsVisible="{Binding ShowActionButton}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Button

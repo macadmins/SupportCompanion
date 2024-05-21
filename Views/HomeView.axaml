@@ -7,6 +7,11 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="SupportCompanion.Views.HomeView"
              x:DataType="vm:HomeViewModel">
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:HomeViewModel />
+    </Design.DataContext>
     <WrapPanel MaxWidth="1250">
         <ScrollViewer VerticalScrollBarVisibility="Hidden">
             <Grid
@@ -37,7 +42,9 @@
                 </StackPanel>
                 <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
                     <views:MunkiUpdatesWidget IsVisible="{Binding ShowMunkiUpdates}" />
+                    <views:IntuneUpdatesView IsVisible="{Binding ShowIntuneUpdates}" />
                     <views:MunkiPendingAppsWidget IsVisible="{Binding ShowMunkiPendingApps}" />
+                    <views:IntunePendingAppsWidget IsVisible="{Binding ShowIntunePendingApps}" />
                 </StackPanel>
             </Grid>
         </ScrollViewer>

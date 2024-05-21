@@ -2,6 +2,9 @@
 .idea
 .idea.old
 
+# ignore vscode stuff
+.vscode
+
 # ignore build output
 Build/build
 Build/payload/Applications/Utilities/*.app

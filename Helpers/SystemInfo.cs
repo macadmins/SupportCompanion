@@ -19,22 +19,42 @@ public class SystemInfo
 
     public static string GetSystemInfo(string key)
     {
-        var pLen = Marshal.AllocHGlobal(sizeof(int));
-        sysctlbyname(key, IntPtr.Zero, pLen, IntPtr.Zero, 0);
-        var length = Marshal.ReadInt32(pLen);
-        var pStr = Marshal.AllocHGlobal(length);
-        sysctlbyname(key, pStr, pLen, IntPtr.Zero, 0);
-        return Marshal.PtrToStringAnsi(pStr);
+        var pLen = IntPtr.Zero;
+        var pStr = IntPtr.Zero;
+        try
+        {
+            pLen = Marshal.AllocHGlobal(sizeof(int));
+            sysctlbyname(key, IntPtr.Zero, pLen, IntPtr.Zero, 0);
+            var length = Marshal.ReadInt32(pLen);
+            pStr = Marshal.AllocHGlobal(length);
+            sysctlbyname(key, pStr, pLen, IntPtr.Zero, 0);
+            return Marshal.PtrToStringAnsi(pStr);
+        }
+        finally
+        {
+            if (pLen != IntPtr.Zero) Marshal.FreeHGlobal(pLen);
+            if (pStr != IntPtr.Zero) Marshal.FreeHGlobal(pStr);
+        }
     }
 
     public static long GetSystemInfoLong(string key)
     {
-        var pLen = Marshal.AllocHGlobal(sizeof(int));
-        sysctlbyname(key, IntPtr.Zero, pLen, IntPtr.Zero, 0);
-        var length = Marshal.ReadInt32(pLen);
-        var pInt = Marshal.AllocHGlobal(length);
-        sysctlbyname(key, pInt, pLen, IntPtr.Zero, 0);
-        return Marshal.ReadInt64(pInt);
+        var pLen = IntPtr.Zero;
+        var pInt = IntPtr.Zero;
+        try
+        {
+            pLen = Marshal.AllocHGlobal(sizeof(int));
+            sysctlbyname(key, IntPtr.Zero, pLen, IntPtr.Zero, 0);
+            var length = Marshal.ReadInt32(pLen);
+            pInt = Marshal.AllocHGlobal(length);
+            sysctlbyname(key, pInt, pLen, IntPtr.Zero, 0);
+            return Marshal.ReadInt64(pInt);
+        }
+        finally
+        {
+            if (pLen != IntPtr.Zero) Marshal.FreeHGlobal(pLen);
+            if (pInt != IntPtr.Zero) Marshal.FreeHGlobal(pInt);
+        }
     }
 
     public async Task<string> GetNetworkInfo(string dataType)

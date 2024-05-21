@@ -1,8 +1,9 @@
-using System.Collections.ObjectModel;
 using System.Globalization;
-using System.Net;
 using System.Net.NetworkInformation;
 using System.Text.Json;
+using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SukiUI.Controls;
 using SupportCompanion.Helpers;
@@ -17,24 +18,21 @@ public partial class ActionsViewModel : ObservableObject, IDisposable
 
     private const string SystemUpdatesBelowVentura = "open /System/Library/PreferencePanes/SoftwareUpdate.prefPane";
     private readonly ActionsService _actionsService;
-    private readonly NotificationService _notification;
+    private bool _disposed;
     [ObservableProperty] private bool _hasUpdates;
-    private readonly Timer _timer;
     [ObservableProperty] private string _updateCount = "0";
 
-    public ActionsViewModel(ActionsService actionsService, NotificationService notification)
+    public ActionsViewModel(ActionsService actionsService)
     {
         _actionsService = actionsService;
-        _notification = notification;
         HideSupportButton = !App.Config.HiddenActions.Contains("Support");
-        HideMmcButton = !App.Config.HiddenActions.Contains("ManagedSoftwareCenter");
+        HideMmcButton = !App.Config.HiddenActions.Contains("ManagedSoftwareCenter") && App.Config.MunkiMode;
         HideChangePasswordButton = !App.Config.HiddenActions.Contains("ChangePassword");
         HideRebootButton = !App.Config.HiddenActions.Contains("Reboot");
         HideKillAgentButton = !App.Config.HiddenActions.Contains("KillAgent");
         HideSoftwareUpdatesButton = !App.Config.HiddenActions.Contains("SoftwareUpdates");
-        var interval = (int)TimeSpan.FromHours(4).TotalMilliseconds;
-        if (!App.Config.HiddenActions.Contains("SoftwareUpdates"))
-            _timer = new Timer(UpdatesCallback, null, 0, interval);
+        HideGatherLogsButton = !App.Config.HiddenActions.Contains("GatherLogs");
+        if (!App.Config.HiddenActions.Contains("SoftwareUpdates")) CheckSoftwareUpdates().ConfigureAwait(false);
     }
 
     public bool HideSupportButton { get; private set; }
@@ -42,38 +40,37 @@ public partial class ActionsViewModel : ObservableObject, IDisposable
     public bool HideMmcButton { get; private set; }
     public bool HideRebootButton { get; private set; }
     public bool HideKillAgentButton { get; private set; }
+    public bool HideGatherLogsButton { get; private set; }
     public bool HideSoftwareUpdatesButton { get; }
 
     public void Dispose()
     {
-        _timer?.Dispose();
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
 
-    private async void UpdatesCallback(object state)
+    private async Task CheckSoftwareUpdates()
     {
-        await CheckForUpdates();
+        var (hasUpdates, updateCount) = await _actionsService.CheckForUpdates();
+        HasUpdates = hasUpdates;
+        UpdateCount = updateCount;
     }
 
-    private static bool CheckForInternetConnection(int timeoutMs = 10000, string url = null)
+    private static async Task<bool> CheckForInternetConnection(int timeoutMs = 10000)
     {
+        var url = CultureInfo.InstalledUICulture switch
+        {
+            { Name: var n } when n.StartsWith("fa") => "http://www.aparat.com", // Iran
+            { Name: var n } when n.StartsWith("zh") => "http://www.baidu.com", // China
+            _ => "http://www.gstatic.com/generate_204"
+        };
+
         try
         {
-            url ??= CultureInfo.InstalledUICulture switch
+            using (var client = new HttpClient { Timeout = TimeSpan.FromMilliseconds(timeoutMs) })
             {
-                { Name: var n } when n.StartsWith("fa") => // Iran
-                    "http://www.aparat.com",
-                { Name: var n } when n.StartsWith("zh") => // China
-                    "http://www.baidu.com",
-                _ =>
-                    "http://www.gstatic.com/generate_204"
-            };
-
-            var request = (HttpWebRequest)WebRequest.Create(url);
-            request.KeepAlive = false;
-            request.Timeout = timeoutMs;
-            using (var response = (HttpWebResponse)request.GetResponse())
-            {
-                return true;
+                var response = await client.GetAsync(url);
+                return response.IsSuccessStatusCode;
             }
         }
         catch
@@ -125,7 +122,7 @@ public partial class ActionsViewModel : ObservableObject, IDisposable
         else if (App.Config.ChangePasswordMode == "url" || App.Config.ChangePasswordMode == "SSOExtension")
         {
             // Do we have a network connection?
-            if (!CheckForInternetConnection())
+            if (!await CheckForInternetConnection())
             {
                 await SukiHost.ShowToast("Change Password",
                     "No network connection",
@@ -172,29 +169,82 @@ public partial class ActionsViewModel : ObservableObject, IDisposable
         }
     }
 
+    public async Task GatherLogs()
+    {
+        var archivePath = "/tmp/supportcompanion_logs.zip";
+        var command = $"/usr/bin/zip -r {archivePath}";
+
+        foreach (var folder in App.Config.LogFolders)
+            // Ensure each folder path is quoted to handle spaces
+            command += $" \'{folder}\'";
+        await _actionsService.RunCommandWithoutOutput(command);
+        // Check if the zip command was successful
+        if (!File.Exists(archivePath))
+        {
+            await SukiHost.ShowToast("Gather Logs",
+                "Failed to gather logs",
+                TimeSpan.FromSeconds(5));
+            return;
+        }
+
+        // Prompt the user for a file save location
+        var mainWindow = Application.Current.ApplicationLifetime is ClassicDesktopStyleApplicationLifetime desktop
+            ? desktop.MainWindow
+            : null;
+
+        if (mainWindow != null)
+        {
+            var storageFile = await mainWindow.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+            {
+                Title = "Save Logs",
+                SuggestedFileName = "supportcompanion_logs.zip",
+                DefaultExtension = "zip"
+            });
+
+            if (storageFile != null)
+            {
+                await using (var sourceStream = new FileStream(archivePath, FileMode.Open, FileAccess.Read))
+                await using (var destinationStream = await storageFile.OpenWriteAsync())
+                {
+                    await sourceStream.CopyToAsync(destinationStream);
+                }
+
+                File.Delete(archivePath); // Delete the source file after successful copy
+
+                await SukiHost.ShowToast("Gather Logs",
+                    "Logs saved successfully",
+                    TimeSpan.FromSeconds(5));
+            }
+            else
+            {
+                await SukiHost.ShowToast("Gather Logs",
+                    "Logs not saved",
+                    TimeSpan.FromSeconds(5));
+            }
+        }
+    }
+
     public void ShowSupportInfoDialog()
     {
         SukiHost.ShowDialog(new SupportDialogViewModel(), allowBackgroundClose: true);
     }
 
-    private async Task CheckForUpdates()
+    private void CleanUp()
     {
-        Logger.LogWithSubsystem("ActionsViewModel", "Checking for software updates...", 1);
-        var result = await _actionsService.RunCommandWithOutput("/usr/sbin/softwareupdate -l");
-        var lines = result.Split('\n');
-        var updates = new ObservableCollection<string>();
-        foreach (var line in lines)
-            if (line.Contains("*"))
-                updates.Add(line);
+        // No cleanup needed
+    }
 
-        if (updates.Count > 0)
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
         {
-            HasUpdates = true;
-            UpdateCount = updates.Count.ToString();
-            _notification.SendNotification(
-                App.Config.SoftwareUpdateNotificationMessage,
-                App.Config.SoftwareUpdateNotificationButtonText,
-                SystemUpdatesVenturaAndAbove);
+            if (disposing) CleanUp();
+            _disposed = true;
         }
+    }
+
+    ~ActionsViewModel()
+    {
+        Dispose(false);
     }
 }

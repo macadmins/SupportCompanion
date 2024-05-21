@@ -100,6 +100,19 @@ public class AppConfigHelper
                     }
 
                     break;
+                case "LogFolders":
+                    if (pref.Value is NSMutableArray logFoldersArray)
+                    {
+                        Config.LogFolders = new List<string>();
+                        foreach (var folder in logFoldersArray)
+                            if (folder is NSString logFolder)
+                                Config.LogFolders.Add(logFolder.ToString());
+                    }
+
+                    break;
+                case "IntuneMode":
+                    Config.IntuneMode = (bool)pref.Value;
+                    break;
             }
 
         if (!string.IsNullOrEmpty(Config.BrandColor))

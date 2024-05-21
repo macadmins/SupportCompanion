@@ -5,28 +5,35 @@ namespace SupportCompanion.Services;
 
 public class IOKitService : IIOKit
 {
+    private readonly IOKit iokit = new();
+
     public string GetProductName()
     {
-        return IOKit.GetProductName();
+        return iokit.GetProductName();
     }
 
     public string GetSerialNumber()
     {
-        return IOKit.GetSerialNumber();
+        return iokit.GetSerialNumber();
     }
 
     public int GetBatteryDesignCapacity()
     {
-        return IOKit.GetBatteryDesignCapacity();
+        return iokit.GetBatteryDesignCapacity();
     }
 
     public int GetBatteryMaxCapacity()
     {
-        return IOKit.GetBatteryMaxCapacity();
+        return iokit.GetBatteryMaxCapacity();
     }
 
     public int GetBatteryCycleCount()
     {
-        return IOKit.GetBatteryCycleCount();
+        return iokit.GetBatteryCycleCount();
+    }
+
+    public void Dispose()
+    {
+        iokit.Dispose();
     }
 }

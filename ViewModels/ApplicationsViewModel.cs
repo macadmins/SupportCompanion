@@ -11,33 +11,52 @@ namespace SupportCompanion.ViewModels;
 public class ApplicationsViewModel : ViewModelBase, IDisposable
 {
     private readonly ActionsService _actions;
+    private readonly IntuneAppsService _intuneApps;
+    private bool _disposed;
     private IList _installedAppsList = new List<string>();
     private IList _selfServeAppsList = new List<string>();
-    private readonly Timer _timer;
+    private Timer? _timer;
 
-    public ApplicationsViewModel(ActionsService actions)
+    public ApplicationsViewModel(ActionsService actions, IntuneAppsService intuneApps)
     {
         _actions = actions;
-        GetInstalledApps();
-        _timer = new Timer(ApplicationsCallback, null, 0, 300000);
+        _intuneApps = intuneApps;
+        var interval = (int)TimeSpan.FromMinutes(10).TotalMilliseconds;
+        _timer = new Timer(ApplicationsCallback, null, 0, interval);
+        ShowActionButton = App.Config.MunkiMode;
     }
+
+    public bool ShowActionButton { get; }
 
     public ObservableCollection<InstalledApp> InstalledApps { get; } = new();
 
     public void Dispose()
     {
-        _timer?.Dispose();
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    public void StopTimer()
+    {
+        if (_timer != null)
+        {
+            _timer.Change(Timeout.Infinite, 0);
+            _timer.Dispose();
+            _timer = null;
+        }
     }
 
     private async void ApplicationsCallback(object state)
     {
-        await GetInstalledApps();
+        if (App.Config.MunkiMode)
+            await GetInstalledApps();
+        else if (App.Config.IntuneMode)
+            await GetIntuneInstalledApps();
     }
 
     public async Task ManageAppClick(string action)
     {
         await _actions.RunCommandWithoutOutput(action);
-        Console.WriteLine(action);
     }
 
     private async Task GetInstalledApps()
@@ -45,7 +64,6 @@ public class ApplicationsViewModel : ViewModelBase, IDisposable
         Logger.LogWithSubsystem("ApplicationsViewModel", "Getting installed apps list", 1);
         _selfServeAppsList = await new MunkiApps().GetSelfServeAppsList();
         _installedAppsList = await new MunkiApps().GetInstalledAppsList();
-        var installedAppsList = new List<InstalledApp>();
         await Dispatcher.UIThread.InvokeAsync(() =>
         {
             InstalledApps.Clear();
@@ -72,5 +90,44 @@ public class ApplicationsViewModel : ViewModelBase, IDisposable
                 }
             }
         });
+    }
+
+    private async Task GetIntuneInstalledApps()
+    {
+        var policies = await _intuneApps.GetIntuneApps();
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            InstalledApps.Clear();
+            foreach (var app in policies)
+            {
+                if (app.Value.ComplianceStateMessage.Applicability == 0
+                    && app.Value.EnforcementStateMessage.EnforcementState != 1000)
+                    continue;
+                var name = app.Value.ApplicationName;
+                var version = app.Value.ComplianceStateMessage.ProductVersion;
+                InstalledApps.Add(new InstalledApp(name, version, string.Empty));
+            }
+        });
+    }
+
+    private void CleanUp()
+    {
+        InstalledApps.Clear();
+        StopTimer();
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing) CleanUp();
+
+            _disposed = true;
+        }
+    }
+
+    ~ApplicationsViewModel()
+    {
+        Dispose(false);
     }
 }

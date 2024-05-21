@@ -3,19 +3,26 @@ using SupportCompanion.Services;
 
 namespace SupportCompanion.ViewModels;
 
-public partial class BatteryWidgetViewModel : ObservableObject
+public partial class BatteryWidgetViewModel : ObservableObject, IDisposable
 {
     private readonly IOKitService _iokit;
-    [ObservableProperty] private int _BatteryCycleCount;
+    [ObservableProperty] private int _batteryCycleCount;
     private int _batteryDesignCapacity;
-    [ObservableProperty] private int _BatteryHealth;
-    [ObservableProperty] private string _BatteryHealthTextColor;
+    [ObservableProperty] private int _batteryHealth;
+    [ObservableProperty] private string _batteryHealthTextColor;
     private int _batteryMaxCapacity;
+    private bool _disposed;
 
     public BatteryWidgetViewModel(IOKitService iokit)
     {
         _iokit = iokit;
         UpdateBatteryHealth();
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
 
     private void UpdateBatteryInfo()
@@ -35,5 +42,24 @@ public partial class BatteryWidgetViewModel : ObservableObject
             < 80 => "#FCE100",
             _ => "LightGreen"
         };
+    }
+
+    private void CleanUp()
+    {
+        _iokit.Dispose();
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing) CleanUp();
+            _disposed = true;
+        }
+    }
+
+    ~BatteryWidgetViewModel()
+    {
+        Dispose(false);
     }
 }

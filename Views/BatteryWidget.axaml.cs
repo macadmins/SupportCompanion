@@ -16,5 +16,24 @@ public partial class BatteryWidget : UserControl
     {
         base.OnAttachedToVisualTree(e);
         DataContext = ((App)Application.Current).ServiceProvider.GetRequiredService<BatteryWidgetViewModel>();
+
+        var window = VisualRoot as Window;
+        if (window != null) window.Closed += Window_Closed;
+    }
+
+    private void Window_Closed(object sender, EventArgs e)
+    {
+        if (DataContext is BatteryWidgetViewModel viewModel) viewModel.Dispose();
+        DataContext = null;
+
+        var window = sender as Window;
+        if (window != null) window.Closed -= Window_Closed;
+    }
+
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnDetachedFromVisualTree(e);
+        var window = VisualRoot as Window;
+        if (window != null) window.Closed -= Window_Closed;
     }
 }

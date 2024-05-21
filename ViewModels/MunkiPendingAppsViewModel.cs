@@ -11,41 +11,45 @@ public class MunkiPendingAppsViewModel : IDisposable
 {
     private const string OpenMmcUpdates = "open munki://updates.html";
     private readonly MunkiAppsService _munkiApps;
-    private readonly NotificationService _notification;
+    private bool _disposed;
     private IList _pendingAppsList = new List<string>();
-    private readonly Timer _timer;
+    private Timer? _pendingAppsTimer;
 
-    public MunkiPendingAppsViewModel(MunkiAppsService munkiApps, NotificationService notification)
+    public MunkiPendingAppsViewModel(MunkiAppsService munkiApps)
     {
-        _timer = new Timer(MunkiPendingAppsCallback, null, 0, 60000);
+        if (App.Config.MunkiMode)
+            _pendingAppsTimer = new Timer(MunkiPendingAppsCallback, null, 0, 60000);
         _munkiApps = munkiApps;
-        _notification = notification;
-        var interval = (int)TimeSpan.FromHours(App.Config.NotificationInterval).TotalMilliseconds;
-        _timer = new Timer(NotificationCallback, null, 0, interval);
     }
 
-    public ObservableCollection<PendingApp> PendingApps { get; } = new();
+    public ObservableCollection<MunkiPendingApp> PendingApps { get; } = new();
 
     public void Dispose()
     {
-        _timer?.Dispose();
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    public void StopTimer()
+    {
+        if (_pendingAppsTimer != null)
+        {
+            _pendingAppsTimer.Change(Timeout.Infinite, 0);
+            _pendingAppsTimer.Dispose();
+            _pendingAppsTimer = null;
+        }
     }
 
     private async void MunkiPendingAppsCallback(object state)
     {
-        await GetPendingApps();
-    }
-
-    private async void NotificationCallback(object state)
-    {
-        await SendNotification();
+        if (App.Config.MunkiMode)
+            await GetPendingApps();
     }
 
     private async Task GetPendingApps()
     {
         Logger.LogWithSubsystem("MunkiPendingAppsViewModel", "Getting pending apps list.", 1);
         _pendingAppsList = await _munkiApps.GetPendingUpdatesList();
-        var pendingAppsList = new List<PendingApp>();
         await Dispatcher.UIThread.InvokeAsync(() =>
         {
             PendingApps.Clear();
@@ -54,24 +58,35 @@ public class MunkiPendingAppsViewModel : IDisposable
                 var appDict = (IDictionary<string, object>)app;
                 var name = appDict["display_name"].ToString();
                 var version = appDict["version_to_install"].ToString();
-                PendingApps.Add(new PendingApp(name, version));
+                PendingApps.Add(new MunkiPendingApp(name, version));
             }
         });
-    }
-
-    private async Task SendNotification()
-    {
-        _pendingAppsList = await _munkiApps.GetPendingUpdatesList();
-        if (_pendingAppsList.Count == 0) return;
-        _notification.SendNotification(
-            App.Config.AppUpdateNotificationMessage,
-            App.Config.AppUpdateNotificationButtonText,
-            OpenMmcUpdates);
     }
 
     public async Task MmcUpdates()
     {
         var helper = new StartProcess();
         await helper.RunCommandWithoutOutput(OpenMmcUpdates);
+    }
+
+    private void CleanUp()
+    {
+        PendingApps.Clear();
+        StopTimer();
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing) CleanUp();
+
+            _disposed = true;
+        }
+    }
+
+    ~MunkiPendingAppsViewModel()
+    {
+        Dispose(false);
     }
 }

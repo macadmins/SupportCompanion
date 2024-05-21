@@ -19,13 +19,14 @@ public class Catalogs
         if (File.Exists(deviceManifest))
             try
             {
-                using var reader = File.Open(deviceManifest, FileMode.Open, FileAccess.Read);
+                await using var reader = File.Open(deviceManifest, FileMode.Open, FileAccess.Read);
                 var plistReader = new PlistReader();
                 var plist = plistReader.Read(reader);
-                if (!plist.ContainsKey("catalogs")) return _catalogs;
-                var catalogs = (IList)plist["catalogs"];
-
-                foreach (var catalog in catalogs) _catalogs.Add(catalog.ToString());
+                if (plist.TryGetValue("catalogs", out var catalogs))
+                    foreach (var catalog in (IList)catalogs)
+                        _catalogs.Add(catalog.ToString());
+                else
+                    Logger.LogWithSubsystem("Catalogs", "Device manifest does not contain catalogs key", 1);
             }
             catch (Exception e)
             {
