@@ -92,7 +92,7 @@ do
 done
 
 cp -a "$PUBLISH_OUTPUT_APP" "${BUILD_PATH}/payload/Applications/Utilities/"
-codesign -s "${APP_SIGNING_IDENTITY}" "${BUILD_PATH}/payload/Applications/Utilities/SupportCompanion.app"
+codesign --verbose -s "${APP_SIGNING_IDENTITY}" "${BUILD_PATH}/payload/Applications/Utilities/SupportCompanion.app"
 
 # Create the json file for signed munkipkg Support Companion pkg
 /bin/cat << SIGNED_JSONFILE > "$BUILD_PATH/build-info.json"
