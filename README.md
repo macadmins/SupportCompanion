@@ -46,7 +46,9 @@ you have any suggestions or issues.
 For now this app is not signed as I do not have access to an Apple Developer Certificate.
 
 1. Obtain the latest PKG installer from [releases](https://github.com/almenscorner/SupportCompanion/releases).
-2. Run the PKG installer.
+2. Download and install the MacAdmins Python package from [here](https://github.com/macadmins/python/releases/tag/v3.12.1.80742).
+   - This is required for the app to run the scripts such as collection MDM information.
+3. Run the PKG installer.
 
 ## Installed files
 
