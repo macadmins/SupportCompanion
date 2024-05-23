@@ -37,7 +37,7 @@
                             IsVisible="{Binding HideChangePasswordButton}" />
                     <Button Command="{Binding KillAgent}"
                             Classes="Flat"
-                            Content="Kill Intune Agent"
+                            Content="Restart Intune Agent"
                             Margin="5"
                             DesiredSize=""
                             IsVisible="{Binding HideKillAgentButton}" />
