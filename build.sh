@@ -17,7 +17,7 @@ PKG_PATH="${BUILD_PATH}/build"
 MP_SHA="71c57fcfdf43692adcd41fa7305be08f66bae3e5"
 MP_BINDIR="/tmp/munki-pkg"
 MP_ZIP="/tmp/munki-pkg.zip"
-CURRENT_SC_MAIN_BUILD_VERSION=$(/usr/libexec/PlistBuddy -c Print:CFBundleVersion $VERSION)
+CURRENT_SC_MAIN_BUILD_VERSION=$VERSION
 NEWSUBBUILD=$((80620 + $(git rev-parse HEAD~0 | xargs -I{} git rev-list --count {})))
 
 # Ensure Xcode is set to run-time
@@ -25,8 +25,6 @@ sudo xcode-select -s "$XCODE_PATH"
 
 # automate the build version bump
 AUTOMATED_SC_BUILD="$CURRENT_SC_MAIN_BUILD_VERSION.$NEWSUBBUILD"
-/usr/bin/xcrun agvtool new-version -all $AUTOMATED_SC_BUILD
-/usr/bin/xcrun agvtool new-marketing-version $AUTOMATED_SC_BUILD
 
 echo "$VERSION" > "./build_info.txt"
 echo "$CURRENT_SC_MAIN_BUILD_VERSION" > "./build_info_main.txt"
@@ -73,6 +71,9 @@ then
 fi
 
 dotnet publish --configuration Release -p:UseAppHost=true
+
+# Create the Applications directory and utilities directory
+mkdir -p "${BUILD_PATH}/payload/Applications/Utilities"
 
 rm -f "$PUBLISH_OUTPUT_DIRECTORY/Contents/Resources/suki_photo.ico"
 cp "$ICON_FILE" "$PUBLISH_OUTPUT_DIRECTORY/Contents/Resources/"
