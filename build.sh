@@ -36,6 +36,9 @@ then
   exit 1
 fi
 
+# Install dotnet workloads
+dotnet workload restore
+
 # Download specific version of munki-pkg
 echo "Downloading munki-pkg tool from github..."
 if [ -f "${MP_ZIP}" ]; then
