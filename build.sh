@@ -11,6 +11,7 @@ APP_SIGNING_IDENTITY="Developer ID Application: Mac Admins Open Source (T4SK8ZXC
 INSTALLER_SIGNING_IDENTITY="Developer ID Installer: Mac Admins Open Source (T4SK8ZXCXG)"
 XCODE_PATH="/Applications/Xcode_15.2.app"
 XCODE_NOTARY_PATH="$XCODE_PATH/Contents/Developer/usr/bin/notarytool"
+XCODE_STAPLER_PATH="$XCODE_PATH/Contents/Developer/usr/bin/stapler"
 VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleVersion" "${PROJECT_PATH}/Info.plist")
 PKG_PATH="${BUILD_PATH}/Build/build"
 MP_SHA="71c57fcfdf43692adcd41fa7305be08f66bae3e5"
