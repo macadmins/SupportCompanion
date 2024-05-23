@@ -1,8 +1,8 @@
 #!/bin/bash
-PROJECT_PATH="./"
+PROJECT_PATH="."
 BUILD_PATH="./Build"
 APP_SUPPORT_PATH="${BUILD_PATH}/payload/Library/Application Support/SupportCompanion"
-PUBLISH_OUTPUT_DIRECTORY="${PROJECT_PATH}/bin/Release/net8.0-macos/SupportCompanion.app/"
+PUBLISH_OUTPUT_DIRECTORY="${PROJECT_PATH}/bin/Release/net8.0-macos/SupportCompanion.app"
 PUBLISH_OUTPUT_APP="${PROJECT_PATH}/bin/Release/net8.0-macos/SupportCompanion.app"
 ICON_FILE="${PROJECT_PATH}/Assets/appicon.icns"
 SUKIUI_LICENSE_FILE="${PROJECT_PATH}/SUKIUI_LICENSE"
@@ -11,13 +11,17 @@ APP_SIGNING_IDENTITY="Developer ID Application: Mac Admins Open Source (T4SK8ZXC
 INSTALLER_SIGNING_IDENTITY="Developer ID Installer: Mac Admins Open Source (T4SK8ZXCXG)"
 XCODE_PATH="/Applications/Xcode_15.2.app"
 XCODE_NOTARY_PATH="$XCODE_PATH/Contents/Developer/usr/bin/notarytool"
+XCODE_STAPLER_PATH="$XCODE_PATH/Contents/Developer/usr/bin/stapler"
 VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleVersion" "${PROJECT_PATH}/Info.plist")
-PKG_PATH="${BUILD_PATH}/Build/build"
+PKG_PATH="${BUILD_PATH}/build"
 MP_SHA="71c57fcfdf43692adcd41fa7305be08f66bae3e5"
 MP_BINDIR="/tmp/munki-pkg"
 MP_ZIP="/tmp/munki-pkg.zip"
 CURRENT_SC_MAIN_BUILD_VERSION=$(/usr/libexec/PlistBuddy -c Print:CFBundleVersion $VERSION)
 NEWSUBBUILD=$((80620 + $(git rev-parse HEAD~0 | xargs -I{} git rev-list --count {})))
+
+# Ensure Xcode is set to run-time
+sudo xcode-select -s "$XCODE_PATH"
 
 # automate the build version bump
 AUTOMATED_SC_BUILD="$CURRENT_SC_MAIN_BUILD_VERSION.$NEWSUBBUILD"
