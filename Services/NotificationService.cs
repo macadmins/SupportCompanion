@@ -5,13 +5,20 @@ namespace SupportCompanion.Services;
 
 public class NotificationService : INotification
 {
+    private readonly LoggerService _logger;
+
+    public NotificationService(LoggerService loggerService)
+    {
+        _logger = loggerService;
+    }
+
     public NotificationService()
     {
         NSUserNotificationCenter.DefaultUserNotificationCenter.DidActivateNotification += (sender, args) =>
         {
             var command = args.Notification.UserInfo["Command"].ToString();
             var helper = new StartProcess();
-            Logger.LogWithSubsystem(
+            _logger.Log(
                 "NotificationService",
                 $"Notification button clicked, running command: {command}",
                 1);
@@ -34,7 +41,7 @@ public class NotificationService : INotification
         if (!string.IsNullOrEmpty(App.Config.NotificationImage))
             if (File.Exists(App.Config.NotificationImage))
             {
-                Logger.LogWithSubsystem(
+                _logger.Log(
                     "NotificationService",
                     $"Notification image found: {App.Config.NotificationImage}",
                     1);
@@ -42,13 +49,13 @@ public class NotificationService : INotification
             }
             else
             {
-                Logger.LogWithSubsystem(
+                _logger.Log(
                     "NotificationService",
                     $"Notification image not found: {App.Config.NotificationImage}",
                     1);
             }
 
-        Logger.LogWithSubsystem("NotificationService", $"Sending notification: {message}", 1);
+        _logger.Log("NotificationService", $"Sending notification: {message}", 1);
         NSUserNotificationCenter.DefaultUserNotificationCenter.DeliverNotification(notification);
     }
 }

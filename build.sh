@@ -1,6 +1,7 @@
 #!/bin/bash
 PROJECT_PATH="./"
 BUILD_PATH="./Build"
+APP_SUPPORT_PATH="${BUILD_PATH}/payload/Library/Application Support/SupportCompanion"
 PUBLISH_OUTPUT_DIRECTORY="${PROJECT_PATH}/bin/Release/net8.0-macos/SupportCompanion.app/"
 PUBLISH_OUTPUT_APP="${PROJECT_PATH}/bin/Release/net8.0-macos/SupportCompanion.app"
 ICON_FILE="${PROJECT_PATH}/Assets/appicon.icns"
@@ -42,15 +43,15 @@ cp "$ICON_FILE" "$PUBLISH_OUTPUT_DIRECTORY/Contents/Resources/"
 cp "$UNINSTALL_SCRIPT" "$PUBLISH_OUTPUT_DIRECTORY/Contents/Resources/"
 cp "$SUKIUI_LICENSE_FILE" "$PUBLISH_OUTPUT_DIRECTORY/Contents/Resources/"
 chmod +x "$PUBLISH_OUTPUT_DIRECTORY/Contents/Resources/Uninstall.sh"
-cp -a "${PROJECT_PATH}/Assets/scripts" "${BUILD_PATH}/payload/usr/local/supportcompanion"
+cp -a "${PROJECT_PATH}/Assets/scripts" "${BUILD_PATH}/payload/Library/Application Support/SupportCompanion/"
 
 # mv each script file to remove the extension
-SCRIPT_FILES="$(ls ${BUILD_PATH}/payload/usr/local/supportcompanion/scripts/)"
+SCRIPT_FILES="$(ls "${APP_SUPPORT_PATH}/scripts/")"
 for SCRIPT_FILE in $SCRIPT_FILES
 do
     FILE_WITHOUT_EXT=$(basename "$SCRIPT_FILE" .py)
-    mv "$BUILD_PATH/payload/usr/local/supportcompanion/scripts/$SCRIPT_FILE" "$BUILD_PATH/payload/usr/local/supportcompanion/scripts/$FILE_WITHOUT_EXT"
-    chmod +x "$BUILD_PATH/payload/usr/local/supportcompanion/scripts/$FILE_WITHOUT_EXT"
+    mv "$APP_SUPPORT_PATH/scripts/$SCRIPT_FILE" "$APP_SUPPORT_PATH/scripts/$FILE_WITHOUT_EXT"
+    chmod +x "$APP_SUPPORT_PATH/scripts/$FILE_WITHOUT_EXT"
 done
 
 cp -a "$PUBLISH_OUTPUT_APP" "${BUILD_PATH}/payload/Applications/Utilities/"

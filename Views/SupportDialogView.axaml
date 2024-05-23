@@ -6,7 +6,8 @@
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="SupportCompanion.Views.SupportDialogView"
-             x:DataType="vm:SupportDialogViewModel">
+             x:DataType="vm:SupportDialogViewModel"
+             x:CompileBindings="True">
     <StackPanel Width="450" Margin="2" HorizontalAlignment="Center" VerticalAlignment="Center">
         <TextBlock Width="320"
                    Margin="0,1,0,0"

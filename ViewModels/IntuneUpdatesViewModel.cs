@@ -1,32 +1,44 @@
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
+using SupportCompanion.Interfaces;
 using SupportCompanion.Services;
 
 namespace SupportCompanion.ViewModels;
 
-public partial class IntuneUpdatesViewModel : ObservableObject, IDisposable
+public partial class IntuneUpdatesViewModel : ObservableObject, IWindowStateAware
 {
     private readonly IntuneAppsService _intuneApps;
-    private bool _disposed;
-    private int _installedAppsCount;
+    private readonly LoggerService _logger;
     [ObservableProperty] private int _installPercentage;
 
     private int _intuneUpdatesCount;
     private Timer? _timer;
 
-    public IntuneUpdatesViewModel(IntuneAppsService intuneApps)
+    public IntuneUpdatesViewModel(IntuneAppsService intuneApps, LoggerService loggerService)
     {
+        _logger = loggerService;
         _intuneApps = intuneApps;
         if (App.Config.IntuneMode)
-            _timer = new Timer(IntuneUpdatesCallback, null, 0, 60000);
+            Dispatcher.UIThread.Post(InitializeAsync);
     }
 
-    public void Dispose()
+    public void OnWindowHidden()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
+        CleanUp();
     }
 
-    private async void IntuneUpdatesCallback(object state)
+    public void OnWindowShown()
+    {
+        if (App.Config.IntuneMode)
+            Dispatcher.UIThread.Post(InitializeAsync);
+    }
+
+    private async void InitializeAsync()
+    {
+        _timer ??= new Timer(async _ => await IntuneUpdatesCallback(), null, 0, 60000);
+    }
+
+    private async Task IntuneUpdatesCallback()
     {
         if (App.Config.IntuneMode)
             await GetInstallPercentage().ConfigureAwait(false);
@@ -45,27 +57,19 @@ public partial class IntuneUpdatesViewModel : ObservableObject, IDisposable
         InstallPercentage = Convert.ToInt32(Math.Round((double)totalInstalled / policies.Count * 100, 2));
     }
 
+    private void Stoptimer()
+    {
+        if (_timer == null) return;
+        _logger.Log("IntuneUpdatesViewModel", "Stopping Intune Updates Timer", 1);
+        _timer.Change(Timeout.Infinite, 0);
+        _timer.Dispose();
+        _timer = null;
+    }
+
     private void CleanUp()
     {
-        if (_timer != null)
-        {
-            _timer.Change(Timeout.Infinite, 0);
-            _timer.Dispose();
-            _timer = null;
-        }
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposed)
-        {
-            if (disposing) CleanUp();
-            _disposed = true;
-        }
-    }
-
-    ~IntuneUpdatesViewModel()
-    {
-        Dispose(false);
+        _intuneUpdatesCount = 0;
+        InstallPercentage = 0;
+        Stoptimer();
     }
 }

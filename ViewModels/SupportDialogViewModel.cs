@@ -16,7 +16,7 @@ public partial class SupportDialogViewModel : ObservableObject
     public string SupportPhone { get; set; }
 
     [RelayCommand]
-    public void CloseDialog()
+    private static void CloseDialog()
     {
         SukiHost.CloseDialog();
     }

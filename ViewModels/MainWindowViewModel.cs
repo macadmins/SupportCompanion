@@ -1,4 +1,5 @@
 ﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Styling;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -23,7 +24,6 @@ public partial class MainWindowViewModel : ObservableObject
 
     public bool ShowHeader { get; private set; }
     public string BrandName { get; private set; }
-    public string appIconPath => "/usr/local/supportcompanion/appicon.ico";
 
     [RelayCommand]
     private void ToggleBaseTheme()
@@ -58,17 +58,17 @@ public partial class MainWindowViewModel : ObservableObject
     {
         if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktopApp)
         {
-            // Declare and initialize the mainWindow variable
+            // Get the main window
             var mainWindow = desktopApp.MainWindow as MainWindow;
 
-            // Check if the main window is hidden
-            if (mainWindow?.IsVisible == true)
+            if (mainWindow != null)
             {
                 // Show the main window and bring it to the front
                 mainWindow.Show();
+                mainWindow.WindowState = WindowState.Normal; // Ensure the window state is set to normal
                 mainWindow.Activate();
             }
-            else if (mainWindow == null || mainWindow.IsClosed)
+            else
             {
                 // If the main window is null (i.e., it has been closed), create a new one
                 var mainWindowViewModel =

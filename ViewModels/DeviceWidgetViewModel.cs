@@ -1,25 +1,26 @@
+using Avalonia.Threading;
 using SukiUI.Controls;
 using SupportCompanion.Helpers;
+using SupportCompanion.Interfaces;
 using SupportCompanion.Models;
 using SupportCompanion.Services;
 
 namespace SupportCompanion.ViewModels;
 
-public class DeviceWidgetViewModel : ViewModelBase, IDisposable
+public class DeviceWidgetViewModel : ViewModelBase, IWindowStateAware
 {
     private readonly ClipboardService _clipboard;
     private readonly IOKitService _iioKit;
     private readonly SystemInfoService _systemInfo;
-    private bool _disposed;
 
-    public DeviceWidgetViewModel(IOKitService iioKit, SystemInfoService systemInfo,
-        ClipboardService clipboard)
+    public DeviceWidgetViewModel(SystemInfoService systemInfo,
+        ClipboardService clipboard, IOKitService iioKit)
     {
         _iioKit = iioKit;
         _systemInfo = systemInfo;
         _clipboard = clipboard;
         DeviceInfo = new DeviceInfoModel();
-        InitializeAsync();
+        Dispatcher.UIThread.Post(InitializeAsync);
     }
 
     public DeviceInfoModel? DeviceInfo { get; private set; }
@@ -28,10 +29,15 @@ public class DeviceWidgetViewModel : ViewModelBase, IDisposable
     public string RebootToolTip =>
         "Regularly rebooting your device can enhance its performance and longevity\nby clearing temporary files and freeing up system resources.";
 
-    public void Dispose()
+    public void OnWindowHidden()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
+        CleanUp();
+    }
+
+    public void OnWindowShown()
+    {
+        DeviceInfo = new DeviceInfoModel();
+        Dispatcher.UIThread.Post(InitializeAsync);
     }
 
     private async void InitializeAsync()
@@ -74,31 +80,17 @@ public class DeviceWidgetViewModel : ViewModelBase, IDisposable
         try
         {
             await _clipboard.SetClipboardTextAsync(systemInfo);
-            await SukiHost.ShowToast("Copy System Info", "System Info successfully copied", TimeSpan.FromSeconds(5));
+            await SukiHost.ShowToast("Copy System Info", "System Info successfully copied");
         }
         catch (Exception e)
         {
-            await SukiHost.ShowToast("Copy System Info", "Failed to copy System Info", TimeSpan.FromSeconds(5));
+            await SukiHost.ShowToast("Copy System Info", "Failed to copy System Info");
         }
     }
 
     private void CleanUp()
     {
         DeviceInfo = null;
-        _iioKit.Dispose();
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposed)
-        {
-            if (disposing) CleanUp();
-            _disposed = true;
-        }
-    }
-
-    ~DeviceWidgetViewModel()
-    {
-        Dispose(false);
+        ModelValue = string.Empty;
     }
 }

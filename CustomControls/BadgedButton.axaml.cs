@@ -2,6 +2,7 @@ using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 
 namespace SupportCompanion.CustomControls;
@@ -21,11 +22,12 @@ public partial class BadgedButton : TemplatedControl
         AvaloniaProperty.Register<BadgedButton, ICommand>(nameof(Command));
 
 
+    private Button _button;
+
     public BadgedButton()
     {
         InitializeComponent();
     }
-
 
     public ICommand Command
     {
@@ -55,11 +57,19 @@ public partial class BadgedButton : TemplatedControl
     {
         base.OnApplyTemplate(e);
 
+        // Detach the previous event handler if the template is reapplied
+        if (_button != null) _button.Click -= OnButtonClick;
+
         // Get a reference to the Button
-        var button = e.NameScope.Find<Button>("PART_Button");
+        _button = e.NameScope.Find<Button>("PART_Button");
 
         // Attach an event handler to the Click event
-        button.Click += (sender, args) => Command?.Execute(null);
+        if (_button != null) _button.Click += OnButtonClick;
+    }
+
+    private void OnButtonClick(object sender, RoutedEventArgs e)
+    {
+        if (Command?.CanExecute(null) == true) Command.Execute(null);
     }
 
     private void InitializeComponent()

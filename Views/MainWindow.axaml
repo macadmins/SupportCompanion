@@ -9,6 +9,7 @@
                      mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="720"
                      x:Class="SupportCompanion.Views.MainWindow"
                      x:DataType="vm:MainWindowViewModel"
+                     x:CompileBindings="True"
                      Title=""
                      Width="1250" Height="765"
                      MinWidth="1250" MaxWidth="1250"
@@ -48,7 +49,7 @@
                     <avalonia:MaterialIcon Kind="Application" />
                 </controls:SukiSideMenuItem.Icon>
                 <controls:SukiSideMenuItem.PageContent>
-                    <views:Applications />
+                    <views:ApplicationsView />
                 </controls:SukiSideMenuItem.PageContent>
             </controls:SukiSideMenuItem>
             <controls:SukiSideMenuItem Header="Identity">

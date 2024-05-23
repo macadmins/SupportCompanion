@@ -1,20 +1,33 @@
 using Microsoft.Data.Sqlite;
 using Newtonsoft.Json.Linq;
 using SupportCompanion.Models;
+using SupportCompanion.Services;
 
 namespace SupportCompanion.Helpers;
 
 public class IntuneApps
 {
     private readonly Dictionary<string, IntunePolicyModel.Policy> _intunePolicies = new();
+    private readonly LoggerService _logger;
     private readonly string _sidecarDBPath = "/Library/Application Support/Microsoft/Intune/SideCar/sidecar.sqlite";
     private readonly string _sidecarQuery = "SELECT * FROM ZAPPSTATECHANGEITEM";
+
+    // Default constructor
+    public IntuneApps() : this(new LoggerService())
+    {
+    }
+
+    // Constructor with LoggerService parameter
+    private IntuneApps(LoggerService logger)
+    {
+        _logger = logger;
+    }
 
     public async Task<Dictionary<string, IntunePolicyModel.Policy>> IntuneAppsDict()
     {
         if (!File.Exists(_sidecarDBPath))
         {
-            Logger.LogWithSubsystem("IntuneApps", "Intune database not found", 1);
+            _logger.Log("IntuneApps", "Intune database not found", 1);
             return _intunePolicies;
         }
 
@@ -25,7 +38,7 @@ public class IntuneApps
 
         if (!reader.HasRows)
         {
-            Logger.LogWithSubsystem("IntuneApps", "No Intune apps found", 1);
+            _logger.Log("IntuneApps", "No Intune apps found", 1);
             return _intunePolicies;
         }
 

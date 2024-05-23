@@ -10,6 +10,12 @@ public class ActionsService : IActions
 {
     private const string OpenManagedSoftwareCenter = "open -a /Applications/Managed\\ Software\\ Center.app";
     private const string OpenMmcUpdates = "open munki://updates.html";
+    private readonly LoggerService _logger;
+
+    public ActionsService(LoggerService loggerService)
+    {
+        _logger = loggerService;
+    }
 
     public async Task KillAgent()
     {
@@ -30,11 +36,11 @@ public class ActionsService : IActions
 
         if (process.ExitCode != 0)
         {
-            Logger.LogWithSubsystem("ActionsService:KillAgent", $"Failed to kill agent: {error}", 2);
-            await SukiHost.ShowToast("Kill Agent", "Failed to kill agent", TimeSpan.FromSeconds(5));
+            _logger.Log("ActionsService:KillAgent", $"Failed to kill agent: {error}", 2);
+            await SukiHost.ShowToast("Kill Agent", "Failed to kill agent");
         }
 
-        await SukiHost.ShowToast("Kill Agent", "Agent successfully killed", TimeSpan.FromSeconds(5));
+        await SukiHost.ShowToast("Kill Agent", "Agent successfully killed");
     }
 
     public async Task Reboot()
@@ -56,8 +62,8 @@ public class ActionsService : IActions
 
         if (process.ExitCode != 0)
         {
-            Logger.LogWithSubsystem("ActionsService:Reboot", $"Reboot failed: {error}", 2);
-            await SukiHost.ShowToast("Reboot", "Reboot failed", TimeSpan.FromSeconds(5));
+            _logger.Log("ActionsService:Reboot", $"Reboot failed: {error}", 2);
+            await SukiHost.ShowToast("Reboot", "Reboot failed");
         }
     }
 
@@ -95,7 +101,7 @@ public class ActionsService : IActions
 
     public async Task<(bool, string)> CheckForUpdates()
     {
-        Logger.LogWithSubsystem("ActionsViewModel", "Checking for software updates...", 1);
+        _logger.Log("ActionsViewModel", "Checking for software updates...", 1);
         var helper = new StartProcess();
         var result = await helper.RunCommand("/usr/sbin/softwareupdate -l");
         var lines = result.Split('\n');

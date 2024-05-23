@@ -1,28 +1,28 @@
 using System.Collections;
 using System.Collections.ObjectModel;
 using Avalonia.Threading;
-using SupportCompanion.Helpers;
+using SupportCompanion.Interfaces;
 using SupportCompanion.Models;
 using SupportCompanion.Services;
 using MunkiApps = SupportCompanion.Helpers.MunkiApps;
 
 namespace SupportCompanion.ViewModels;
 
-public class ApplicationsViewModel : ViewModelBase, IDisposable
+public class ApplicationsViewModel : ViewModelBase, IWindowStateAware
 {
     private readonly ActionsService _actions;
     private readonly IntuneAppsService _intuneApps;
-    private bool _disposed;
+    private readonly LoggerService _logger;
     private IList _installedAppsList = new List<string>();
     private IList _selfServeAppsList = new List<string>();
     private Timer? _timer;
 
-    public ApplicationsViewModel(ActionsService actions, IntuneAppsService intuneApps)
+    public ApplicationsViewModel(ActionsService actions, IntuneAppsService intuneApps, LoggerService loggerService)
     {
         _actions = actions;
         _intuneApps = intuneApps;
-        var interval = (int)TimeSpan.FromMinutes(10).TotalMilliseconds;
-        _timer = new Timer(ApplicationsCallback, null, 0, interval);
+        _logger = loggerService;
+        Dispatcher.UIThread.Post(InitializeAsync);
         ShowActionButton = App.Config.MunkiMode;
     }
 
@@ -30,23 +30,32 @@ public class ApplicationsViewModel : ViewModelBase, IDisposable
 
     public ObservableCollection<InstalledApp> InstalledApps { get; } = new();
 
-    public void Dispose()
+    public void OnWindowHidden()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
+        CleanUp();
     }
 
-    public void StopTimer()
+    public void OnWindowShown()
     {
-        if (_timer != null)
-        {
-            _timer.Change(Timeout.Infinite, 0);
-            _timer.Dispose();
-            _timer = null;
-        }
+        Dispatcher.UIThread.Post(InitializeAsync);
     }
 
-    private async void ApplicationsCallback(object state)
+    private void StopTimer()
+    {
+        if (_timer == null) return;
+        _logger.Log("ApplicationsViewModel", "Stopping Applications timer", 1);
+        _timer.Change(Timeout.Infinite, 0);
+        _timer.Dispose();
+        _timer = null;
+    }
+
+    private async void InitializeAsync()
+    {
+        var interval = (int)TimeSpan.FromMinutes(10).TotalMilliseconds;
+        _timer ??= new Timer(async _ => await ApplicationsCallback(), null, 0, interval);
+    }
+
+    private async Task ApplicationsCallback()
     {
         if (App.Config.MunkiMode)
             await GetInstalledApps();
@@ -61,7 +70,7 @@ public class ApplicationsViewModel : ViewModelBase, IDisposable
 
     private async Task GetInstalledApps()
     {
-        Logger.LogWithSubsystem("ApplicationsViewModel", "Getting installed apps list", 1);
+        _logger.Log("ApplicationsViewModel", "Getting installed apps list", 1);
         _selfServeAppsList = await new MunkiApps().GetSelfServeAppsList();
         _installedAppsList = await new MunkiApps().GetInstalledAppsList();
         await Dispatcher.UIThread.InvokeAsync(() =>
@@ -113,21 +122,8 @@ public class ApplicationsViewModel : ViewModelBase, IDisposable
     private void CleanUp()
     {
         InstalledApps.Clear();
+        _installedAppsList.Clear();
+        _selfServeAppsList.Clear();
         StopTimer();
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposed)
-        {
-            if (disposing) CleanUp();
-
-            _disposed = true;
-        }
-    }
-
-    ~ApplicationsViewModel()
-    {
-        Dispose(false);
     }
 }

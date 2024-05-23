@@ -6,7 +6,8 @@
              xmlns:vm="clr-namespace:SupportCompanion.ViewModels"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="SupportCompanion.Views.HomeView"
-             x:DataType="vm:HomeViewModel">
+             x:DataType="vm:HomeViewModel"
+             x:CompileBindings="True">
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
@@ -25,26 +26,26 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal">
-                    <views:DeviceInfoWidget IsVisible="{Binding ShowDeviceWidget}" />
+                    <views:DeviceInfoWidgetView IsVisible="{Binding ShowDeviceWidget}" />
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
-                        <views:EvergreenInfoWidget Grid.Row="0" IsVisible="{Binding ShowEvergreenInfo}" />
-                        <views:BatteryWidget Grid.Row="1" IsVisible="{Binding ShowBattery}" />
+                        <views:EvergreenInfoWidgetView Grid.Row="0" IsVisible="{Binding ShowEvergreenInfo}" />
+                        <views:BatteryWidgetView Grid.Row="1" IsVisible="{Binding ShowBattery}" />
                     </Grid>
-                    <views:ActionsWidget IsVisible="{Binding ShowActions}" />
+                    <views:ActionsWidgetView IsVisible="{Binding ShowActions}" />
                 </StackPanel>
                 <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical">
-                    <views:MdmStatusWidget IsVisible="{Binding ShowMdmStatus}" />
-                    <views:StorageWidget IsVisible="{Binding ShowStorage}" />
+                    <views:MdmStatusWidgetView IsVisible="{Binding ShowMdmStatus}" />
+                    <views:StorageWidgetView IsVisible="{Binding ShowStorage}" />
                 </StackPanel>
                 <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
-                    <views:MunkiUpdatesWidget IsVisible="{Binding ShowMunkiUpdates}" />
-                    <views:IntuneUpdatesView IsVisible="{Binding ShowIntuneUpdates}" />
-                    <views:MunkiPendingAppsWidget IsVisible="{Binding ShowMunkiPendingApps}" />
-                    <views:IntunePendingAppsWidget IsVisible="{Binding ShowIntunePendingApps}" />
+                    <views:MunkiUpdatesWidgetView IsVisible="{Binding ShowMunkiUpdates}" />
+                    <views:IntuneUpdatesWidgetView IsVisible="{Binding ShowIntuneUpdates}" />
+                    <views:MunkiPendingAppsWidgetView IsVisible="{Binding ShowMunkiPendingApps}" />
+                    <views:IntunePendingAppsWidgetView IsVisible="{Binding ShowIntunePendingApps}" />
                 </StackPanel>
             </Grid>
         </ScrollViewer>

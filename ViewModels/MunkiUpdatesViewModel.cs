@@ -1,36 +1,51 @@
-using SupportCompanion.Helpers;
+using Avalonia.Threading;
+using SupportCompanion.Interfaces;
 using SupportCompanion.Models;
 using SupportCompanion.Services;
 
 namespace SupportCompanion.ViewModels;
 
-public class MunkiUpdatesViewModel : ViewModelBase, IDisposable
+public class MunkiUpdatesViewModel : ViewModelBase, IWindowStateAware
 {
+    private readonly LoggerService _logger;
     private readonly MunkiAppsService _munkiApps;
-    private bool _disposed;
     private int _installedAppsCount;
     private int _munkiUpdatesCount;
     private Timer? _timer;
 
-    public MunkiUpdatesViewModel(MunkiAppsService munkiApps)
+    public MunkiUpdatesViewModel(MunkiAppsService munkiApps, LoggerService loggerService)
     {
         _munkiApps = munkiApps;
-        if (App.Config.MunkiMode)
+        _logger = loggerService;
+        if (App.Config.MunkiMode && !App.Config.HiddenWidgets.Contains("MunkiUpdates"))
         {
             MunkiUpdatesInfo = new MunkiUpdatesModel();
-            _timer = new Timer(MunkiUpdatesCallback, null, 0, 60000);
+            Dispatcher.UIThread.Post(InitializeAsync);
         }
     }
 
-    public MunkiUpdatesModel MunkiUpdatesInfo { get; }
+    public MunkiUpdatesModel? MunkiUpdatesInfo { get; private set; }
 
-    public void Dispose()
+    public void OnWindowHidden()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
+        CleanUp();
     }
 
-    private async void MunkiUpdatesCallback(object state)
+    public void OnWindowShown()
+    {
+        if (App.Config.MunkiMode && !App.Config.HiddenWidgets.Contains("MunkiUpdates"))
+        {
+            MunkiUpdatesInfo = new MunkiUpdatesModel();
+            Dispatcher.UIThread.Post(InitializeAsync);
+        }
+    }
+
+    private async void InitializeAsync()
+    {
+        _timer ??= new Timer(async _ => await MunkiUpdatesCallback(), null, 0, 60000);
+    }
+
+    private async Task MunkiUpdatesCallback()
     {
         if (App.Config.MunkiMode)
             await GetInstallPercentage().ConfigureAwait(false);
@@ -48,9 +63,9 @@ public class MunkiUpdatesViewModel : ViewModelBase, IDisposable
         MunkiUpdatesInfo.InstalledApps = _installedAppsCount;
     }
 
-    public async Task GetInstallPercentage()
+    private async Task GetInstallPercentage()
     {
-        Logger.LogWithSubsystem("MunkiUpdatesViewModel", "Getting Munki install percentage.", 1);
+        _logger.Log("MunkiUpdatesViewModel", "Getting Munki install percentage.", 1);
         await GetMunkiUpdatesCount();
         await GetInstalledAppsCount();
 
@@ -60,27 +75,20 @@ public class MunkiUpdatesViewModel : ViewModelBase, IDisposable
             Math.Round((double)totalInstalled / MunkiUpdatesInfo.InstalledApps * 100, 2);
     }
 
+    private void StopTimer()
+    {
+        if (_timer == null) return;
+        _logger.Log("MunkiUpdatesViewModel", "Stopping Munki Updates timer.", 1);
+        _timer.Change(Timeout.Infinite, 0);
+        _timer.Dispose();
+        _timer = null;
+    }
+
     private void CleanUp()
     {
-        if (_timer != null)
-        {
-            _timer.Change(Timeout.Infinite, 0);
-            _timer.Dispose();
-            _timer = null;
-        }
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposed)
-        {
-            if (disposing) CleanUp();
-            _disposed = true;
-        }
-    }
-
-    ~MunkiUpdatesViewModel()
-    {
-        Dispose(false);
+        _installedAppsCount = 0;
+        _munkiUpdatesCount = 0;
+        MunkiUpdatesInfo = null;
+        StopTimer();
     }
 }

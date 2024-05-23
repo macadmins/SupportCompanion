@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using SupportCompanion.Services;
 
 namespace SupportCompanion.Helpers;
 
@@ -12,6 +13,19 @@ public class StartProcess
         RedirectStandardOutput = true,
         RedirectStandardError = true
     };
+
+    private readonly LoggerService _logger;
+
+    // Default constructor
+    public StartProcess() : this(new LoggerService())
+    {
+    }
+
+    // Constructor with LoggerService parameter
+    private StartProcess(LoggerService logger)
+    {
+        _logger = logger;
+    }
 
     private ProcessStartInfo CreateStartInfo(string command)
     {
@@ -29,7 +43,7 @@ public class StartProcess
     public async Task<string> RunCommand(string command)
     {
         if (string.IsNullOrWhiteSpace(command))
-            Logger.LogWithSubsystem("StartProcess", "Command must not be null or whitespace", 2);
+            _logger.Log("StartProcess", "Command must not be null or whitespace", 2);
 
         var startInfo = CreateStartInfo(command);
         using var process = new Process { StartInfo = startInfo };
@@ -44,7 +58,7 @@ public class StartProcess
         await process.WaitForExitAsync();
 
         if (process.ExitCode != 0)
-            Logger.LogWithSubsystem("StartProcess",
+            _logger.Log("StartProcess",
                 $"Command {command} failed with exit code {process.ExitCode}\nError: {output[1]}", 2);
 
         return output[0].Trim();
@@ -53,7 +67,7 @@ public class StartProcess
     public async Task RunCommandWithoutOutput(string command)
     {
         if (string.IsNullOrWhiteSpace(command))
-            Logger.LogWithSubsystem("StartProcess", "Command must not be null or whitespace", 2);
+            _logger.Log("StartProcess", "Command must not be null or whitespace", 2);
 
         var startInfo = CreateStartInfo(command);
         using var process = new Process { StartInfo = startInfo };
@@ -64,7 +78,7 @@ public class StartProcess
         if (process.ExitCode != 0)
         {
             var error = await process.StandardError.ReadToEndAsync();
-            Logger.LogWithSubsystem("StartProcess",
+            _logger.Log("StartProcess",
                 $"Command {command} failed with exit code {process.ExitCode}\nError: {error}", 2);
         }
     }

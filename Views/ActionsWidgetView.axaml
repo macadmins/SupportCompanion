@@ -1,0 +1,83 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:SukiUI.Controls;assembly=SukiUI"
+             xmlns:vm="using:SupportCompanion.ViewModels"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:customControls="clr-namespace:SupportCompanion.CustomControls"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="SupportCompanion.Views.ActionsWidgetView"
+             x:DataType="vm:ActionsViewModel"
+             x:CompileBindings="True">
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE. -->
+        <vm:ActionsViewModel />
+    </Design.DataContext>
+    <Grid Margin="10">
+        <controls:GlassCard CornerRadius="10">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Margin="10">
+                    <avalonia:MaterialIcon Kind="CallToAction" Width="20" Height="20" />
+                    <Run Text="Actions" FontWeight="DemiBold" FontSize="16" />
+                </TextBlock>
+                <WrapPanel Grid.Row="1"
+                           Orientation="Horizontal"
+                           Margin="10,10,10,2"
+                           MaxWidth="350">
+                    <Button Command="{Binding OpenChangePasswordPage}"
+                            Classes="Flat"
+                            Content="Change Password"
+                            Margin="5"
+                            IsVisible="{Binding HideChangePasswordButton}" />
+                    <Button Command="{Binding KillAgent}"
+                            Classes="Flat"
+                            Content="Restart Intune Agent"
+                            Margin="5"
+                            DesiredSize=""
+                            IsVisible="{Binding HideKillAgentButton}" />
+                    <Button Command="{Binding Reboot}"
+                            Classes="Flat"
+                            Content="Reboot"
+                            Margin="5"
+                            DesiredSize=""
+                            IsVisible="{Binding HideRebootButton}" />
+                    <Button Command="{Binding ManagedSoftwareCenter}"
+                            Classes="Flat"
+                            Content="Open MSC"
+                            Margin="5"
+                            IsVisible="{Binding HideMmcButton}" />
+                    <Button Command="{Binding OpenSupportPage}"
+                            Classes="Flat"
+                            Content="Get Support"
+                            Margin="5"
+                            IsVisible="{Binding HideSupportButton}" />
+                    <customControls:BadgedButton
+                        IsVisible="{Binding HideSoftwareUpdatesButton}"
+                        Margin="5"
+                        Content="Software Updates"
+                        Command="{Binding OpenSystemUpdates}"
+                        BadgeVisible="{Binding HasUpdates}"
+                        BadgeContent="{Binding UpdateCount}" />
+                    <Button Command="{Binding GatherLogs}"
+                            Classes="Flat"
+                            Content="Gather Logs"
+                            Margin="5"
+                            IsVisible="{Binding HideGatherLogsButton}" />
+                </WrapPanel>
+                <Button Command="{Binding ShowSupportInfoDialog}"
+                        Classes="Basic"
+                        Content="Support Info"
+                        Margin="5"
+                        Grid.Row="2"
+                        VerticalAlignment="Bottom"
+                        IsVisible="{Binding HideSupportButton}" />
+            </Grid>
+        </controls:GlassCard>
+    </Grid>
+</UserControl>

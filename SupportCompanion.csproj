@@ -35,7 +35,7 @@
         <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.10"/>
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2"/>
         <PackageReference Include="Material.Icons.Avalonia" Version="2.1.9"/>
-        <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.4"/>
+        <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.5"/>
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0"/>
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
         <PackageReference Include="PropertyList" Version="1.1.0"/>

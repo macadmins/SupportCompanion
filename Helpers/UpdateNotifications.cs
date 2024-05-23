@@ -11,6 +11,7 @@ public class UpdateNotifications
     private const string SoftwareUpdateNotificationCache = "last_software_update_notification.txt";
     private readonly ActionsService _actionsService;
     private readonly IntuneAppsService _intuneAppsService;
+    private readonly LoggerService _logger;
     private readonly MunkiAppsService _munkiAppsService;
     private readonly NotificationService _notificationService;
     private Timer _appUpdateTimer;
@@ -21,18 +22,20 @@ public class UpdateNotifications
         ActionsService actionsService,
         NotificationService notificationService,
         MunkiAppsService munkiAppsService,
-        IntuneAppsService intuneAppsService)
+        IntuneAppsService intuneAppsService,
+        LoggerService loggerService)
     {
         _actionsService = actionsService;
         _notificationService = notificationService;
         _munkiAppsService = munkiAppsService;
         _intuneAppsService = intuneAppsService;
+        _logger = loggerService;
         StartTimers();
     }
 
     private void StartTimers()
     {
-        var interval = (int)TimeSpan.FromHours(App.Config.NotificationInterval).TotalMilliseconds;
+        var interval = (int)TimeSpan.FromHours(1).TotalMilliseconds;
         if (!App.Config.HiddenActions.Contains("SoftwareUpdates"))
             _softwareUpdateTimer = new Timer(SoftwareUpdateNotificationCallback, null, 0, interval);
         if (!App.Config.HiddenActions.Contains("IntunePendingApps") ||
@@ -75,7 +78,7 @@ public class UpdateNotifications
         }
         catch (Exception ex)
         {
-            Logger.LogWithSubsystem("CheckAndSendSoftwareUpdateNotification", $"An error occurred: {ex.Message}", 3);
+            _logger.Log("CheckAndSendSoftwareUpdateNotification", $"An error occurred: {ex.Message}", 3);
         }
     }
 
@@ -100,7 +103,7 @@ public class UpdateNotifications
         }
         catch (Exception ex)
         {
-            Logger.LogWithSubsystem("CheckAndSendMunkiAppUpdateNotification", $"An error occurred: {ex.Message}", 3);
+            _logger.Log("CheckAndSendMunkiAppUpdateNotification", $"An error occurred: {ex.Message}", 3);
         }
     }
 
@@ -129,7 +132,7 @@ public class UpdateNotifications
         }
         catch (Exception ex)
         {
-            Logger.LogWithSubsystem("CheckAndSendIntuneAppUpdateNotification", $"An error occurred: {ex.Message}", 3);
+            _logger.Log("CheckAndSendIntuneAppUpdateNotification", $"An error occurred: {ex.Message}", 3);
         }
     }
 }

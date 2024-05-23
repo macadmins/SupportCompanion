@@ -25,7 +25,7 @@ public class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        RegisterServices();
+        RegisterAppServices();
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
@@ -41,7 +41,7 @@ public class App : Application
         base.OnFrameworkInitializationCompleted();
     }
 
-    private void RegisterServices()
+    private void RegisterAppServices()
     {
         var serviceCollection = new ServiceCollection();
 
@@ -58,23 +58,24 @@ public class App : Application
         serviceCollection.AddSingleton<IntuneAppsService>();
         serviceCollection.AddSingleton<MacPasswordService>();
         serviceCollection.AddSingleton<UpdateNotifications>();
+        serviceCollection.AddSingleton<LoggerService>();
 
         // Register view models
-        serviceCollection.AddTransient<DeviceWidgetViewModel>();
-        serviceCollection.AddTransient<MunkiPendingAppsViewModel>();
-        serviceCollection.AddTransient<MunkiUpdatesViewModel>();
-        serviceCollection.AddTransient<StorageViewModel>();
-        serviceCollection.AddTransient<MdmStatusViewModel>();
-        serviceCollection.AddTransient<EvergreenWidgetViewModel>();
-        serviceCollection.AddTransient<ActionsViewModel>();
-        serviceCollection.AddTransient<BatteryWidgetViewModel>();
-        serviceCollection.AddTransient<ApplicationsViewModel>();
-        serviceCollection.AddTransient<MainWindowViewModel>();
-        serviceCollection.AddTransient<SupportDialogViewModel>();
-        serviceCollection.AddTransient<IntuneUpdatesViewModel>();
-        serviceCollection.AddTransient<IntunePendingAppsViewModel>();
-        serviceCollection.AddTransient<UserViewModel>();
-        serviceCollection.AddTransient<MacPasswordViewModel>();
+        serviceCollection.AddSingleton<DeviceWidgetViewModel>();
+        serviceCollection.AddSingleton<MunkiPendingAppsViewModel>();
+        serviceCollection.AddSingleton<MunkiUpdatesViewModel>();
+        serviceCollection.AddSingleton<StorageViewModel>();
+        serviceCollection.AddSingleton<MdmStatusViewModel>();
+        serviceCollection.AddSingleton<EvergreenWidgetViewModel>();
+        serviceCollection.AddSingleton<ActionsViewModel>();
+        serviceCollection.AddSingleton<BatteryWidgetViewModel>();
+        serviceCollection.AddSingleton<ApplicationsViewModel>();
+        serviceCollection.AddSingleton<MainWindowViewModel>();
+        serviceCollection.AddSingleton<SupportDialogViewModel>();
+        serviceCollection.AddSingleton<IntuneUpdatesViewModel>();
+        serviceCollection.AddSingleton<IntunePendingAppsViewModel>();
+        serviceCollection.AddSingleton<UserViewModel>();
+        serviceCollection.AddSingleton<MacPasswordViewModel>();
 
         ServiceProvider = serviceCollection.BuildServiceProvider();
     }

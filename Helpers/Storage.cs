@@ -1,13 +1,26 @@
 using System.Collections;
 using System.Text;
 using PropertyList;
+using SupportCompanion.Services;
 
 namespace SupportCompanion.Helpers;
 
 public class Storage
 {
+    private readonly LoggerService _logger;
     private readonly string _storageCommand = "/usr/sbin/diskutil info -plist /";
     private Dictionary<string, object> _storageInfo = new();
+
+    // Default constructor
+    public Storage() : this(new LoggerService())
+    {
+    }
+
+    // Constructor with LoggerService parameter
+    private Storage(LoggerService logger)
+    {
+        _logger = logger;
+    }
 
     public async Task<IDictionary> GetStorageInfo()
     {
@@ -44,7 +57,7 @@ public class Storage
         }
         catch (Exception e)
         {
-            Logger.LogWithSubsystem("Storage", $"Failed to get storage info: {e.Message}", 2);
+            _logger.Log("Storage", $"Failed to get storage info: {e.Message}", 2);
         }
 
         return _storageInfo;
