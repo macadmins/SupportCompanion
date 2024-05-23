@@ -1,26 +1,38 @@
 using System.Text.RegularExpressions;
+using Avalonia.Threading;
+using SupportCompanion.Interfaces;
 using SupportCompanion.Models;
 using SupportCompanion.Services;
 
 namespace SupportCompanion.ViewModels;
 
-public class UserViewModel : ViewModelBase
+public class UserViewModel : ViewModelBase, IWindowStateAware
 {
+    private const string HomeDirPattern = @"Directory:\s+(\S+)";
     private const string LoginNamePattern = @"Login:\s+(\w+)";
     private const string NamePattern = @"Name:\s+(.+)";
-    private const string HomeDirPattern = @"Directory:\s+(\S+)";
     private const string ShellPattern = @"Shell:\s+(\S+)";
     private readonly ActionsService _actionsService;
-    private bool _disposed;
 
     public UserViewModel(ActionsService actionsService)
     {
         User = new UserModel();
         _actionsService = actionsService;
-        InitializeAsync();
+        Dispatcher.UIThread.Post(InitializeAsync);
     }
 
     public UserModel? User { get; private set; }
+
+    public void OnWindowHidden()
+    {
+        CleanUp();
+    }
+
+    public void OnWindowShown()
+    {
+        User = new UserModel();
+        Dispatcher.UIThread.Post(InitializeAsync);
+    }
 
     private async void InitializeAsync()
     {
@@ -40,26 +52,5 @@ public class UserViewModel : ViewModelBase
     private void CleanUp()
     {
         User = null;
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposed)
-        {
-            if (disposing) CleanUp();
-
-            _disposed = true;
-        }
-    }
-
-    ~UserViewModel()
-    {
-        Dispose(false);
-    }
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
     }
 }

@@ -3,29 +3,17 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:SupportCompanion.ViewModels"
-             xmlns:models="clr-namespace:SupportCompanion.Models"
              xmlns:controls="clr-namespace:SukiUI.Controls;assembly=SukiUI"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="SupportCompanion.Views.IntunePendingAppsWidget"
-             x:DataType="vm:IntunePendingAppsViewModel">
+             x:Class="SupportCompanion.Views.MunkiPendingAppsWidgetView"
+             x:DataType="vm:MunkiPendingAppsViewModel"
+             x:CompileBindings="True">
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:IntunePendingAppsViewModel />
+        <vm:MunkiPendingAppsViewModel />
     </Design.DataContext>
-    <UserControl.Resources>
-        <DataTemplate x:Key="InfoIconTemplate" x:DataType="models:IntunePendingApp">
-            <Border Background="Transparent" Padding="10,0,10,0">
-                <ToolTip.Tip>
-                    <TextBlock Text="{Binding PendingReason}" />
-                </ToolTip.Tip>
-                <avalonia:MaterialIcon Kind="InformationOutline"
-                                       Width="20" Height="20"
-                                       IsVisible="{Binding ShowInfoIcon}" />
-            </Border>
-        </DataTemplate>
-    </UserControl.Resources>
     <Grid Margin="10">
         <controls:GlassCard CornerRadius="10">
             <Grid>
@@ -36,28 +24,22 @@
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0" Margin="10">
                     <avalonia:MaterialIcon Kind="Clock" Width="20" Height="20" />
-                    <Run Text="Pending Installs" FontWeight="DemiBold" FontSize="16" />
+                    <Run Text="Pending Updates" FontWeight="DemiBold" FontSize="16" />
                 </TextBlock>
                 <StackPanel Grid.Row="1">
                     <DataGrid Margin="5,0,5,30"
                               VerticalAlignment="Top"
-                              AutoGenerateColumns="False"
+                              AutoGenerateColumns="True"
                               IsReadOnly="True"
                               ItemsSource="{Binding PendingApps}"
                               Width="290"
                               MaxWidth="290"
-                              MaxHeight="200"
-                              ColumnWidth="*">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
-                            <DataGridTemplateColumn CellTemplate="{StaticResource InfoIconTemplate}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
+                              MaxHeight="200" />
                 </StackPanel>
                 <DockPanel Grid.Row="2" VerticalAlignment="Bottom">
-                    <Button Command="{Binding CompanyPortal}"
+                    <Button Command="{Binding MmcUpdates}"
                             Classes="Flat"
-                            Content="Open Company Portal" />
+                            Content="Open MSC Updates" />
                 </DockPanel>
             </Grid>
         </controls:GlassCard>

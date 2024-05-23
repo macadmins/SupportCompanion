@@ -1,9 +1,11 @@
+using Avalonia.Threading;
+using SupportCompanion.Interfaces;
 using SupportCompanion.Models;
 using SupportCompanion.Services;
 
 namespace SupportCompanion.ViewModels;
 
-public class MdmStatusViewModel : ViewModelBase
+public class MdmStatusViewModel : ViewModelBase, IWindowStateAware
 {
     private readonly MdmStatusService _mdmStatusService;
     private bool _disposed;
@@ -13,13 +15,23 @@ public class MdmStatusViewModel : ViewModelBase
     {
         _mdmStatusService = mdmStatus;
         MdmStatusInfo = new MdmStatusModel();
-        Initialization = InitializeAsync();
+        Dispatcher.UIThread.Post(InitializeAsync);
     }
 
-    public MdmStatusModel MdmStatusInfo { get; }
-    public Task Initialization { get; private set; }
+    public MdmStatusModel? MdmStatusInfo { get; private set; }
 
-    private async Task InitializeAsync()
+    public void OnWindowHidden()
+    {
+        CleanUp();
+    }
+
+    public void OnWindowShown()
+    {
+        MdmStatusInfo = new MdmStatusModel();
+        Dispatcher.UIThread.Post(InitializeAsync);
+    }
+
+    private async void InitializeAsync()
     {
         await GetMdmDetails().ConfigureAwait(false);
     }
@@ -35,26 +47,17 @@ public class MdmStatusViewModel : ViewModelBase
 
     private void CleanUp()
     {
+        MdmStatusInfo = null;
         _mdmStatus.Clear();
     }
 
-    protected virtual void Dispose(bool disposing)
+    private void Dispose(bool disposing)
     {
         if (!_disposed)
         {
             if (disposing) CleanUp();
             _disposed = true;
+            GC.SuppressFinalize(this);
         }
-    }
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    ~MdmStatusViewModel()
-    {
-        Dispose(false);
     }
 }

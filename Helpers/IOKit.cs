@@ -10,10 +10,8 @@ public class IOKit : IDisposable
 {
     private const string kIOPlatformSerialNumberKey = "IOPlatformSerialNumber";
     private const string kIOProductNameKey = "product-name";
+    private bool _disposed;
 
-    private bool disposed;
-
-    // Implementing IDisposable to ensure resources are released.
     public void Dispose()
     {
         Dispose(true);
@@ -70,7 +68,7 @@ public class IOKit : IDisposable
 
     public string GetSerialNumber()
     {
-        return GetPropertyValue("IOPlatformSerialNumber", "IOPlatformExpertDevice");
+        return GetPropertyValue(kIOPlatformSerialNumberKey, "IOPlatformExpertDevice");
     }
 
     public int GetBatteryDesignCapacity()
@@ -92,6 +90,7 @@ public class IOKit : IDisposable
     {
         var result = string.Empty;
         var propertyPointer = IntPtr.Zero;
+
         var service = IOServiceGetMatchingService(0, IOServiceMatching(serviceName));
         if (service == 0)
             service = IOServiceGetMatchingService(0, IOServiceNameMatching(serviceName));
@@ -200,9 +199,16 @@ public class IOKit : IDisposable
 
     protected virtual void Dispose(bool disposing)
     {
-        if (!disposed)
-            // Release any unmanaged resources here.
-            disposed = true;
+        if (!_disposed)
+        {
+            if (disposing)
+            {
+                // Dispose managed resources
+            }
+
+            // Dispose unmanaged resources
+            _disposed = true;
+        }
     }
 
     ~IOKit()
@@ -217,7 +223,7 @@ public class IOKit : IDisposable
 
     private sealed class SafeCFStringHandle : SafeHandleZeroOrMinusOneIsInvalid
     {
-        private SafeCFStringHandle() : base(true)
+        public SafeCFStringHandle() : base(true)
         {
         }
 

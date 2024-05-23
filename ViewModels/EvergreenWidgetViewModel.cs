@@ -1,28 +1,39 @@
+using Avalonia.Threading;
+using SupportCompanion.Interfaces;
 using SupportCompanion.Models;
 using SupportCompanion.Services;
 
 namespace SupportCompanion.ViewModels;
 
-public class EvergreenWidgetViewModel : ViewModelBase, IDisposable
+public class EvergreenWidgetViewModel : ViewModelBase, IWindowStateAware
 {
     private readonly CatalogsService _catalogsService;
     private List<string> _catalogs = new();
-    private bool _disposed;
 
     public EvergreenWidgetViewModel(CatalogsService catalogs)
     {
         _catalogsService = catalogs;
-        EvergreenInfo = new EvergreenInfoModel();
         if (App.Config.MunkiMode)
-            InitializeAsync();
+        {
+            EvergreenInfo = new EvergreenInfoModel();
+            Dispatcher.UIThread.Post(InitializeAsync);
+        }
     }
 
     public EvergreenInfoModel? EvergreenInfo { get; private set; }
 
-    public void Dispose()
+    public void OnWindowHidden()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
+        CleanUp();
+    }
+
+    public void OnWindowShown()
+    {
+        if (App.Config.MunkiMode)
+        {
+            EvergreenInfo = new EvergreenInfoModel();
+            Dispatcher.UIThread.Post(InitializeAsync);
+        }
     }
 
     private async void InitializeAsync()
@@ -32,6 +43,7 @@ public class EvergreenWidgetViewModel : ViewModelBase, IDisposable
 
     private async Task DeviceCatalogs()
     {
+        EvergreenInfo?.Catalogs?.Clear();
         _catalogs = await _catalogsService.GetCatalogs();
         EvergreenInfo.Catalogs = _catalogs;
     }
@@ -40,19 +52,5 @@ public class EvergreenWidgetViewModel : ViewModelBase, IDisposable
     {
         _catalogs.Clear();
         EvergreenInfo = null;
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposed)
-        {
-            if (disposing) CleanUp();
-            _disposed = true;
-        }
-    }
-
-    ~EvergreenWidgetViewModel()
-    {
-        Dispose(false);
     }
 }

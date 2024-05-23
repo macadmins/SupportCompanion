@@ -1,43 +1,56 @@
-using SupportCompanion.Helpers;
+using Avalonia.Threading;
+using SupportCompanion.Interfaces;
 using SupportCompanion.Models;
 using SupportCompanion.Services;
 
 namespace SupportCompanion.ViewModels;
 
-public class StorageViewModel : ViewModelBase, IDisposable
+public class StorageViewModel : ViewModelBase, IWindowStateAware
 {
+    private readonly LoggerService _logger;
     private readonly StorageService _storage;
-    private bool _disposed;
     private Timer? _timer;
 
-    public StorageViewModel(StorageService storage)
+    public StorageViewModel(StorageService storage, LoggerService loggerService)
     {
         _storage = storage;
+        _logger = loggerService;
         StorageInfo = new StorageModel();
         ShowManageStorageButton = Environment.OSVersion.Version.Major >= 13;
-        _timer = new Timer(StorageCallback, null, 0, 300000);
+        if (!App.Config.HiddenWidgets.Contains("Storage"))
+            Dispatcher.UIThread.Post(InitializeAsync);
     }
 
     public StorageModel? StorageInfo { get; private set; }
     public bool ShowManageStorageButton { get; private set; }
 
-    public void Dispose()
+    public void OnWindowHidden()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
+        CleanUp();
     }
 
-    public void StopTimer()
+    public void OnWindowShown()
     {
-        if (_timer != null)
-        {
-            _timer?.Change(Timeout.Infinite, 0);
-            _timer?.Dispose();
-            _timer = null;
-        }
+        StorageInfo = new StorageModel();
+        if (!App.Config.HiddenWidgets.Contains("Storage"))
+            Dispatcher.UIThread.Post(InitializeAsync);
     }
 
-    private async void StorageCallback(object? state)
+    private void StopTimer()
+    {
+        if (_timer == null) return;
+        _logger.Log("StorageViewModel", "Stopping Storage timer", 1);
+        _timer.Change(Timeout.Infinite, 0);
+        _timer.Dispose();
+        _timer = null;
+    }
+
+    private async void InitializeAsync()
+    {
+        _timer ??= new Timer(async _ => await StorageCallback(), null, TimeSpan.Zero, TimeSpan.FromMinutes(5));
+    }
+
+    private async Task StorageCallback()
     {
         await GetStorageInfo().ConfigureAwait(false);
     }
@@ -46,7 +59,7 @@ public class StorageViewModel : ViewModelBase, IDisposable
     {
         try
         {
-            Logger.LogWithSubsystem("StorageViewModel", "Getting storage info...", 1);
+            _logger.Log("StorageViewModel", "Getting storage info...", 1);
             var storageInfo = await _storage.GetStorageInfo();
             StorageInfo.VolumeType = storageInfo["VolumeType"]?.ToString();
             StorageInfo.VolumeName = storageInfo["VolumeName"].ToString();
@@ -67,7 +80,7 @@ public class StorageViewModel : ViewModelBase, IDisposable
         }
         catch (Exception ex)
         {
-            Logger.LogWithSubsystem("StorageViewModel", $"Error getting storage info: {ex.Message}", 3);
+            _logger.Log("StorageViewModel", $"Error getting storage info: {ex.Message}", 3);
         }
     }
 
@@ -79,21 +92,7 @@ public class StorageViewModel : ViewModelBase, IDisposable
     private void CleanUp()
     {
         StorageInfo = null;
+        ShowManageStorageButton = false;
         StopTimer();
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposed)
-        {
-            if (disposing) CleanUp();
-
-            _disposed = true;
-        }
-    }
-
-    ~StorageViewModel()
-    {
-        Dispose(false);
     }
 }

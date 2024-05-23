@@ -3,7 +3,7 @@
              xmlns:controls="clr-namespace:SukiUI.Controls;assembly=SukiUI"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:vm="clr-namespace:SupportCompanion.ViewModels"
-             x:Class="SupportCompanion.Views.DeviceInfoWidget"
+             x:Class="SupportCompanion.Views.DeviceInfoWidgetView"
              x:DataType="vm:DeviceWidgetViewModel"
              x:CompileBindings="True"
              x:Name="DeviceInfoWidgetControl">

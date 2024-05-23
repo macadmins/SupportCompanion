@@ -7,8 +7,9 @@
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:customControls="clr-namespace:SupportCompanion.CustomControls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="SupportCompanion.Views.ActionsWidget"
-             x:DataType="vm:ActionsViewModel">
+             x:Class="SupportCompanion.Views.ActionsWidgetView"
+             x:DataType="vm:ActionsViewModel"
+             x:CompileBindings="True">
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE. -->
         <vm:ActionsViewModel />

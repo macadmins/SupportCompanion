@@ -1,30 +1,29 @@
 using Avalonia;
 using Avalonia.Controls;
 using Microsoft.Extensions.DependencyInjection;
-using SupportCompanion.Services;
 using SupportCompanion.ViewModels;
 
 namespace SupportCompanion.Views;
 
-public partial class SupportDialogView : UserControl
+public partial class IntuneUpdatesWidgetView : UserControl
 {
-    private readonly ClipboardService _clipboard;
-
-    public SupportDialogView()
+    public IntuneUpdatesWidgetView()
     {
         InitializeComponent();
-        _clipboard = ((App)Application.Current).ServiceProvider.GetRequiredService<ClipboardService>();
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        if (!App.Config.IntuneMode) return;
+
         base.OnAttachedToVisualTree(e);
-        DataContext = ((App)Application.Current).ServiceProvider.GetRequiredService<SupportDialogViewModel>();
+        DataContext = ((App)Application.Current).ServiceProvider.GetRequiredService<IntuneUpdatesViewModel>();
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        if (!App.Config.IntuneMode) return;
+
         base.OnDetachedFromVisualTree(e);
-        DataContext = null;
     }
 }

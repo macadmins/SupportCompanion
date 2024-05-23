@@ -3,7 +3,6 @@ namespace SupportCompanion.Models;
 public class AppConfiguration
 {
     public string BundleId = "SupportCompanion";
-    public string CacheDir = "/usr/local/supportcompanion";
 
     public List<string> Keys = new()
     {

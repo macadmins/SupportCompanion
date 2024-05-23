@@ -1,12 +1,18 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using SupportCompanion.Helpers;
 using IClipboard = SupportCompanion.Interfaces.IClipboard;
 
 namespace SupportCompanion.Services;
 
 public class ClipboardService : IClipboard
 {
+    private readonly LoggerService _logger;
+
+    public ClipboardService(LoggerService loggerService)
+    {
+        _logger = loggerService;
+    }
+
     public async Task SetClipboardTextAsync(string text)
     {
         if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop ||
@@ -21,7 +27,7 @@ public class ClipboardService : IClipboard
         if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop ||
             desktop.MainWindow?.Clipboard is not { } provider)
         {
-            Logger.LogWithSubsystem("ClipboardService", "Missing Clipboard instance.", 2);
+            _logger.Log("ClipboardService:GetClipboardTextAsync", "Missing Clipboard instance.", 2);
             return string.Empty;
         }
 

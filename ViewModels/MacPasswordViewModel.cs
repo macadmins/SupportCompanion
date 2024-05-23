@@ -1,50 +1,65 @@
 using System.Text.Json;
-using SupportCompanion.Helpers;
+using Avalonia.Threading;
+using SupportCompanion.Interfaces;
 using SupportCompanion.Models;
 using SupportCompanion.Services;
 
 namespace SupportCompanion.ViewModels;
 
-public class MacPasswordViewModel : ViewModelBase
+public class MacPasswordViewModel : ViewModelBase, IWindowStateAware
 {
     private readonly ActionsService _actionsService;
+    private readonly LoggerService _logger;
     private readonly MacPasswordService _macPasswordService;
-    private bool _disposed;
 
-    public MacPasswordViewModel(ActionsService actionsService, MacPasswordService macPasswordService)
+    public MacPasswordViewModel(ActionsService actionsService, MacPasswordService macPasswordService,
+        LoggerService loggerService)
     {
         _actionsService = actionsService;
         _macPasswordService = macPasswordService;
+        _logger = loggerService;
         KerberosSSO = new KerberosSSOModel();
         PlatformSSO = new PlatformSSOModel();
-        InitializeAsync();
+        Dispatcher.UIThread.Post(InitializeAsync);
     }
 
     public KerberosSSOModel? KerberosSSO { get; private set; }
     public PlatformSSOModel? PlatformSSO { get; private set; }
 
+    public void OnWindowHidden()
+    {
+        CleanUp();
+    }
+
+    public void OnWindowShown()
+    {
+        KerberosSSO = new KerberosSSOModel();
+        PlatformSSO = new PlatformSSOModel();
+        Dispatcher.UIThread.Post(InitializeAsync);
+    }
+
     private async void InitializeAsync()
     {
-        await GetMacPasswordInfo();
+        await GetMacPasswordInfo().ConfigureAwait(false);
     }
 
     private T GetValueOrDefault<T>(Dictionary<string, object> dictionary, string key, T defaultValue = default)
     {
         if (dictionary == null)
         {
-            Logger.LogWithSubsystem("MacPasswordViewModel", "Dictionary is null.", 1);
+            _logger.Log("MacPasswordViewModel", "Dictionary is null.", 1);
             return defaultValue;
         }
 
         if (!dictionary.TryGetValue(key, out var value))
         {
-            Logger.LogWithSubsystem("MacPasswordViewModel", $"Key '{key}' not found in dictionary.", 1);
+            _logger.Log("MacPasswordViewModel", $"Key '{key}' not found in dictionary.", 1);
             return defaultValue;
         }
 
         if (value == null)
         {
-            Logger.LogWithSubsystem("MacPasswordViewModel", $"Value for key '{key}' is null.", 1);
+            _logger.Log("MacPasswordViewModel", $"Value for key '{key}' is null.", 1);
             return defaultValue;
         }
 
@@ -58,14 +73,14 @@ public class MacPasswordViewModel : ViewModelBase
             }
             catch (Exception ex)
             {
-                Logger.LogWithSubsystem("MacPasswordViewModel",
+                _logger.Log("MacPasswordViewModel",
                     $"Error converting value for key '{key}' to type '{typeof(T)}': {ex.Message}", 1);
                 return defaultValue;
             }
 
         if (value is T typedValue) return typedValue;
 
-        Logger.LogWithSubsystem("MacPasswordViewModel", $"Value for key '{key}' is not of type '{typeof(T)}'.", 1);
+        _logger.Log("MacPasswordViewModel", $"Value for key '{key}' is not of type '{typeof(T)}'.", 1);
         return defaultValue;
     }
 
@@ -129,25 +144,5 @@ public class MacPasswordViewModel : ViewModelBase
     {
         KerberosSSO = null;
         PlatformSSO = null;
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposed)
-        {
-            if (disposing) CleanUp();
-            _disposed = true;
-        }
-    }
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    ~MacPasswordViewModel()
-    {
-        Dispose(false);
     }
 }

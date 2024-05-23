@@ -1,55 +1,65 @@
 using System.Collections.ObjectModel;
 using Avalonia.Threading;
-using SupportCompanion.Helpers;
+using SupportCompanion.Interfaces;
 using SupportCompanion.Models;
 using SupportCompanion.Services;
 
 namespace SupportCompanion.ViewModels;
 
-public class IntunePendingAppsViewModel : IDisposable
+public class IntunePendingAppsViewModel : IWindowStateAware
 {
     private const string OpenCompanyPortal = "open companyportal://";
     private readonly ActionsService _actions;
     private readonly IntuneAppsService _intuneApps;
-    private bool _disposed;
+    private readonly LoggerService _logger;
     private Timer? _pendingAppsTimer;
     private bool _showInfoIcon = true;
 
-    public IntunePendingAppsViewModel(IntuneAppsService intuneApps, ActionsService actions)
+    public IntunePendingAppsViewModel(IntuneAppsService intuneApps, ActionsService actions, LoggerService loggerService)
     {
         if (App.Config.IntuneMode)
-            _pendingAppsTimer = new Timer(IntunePendingAppsCallback, null, 0, 60000);
+            Dispatcher.UIThread.Post(InitializeAsync);
         _intuneApps = intuneApps;
         _actions = actions;
+        _logger = loggerService;
     }
 
     public ObservableCollection<IntunePendingApp> PendingApps { get; } = new();
 
-    public void Dispose()
+    public void OnWindowHidden()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
+        CleanUp();
     }
 
-    public void StopTimer()
-    {
-        if (_pendingAppsTimer != null)
-        {
-            _pendingAppsTimer.Change(Timeout.Infinite, 0);
-            _pendingAppsTimer.Dispose();
-            _pendingAppsTimer = null;
-        }
-    }
-
-    private async void IntunePendingAppsCallback(object state)
+    public void OnWindowShown()
     {
         if (App.Config.IntuneMode)
-            await GetPendingApps();
+            Dispatcher.UIThread.Post(InitializeAsync);
+    }
+
+    private void StopTimer()
+    {
+        if (_pendingAppsTimer == null) return;
+        _logger.Log("IntunePendingAppsViewModel", "Stopping Intune Pending Apps timer.", 1);
+        _pendingAppsTimer.Change(Timeout.Infinite, 0);
+        _pendingAppsTimer.Dispose();
+        _pendingAppsTimer = null;
+    }
+
+    private async void InitializeAsync()
+    {
+        _pendingAppsTimer ??= new Timer(async _ => await GetIntunePendingAppsCallback(), null, 0, 60000);
+    }
+
+    private async Task GetIntunePendingAppsCallback()
+    {
+        if (App.Config.IntuneMode)
+            await GetPendingApps().ConfigureAwait(false);
     }
 
     private async Task GetPendingApps()
     {
-        Logger.LogWithSubsystem("IntunePendingAppsViewModel", "Getting pending apps list.", 1);
+        _logger.Log("IntunePendingAppsViewModel", "Getting pending apps list.", 1);
         var policies = await _intuneApps.GetIntuneApps();
         await Dispatcher.UIThread.InvokeAsync(() =>
         {
@@ -78,19 +88,5 @@ public class IntunePendingAppsViewModel : IDisposable
     {
         PendingApps.Clear();
         StopTimer();
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposed)
-        {
-            if (disposing) CleanUp();
-            _disposed = true;
-        }
-    }
-
-    ~IntunePendingAppsViewModel()
-    {
-        Dispose(false);
     }
 }

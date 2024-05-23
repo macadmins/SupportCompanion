@@ -1,14 +1,27 @@
 using System.Collections;
 using PropertyList;
+using SupportCompanion.Services;
 
 namespace SupportCompanion.Helpers;
 
 public class MunkiApps
 {
+    private readonly LoggerService _logger;
     private readonly string _managedInstallsReportPlist = "/Library/Managed Installs/ManagedInstallReport.plist";
     private readonly string _selfServeManifest = "/Library/Managed Installs/manifests/SelfServeManifest";
 
-    private static async Task<Stream?> ReadFileWithRetry(string filePath, int maxRetries = 3,
+    // Default constructor
+    public MunkiApps() : this(new LoggerService())
+    {
+    }
+
+    // Constructor with LoggerService parameter
+    private MunkiApps(LoggerService logger)
+    {
+        _logger = logger;
+    }
+
+    private async Task<Stream?> ReadFileWithRetry(string filePath, int maxRetries = 3,
         int delayMilliseconds = 20000)
     {
         for (var i = 0; i < maxRetries; i++)
@@ -19,7 +32,7 @@ public class MunkiApps
             catch (IOException)
             {
                 // Wait before retrying
-                Logger.LogWithSubsystem(
+                _logger.Log(
                     "ReadFileWithRetry",
                     $"File {filePath} is not available. Retrying in {delayMilliseconds} milliseconds.",
                     1);
@@ -27,12 +40,12 @@ public class MunkiApps
             }
 
         // If we've tried to open the file maxRetries times and it's still not available, log an error and return null
-        Logger.LogWithSubsystem("ReadFileWithRetry",
+        _logger.Log("ReadFileWithRetry",
             $"File {filePath} could not be opened after {maxRetries} attempts.", 2);
         return null;
     }
 
-    private static async Task LookForFileWithRetry(string filePath, int maxRetries = 3, int delayMilliseconds = 20000)
+    private async Task LookForFileWithRetry(string filePath, int maxRetries = 3, int delayMilliseconds = 20000)
     {
         for (var i = 0; i < maxRetries; i++)
             if (File.Exists(filePath))
@@ -42,7 +55,7 @@ public class MunkiApps
             else
             {
                 // Wait before retrying
-                Logger.LogWithSubsystem(
+                _logger.Log(
                     "LookForFileWithRetry",
                     $"File {filePath} is not available. Retrying in {delayMilliseconds} milliseconds.",
                     1);
@@ -50,7 +63,7 @@ public class MunkiApps
             }
 
         // If we've tried to open the file maxRetries times and it's still not available, log an error and return null
-        Logger.LogWithSubsystem("LookForFileWithRetry",
+        _logger.Log("LookForFileWithRetry",
             $"File {filePath} could not be found after {maxRetries} attempts.", 2);
     }
 
@@ -60,7 +73,7 @@ public class MunkiApps
         await using var reader = await ReadFileWithRetry(_managedInstallsReportPlist);
         if (reader == null)
         {
-            Logger.LogWithSubsystem("MunkiApps:GetPendingUpdates", "Reader is null", 1);
+            _logger.Log("MunkiApps:GetPendingUpdates", "Reader is null", 1);
             return 0;
         }
 
@@ -69,7 +82,7 @@ public class MunkiApps
         if (plist.TryGetValue("ItemsToInstall", out var pendingApps))
             return ((IList)pendingApps).Count;
 
-        Logger.LogWithSubsystem("MunkiApps:GetPendingUpdates", "ItemsToInstall key not found", 1);
+        _logger.Log("MunkiApps:GetPendingUpdates", "ItemsToInstall key not found", 1);
         return 0;
     }
 
@@ -79,7 +92,7 @@ public class MunkiApps
         await using var reader = await ReadFileWithRetry(_managedInstallsReportPlist);
         if (reader == null)
         {
-            Logger.LogWithSubsystem("MunkiApps:GetInstalledAppCount", "Reader is null", 1);
+            _logger.Log("MunkiApps:GetInstalledAppCount", "Reader is null", 1);
             return 0;
         }
 
@@ -88,7 +101,7 @@ public class MunkiApps
         if (plist.TryGetValue("InstalledItems", out var installedApps))
             return ((IList)installedApps).Count;
 
-        Logger.LogWithSubsystem("MunkiApps:GetInstalledAppCount", "InstalledItems key not found", 1);
+        _logger.Log("MunkiApps:GetInstalledAppCount", "InstalledItems key not found", 1);
         return 0;
     }
 
@@ -98,7 +111,7 @@ public class MunkiApps
         await using var reader = await ReadFileWithRetry(_managedInstallsReportPlist);
         if (reader == null)
         {
-            Logger.LogWithSubsystem("MunkiApps:GetPendingUpdatesList", "Reader is null", 1);
+            _logger.Log("MunkiApps:GetPendingUpdatesList", "Reader is null", 1);
             return new List<string>();
         }
 
@@ -107,7 +120,7 @@ public class MunkiApps
         if (plist.TryGetValue("ItemsToInstall", out var pendingApps))
             return (IList)pendingApps;
 
-        Logger.LogWithSubsystem("MunkiApps:GetPendingUpdatesList", "ItemsToInstall key not found", 1);
+        _logger.Log("MunkiApps:GetPendingUpdatesList", "ItemsToInstall key not found", 1);
         return new List<string>();
     }
 
@@ -117,7 +130,7 @@ public class MunkiApps
         await using var reader = await ReadFileWithRetry(_managedInstallsReportPlist);
         if (reader == null)
         {
-            Logger.LogWithSubsystem("MunkiApps:GetInstalledAppsList", "Reader is null", 1);
+            _logger.Log("MunkiApps:GetInstalledAppsList", "Reader is null", 1);
             return new List<string>();
         }
 
@@ -126,7 +139,7 @@ public class MunkiApps
         if (plist.TryGetValue("ManagedInstalls", out var installedApps))
             return (IList)installedApps;
 
-        Logger.LogWithSubsystem("MunkiApps:GetInstalledAppsList", "ManagedInstalls key not found", 1);
+        _logger.Log("MunkiApps:GetInstalledAppsList", "ManagedInstalls key not found", 1);
         return new List<string>();
     }
 
@@ -136,7 +149,7 @@ public class MunkiApps
         await using var reader = await ReadFileWithRetry(_selfServeManifest);
         if (reader == null)
         {
-            Logger.LogWithSubsystem("MunkiApps:GetSelfServeAppsList", "Reader is null", 1);
+            _logger.Log("MunkiApps:GetSelfServeAppsList", "Reader is null", 1);
             return new List<string>();
         }
 
@@ -145,7 +158,7 @@ public class MunkiApps
         if (plist.TryGetValue("managed_installs", out var selfServeApps))
             return (IList)selfServeApps;
 
-        Logger.LogWithSubsystem("MunkiApps:GetSelfServeAppsList", "managed_installs key not found", 1);
+        _logger.Log("MunkiApps:GetSelfServeAppsList", "managed_installs key not found", 1);
         return new List<string>();
     }
 }

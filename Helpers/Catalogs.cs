@@ -1,5 +1,6 @@
 using System.Collections;
 using PropertyList;
+using SupportCompanion.Services;
 
 namespace SupportCompanion.Helpers;
 
@@ -9,7 +10,19 @@ public class Catalogs
         "/usr/sbin/system_profiler SPHardwareDataType | awk '/Serial/ {print $4}'";
 
     private readonly List<string> _catalogs = new();
+    private readonly LoggerService _logger;
     private readonly string _manifestDirectory = "/Library/Managed Installs/manifests";
+
+    // Default constructor
+    public Catalogs() : this(new LoggerService())
+    {
+    }
+
+    // Constructor with LoggerService parameter
+    private Catalogs(LoggerService logger)
+    {
+        _logger = logger;
+    }
 
     public async Task<List<string>> GetCatalogs()
     {
@@ -26,14 +39,14 @@ public class Catalogs
                     foreach (var catalog in (IList)catalogs)
                         _catalogs.Add(catalog.ToString());
                 else
-                    Logger.LogWithSubsystem("Catalogs", "Device manifest does not contain catalogs key", 1);
+                    _logger.Log("Catalogs", "Device manifest does not contain catalogs key", 1);
             }
             catch (Exception e)
             {
-                Logger.LogWithSubsystem("Catalogs", $"Failed to read device manifest: {e.Message}", 2);
+                _logger.Log("Catalogs", $"Failed to read device manifest: {e.Message}", 2);
             }
         else
-            Logger.LogWithSubsystem("Catalogs", "Device manifest not found", 0);
+            _logger.Log("Catalogs", "Device manifest not found", 0);
 
         return _catalogs;
     }

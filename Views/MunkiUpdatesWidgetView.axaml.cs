@@ -1,30 +1,29 @@
 using Avalonia;
 using Avalonia.Controls;
 using Microsoft.Extensions.DependencyInjection;
-using SupportCompanion.Services;
 using SupportCompanion.ViewModels;
 
 namespace SupportCompanion.Views;
 
-public partial class SupportDialogView : UserControl
+public partial class MunkiUpdatesWidgetView : UserControl
 {
-    private readonly ClipboardService _clipboard;
-
-    public SupportDialogView()
+    public MunkiUpdatesWidgetView()
     {
         InitializeComponent();
-        _clipboard = ((App)Application.Current).ServiceProvider.GetRequiredService<ClipboardService>();
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        if (!App.Config.MunkiMode) return;
+
         base.OnAttachedToVisualTree(e);
-        DataContext = ((App)Application.Current).ServiceProvider.GetRequiredService<SupportDialogViewModel>();
+        DataContext = ((App)Application.Current).ServiceProvider.GetRequiredService<MunkiUpdatesViewModel>();
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        if (!App.Config.MunkiMode) return;
+
         base.OnDetachedFromVisualTree(e);
-        DataContext = null;
     }
 }

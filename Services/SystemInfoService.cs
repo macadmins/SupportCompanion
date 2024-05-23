@@ -5,6 +5,7 @@ namespace SupportCompanion.Services;
 
 public class SystemInfoService : ISystemInfo
 {
+    // Static methods for getting basic system information
     public string GetHostName()
     {
         return SystemInfo.GetSystemInfo("kern.hostname");
@@ -35,13 +36,16 @@ public class SystemInfoService : ISystemInfo
         return SystemInfo.GetSystemInfoLong("hw.memsize_usable") / 1000 / 1000 / 1000;
     }
 
+    // Methods that require instance of SystemInfo
     public async Task<string> GetIPAddress()
     {
-        return await new SystemInfo().GetNetworkInfo("SPNetworkDataType");
+        using var systemInfo = new SystemInfo();
+        return await systemInfo.GetNetworkInfo("SPNetworkDataType");
     }
 
     public async Task<int> GetLastBootTime()
     {
-        return await new SystemInfo().GetLastBootTime();
+        using var systemInfo = new SystemInfo();
+        return await systemInfo.GetLastBootTime();
     }
 }

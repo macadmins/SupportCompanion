@@ -4,27 +4,29 @@ using System.Text.Json;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SukiUI.Controls;
-using SupportCompanion.Helpers;
+using SupportCompanion.Interfaces;
 using SupportCompanion.Services;
 
 namespace SupportCompanion.ViewModels;
 
-public partial class ActionsViewModel : ObservableObject, IDisposable
+public partial class ActionsViewModel : ObservableObject, IWindowStateAware
 {
     private const string SystemUpdatesVenturaAndAbove =
         "open x-apple.systempreferences:com.apple.preferences.softwareupdate";
 
     private const string SystemUpdatesBelowVentura = "open /System/Library/PreferencePanes/SoftwareUpdate.prefPane";
     private readonly ActionsService _actionsService;
-    private bool _disposed;
+    private readonly LoggerService _logger;
     [ObservableProperty] private bool _hasUpdates;
     [ObservableProperty] private string _updateCount = "0";
 
-    public ActionsViewModel(ActionsService actionsService)
+    public ActionsViewModel(ActionsService actionsService, LoggerService loggerService)
     {
         _actionsService = actionsService;
+        _logger = loggerService;
         HideSupportButton = !App.Config.HiddenActions.Contains("Support");
         HideMmcButton = !App.Config.HiddenActions.Contains("ManagedSoftwareCenter") && App.Config.MunkiMode;
         HideChangePasswordButton = !App.Config.HiddenActions.Contains("ChangePassword");
@@ -32,7 +34,8 @@ public partial class ActionsViewModel : ObservableObject, IDisposable
         HideKillAgentButton = !App.Config.HiddenActions.Contains("KillAgent");
         HideSoftwareUpdatesButton = !App.Config.HiddenActions.Contains("SoftwareUpdates");
         HideGatherLogsButton = !App.Config.HiddenActions.Contains("GatherLogs");
-        if (!App.Config.HiddenActions.Contains("SoftwareUpdates")) CheckSoftwareUpdates().ConfigureAwait(false);
+        if (!App.Config.HiddenActions.Contains("SoftwareUpdates"))
+            Dispatcher.UIThread.Post(InitializeAsync);
     }
 
     public bool HideSupportButton { get; private set; }
@@ -43,20 +46,30 @@ public partial class ActionsViewModel : ObservableObject, IDisposable
     public bool HideGatherLogsButton { get; private set; }
     public bool HideSoftwareUpdatesButton { get; }
 
-    public void Dispose()
+    public void OnWindowHidden()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
+        CleanUp();
+    }
+
+    public void OnWindowShown()
+    {
+        if (!App.Config.HiddenActions.Contains("SoftwareUpdates"))
+            Dispatcher.UIThread.Post(InitializeAsync);
+    }
+
+    private async void InitializeAsync()
+    {
+        await CheckSoftwareUpdates();
     }
 
     private async Task CheckSoftwareUpdates()
     {
-        var (hasUpdates, updateCount) = await _actionsService.CheckForUpdates();
+        var (hasUpdates, updateCount) = await _actionsService.CheckForUpdates().ConfigureAwait(false);
         HasUpdates = hasUpdates;
         UpdateCount = updateCount;
     }
 
-    private static async Task<bool> CheckForInternetConnection(int timeoutMs = 10000)
+    private async Task<bool> CheckForInternetConnection(int timeoutMs = 10000)
     {
         var url = CultureInfo.InstalledUICulture switch
         {
@@ -75,7 +88,7 @@ public partial class ActionsViewModel : ObservableObject, IDisposable
         }
         catch
         {
-            Logger.LogWithSubsystem("ActionsViewModel", "No network connection", 1);
+            _logger.Log("ActionsViewModel", "No network connection", 1);
             return false;
         }
     }
@@ -125,8 +138,7 @@ public partial class ActionsViewModel : ObservableObject, IDisposable
             if (!await CheckForInternetConnection())
             {
                 await SukiHost.ShowToast("Change Password",
-                    "No network connection",
-                    TimeSpan.FromSeconds(5));
+                    "No network connection");
                 return;
             }
 
@@ -150,21 +162,18 @@ public partial class ActionsViewModel : ObservableObject, IDisposable
                         await _actionsService.RunCommandWithoutOutput($"/usr/bin/app-sso -c {realmName}");
                     else
                         await SukiHost.ShowToast("Change Password",
-                            $"Cannot reach {realmName}, make sure to connect to VPN or corporate network.",
-                            TimeSpan.FromSeconds(5));
+                            $"Cannot reach {realmName}, make sure to connect to VPN or corporate network.");
                 }
                 catch (Exception)
                 {
                     await SukiHost.ShowToast("Change Password",
-                        "Change request failed for unknown reason",
-                        TimeSpan.FromSeconds(5));
+                        "Change request failed for unknown reason");
                 }
             }
             else
             {
                 await SukiHost.ShowToast("Change Password",
-                    "Change password mode not configured",
-                    TimeSpan.FromSeconds(5));
+                    "Change password mode not configured");
             }
         }
     }
@@ -182,8 +191,7 @@ public partial class ActionsViewModel : ObservableObject, IDisposable
         if (!File.Exists(archivePath))
         {
             await SukiHost.ShowToast("Gather Logs",
-                "Failed to gather logs",
-                TimeSpan.FromSeconds(5));
+                "Failed to gather logs");
             return;
         }
 
@@ -212,14 +220,12 @@ public partial class ActionsViewModel : ObservableObject, IDisposable
                 File.Delete(archivePath); // Delete the source file after successful copy
 
                 await SukiHost.ShowToast("Gather Logs",
-                    "Logs saved successfully",
-                    TimeSpan.FromSeconds(5));
+                    "Logs saved successfully");
             }
             else
             {
                 await SukiHost.ShowToast("Gather Logs",
-                    "Logs not saved",
-                    TimeSpan.FromSeconds(5));
+                    "Logs not saved");
             }
         }
     }
@@ -232,19 +238,5 @@ public partial class ActionsViewModel : ObservableObject, IDisposable
     private void CleanUp()
     {
         // No cleanup needed
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposed)
-        {
-            if (disposing) CleanUp();
-            _disposed = true;
-        }
-    }
-
-    ~ActionsViewModel()
-    {
-        Dispose(false);
     }
 }

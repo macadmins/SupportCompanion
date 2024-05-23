@@ -2,53 +2,63 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using Avalonia.Threading;
 using SupportCompanion.Helpers;
+using SupportCompanion.Interfaces;
 using SupportCompanion.Models;
 using SupportCompanion.Services;
 
 namespace SupportCompanion.ViewModels;
 
-public class MunkiPendingAppsViewModel : IDisposable
+public class MunkiPendingAppsViewModel : IWindowStateAware
 {
     private const string OpenMmcUpdates = "open munki://updates.html";
+    private readonly LoggerService _logger;
     private readonly MunkiAppsService _munkiApps;
-    private bool _disposed;
     private IList _pendingAppsList = new List<string>();
     private Timer? _pendingAppsTimer;
 
-    public MunkiPendingAppsViewModel(MunkiAppsService munkiApps)
+    public MunkiPendingAppsViewModel(MunkiAppsService munkiApps, LoggerService loggerService)
     {
-        if (App.Config.MunkiMode)
-            _pendingAppsTimer = new Timer(MunkiPendingAppsCallback, null, 0, 60000);
+        if (App.Config.MunkiMode && App.Config.HiddenWidgets.Contains("MunkiPendingApps") == false)
+            Dispatcher.UIThread.Post(InitializeAsync);
         _munkiApps = munkiApps;
+        _logger = loggerService;
     }
 
     public ObservableCollection<MunkiPendingApp> PendingApps { get; } = new();
 
-    public void Dispose()
+    public void OnWindowHidden()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
+        CleanUp();
     }
 
-    public void StopTimer()
+    public void OnWindowShown()
     {
-        if (_pendingAppsTimer != null)
-        {
-            _pendingAppsTimer.Change(Timeout.Infinite, 0);
-            _pendingAppsTimer.Dispose();
-            _pendingAppsTimer = null;
-        }
+        if (App.Config.MunkiMode && App.Config.HiddenWidgets.Contains("MunkiPendingApps") == false)
+            Dispatcher.UIThread.Post(InitializeAsync);
     }
 
-    private async void MunkiPendingAppsCallback(object state)
+    private void StopTimer()
     {
-        if (App.Config.MunkiMode)
-            await GetPendingApps();
+        if (_pendingAppsTimer == null) return;
+        _logger.Log("MunkiPendingAppsViewModel", "Stopping Munki Pending Apps timer.", 1);
+        _pendingAppsTimer.Change(Timeout.Infinite, 0);
+        _pendingAppsTimer.Dispose();
+        _pendingAppsTimer = null;
+    }
+
+    private async void InitializeAsync()
+    {
+        _pendingAppsTimer ??= new Timer(async _ => await MunkiPendingAppsCallback(), null, 0, 60000);
+    }
+
+    private async Task MunkiPendingAppsCallback()
+    {
+        if (App.Config.MunkiMode) await GetPendingApps();
     }
 
     private async Task GetPendingApps()
     {
-        Logger.LogWithSubsystem("MunkiPendingAppsViewModel", "Getting pending apps list.", 1);
+        _logger.Log("MunkiPendingAppsViewModel", "Getting pending apps list.", 1);
         _pendingAppsList = await _munkiApps.GetPendingUpdatesList();
         await Dispatcher.UIThread.InvokeAsync(() =>
         {
@@ -72,21 +82,7 @@ public class MunkiPendingAppsViewModel : IDisposable
     private void CleanUp()
     {
         PendingApps.Clear();
+        _pendingAppsList.Clear();
         StopTimer();
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposed)
-        {
-            if (disposing) CleanUp();
-
-            _disposed = true;
-        }
-    }
-
-    ~MunkiPendingAppsViewModel()
-    {
-        Dispose(false);
     }
 }
