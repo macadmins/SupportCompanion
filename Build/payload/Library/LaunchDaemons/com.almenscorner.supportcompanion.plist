@@ -6,7 +6,7 @@
     <string>com.almenscorner.supportcompanion.plist</string>    
     <key>ProgramArguments</key>    
         <array>        
-            <string>/usr/local/supportcompanion/scripts/MDMStatus</string>    
+            <string>/Library/Application Support/SupportCompanion/scripts/MDMStatus</string>    
         </array>    
         <key>RunAtLoad</key>    
         <true/>
