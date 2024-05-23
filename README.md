@@ -186,5 +186,5 @@ To switch from Munki to Intune for application information, add the following ke
 ![SCNotification](https://github.com/almenscorner/SupportCompanion/assets/78877636/414a7d55-2925-4312-bd9c-9f11ac450e23)
 
 ## Credits
-- [AvoloniaUI](https://avaloniaui.net/)
+- [AvaloniaUI](https://avaloniaui.net/)
 - [SukiUI](https://github.com/kikipoulet/SukiUI)
