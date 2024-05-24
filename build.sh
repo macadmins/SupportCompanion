@@ -105,7 +105,7 @@ find "${BUILD_PATH}/payload/Applications/Utilities/SupportCompanion.app/Contents
   "postinstall_action": "none",
   "distribution_style": true,
   "version": "$AUTOMATED_SC_BUILD",
-  "name": "SupportCompanion-$AUTOMATED_SC_BUILD",
+  "name": "SupportCompanion-$AUTOMATED_SC_BUILD.pkg",
   "install_location": "/Applications/Utilities",
   "signing_info": {
     "identity": "$INSTALLER_SIGNING_IDENTITY",
@@ -121,6 +121,6 @@ if [ "${PKG_RESULT}" != "0" ]; then
   echo "Could not sign package: ${PKG_RESULT}" 1>&2
 else
   # Notarize Support Companion package
-  $XCODE_NOTARY_PATH submit "$PKG_PATH/SupportCompanion-$AUTOMATED_SC_BUILD" --keychain-profile "supportcompanion" --wait
-  $XCODE_STAPLER_PATH staple "$PKG_PATH/SupportCompanion-$AUTOMATED_SC_BUILD"
+  $XCODE_NOTARY_PATH submit "$PKG_PATH/SupportCompanion-$AUTOMATED_SC_BUILD.pkg" --keychain-profile "supportcompanion" --wait
+  $XCODE_STAPLER_PATH staple "$PKG_PATH/SupportCompanion-$AUTOMATED_SC_BUILD.pkg"
 fi
