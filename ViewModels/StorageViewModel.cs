@@ -1,4 +1,5 @@
 using Avalonia.Threading;
+using ReactiveUI;
 using SupportCompanion.Interfaces;
 using SupportCompanion.Models;
 using SupportCompanion.Services;
@@ -9,6 +10,8 @@ public class StorageViewModel : ViewModelBase, IWindowStateAware
 {
     private readonly LoggerService _logger;
     private readonly StorageService _storage;
+
+    private StorageModel? _storageInfo;
     private Timer? _timer;
 
     public StorageViewModel(StorageService storage, LoggerService loggerService)
@@ -21,7 +24,12 @@ public class StorageViewModel : ViewModelBase, IWindowStateAware
             Dispatcher.UIThread.Post(InitializeAsync);
     }
 
-    public StorageModel? StorageInfo { get; private set; }
+    public StorageModel? StorageInfo
+    {
+        get => _storageInfo;
+        private set => this.RaiseAndSetIfChanged(ref _storageInfo, value);
+    }
+
     public bool ShowManageStorageButton { get; private set; }
 
     public void OnWindowHidden()

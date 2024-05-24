@@ -1,4 +1,5 @@
 using Avalonia.Threading;
+using ReactiveUI;
 using SupportCompanion.Interfaces;
 using SupportCompanion.Models;
 using SupportCompanion.Services;
@@ -11,6 +12,8 @@ public class MdmStatusViewModel : ViewModelBase, IWindowStateAware
     private bool _disposed;
     private Dictionary<string, string> _mdmStatus = new();
 
+    private MdmStatusModel? _mdmStatusInfo;
+
     public MdmStatusViewModel(MdmStatusService mdmStatus)
     {
         _mdmStatusService = mdmStatus;
@@ -18,7 +21,11 @@ public class MdmStatusViewModel : ViewModelBase, IWindowStateAware
         Dispatcher.UIThread.Post(InitializeAsync);
     }
 
-    public MdmStatusModel? MdmStatusInfo { get; private set; }
+    public MdmStatusModel? MdmStatusInfo
+    {
+        get => _mdmStatusInfo;
+        private set => this.RaiseAndSetIfChanged(ref _mdmStatusInfo, value);
+    }
 
     public void OnWindowHidden()
     {
