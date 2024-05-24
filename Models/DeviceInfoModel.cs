@@ -7,7 +7,7 @@ public partial class DeviceInfoModel : ObservableObject
     [ObservableProperty] private string _hostName = string.Empty;
     [ObservableProperty] private string _ipAddress = string.Empty;
     [ObservableProperty] private int _lastBootTime;
-    [ObservableProperty] private string _lastBootTimeColor = string.Empty;
+    [ObservableProperty] private string _lastBootTimeColor = "#FFFFFF";
     [ObservableProperty] private long _memSize;
     [ObservableProperty] private string _model = string.Empty;
     [ObservableProperty] private string _osBuild = string.Empty;

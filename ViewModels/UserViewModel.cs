@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using Avalonia.Threading;
+using ReactiveUI;
 using SupportCompanion.Interfaces;
 using SupportCompanion.Models;
 using SupportCompanion.Services;
@@ -14,6 +15,8 @@ public class UserViewModel : ViewModelBase, IWindowStateAware
     private const string ShellPattern = @"Shell:\s+(\S+)";
     private readonly ActionsService _actionsService;
 
+    private UserModel _user;
+
     public UserViewModel(ActionsService actionsService)
     {
         User = new UserModel();
@@ -21,7 +24,11 @@ public class UserViewModel : ViewModelBase, IWindowStateAware
         Dispatcher.UIThread.Post(InitializeAsync);
     }
 
-    public UserModel? User { get; private set; }
+    public UserModel? User
+    {
+        get => _user;
+        private set => this.RaiseAndSetIfChanged(ref _user, value);
+    }
 
     public void OnWindowHidden()
     {

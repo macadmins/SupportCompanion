@@ -1,4 +1,6 @@
+using System.Collections.ObjectModel;
 using Avalonia.Threading;
+using ReactiveUI;
 using SupportCompanion.Interfaces;
 using SupportCompanion.Models;
 using SupportCompanion.Services;
@@ -8,19 +10,28 @@ namespace SupportCompanion.ViewModels;
 public class EvergreenWidgetViewModel : ViewModelBase, IWindowStateAware
 {
     private readonly CatalogsService _catalogsService;
-    private List<string> _catalogs = new();
+    private readonly ObservableCollection<string> _catalogs = new();
+
+    private EvergreenInfoModel? _evergreenInfo;
 
     public EvergreenWidgetViewModel(CatalogsService catalogs)
     {
         _catalogsService = catalogs;
         if (App.Config.MunkiMode)
         {
-            EvergreenInfo = new EvergreenInfoModel();
+            EvergreenInfo = new EvergreenInfoModel
+            {
+                Catalogs = _catalogs
+            };
             Dispatcher.UIThread.Post(InitializeAsync);
         }
     }
 
-    public EvergreenInfoModel? EvergreenInfo { get; private set; }
+    public EvergreenInfoModel? EvergreenInfo
+    {
+        get => _evergreenInfo;
+        private set => this.RaiseAndSetIfChanged(ref _evergreenInfo, value);
+    }
 
     public void OnWindowHidden()
     {
@@ -31,7 +42,10 @@ public class EvergreenWidgetViewModel : ViewModelBase, IWindowStateAware
     {
         if (App.Config.MunkiMode)
         {
-            EvergreenInfo = new EvergreenInfoModel();
+            EvergreenInfo = new EvergreenInfoModel
+            {
+                Catalogs = _catalogs
+            };
             Dispatcher.UIThread.Post(InitializeAsync);
         }
     }
@@ -43,9 +57,9 @@ public class EvergreenWidgetViewModel : ViewModelBase, IWindowStateAware
 
     private async Task DeviceCatalogs()
     {
-        EvergreenInfo?.Catalogs?.Clear();
-        _catalogs = await _catalogsService.GetCatalogs();
-        EvergreenInfo.Catalogs = _catalogs;
+        _catalogs.Clear(); // Clear the collection before fetching new catalogs
+        var newCatalogs = await _catalogsService.GetCatalogs();
+        foreach (var catalog in newCatalogs) _catalogs.Add(catalog); // Add new catalogs to the ObservableCollection
     }
 
     private void CleanUp()

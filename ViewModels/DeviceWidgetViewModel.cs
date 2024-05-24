@@ -1,4 +1,5 @@
 using Avalonia.Threading;
+using ReactiveUI;
 using SukiUI.Controls;
 using SupportCompanion.Helpers;
 using SupportCompanion.Interfaces;
@@ -13,6 +14,8 @@ public class DeviceWidgetViewModel : ViewModelBase, IWindowStateAware
     private readonly IOKitService _iioKit;
     private readonly SystemInfoService _systemInfo;
 
+    private DeviceInfoModel? _deviceInfo;
+
     public DeviceWidgetViewModel(SystemInfoService systemInfo,
         ClipboardService clipboard, IOKitService iioKit)
     {
@@ -23,7 +26,12 @@ public class DeviceWidgetViewModel : ViewModelBase, IWindowStateAware
         Dispatcher.UIThread.Post(InitializeAsync);
     }
 
-    public DeviceInfoModel? DeviceInfo { get; private set; }
+    public DeviceInfoModel? DeviceInfo
+    {
+        get => _deviceInfo;
+        private set => this.RaiseAndSetIfChanged(ref _deviceInfo, value);
+    }
+
     private string ModelValue { get; set; } = string.Empty;
 
     public string RebootToolTip =>

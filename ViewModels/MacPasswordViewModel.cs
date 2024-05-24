@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Avalonia.Threading;
+using ReactiveUI;
 using SupportCompanion.Interfaces;
 using SupportCompanion.Models;
 using SupportCompanion.Services;
@@ -12,6 +13,9 @@ public class MacPasswordViewModel : ViewModelBase, IWindowStateAware
     private readonly LoggerService _logger;
     private readonly MacPasswordService _macPasswordService;
 
+    private KerberosSSOModel? _kerberosSSO;
+    private PlatformSSOModel? _platformSSO;
+
     public MacPasswordViewModel(ActionsService actionsService, MacPasswordService macPasswordService,
         LoggerService loggerService)
     {
@@ -23,8 +27,17 @@ public class MacPasswordViewModel : ViewModelBase, IWindowStateAware
         Dispatcher.UIThread.Post(InitializeAsync);
     }
 
-    public KerberosSSOModel? KerberosSSO { get; private set; }
-    public PlatformSSOModel? PlatformSSO { get; private set; }
+    public KerberosSSOModel? KerberosSSO
+    {
+        get => _kerberosSSO;
+        private set => this.RaiseAndSetIfChanged(ref _kerberosSSO, value);
+    }
+
+    public PlatformSSOModel? PlatformSSO
+    {
+        get => _platformSSO;
+        private set => this.RaiseAndSetIfChanged(ref _platformSSO, value);
+    }
 
     public void OnWindowHidden()
     {
