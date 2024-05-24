@@ -92,7 +92,9 @@ do
 done
 
 cp -a "$PUBLISH_OUTPUT_APP" "${BUILD_PATH}/payload/Applications/Utilities/"
-codesign --force --options runtime --deep --verbose --sign "${APP_SIGNING_IDENTITY}" "${BUILD_PATH}/payload/Applications/Utilities/SupportCompanion.app"
+codesign --force --options runtime --deep --verbose --timestamp --sign "${APP_SIGNING_IDENTITY}" "${BUILD_PATH}/payload/Applications/Utilities/SupportCompanion.app"
+# Recursively sign the dylibs in /Contents/MonoBundle
+find "${BUILD_PATH}/payload/Applications/Utilities/SupportCompanion.app/Contents/MonoBundle" -type f -name "*.dylib" -exec codesign --force --options runtime --verbose --timestamp --sign "${APP_SIGNING_IDENTITY}" {} \;
 
 # Create the json file for signed munkipkg Support Companion pkg
 /bin/cat << SIGNED_JSONFILE > "$BUILD_PATH/build-info.json"
@@ -103,7 +105,7 @@ codesign --force --options runtime --deep --verbose --sign "${APP_SIGNING_IDENTI
   "postinstall_action": "none",
   "distribution_style": true,
   "version": "$AUTOMATED_SC_BUILD",
-  "name": "SupportCompanion-$VERSION.pkg",
+  "name": "SupportCompanion-$AUTOMATED_SC_BUILD",
   "install_location": "/Applications/Utilities",
   "signing_info": {
     "identity": "$INSTALLER_SIGNING_IDENTITY",
@@ -119,6 +121,6 @@ if [ "${PKG_RESULT}" != "0" ]; then
   echo "Could not sign package: ${PKG_RESULT}" 1>&2
 else
   # Notarize Support Companion package
-  $XCODE_NOTARY_PATH submit "$PKG_PATH/SupportCompanion-$VERSION.pkg" --keychain-profile "supportcompanion" --wait
-  $XCODE_STAPLER_PATH staple "$PKG_PATH/SupportCompanion-$VERSION.pkg"
+  $XCODE_NOTARY_PATH submit "$PKG_PATH/SupportCompanion-$AUTOMATED_SC_BUILD" --keychain-profile "supportcompanion" --wait
+  $XCODE_STAPLER_PATH staple "$PKG_PATH/SupportCompanion-$AUTOMATED_SC_BUILD"
 fi
