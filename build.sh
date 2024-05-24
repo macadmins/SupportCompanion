@@ -92,9 +92,10 @@ do
 done
 
 cp -a "$PUBLISH_OUTPUT_APP" "${BUILD_PATH}/payload/Applications/Utilities/"
-codesign --force --options runtime --deep --verbose --timestamp --sign "${APP_SIGNING_IDENTITY}" "${BUILD_PATH}/payload/Applications/Utilities/SupportCompanion.app"
+# Sign the Support Companion app
+/usr/bin/codesign --sign "${APP_SIGNING_IDENTITY}" --timestamp --deep --force --preserve-metadata=identifier,entitlements,flags,runtime "${BUILD_PATH}/payload/Applications/Utilities/SupportCompanion.app"
 # Recursively sign the dylibs in /Contents/MonoBundle
-find "${BUILD_PATH}/payload/Applications/Utilities/SupportCompanion.app/Contents/MonoBundle" -type f -name "*.dylib" -exec codesign --force --options runtime --verbose --timestamp --sign "${APP_SIGNING_IDENTITY}" {} \;
+find "${BUILD_PATH}/payload/Applications/Utilities/SupportCompanion.app/Contents/MonoBundle" -type f -name "*.dylib" /usr/bin/codesign --sign "${APP_SIGNING_IDENTITY}" --timestamp --preserve-metadata=identifier,entitlements,flags,runtime -f {} \;
 
 # Create the json file for signed munkipkg Support Companion pkg
 /bin/cat << SIGNED_JSONFILE > "$BUILD_PATH/build-info.json"
