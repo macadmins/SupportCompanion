@@ -18,6 +18,7 @@ public partial class ActionsViewModel : ObservableObject, IWindowStateAware
         "open x-apple.systempreferences:com.apple.preferences.softwareupdate";
 
     private const string SystemUpdatesBelowVentura = "open /System/Library/PreferencePanes/SoftwareUpdate.prefPane";
+    private const string ChangePasswordLocal = "open /System/Library/PreferencePanes/Accounts.prefPane";
     private readonly ActionsService _actionsService;
     private readonly LoggerService _logger;
     [ObservableProperty] private bool _hasUpdates;
@@ -127,10 +128,7 @@ public partial class ActionsViewModel : ObservableObject, IWindowStateAware
     {
         if (App.Config.ChangePasswordMode == "local")
         {
-            if (Environment.OSVersion.Version.Major >= 13)
-                await _actionsService.RunCommandWithoutOutput(SystemUpdatesVenturaAndAbove);
-            else
-                await _actionsService.RunCommandWithoutOutput(SystemUpdatesBelowVentura);
+            await _actionsService.RunCommandWithoutOutput(ChangePasswordLocal);
         }
         else if (App.Config.ChangePasswordMode == "url" || App.Config.ChangePasswordMode == "SSOExtension")
         {
