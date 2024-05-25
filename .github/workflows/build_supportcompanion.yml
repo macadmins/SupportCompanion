@@ -12,6 +12,9 @@ on:
       - '**/CHANGELOG.md'
       - '**/README.md'
       - 'LaunchAgentExample/**'
+        
+permissions:
+  contents: write
 
 jobs:
   build:
