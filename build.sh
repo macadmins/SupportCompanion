@@ -112,14 +112,14 @@ find "${BUILD_PATH}/${APP_NAME}/Contents/MonoBundle" -type f -name "*dylib" -exe
 # Recursively sign everything in /Contents/Resources
 find "${BUILD_PATH}/${APP_NAME}/Contents/Resources" -type f -perm -u=x -exec /usr/bin/codesign --sign "${APP_SIGNING_IDENTITY}" --timestamp --preserve-metadata=identifier,entitlements,flags,runtime -f {} \;
 # Avalonia docs signing style
-find "$APP_NAME/Contents/MacOS/"|while read fname; do
+find "$BUILD_PATH/$APP_NAME/Contents/MacOS/"|while read fname; do
     if [[ -f $fname ]]; then
         echo "[INFO] Signing $fname"
         codesign --force --timestamp --options=runtime --entitlements "$ENTITLEMENTS" --sign "$APP_SIGNING_IDENTITY" "$fname"
     fi
 done
 
-codesign --force --timestamp --options=runtime --entitlements "$ENTITLEMENTS" --sign "$APP_SIGNING_IDENTITY" "$APP_NAME"
+codesign --force --timestamp --options=runtime --entitlements "$ENTITLEMENTS" --sign "$APP_SIGNING_IDENTITY" "$BUILD_PATH/$APP_NAME"
 
 # Create the json file for signed munkipkg Support Companion pkg
 /bin/cat << SIGNED_JSONFILE > "$BUILD_PATH/build-info.json"
