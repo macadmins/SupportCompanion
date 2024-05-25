@@ -14,6 +14,8 @@ XCODE_NOTARY_PATH="$XCODE_PATH/Contents/Developer/usr/bin/notarytool"
 XCODE_STAPLER_PATH="$XCODE_PATH/Contents/Developer/usr/bin/stapler"
 VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleVersion" "${PROJECT_PATH}/Info.plist")
 PKG_PATH="${BUILD_PATH}/build"
+APP_NAME="payload/Applications/Utilities/SupportCompanion.app"
+ENTITLEMENTS="${PROJECT_PATH}/SupportCompanion.entitlements"
 MP_SHA="71c57fcfdf43692adcd41fa7305be08f66bae3e5"
 MP_BINDIR="/tmp/munki-pkg"
 MP_ZIP="/tmp/munki-pkg.zip"
@@ -70,9 +72,9 @@ then
   rm -rf "$APP_SUPPORT_PATH/scripts"
 fi
 
-if [ -d "$BUILD_PATH/payload/Applications/Utilities/SupportCompanion.app/" ]
+if [ -d "$BUILD_PATH/$APP_NAME/" ]
 then
-  rm -rf "$BUILD_PATH/payload/Applications/Utilities/SupportCompanion.app/"
+  rm -rf "$BUILD_PATH/{$APP_NAME}/"
 fi
 
 dotnet publish --configuration Release -p:UseAppHost=true
@@ -103,14 +105,12 @@ done
 cp -a "$PUBLISH_OUTPUT_APP" "${BUILD_PATH}/payload/Applications/Utilities/"
 
 # Sign the Support Companion app
-/usr/bin/codesign --sign "${APP_SIGNING_IDENTITY}" --timestamp --deep --force --preserve-metadata=identifier,entitlements,flags,runtime "${BUILD_PATH}/payload/Applications/Utilities/SupportCompanion.app"
+/usr/bin/codesign --sign "${APP_SIGNING_IDENTITY}" --timestamp --deep --force --options=runtime --entitlements "$ENTITLEMENTS" --preserve-metadata=identifier,entitlements,flags,runtime "${BUILD_PATH}/${APP_NAME}"
 # Recursively sign everything in /Contents/MonoBundle
-find "${BUILD_PATH}/payload/Applications/Utilities/SupportCompanion.app/Contents/MonoBundle" -type f -perm -u=x -exec /usr/bin/codesign --sign "${APP_SIGNING_IDENTITY}" --timestamp --preserve-metadata=identifier,entitlements,flags,runtime -f {} \;
-find "${BUILD_PATH}/payload/Applications/Utilities/SupportCompanion.app/Contents/MonoBundle" -type f -name "*dylib" -exec /usr/bin/codesign --sign "${APP_SIGNING_IDENTITY}" --timestamp --preserve-metadata=identifier,entitlements,flags,runtime -f {} \;
+find "${BUILD_PATH}/${APP_NAME}/Contents/MonoBundle" -type f -perm -u=x -exec /usr/bin/codesign --sign "${APP_SIGNING_IDENTITY}" --timestamp --preserve-metadata=identifier,entitlements,flags,runtime -f {} \;
+find "${BUILD_PATH}/${APP_NAME}/Contents/MonoBundle" -type f -name "*dylib" -exec /usr/bin/codesign --sign "${APP_SIGNING_IDENTITY}" --timestamp --preserve-metadata=identifier,entitlements,flags,runtime -f {} \;
 # Recursively sign everything in /Contents/Resources
-find "${BUILD_PATH}/payload/Applications/Utilities/SupportCompanion.app/Contents/Resources" -type f -perm -u=x -exec /usr/bin/codesign --sign "${APP_SIGNING_IDENTITY}" --timestamp --preserve-metadata=identifier,entitlements,flags,runtime -f {} \;
-# Sign the Support Companion app executable
-/usr/bin/codesign --sign "${APP_SIGNING_IDENTITY}" --timestamp --preserve-metadata=identifier,entitlements,flags,runtime "${BUILD_PATH}/payload/Applications/Utilities/SupportCompanion.app/Contents/MacOS/SupportCompanion"
+find "${BUILD_PATH}/${APP_NAME}/Contents/Resources" -type f -perm -u=x -exec /usr/bin/codesign --sign "${APP_SIGNING_IDENTITY}" --timestamp --preserve-metadata=identifier,entitlements,flags,runtime -f {} \;
 
 # Create the json file for signed munkipkg Support Companion pkg
 /bin/cat << SIGNED_JSONFILE > "$BUILD_PATH/build-info.json"
