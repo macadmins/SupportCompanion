@@ -105,12 +105,21 @@ done
 cp -a "$PUBLISH_OUTPUT_APP" "${BUILD_PATH}/payload/Applications/Utilities/"
 
 # Sign the Support Companion app
-/usr/bin/codesign --sign "${APP_SIGNING_IDENTITY}" --timestamp --deep --force --options=runtime --entitlements "$ENTITLEMENTS" --preserve-metadata=identifier,entitlements,flags,runtime "${BUILD_PATH}/${APP_NAME}"
+# /usr/bin/codesign --sign "${APP_SIGNING_IDENTITY}" --timestamp --deep --force --options=runtime --entitlements "$ENTITLEMENTS" --preserve-metadata=identifier,entitlements,flags,runtime "${BUILD_PATH}/${APP_NAME}"
 # Recursively sign everything in /Contents/MonoBundle
 find "${BUILD_PATH}/${APP_NAME}/Contents/MonoBundle" -type f -perm -u=x -exec /usr/bin/codesign --sign "${APP_SIGNING_IDENTITY}" --timestamp --preserve-metadata=identifier,entitlements,flags,runtime -f {} \;
 find "${BUILD_PATH}/${APP_NAME}/Contents/MonoBundle" -type f -name "*dylib" -exec /usr/bin/codesign --sign "${APP_SIGNING_IDENTITY}" --timestamp --preserve-metadata=identifier,entitlements,flags,runtime -f {} \;
 # Recursively sign everything in /Contents/Resources
 find "${BUILD_PATH}/${APP_NAME}/Contents/Resources" -type f -perm -u=x -exec /usr/bin/codesign --sign "${APP_SIGNING_IDENTITY}" --timestamp --preserve-metadata=identifier,entitlements,flags,runtime -f {} \;
+# Avalonia docs signing style
+find "$APP_NAME/Contents/MacOS/"|while read fname; do
+    if [[ -f $fname ]]; then
+        echo "[INFO] Signing $fname"
+        codesign --force --timestamp --options=runtime --entitlements "$ENTITLEMENTS" --sign "$APP_SIGNING_IDENTITY" "$fname"
+    fi
+done
+
+codesign --force --timestamp --options=runtime --entitlements "$ENTITLEMENTS" --sign "$APP_SIGNING_IDENTITY" "$APP_NAME"
 
 # Create the json file for signed munkipkg Support Companion pkg
 /bin/cat << SIGNED_JSONFILE > "$BUILD_PATH/build-info.json"
