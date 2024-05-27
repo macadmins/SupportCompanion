@@ -1,4 +1,5 @@
 using Avalonia.Threading;
+using ReactiveUI;
 using SupportCompanion.Interfaces;
 using SupportCompanion.Models;
 using SupportCompanion.Services;
@@ -11,6 +12,8 @@ public class MunkiUpdatesViewModel : ViewModelBase, IWindowStateAware
     private readonly MunkiAppsService _munkiApps;
     private int _installedAppsCount;
     private int _munkiUpdatesCount;
+
+    private MunkiUpdatesModel? _munkiUpdatesInfo;
     private Timer? _timer;
 
     public MunkiUpdatesViewModel(MunkiAppsService munkiApps, LoggerService loggerService)
@@ -24,7 +27,11 @@ public class MunkiUpdatesViewModel : ViewModelBase, IWindowStateAware
         }
     }
 
-    public MunkiUpdatesModel? MunkiUpdatesInfo { get; private set; }
+    public MunkiUpdatesModel? MunkiUpdatesInfo
+    {
+        get => _munkiUpdatesInfo;
+        private set => this.RaiseAndSetIfChanged(ref _munkiUpdatesInfo, value);
+    }
 
     public void OnWindowHidden()
     {
