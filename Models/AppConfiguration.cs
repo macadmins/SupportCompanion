@@ -10,7 +10,7 @@ public class AppConfiguration
         "ChangePasswordMode", "SupportEmail", "SupportPhone", "HiddenActions", "NotificationInterval",
         "NotificationTitle", "NotificationImage", "SoftwareUpdateNotificationMessage",
         "SoftwareUpdateNotificationButtonText", "AppUpdateNotificationMessage", "AppUpdateNotificationButtonText",
-        "MunkiMode", "IntuneMode", "LogFolders"
+        "MunkiMode", "IntuneMode", "LogFolders", "Actions"
     };
 
     public string BrandName { get; set; } = string.Empty;
@@ -39,4 +39,5 @@ public class AppConfiguration
     public Dictionary<string, string> CustomColors { get; set; } = new();
     public bool MunkiMode { get; set; } = true;
     public bool IntuneMode { get; set; }
+    public Dictionary<string, string> Actions { get; set; } = new();
 }

@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using SupportCompanion.Helpers;
 using SupportCompanion.Models;
@@ -37,6 +38,35 @@ public class App : Application
         }
 
         DataContext = ServiceProvider.GetRequiredService<MainWindowViewModel>();
+
+        if (Config.Actions.Count > 0)
+        {
+            // Create the main "Actions" menu item
+            var actionsMenuItem = new NativeMenuItem { Header = "Actions ✅" };
+            actionsMenuItem.Menu = new NativeMenu();
+
+            // Iterate over the Config.Actions and add them as sub-items
+            foreach (var item in Config.Actions)
+            {
+                var subItem = new NativeMenuItem
+                {
+                    Header = item.Key,
+                    Command = new RelayCommand(() =>
+                    {
+                        var actionsService = ServiceProvider.GetRequiredService<ActionsService>();
+                        actionsService.RunCommandWithoutOutput(item.Value);
+                    })
+                };
+                actionsMenuItem.Menu.Items.Add(subItem);
+            }
+
+            // Insert the main "Actions" menu item at the third position (index 2)
+            var trayIcon = TrayIcon.GetIcons(this).First();
+            if (trayIcon.Menu.Items.Count > 2)
+                trayIcon.Menu.Items.Insert(2, actionsMenuItem);
+            else
+                trayIcon.Menu.Items.Add(actionsMenuItem);
+        }
 
         base.OnFrameworkInitializationCompleted();
     }

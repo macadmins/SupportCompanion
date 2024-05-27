@@ -101,8 +101,9 @@ Many aspects of the app can be configured using MDM profiles, the folloing keys 
 | `AppUpdateNotificationMessage` | String | You have app updates available. Take action now! \ud83c\udf89 | False | Configures the message for notifications for App Updates notifications |
 | `AppUpdateNotificationButtonText` | String | Details \ud83d\udc40 | False | Configures the button text for notifications for App Updates notifications |
 | `CustomColors` | Array | None | False | Configures custom colors for the app, should be specified in hex format, see example below. Do not use `BrandColor` in conjunction with this key |
-| `IntuneMode` | bool | False | False | Configures the app to use Intune for application information. Only supports PKG and DMG type apps, not LOB. |
-| `LogFolders` | array | /Library/Logs/Microsoft | False | Configures the log folders to gather logs from. Only used when gathering logs. |
+| `IntuneMode` | Bool | False | False | Configures the app to use Intune for application information. Only supports PKG and DMG type apps, not LOB. |
+| `LogFolders` | Array | /Library/Logs/Microsoft | False | Configures the log folders to gather logs from. Only used when gathering logs. |
+| `Actions` | Array | None | False | Configures custom actions to add to the tray menu. See example below. |
 
 ### Example Configuration
 
@@ -134,6 +135,17 @@ To switch from Munki to Intune for application information, add the following ke
             <key>AccentColor</key>
             <string>#45637A</string>
           </dict>
+        </array>
+        <key>Actions</key>
+        <array>
+           <dict>
+              <key>Restart clipboard 🥹</key>
+              <string>killall pboard</string>
+           </dict>
+           <dict>
+              <key>Restart Intune Agent ⚡️</key>
+              <string>/usr/bin/osascript -e 'do shell script \"sudo killall IntuneMdmAgent\" with administrator privileges'</string>
+           </dict>
         </array>
         <key>NotificationTitle</key>
         <string>AwesomeCorp IT</string>

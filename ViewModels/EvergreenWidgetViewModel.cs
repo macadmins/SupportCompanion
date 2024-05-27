@@ -9,8 +9,8 @@ namespace SupportCompanion.ViewModels;
 
 public class EvergreenWidgetViewModel : ViewModelBase, IWindowStateAware
 {
-    private readonly CatalogsService _catalogsService;
     private readonly ObservableCollection<string> _catalogs = new();
+    private readonly CatalogsService _catalogsService;
 
     private EvergreenInfoModel? _evergreenInfo;
 
