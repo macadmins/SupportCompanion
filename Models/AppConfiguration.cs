@@ -39,5 +39,5 @@ public class AppConfiguration
     public Dictionary<string, string> CustomColors { get; set; } = new();
     public bool MunkiMode { get; set; } = true;
     public bool IntuneMode { get; set; }
-    public Dictionary<string, string> Actions { get; set; } = new();
+    public Dictionary<string, Dictionary<string, string>> Actions { get; set; } = new();
 }

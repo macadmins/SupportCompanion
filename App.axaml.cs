@@ -27,7 +27,6 @@ public class App : Application
     public override void OnFrameworkInitializationCompleted()
     {
         RegisterAppServices();
-
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             DataContext = ServiceProvider.GetRequiredService<MainWindowViewModel>();
@@ -39,26 +38,28 @@ public class App : Application
 
         DataContext = ServiceProvider.GetRequiredService<MainWindowViewModel>();
 
-        if (Config.Actions.Count > 0)
+        if (Config.Actions != null && Config.Actions.Count > 0)
         {
             // Create the main "Actions" menu item
             var actionsMenuItem = new NativeMenuItem { Header = "Actions ✅" };
             actionsMenuItem.Menu = new NativeMenu();
 
             // Iterate over the Config.Actions and add them as sub-items
-            foreach (var item in Config.Actions)
-            {
-                var subItem = new NativeMenuItem
+            foreach (var action in Config.Actions)
+                if (action.Value.TryGetValue("Name", out var name) &&
+                    action.Value.TryGetValue("Command", out var command))
                 {
-                    Header = item.Key,
-                    Command = new RelayCommand(() =>
+                    var subItem = new NativeMenuItem
                     {
-                        var actionsService = ServiceProvider.GetRequiredService<ActionsService>();
-                        actionsService.RunCommandWithoutOutput(item.Value);
-                    })
-                };
-                actionsMenuItem.Menu.Items.Add(subItem);
-            }
+                        Header = name,
+                        Command = new RelayCommand(() =>
+                        {
+                            var actionsService = ServiceProvider.GetRequiredService<ActionsService>();
+                            actionsService.RunCommandWithoutOutput(command);
+                        })
+                    };
+                    actionsMenuItem.Menu.Items.Add(subItem);
+                }
 
             // Insert the main "Actions" menu item at the third position (index 2)
             var trayIcon = TrayIcon.GetIcons(this).First();
