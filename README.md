@@ -130,8 +130,6 @@ To switch from Munki to Intune for application information, add the following ke
           <dict>
             <key>PrimaryColor</key>
             <string>#00A0D0</string>
-          </dict>
-          <dict>
             <key>AccentColor</key>
             <string>#45637A</string>
           </dict>
@@ -139,12 +137,16 @@ To switch from Munki to Intune for application information, add the following ke
         <key>Actions</key>
         <array>
            <dict>
-              <key>Restart clipboard 🥹</key>
-              <string>killall pboard</string>
+               <key>Name</key>
+               <string>Restart clipboard 🥹</string>
+               <key>Command</key>
+               <string>killall pboard</string>
            </dict>
            <dict>
-              <key>Restart Intune Agent ⚡️</key>
-              <string>/usr/bin/osascript -e 'do shell script \"sudo killall IntuneMdmAgent\" with administrator privileges'</string>
+               <key>Name</key>
+               <string>Restart Intune Agent ⚡️</string>
+               <key>Command</key>
+               <string>/usr/bin/osascript -e 'do shell script \"sudo killall IntuneMdmAgent\" with administrator privileges'</string>
            </dict>
         </array>
         <key>NotificationTitle</key>
