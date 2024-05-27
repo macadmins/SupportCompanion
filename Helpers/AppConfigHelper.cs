@@ -100,6 +100,18 @@ public class AppConfigHelper
                     }
 
                     break;
+                case "Actions":
+                    if (pref.Value is NSMutableArray actionsArray)
+                    {
+                        Config.Actions = new Dictionary<string, string>();
+                        foreach (var action in actionsArray)
+                            if (action is NSDictionary actionDict)
+                                foreach (var key in actionDict.Keys)
+                                    if (key is NSString actionKey && actionDict[actionKey] is NSString actionValue)
+                                        Config.Actions.Add(actionKey.ToString(), actionValue.ToString());
+                    }
+
+                    break;
                 case "LogFolders":
                     if (pref.Value is NSMutableArray logFoldersArray)
                     {
