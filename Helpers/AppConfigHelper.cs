@@ -103,12 +103,22 @@ public class AppConfigHelper
                 case "Actions":
                     if (pref.Value is NSMutableArray actionsArray)
                     {
-                        Config.Actions = new Dictionary<string, string>();
+                        Config.Actions = new Dictionary<string, Dictionary<string, string>>();
                         foreach (var action in actionsArray)
                             if (action is NSDictionary actionDict)
+                            {
+                                var actionEntry = new Dictionary<string, string>();
+                                string actionName = null;
+
                                 foreach (var key in actionDict.Keys)
                                     if (key is NSString actionKey && actionDict[actionKey] is NSString actionValue)
-                                        Config.Actions.Add(actionKey.ToString(), actionValue.ToString());
+                                    {
+                                        if (actionKey.ToString() == "Name") actionName = actionValue.ToString();
+                                        actionEntry[actionKey.ToString()] = actionValue.ToString();
+                                    }
+
+                                if (actionName != null) Config.Actions[actionName] = actionEntry;
+                            }
                     }
 
                     break;
