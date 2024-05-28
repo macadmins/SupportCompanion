@@ -83,7 +83,7 @@ jobs:
             ${{ steps.changelog_reader.outputs.changes }}
 
             # Changes
-            ${{ steps.changelog.outputs.changes }}
+            ${{ steps.changelog.outputs.changelog }}
           files: ${{github.workspace}}/Build/build/*.pkg
 
       - name: Upload packages
