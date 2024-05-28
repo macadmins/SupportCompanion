@@ -22,7 +22,7 @@ public class AppConfigHelper
             var preference = CFPreferences.GetAppValue(pref, bundleId);
             if (preference != null) prefs.Add(pref, preference);
         }
-
+        
         foreach (var pref in prefs)
             switch (pref.Key)
             {
@@ -48,7 +48,14 @@ public class AppConfigHelper
                     Config.SupportPhone = pref.Value as NSString;
                     break;
                 case "NotificationInterval":
-                    Config.NotificationInterval = (int)pref.Value;
+                    if (pref.Value is Foundation.NSNumber number)
+                    {
+                        Config.NotificationInterval = number.Int32Value;
+                    }
+                    else if (pref.Value is Foundation.NSString nsString)
+                    {
+                        Config.NotificationInterval = int.Parse(nsString.ToString());
+                    }
                     break;
                 case "NotificationTitle":
                     Config.NotificationTitle = pref.Value as NSString;
