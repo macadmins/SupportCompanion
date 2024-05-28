@@ -16,11 +16,24 @@ public class App : Application
     public static AppConfiguration Config { get; private set; }
     public IServiceProvider ServiceProvider { get; private set; }
 
+    public App()
+    {
+        RegisterAppServices();
+    }
+    
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
         var prefs = new AppConfigHelper();
-        prefs.SetPrefs();
+        try
+        {
+            prefs.SetPrefs();
+        }
+        catch (Exception e)
+        {
+            var logger = ServiceProvider.GetRequiredService<LoggerService>();
+            logger.Log("App initialization", "Error loading preferences: " + e.Message, 2);
+        }
         Config = AppConfigHelper.Config;
     }
 
