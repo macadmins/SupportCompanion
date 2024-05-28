@@ -88,12 +88,12 @@ Many aspects of the app can be configured using MDM profiles, the folloing keys 
 | `BrandColor` | String | Blue | False | Configures the brand color shown in the app, available colors are: Blue, Green, Red, Orange |
 | `SupportPageUrl` | String | None | False | Configures the URL to open when the user clicks on the Get Support button |
 | `ChangePasswordUrl` | String | None | False | Configures the URL to open when the user clicks on the Change Password button |
-| `ChangePasswordMode` | String | local | False | Configures the mode for the Change Password button, available modes are: `local`, `SSOExtension`, `Url` |
+| `ChangePasswordMode` | String | local | False | Configures the mode for the Change Password button, available modes are: `local`, `SSOExtension`, `url` |
 | `SupportEmail` | String | None | False | Configures the email address shown when the user clicks on the Support Info button |
 | `SupportPhone` | String | None | False | Configures the phone number shown when the user clicks on the Support Info button |
 | `HiddenWidgets` | Array | None | False | Configures which widgets to hide, available widgets are: `DeviceInfo`, `MunkiPendingApps`, `MunkiUpdates`, `IntunePendingApps`, `IntuneUpdates`, `Storage`, `MdmStatus`, `Actions`, `Battery`, `EvergreenInfo` |
 | `HiddenActions` | Array | None | False | Configures which actions to hide, available actions are: `Support`, `ManagedSoftwareCenter`, `ChangePassword`, `Reboot`, `KillAgent`, `SoftwareUpdates`, `GatherLogs` |
-| `NotificationInterval` | String | 4 | False | Configures the interval for notifications in hours for Application Updates and Software Updates notifications |
+| `NotificationInterval` | Integer | 4 | False | Configures the interval for notifications in hours for Application Updates and Software Updates notifications |
 | `NotificationTitle` | String | Support Companion | False | Configures the title for notifications for notifications |
 | `NotificationImage` | String | None | False | Configures an image to add to notifications. Path should be specified |
 | `SoftwareUpdateNotificationMessage` | String | You have software updates available. Take action now! \ud83c\udf89 | False | Configures the message for notifications for Software Updates notifications |

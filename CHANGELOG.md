@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.3] - 2024-05-28
+### Fixed
+- Notification Interval failed to be cast as an integer, causing the app to crash on initialization. The value is now converted from NSNumber to Int before being used in the app.
+
 ## [1.0.2] - 2024-05-27
 ### Changed
 - Changed the configuration of the custom tray menu actions to use `Name` and `Command` keys for better readability.
