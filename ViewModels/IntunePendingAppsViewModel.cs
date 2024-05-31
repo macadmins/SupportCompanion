@@ -72,7 +72,7 @@ public class IntunePendingAppsViewModel : IWindowStateAware
                     PendingApps.Add(new IntunePendingApp
                     {
                         Name = app.Value.ApplicationName,
-                        PendingReason = app.Value.ErrorDetails,
+                        PendingReason = $"{app.Value.ApplicationName}\n{app.Value.ErrorDetails}",
                         ShowInfoIcon = _showInfoIcon
                     });
                 }
