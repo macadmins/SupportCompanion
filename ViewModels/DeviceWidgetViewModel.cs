@@ -1,6 +1,8 @@
+using System.Net;
 using Avalonia.Threading;
 using ReactiveUI;
 using SukiUI.Controls;
+using SupportCompanion.Assets;
 using SupportCompanion.Helpers;
 using SupportCompanion.Interfaces;
 using SupportCompanion.Models;
@@ -34,8 +36,7 @@ public class DeviceWidgetViewModel : ViewModelBase, IWindowStateAware
 
     private string ModelValue { get; set; } = string.Empty;
 
-    public string RebootToolTip =>
-        "Regularly rebooting your device can enhance its performance and longevity\nby clearing temporary files and freeing up system resources.";
+    public string RebootToolTip => WebUtility.HtmlDecode(Resources.DeviceInfoLastRebootToolTip);
 
     public void OnWindowHidden()
     {

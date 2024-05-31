@@ -133,12 +133,35 @@ public class MacPasswordViewModel : ViewModelBase, IWindowStateAware
         {
             KerberosSSO.IsKerberosSSO = true;
             var kerberosInfo = await _macPasswordService.GetKerberosSsoInfo();
-            KerberosSSO.UserName = kerberosInfo["user_name"].ToString();
-            KerberosSSO.KerberosRealm = kerberosInfo["realm"].ToString();
-            KerberosSSO.LocalPasswordLastChanged = Convert.ToInt32(kerberosInfo["local_password_changed_date"]);
-            KerberosSSO.KerberosPasswordExpiryDays = Convert.ToInt32(kerberosInfo["password_expires_date"]);
-            KerberosSSO.KerberosPasswordLastChangedDays = Convert.ToInt32(kerberosInfo["password_changed_date"]);
-            KerberosSSO.ExpiryColor = kerberosInfo["password_expiry_color"].ToString();
+
+            KerberosSSO.UserName = kerberosInfo.TryGetValue(
+                "user_name", out var userName)
+                ? Convert.ToString(userName)
+                : string.Empty;
+            KerberosSSO.KerberosRealm = kerberosInfo.TryGetValue(
+                "realm", out var kerberosRealm)
+                ? Convert.ToString(kerberosRealm)
+                : string.Empty;
+            KerberosSSO.LocalPasswordLastChanged = kerberosInfo.TryGetValue(
+                "local_password_changed_date",
+                out var localPasswordChangedDate)
+                ? Convert.ToInt32(localPasswordChangedDate)
+                : 0;
+            KerberosSSO.KerberosPasswordExpiryDays = kerberosInfo.TryGetValue(
+                "password_expires_date",
+                out var passwordExpiresDate)
+                ? Convert.ToInt32(passwordExpiresDate)
+                : 0;
+            KerberosSSO.KerberosPasswordLastChangedDays = kerberosInfo.TryGetValue(
+                "password_changed_date",
+                out var passwordChangedDate)
+                ? Convert.ToInt32(passwordChangedDate)
+                : 0;
+            KerberosSSO.ExpiryColor = kerberosInfo.TryGetValue(
+                "password_expiry_color",
+                out var passwordExpiryColor)
+                ? Convert.ToString(passwordExpiryColor)
+                : "White";
         }
         else
         {

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="DeviceInfo" xml:space="preserve">
+        <value>Informations sur l'appareil</value>
+    </data>
+    <data name="DeviceInfoHostName" xml:space="preserve">
+        <value>Nom</value>
+    </data>
+    <data name="DeviceInfoIP" xml:space="preserve">
+        <value>Adresse IP</value>
+    </data>
+    <data name="DeviceInfoLastReboot" xml:space="preserve">
+        <value>Dernier redémarrage</value>
+    </data>
+    <data name="ActionsSoftwareUpdates" xml:space="preserve">
+        <value>MAJ logiciel</value>
+    </data>
+    <data name="ActionsGatherLogs" xml:space="preserve">
+        <value>Récupérer les logs</value>
+    </data>
+    <data name="ActionsChangePassword" xml:space="preserve">
+        <value>Changer le mdp</value>
+    </data>
+    <data name="ActionsGetSupport" xml:space="preserve">
+        <value>Support</value>
+    </data>
+    <data name="ActionsOpenMSC" xml:space="preserve">
+        <value>Ouvrir MSC</value>
+    </data>
+    <data name="ActionsReboot" xml:space="preserve">
+        <value>Redémarrer</value>
+    </data>
+    <data name="ActionsRestartIntuneAgent" xml:space="preserve">
+        <value>Relancer l'agent intune</value>
+    </data>
+    <data name="ActionsSupportInfo" xml:space="preserve">
+        <value>Information de support</value>
+    </data>
+    <data name="ApplicationInstallProgress" xml:space="preserve">
+        <value>Progression des installations d'applications</value>
+    </data>
+    <data name="Battery" xml:space="preserve">
+        <value>Batterie</value>
+    </data>
+    <data name="BatteryCycleCount" xml:space="preserve">
+        <value>Nombre de cylces</value>
+    </data>
+    <data name="BatteryHealth" xml:space="preserve">
+        <value>Santé</value>
+    </data>
+    <data name="Days" xml:space="preserve">
+        <value>Jours</value>
+    </data>
+    <data name="DaysAgo" xml:space="preserve">
+        <value>Jours avant</value>
+    </data>
+    <data name="DeviceInfoLastRebootToolTip" xml:space="preserve">
+        <value>Un redémarrage régulier de votre appareil peut améliorer ses performances et sa durée de vie&amp;#10;en nettoyant les fichiers temporaires et en libérant les ressources système.</value>
+    </data>
+    <data name="DeviceInfoMemory" xml:space="preserve">
+        <value>Mémoire</value>
+    </data>
+    <data name="DeviceInfoModel" xml:space="preserve">
+        <value>Modèle</value>
+    </data>
+    <data name="DeviceInfoOSBuild" xml:space="preserve">
+        <value>Build Système</value>
+    </data>
+    <data name="DeviceInfoOSVersion" xml:space="preserve">
+        <value>Version Système</value>
+    </data>
+    <data name="DeviceInfoProcessor" xml:space="preserve">
+        <value>Processeur</value>
+    </data>
+    <data name="DeviceInfoSerialNumber" xml:space="preserve">
+        <value>Numéro de série</value>
+    </data>
+    <data name="DeviceManagement" xml:space="preserve">
+        <value>Gestion de l'appareil</value>
+    </data>
+    <data name="DeviceManagementEnrolled" xml:space="preserve">
+        <value>Enrôlement</value>
+    </data>
+    <data name="DeviceManagementEnrollmentDate" xml:space="preserve">
+        <value>Date d'enrôlement</value>
+    </data>
+    <data name="EvergreenCatalogs" xml:space="preserve">
+        <value>Catalogues</value>
+    </data>
+    <data name="Exit" xml:space="preserve">
+        <value>Quitter</value>
+    </data>
+    <data name="InstalledApps" xml:space="preserve">
+        <value>Applications installées</value>
+    </data>
+    <data name="InstalledAppsManage" xml:space="preserve">
+        <value>Gérer</value>
+    </data>
+    <data name="KerberosSSOADPasswordExpiry" xml:space="preserve">
+        <value>Expiration du mot de passe AD</value>
+    </data>
+    <data name="KerberosSSOADUsername" xml:space="preserve">
+        <value>Nom d'utilisateur AD</value>
+    </data>
+    <data name="KerberosSSOLastADPasswordChange" xml:space="preserve">
+        <value>Dernière modification du mot de passe AD</value>
+    </data>
+    <data name="KerberosSSOLastLocalPasswordChange" xml:space="preserve">
+        <value>Dernière modification du mot de passe local</value>
+    </data>
+    <data name="KerberosSSORealm" xml:space="preserve">
+        <value>Domaine</value>
+    </data>
+    <data name="MenuHome" xml:space="preserve">
+        <value>Accueil</value>
+    </data>
+    <data name="MenuIdentity" xml:space="preserve">
+        <value>Identité</value>
+    </data>
+    <data name="Name" xml:space="preserve">
+        <value>Nom</value>
+    </data>
+    <data name="NativeMenuSystemUpdates" xml:space="preserve">
+        <value>Mises à jour système</value>
+    </data>
+    <data name="Open" xml:space="preserve">
+        <value>Ouvrir</value>
+    </data>
+    <data name="PendingUpdates" xml:space="preserve">
+        <value>Mises à jour en attente</value>
+    </data>
+    <data name="PendingUpdatesOpenCompanyPortal" xml:space="preserve">
+        <value>Ouvrir le portail d'entreprise</value>
+    </data>
+    <data name="PendingUpdatesOpenMSC" xml:space="preserve">
+        <value>Ouvrir la mise à jour MSC</value>
+    </data>
+    <data name="PlatformSSOExtensionIdentifier" xml:space="preserve">
+        <value>Indentifiant d'extention</value>
+    </data>
+    <data name="PlatformSSOLoginFrequency" xml:space="preserve">
+        <value>Fréquence de connexion</value>
+    </data>
+    <data name="PlatformSSOLoginType" xml:space="preserve">
+        <value>Type de connexion</value>
+    </data>
+    <data name="PlatformSSONewUserAuthorizationMode" xml:space="preserve">
+        <value>Nouveau mode d’autorisation utilisateur</value>
+    </data>
+    <data name="PlatformSSORegistrationCompleted" xml:space="preserve">
+        <value>Enregistrement terminé</value>
+    </data>
+    <data name="PlatformSSOSDKVersion" xml:space="preserve">
+        <value>Version du Kit de développement</value>
+    </data>
+    <data name="PlatformSSOSharedDeviceKeys" xml:space="preserve">
+        <value>Clef d'appareils partagé</value>
+    </data>
+    <data name="PlatformSSOUserAuthorizationMode" xml:space="preserve">
+        <value>Mode d'autorisation Utilisateur</value>
+    </data>
+    <data name="Storage" xml:space="preserve">
+        <value>Stockage</value>
+    </data>
+    <data name="StorageName" xml:space="preserve">
+        <value>Nom</value>
+    </data>
+    <data name="StorageUsage" xml:space="preserve">
+        <value>Utilisation</value>
+    </data>
+    <data name="UserInformation" xml:space="preserve">
+        <value>Infos de l'utilisateur</value>
+    </data>
+    <data name="UserInformationHomeDirectory" xml:space="preserve">
+        <value>Dossier maison</value>
+    </data>
+    <data name="UserInformationLogin" xml:space="preserve">
+        <value>Identifiant</value>
+    </data>
+    <data name="UserInformationUsername" xml:space="preserve">
+        <value>Nom d'utilisateur</value>
+    </data>
+    <data name="Close" xml:space="preserve">
+        <value>Fermer</value>
+    </data>
+    <data name="SupportDialogPhone" xml:space="preserve">
+        <value>Téléphone</value>
+    </data>
+</root>

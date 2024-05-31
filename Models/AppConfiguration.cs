@@ -10,11 +10,12 @@ public class AppConfiguration
         "ChangePasswordMode", "SupportEmail", "SupportPhone", "HiddenActions", "NotificationInterval",
         "NotificationTitle", "NotificationImage", "SoftwareUpdateNotificationMessage",
         "SoftwareUpdateNotificationButtonText", "AppUpdateNotificationMessage", "AppUpdateNotificationButtonText",
-        "MunkiMode", "IntuneMode", "LogFolders", "Actions"
+        "MunkiMode", "IntuneMode", "LogFolders", "Actions", "BrandLogo"
     };
 
     public string BrandName { get; set; } = string.Empty;
     public string BrandColor { get; set; } = string.Empty;
+    public string BrandLogo { get; set; } = string.Empty;
     public string SupportPageUrl { get; set; } = string.Empty;
     public string ChangePasswordUrl { get; set; } = string.Empty;
     public string ChangePasswordMode { get; set; } = "local";

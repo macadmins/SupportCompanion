@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:controls="clr-namespace:SukiUI.Controls;assembly=SukiUI"
              xmlns:vm="using:SupportCompanion.ViewModels"
+             xmlns:assets="clr-namespace:SupportCompanion.Assets"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:customControls="clr-namespace:SupportCompanion.CustomControls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
@@ -24,7 +25,7 @@
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0" Margin="10">
                     <avalonia:MaterialIcon Kind="CallToAction" Width="20" Height="20" />
-                    <Run Text="Actions" FontWeight="DemiBold" FontSize="16" />
+                    <Run Text="{x:Static assets:Resources.Actions}" FontWeight="DemiBold" FontSize="16" />
                 </TextBlock>
                 <WrapPanel Grid.Row="1"
                            Orientation="Horizontal"
@@ -32,47 +33,52 @@
                            MaxWidth="350">
                     <Button Command="{Binding OpenChangePasswordPage}"
                             Classes="Flat"
-                            Content="Change Password"
+                            Content="{x:Static assets:Resources.ActionsChangePassword}"
                             Margin="5"
+                            MinWidth="150"
                             IsVisible="{Binding HideChangePasswordButton}" />
-                    <Button Command="{Binding KillAgent}"
-                            Classes="Flat"
-                            Content="Restart Intune Agent"
-                            Margin="5"
-                            DesiredSize=""
-                            IsVisible="{Binding HideKillAgentButton}" />
                     <Button Command="{Binding Reboot}"
                             Classes="Flat"
-                            Content="Reboot"
+                            Content="{x:Static assets:Resources.ActionsReboot}"
                             Margin="5"
-                            DesiredSize=""
+                            MinWidth="150"
                             IsVisible="{Binding HideRebootButton}" />
                     <Button Command="{Binding ManagedSoftwareCenter}"
                             Classes="Flat"
-                            Content="Open MSC"
+                            Content="{x:Static assets:Resources.ActionsOpenMSC}"
                             Margin="5"
+                            MinWidth="150"
                             IsVisible="{Binding HideMmcButton}" />
                     <Button Command="{Binding OpenSupportPage}"
                             Classes="Flat"
-                            Content="Get Support"
+                            Content="{x:Static assets:Resources.ActionsGetSupport}"
                             Margin="5"
+                            MinWidth="150"
                             IsVisible="{Binding HideSupportButton}" />
+                    <Button Command="{Binding GatherLogs}"
+                            Classes="Flat"
+                            Content="{x:Static assets:Resources.ActionsGatherLogs}"
+                            Margin="5"
+                            MinWidth="150"
+                            IsVisible="{Binding HideGatherLogsButton}" />
                     <customControls:BadgedButton
                         IsVisible="{Binding HideSoftwareUpdatesButton}"
                         Margin="5"
-                        Content="Software Updates"
+                        MinWidth="150"
+                        Content="{x:Static assets:Resources.ActionsSoftwareUpdates}"
                         Command="{Binding OpenSystemUpdates}"
                         BadgeVisible="{Binding HasUpdates}"
                         BadgeContent="{Binding UpdateCount}" />
-                    <Button Command="{Binding GatherLogs}"
+                    <Button Command="{Binding KillAgent}"
                             Classes="Flat"
-                            Content="Gather Logs"
+                            Content="{x:Static assets:Resources.ActionsRestartIntuneAgent}"
                             Margin="5"
-                            IsVisible="{Binding HideGatherLogsButton}" />
+                            MinWidth="150"
+                            IsVisible="{Binding HideKillAgentButton}" />
                 </WrapPanel>
                 <Button Command="{Binding ShowSupportInfoDialog}"
                         Classes="Basic"
-                        Content="Support Info"
+                        Content="{x:Static assets:Resources.ActionsSupportInfo}"
                         Margin="5"
                         Grid.Row="2"
                         VerticalAlignment="Bottom"

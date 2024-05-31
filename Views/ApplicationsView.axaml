@@ -5,6 +5,7 @@
              xmlns:controls="clr-namespace:SukiUI.Controls;assembly=SukiUI"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:vm="clr-namespace:SupportCompanion.ViewModels"
+             xmlns:assets="clr-namespace:SupportCompanion.Assets"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="SupportCompanion.Views.ApplicationsView"
              x:DataType="vm:ApplicationsViewModel"
@@ -30,7 +31,7 @@
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0" Margin="15">
                     <avalonia:MaterialIcon Kind="CheckboxMarked" Width="20" Height="20" />
-                    <Run Text="Installed Apps" FontWeight="DemiBold" FontSize="16" />
+                    <Run Text="{x:Static assets:Resources.InstalledApps}" FontWeight="DemiBold" FontSize="16" />
                 </TextBlock>
                 <DataGrid Grid.Row="1" Margin="15"
                           VerticalAlignment="Stretch"
@@ -41,15 +42,16 @@
                           GridLinesVisibility="None"
                           ColumnWidth="*">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
-                        <DataGridTextColumn Header="Version" Binding="{Binding Version}" />
-                        <DataGridTemplateColumn Header="Actions" IsVisible="{Binding ShowActionButton}">
+                        <DataGridTextColumn Header="{x:Static assets:Resources.Name}" Binding="{Binding Name}" />
+                        <DataGridTextColumn Header="{x:Static assets:Resources.Version}" Binding="{Binding Version}" />
+                        <DataGridTemplateColumn Header="{x:Static assets:Resources.Actions}"
+                                                IsVisible="{Binding ShowActionButton}">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Button
                                         Command="{Binding #ApplicationsTable.((vm:ApplicationsViewModel)DataContext).ManageAppClick}"
                                         CommandParameter="{Binding Action}"
-                                        Content="Manage"
+                                        Content="{x:Static assets:Resources.InstalledAppsManage}"
                                         Classes="Flat"
                                         IsEnabled="{Binding IsSelfServe}" />
                                 </DataTemplate>

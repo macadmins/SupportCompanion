@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:SupportCompanion.ViewModels"
+             xmlns:assets="clr-namespace:SupportCompanion.Assets"
              xmlns:controls="clr-namespace:SukiUI.Controls;assembly=SukiUI"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
@@ -23,7 +24,7 @@
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0" Margin="10">
                     <avalonia:MaterialIcon Kind="Administrator" Width="20" Height="20" />
-                    <Run Text="Device Management" FontWeight="DemiBold" FontSize="16" />
+                    <Run Text="{x:Static assets:Resources.DeviceManagement}" FontWeight="DemiBold" FontSize="16" />
                 </TextBlock>
                 <StackPanel Grid.Row="1" Margin="10">
                     <TextBlock Margin="0,0,0,5">
@@ -31,11 +32,13 @@
                         <Run Text="{Binding MdmStatusInfo.Abm}" />
                     </TextBlock>
                     <TextBlock Margin="0,0,0,5">
-                        <Run Text="Enrolled: " FontWeight="Bold" />
+                        <Run Text="{x:Static assets:Resources.DeviceManagementEnrolled}" FontWeight="Bold" />
+                        <Run Text=": " FontWeight="Bold" />
                         <Run Text="{Binding MdmStatusInfo.Enrolled}" />
                     </TextBlock>
                     <TextBlock Margin="0,0,0,5">
-                        <Run Text="Enrollment Date: " FontWeight="Bold" />
+                        <Run Text="{x:Static assets:Resources.DeviceManagementEnrollmentDate}" FontWeight="Bold" />
+                        <Run Text=": " FontWeight="Bold" />
                         <Run Text="{Binding MdmStatusInfo.EnrollmentDate}" />
                     </TextBlock>
                 </StackPanel>

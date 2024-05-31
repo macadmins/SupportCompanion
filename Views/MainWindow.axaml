@@ -4,6 +4,7 @@
                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                      xmlns:views="clr-namespace:SupportCompanion.Views"
+                     xmlns:assets="clr-namespace:SupportCompanion.Assets"
                      xmlns:controls="clr-namespace:SukiUI.Controls;assembly=SukiUI"
                      xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
                      mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="720"
@@ -12,7 +13,7 @@
                      x:CompileBindings="True"
                      Title=""
                      Width="1250" Height="765"
-                     MinWidth="1250" MaxWidth="1250"
+                     MinWidth="1300" MaxWidth="1300"
                      MinHeight="765" MaxHeight="765"
                      controls:SukiHost.ToastLocation="BottomRight"
                      controls:SukiHost.ToastLimit="4"
@@ -26,17 +27,24 @@
     </Design.DataContext>
     <controls:SukiSideMenu>
         <controls:SukiSideMenu.HeaderContent>
-            <TextBlock Text="{Binding BrandName}"
-                       FontSize="20"
-                       FontWeight="Bold"
-                       Foreground="White"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Center"
-                       Margin="0,0,0,10"
-                       IsVisible="{Binding ShowHeader}" />
+            <StackPanel>
+                <Image Source="{Binding BrandLogo}"
+                       Margin="20"
+                       MaxHeight="200"
+                       MaxWidth="200"
+                       IsVisible="{Binding ShowLogo}" />
+                <TextBlock Text="{Binding BrandName}"
+                           FontSize="20"
+                           FontWeight="Bold"
+                           Foreground="White"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,10"
+                           IsVisible="{Binding ShowHeader}" />
+            </StackPanel>
         </controls:SukiSideMenu.HeaderContent>
         <controls:SukiSideMenu.Items>
-            <controls:SukiSideMenuItem Header="Home">
+            <controls:SukiSideMenuItem Header="{x:Static assets:Resources.MenuHome}">
                 <controls:SukiSideMenuItem.Icon>
                     <avalonia:MaterialIcon Kind="Home" />
                 </controls:SukiSideMenuItem.Icon>
@@ -44,7 +52,7 @@
                     <views:HomeView />
                 </controls:SukiSideMenuItem.PageContent>
             </controls:SukiSideMenuItem>
-            <controls:SukiSideMenuItem Header="Applications">
+            <controls:SukiSideMenuItem Header="{x:Static assets:Resources.MenuApplications}">
                 <controls:SukiSideMenuItem.Icon>
                     <avalonia:MaterialIcon Kind="Application" />
                 </controls:SukiSideMenuItem.Icon>
@@ -52,7 +60,7 @@
                     <views:ApplicationsView />
                 </controls:SukiSideMenuItem.PageContent>
             </controls:SukiSideMenuItem>
-            <controls:SukiSideMenuItem Header="Identity">
+            <controls:SukiSideMenuItem Header="{x:Static assets:Resources.MenuIdentity}">
                 <controls:SukiSideMenuItem.Icon>
                     <avalonia:MaterialIcon Kind="IdentificationCard" />
                 </controls:SukiSideMenuItem.Icon>

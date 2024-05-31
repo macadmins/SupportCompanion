@@ -22,7 +22,7 @@ public class AppConfigHelper
             var preference = CFPreferences.GetAppValue(pref, bundleId);
             if (preference != null) prefs.Add(pref, preference);
         }
-        
+
         foreach (var pref in prefs)
             switch (pref.Key)
             {
@@ -31,6 +31,9 @@ public class AppConfigHelper
                     break;
                 case "BrandColor":
                     Config.BrandColor = pref.Value as NSString;
+                    break;
+                case "BrandLogo":
+                    Config.BrandLogo = pref.Value as NSString;
                     break;
                 case "SupportUrl":
                     Config.SupportPageUrl = pref.Value as NSString;
@@ -48,14 +51,10 @@ public class AppConfigHelper
                     Config.SupportPhone = pref.Value as NSString;
                     break;
                 case "NotificationInterval":
-                    if (pref.Value is Foundation.NSNumber number)
-                    {
+                    if (pref.Value is NSNumber number)
                         Config.NotificationInterval = number.Int32Value;
-                    }
-                    else if (pref.Value is Foundation.NSString nsString)
-                    {
+                    else if (pref.Value is NSString nsString)
                         Config.NotificationInterval = int.Parse(nsString.ToString());
-                    }
                     break;
                 case "NotificationTitle":
                     Config.NotificationTitle = pref.Value as NSString;

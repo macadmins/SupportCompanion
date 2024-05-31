@@ -1,0 +1,198 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="DeviceInfoHostName" xml:space="preserve">
+        <value>Namn</value>
+    </data>
+    <data name="DeviceInfoSerialNumber" xml:space="preserve">
+        <value>Serienummer</value>
+    </data>
+    <data name="DeviceInfoModel" xml:space="preserve">
+        <value>Modell</value>
+    </data>
+    <data name="DeviceInfoMemory" xml:space="preserve">
+        <value>Minne</value>
+    </data>
+    <data name="DeviceInfoIP" xml:space="preserve">
+        <value>Ipaddress</value>
+    </data>
+    <data name="DeviceInfoLastReboot" xml:space="preserve">
+        <value>Senaste omstart</value>
+    </data>
+    <data name="DeviceInfo" xml:space="preserve">
+        <value>Enhetsinformation</value>
+    </data>
+    <data name="DeviceInfoLastRebootToolTip" xml:space="preserve">
+        <value>Att regelbundet starta om din enhet kan förbättra dess prestanda och livslängd&amp;#10;genom att rensa tillfälliga filer och frigöra systemresurser.</value>
+    </data>
+    <data name="DeviceManagement" xml:space="preserve">
+        <value>Enhetshantering</value>
+    </data>
+    <data name="DeviceManagementEnrolled" xml:space="preserve">
+        <value>Registrerad</value>
+    </data>
+    <data name="DeviceManagementEnrollmentDate" xml:space="preserve">
+        <value>Registreringsdatum</value>
+    </data>
+    <data name="Storage" xml:space="preserve">
+        <value>Lagring</value>
+    </data>
+    <data name="StorageName" xml:space="preserve">
+        <value>Namn</value>
+    </data>
+    <data name="StorageUsage" xml:space="preserve">
+        <value>Använt</value>
+    </data>
+    <data name="EvergreenCatalogs" xml:space="preserve">
+        <value>Kataloger</value>
+    </data>
+    <data name="Battery" xml:space="preserve">
+        <value>Batteri</value>
+    </data>
+    <data name="BatteryCycleCount" xml:space="preserve">
+        <value>Cykler</value>
+    </data>
+    <data name="BatteryHealth" xml:space="preserve">
+        <value>Hälsa</value>
+    </data>
+    <data name="ApplicationInstallProgress" xml:space="preserve">
+        <value>Installationsstatus för applikationer</value>
+    </data>
+    <data name="Actions" xml:space="preserve">
+        <value>Åtgärder</value>
+    </data>
+    <data name="ActionsChangePassword" xml:space="preserve">
+        <value>Byt lösenord</value>
+    </data>
+    <data name="ActionsRestartIntuneAgent" xml:space="preserve">
+        <value>Starta om Intune-agenten</value>
+    </data>
+    <data name="ActionsReboot" xml:space="preserve">
+        <value>Starta om</value>
+    </data>
+    <data name="ActionsGetSupport" xml:space="preserve">
+        <value>Support</value>
+    </data>
+    <data name="ActionsGatherLogs" xml:space="preserve">
+        <value>Spara loggar</value>
+    </data>
+    <data name="ActionsSoftwareUpdates" xml:space="preserve">
+        <value>Uppdateringar</value>
+    </data>
+    <data name="ActionsOpenMSC" xml:space="preserve">
+        <value>Öppna MSC</value>
+    </data>
+    <data name="PendingUpdates" xml:space="preserve">
+        <value>Väntande uppdateringar</value>
+    </data>
+    <data name="PendingUpdatesOpenMSC" xml:space="preserve">
+        <value>Öppna MSC uppdateringar</value>
+    </data>
+    <data name="PendingUpdatesOpenCompanyPortal" xml:space="preserve">
+        <value>Öppna Company Portal</value>
+    </data>
+    <data name="MenuApplications" xml:space="preserve">
+        <value>Applikationer</value>
+    </data>
+    <data name="MenuHome" xml:space="preserve">
+        <value>Hem</value>
+    </data>
+    <data name="MenuIdentity" xml:space="preserve">
+        <value>Identitet</value>
+    </data>
+    <data name="InstalledApps" xml:space="preserve">
+        <value>Installerade applikationer</value>
+    </data>
+    <data name="InstalledAppsManage" xml:space="preserve">
+        <value>Hantera</value>
+    </data>
+    <data name="Name" xml:space="preserve">
+        <value>Namn</value>
+    </data>
+    <data name="UserInformation" xml:space="preserve">
+        <value>Användarinformation</value>
+    </data>
+    <data name="UserInformationUsername" xml:space="preserve">
+        <value>Användarnamn</value>
+    </data>
+    <data name="UserInformationHomeDirectory" xml:space="preserve">
+        <value>Hemkatalog</value>
+    </data>
+    <data name="KerberosSSOADPasswordExpiry" xml:space="preserve">
+        <value>Utgång av AD-lösenord</value>
+    </data>
+    <data name="KerberosSSOADUsername" xml:space="preserve">
+        <value>AD-användarnamn</value>
+    </data>
+    <data name="KerberosSSOLastADPasswordChange" xml:space="preserve">
+        <value>Senaste AD-lösenordsbyte</value>
+    </data>
+    <data name="KerberosSSOLastLocalPasswordChange" xml:space="preserve">
+        <value>Senaste lokala lösenordsbyte</value>
+    </data>
+    <data name="Days" xml:space="preserve">
+        <value>dagar</value>
+    </data>
+    <data name="DaysAgo" xml:space="preserve">
+        <value>dagar sedan</value>
+    </data>
+    <data name="PlatformSSOLoginFrequency" xml:space="preserve">
+        <value>Inloggningsfrekvens</value>
+    </data>
+    <data name="PlatformSSOLoginType" xml:space="preserve">
+        <value>Inloggingstyp</value>
+    </data>
+    <data name="PlatformSSONewUserAuthorizationMode" xml:space="preserve">
+        <value>Ny användarbehörighetsläge
+</value>
+    </data>
+    <data name="PlatformSSORegistrationCompleted" xml:space="preserve">
+        <value>Registrering slutförd
+</value>
+    </data>
+    <data name="PlatformSSOSDKVersion" xml:space="preserve">
+        <value>SDK-version</value>
+    </data>
+    <data name="PlatformSSOSharedDeviceKeys" xml:space="preserve">
+        <value>Delade enhetsnycklar
+</value>
+    </data>
+    <data name="PlatformSSOUserAuthorizationMode" xml:space="preserve">
+        <value>Användarbehörighetsläge
+</value>
+    </data>
+    <data name="DeviceInfoOSBuild" xml:space="preserve">
+        <value>OS-build</value>
+    </data>
+    <data name="DeviceInfoOSVersion" xml:space="preserve">
+        <value>OS-version</value>
+    </data>
+    <data name="Open" xml:space="preserve">
+        <value>Öppna</value>
+    </data>
+    <data name="NativeMenuSystemUpdates" xml:space="preserve">
+        <value>Systemuppdateringar</value>
+    </data>
+    <data name="ActionsSupportInfo" xml:space="preserve">
+        <value>Supportinfo</value>
+    </data>
+    <data name="Close" xml:space="preserve">
+        <value>Stäng</value>
+    </data>
+    <data name="SupportDialogEmail" xml:space="preserve">
+        <value>Epost</value>
+    </data>
+    <data name="SupportDialogPhone" xml:space="preserve">
+        <value>Telefon</value>
+    </data>
+</root>

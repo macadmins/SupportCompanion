@@ -1,5 +1,8 @@
+using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Documents;
+using Avalonia.Input;
 using Microsoft.Extensions.DependencyInjection;
 using SupportCompanion.Services;
 using SupportCompanion.ViewModels;
@@ -26,5 +29,19 @@ public partial class SupportDialogView : UserControl
     {
         base.OnDetachedFromVisualTree(e);
         DataContext = null;
+    }
+
+    private void EmailLink_OnPointerPressed(object sender, PointerPressedEventArgs e)
+    {
+        if (sender is TextBlock textBlock)
+            // Find the Run element that contains the email address
+            foreach (var inline in textBlock.Inlines)
+                if (inline is Run run && run.Text.Contains("@"))
+                {
+                    var email = run.Text;
+                    if (!string.IsNullOrEmpty(email))
+                        Process.Start(new ProcessStartInfo("mailto:" + email) { UseShellExecute = true });
+                    break;
+                }
     }
 }

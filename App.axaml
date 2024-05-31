@@ -14,13 +14,14 @@
     </Application.DataTemplates>
     <TrayIcon.Icons>
         <TrayIcons>
-            <TrayIcon Icon="/Assets/appicon.png" ToolTipText="Support Companion">
+            <TrayIcon Icon="/Assets/trayicon.png" ToolTipText="Support Companion">
                 <TrayIcon.Menu>
                     <NativeMenu>
-                        <NativeMenuItem Header="Open Support Companion 🚀" Command="{Binding OpenApp}" />
-                        <NativeMenuItem Header="Software Updates 🔄" Command="{Binding OpenSystemUpdates}" />
+                        <NativeMenuItem Header="{Binding NativeMenuOpenText}" Command="{Binding OpenApp}" />
+                        <NativeMenuItem Header="{Binding NativeMenuSystemUpdatesText}"
+                                        Command="{Binding OpenSystemUpdates}" />
                         <NativeMenuItemSeparator />
-                        <NativeMenuItem Header="Exit" Command="{Binding QuitApp}" />
+                        <NativeMenuItem Header="{Binding NativeMenuQuitAppText}" Command="{Binding QuitApp}" />
                     </NativeMenu>
                 </TrayIcon.Menu>
             </TrayIcon>
