@@ -10,21 +10,16 @@ quick and easy access to crucial information and actions. This application is bu
 tasks, eliminating the need for extensive searching and complex navigation. Support Companion is equipped with a range
 of features that enhance user productivity.
 
-It integrates with Munki and Intune for application information and updates, and with
-Intune for MDM information, providing a unified platform for managing these services. Users can view system information
+It integrates with Munki and Intune for application information and updates, providing a unified platform for managing these services. Users can view system information
 such as macOS version, model, and serial number at a glance, and perform actions such as changing passwords, rebooting,
 and more with just a few clicks.
 
-This initial version relies on Munki and/or Intune for application information and updates, and Intune for some MDM actions. If you are
-not using Munki or Intune, this app may not provide much information and actions at the moment.
+This initial version relies on Munki and/or Intune for application information and updates. If you are
+not using Munki or Intune, this app may not provide as detailed information at the moment.
 
 If there are wishes to add other MDM specific actions and information, please let me know. I am open to
 adding more MDM providers in the future if there is a demand for it.
 I am only able to test with Intune, so if you have another MDM provider, I would appreciate your help in testing.
-
-## Stage
-The app is currently in `beta`, and I am looking for feedback on features, bugs, and improvements. Please let me know if
-you have any suggestions or issues.
 
 ## Features
 
@@ -41,9 +36,13 @@ you have any suggestions or issues.
 - **Applications**: View installed applications and their versions.
 - **Identity**: View the current user's profile information and Kerberos SSO or Platform SSO information.
 
-## Installation
+## Localization
 
-For now this app is not signed as I do not have access to an Apple Developer Certificate.
+The app is localized to `Swedish` and `French`. The app will now display in the user's preferred language if it is set to one of these languages in macOS. If the user's preferred language is not one of these, the app will default to English.
+
+Contributions to other languages are welcome!
+
+## Installation
 
 1. Obtain the latest PKG installer from [releases](https://github.com/almenscorner/SupportCompanion/releases).
 2. Download and install the MacAdmins Python package from [here](https://github.com/macadmins/python/releases/tag/v3.12.1.80742).
@@ -86,6 +85,7 @@ Many aspects of the app can be configured using MDM profiles, the folloing keys 
 | --- | --- | --- | --- | --- |
 | `BrandName` | String | None | False | Configures the brand name shown in the menu |
 | `BrandColor` | String | Blue | False | Configures the brand color shown in the app, available colors are: Blue, Green, Red, Orange |
+| `BrandLogo` | String | None | False | Configures the brand logo shown in the apps side menu. Specify a local path |
 | `SupportPageUrl` | String | None | False | Configures the URL to open when the user clicks on the Get Support button |
 | `ChangePasswordUrl` | String | None | False | Configures the URL to open when the user clicks on the Change Password button |
 | `ChangePasswordMode` | String | local | False | Configures the mode for the Change Password button, available modes are: `local`, `SSOExtension`, `url` |
