@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Media.Imaging;
 using Avalonia.Styling;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -13,17 +14,30 @@ namespace SupportCompanion.ViewModels;
 public partial class MainWindowViewModel : ObservableObject
 {
     private readonly ActionsService _actionsService;
+    [ObservableProperty] private string _nativeMenuActionsHeader;
+
+    [ObservableProperty] private string _nativeMenuOpenText;
+    [ObservableProperty] private string _nativeMenuQuitAppText;
+    [ObservableProperty] private string _nativeMenuSystemUpdatesText;
 
     public MainWindowViewModel(ActionsService actionsService)
 
     {
         ShowHeader = !string.IsNullOrEmpty(App.Config.BrandName);
         BrandName = App.Config.BrandName;
+        if (File.Exists(App.Config.BrandLogo))
+        {
+            BrandLogo = new Bitmap(App.Config.BrandLogo);
+            ShowLogo = true;
+        }
+
         _actionsService = actionsService;
     }
 
     public bool ShowHeader { get; private set; }
+    public bool ShowLogo { get; private set; }
     public string BrandName { get; private set; }
+    public Bitmap BrandLogo { get; private set; }
 
     [RelayCommand]
     private void ToggleBaseTheme()
