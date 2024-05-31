@@ -3,6 +3,7 @@
              xmlns:controls="clr-namespace:SukiUI.Controls;assembly=SukiUI"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              xmlns:vm="clr-namespace:SupportCompanion.ViewModels"
+             xmlns:assets="clr-namespace:SupportCompanion.Assets"
              x:Class="SupportCompanion.Views.DeviceInfoWidgetView"
              x:DataType="vm:DeviceWidgetViewModel"
              x:CompileBindings="True"
@@ -22,7 +23,7 @@
                 <DockPanel Grid.Row="0">
                     <TextBlock DockPanel.Dock="Left" Margin="10">
                         <avalonia:MaterialIcon Kind="Laptop" Width="20" Height="20" />
-                        <Run Text="Device Information" FontWeight="DemiBold" FontSize="16" />
+                        <Run Text="{x:Static assets:Resources.DeviceInfo}" FontWeight="DemiBold" FontSize="16" />
                     </TextBlock>
                     <Button DockPanel.Dock="Right"
                             Command="{Binding CopyToClipboard}"
@@ -35,43 +36,52 @@
                 </DockPanel>
                 <StackPanel Grid.Row="1" Margin="10">
                     <TextBlock Margin="0,0,0,5">
-                        <Run Text="Host Name: " FontWeight="Bold" />
+                        <Run Text="{x:Static assets:Resources.DeviceInfoHostName}" FontWeight="Bold" />
+                        <Run Text=": " FontWeight="Bold" />
                         <Run Text="{Binding DeviceInfo.HostName}" />
                     </TextBlock>
                     <TextBlock Margin="0,0,0,5">
-                        <Run Text="Serial Number: " FontWeight="Bold" />
+                        <Run Text="{x:Static assets:Resources.DeviceInfoSerialNumber}" FontWeight="Bold" />
+                        <Run Text=": " FontWeight="Bold" />
                         <Run Text="{Binding DeviceInfo.SerialNumber}" />
                     </TextBlock>
                     <TextBlock Margin="0,0,0,5">
-                        <Run Text="Model: " FontWeight="Bold" />
+                        <Run Text="{x:Static assets:Resources.DeviceInfoModel}" FontWeight="Bold" />
+                        <Run Text=": " FontWeight="Bold" />
                         <Run Text="{Binding DeviceInfo.Model}" />
                     </TextBlock>
                     <TextBlock Margin="0,0,0,5">
-                        <Run Text="Processor: " FontWeight="Bold" />
+                        <Run Text="{x:Static assets:Resources.DeviceInfoProcessor}" FontWeight="Bold" />
+                        <Run Text=": " FontWeight="Bold" />
                         <Run Text="{Binding DeviceInfo.Processor}" />
                     </TextBlock>
                     <TextBlock Margin="0,0,0,5">
-                        <Run Text="Memory: " FontWeight="Bold" />
+                        <Run Text="{x:Static assets:Resources.DeviceInfoMemory}" FontWeight="Bold" />
+                        <Run Text=": " FontWeight="Bold" />
                         <Run Text="{Binding DeviceInfo.MemSize}" />
                         <Run Text=" GB" />
                     </TextBlock>
                     <TextBlock Margin="0,0,0,5">
-                        <Run Text="OS Version: " FontWeight="Bold" />
+                        <Run Text="{x:Static assets:Resources.DeviceInfoOSVersion}" FontWeight="Bold" />
+                        <Run Text=": " FontWeight="Bold" />
                         <Run Text="{Binding DeviceInfo.OsVersion}" />
                     </TextBlock>
                     <TextBlock Margin="0,0,0,5">
-                        <Run Text="OS Build: " FontWeight="Bold" />
+                        <Run Text="{x:Static assets:Resources.DeviceInfoOSBuild}" FontWeight="Bold" />
+                        <Run Text=": " FontWeight="Bold" />
                         <Run Text="{Binding DeviceInfo.OsBuild}" />
                     </TextBlock>
                     <TextBlock Margin="0,0,0,5">
-                        <Run Text="IP Address: " FontWeight="Bold" />
+                        <Run Text="{x:Static assets:Resources.DeviceInfoIP}" FontWeight="Bold" />
+                        <Run Text=": " FontWeight="Bold" />
                         <Run Text="{Binding DeviceInfo.IpAddress}" />
                     </TextBlock>
                     <TextBlock Margin="0,0,0,5">
-                        <Run Text="Last Reboot: " FontWeight="Bold" />
+                        <Run Text="{x:Static assets:Resources.DeviceInfoLastReboot}" FontWeight="Bold" />
+                        <Run Text=": " FontWeight="Bold" />
                         <Run Text="{Binding DeviceInfo.LastBootTime}"
                              Foreground="{Binding DeviceInfo.LastBootTimeColor}" />
-                        <Run Text="days ago" />
+                        <Run Text="{x:Static assets:Resources.Days}" />
                         <avalonia:MaterialIcon Kind="Information" Width="20" Height="20"
                                                ToolTip.Tip="{Binding RebootToolTip}" />
                     </TextBlock>

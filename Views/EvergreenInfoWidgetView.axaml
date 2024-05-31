@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:SupportCompanion.ViewModels"
+             xmlns:assets="clr-namespace:SupportCompanion.Assets"
              xmlns:controls="clr-namespace:SukiUI.Controls;assembly=SukiUI"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
@@ -26,7 +27,8 @@
                     <Run Text="Evergreen" FontWeight="DemiBold" FontSize="16" />
                 </TextBlock>
                 <TextBlock Grid.Row="1" Margin="10">
-                    <Run Text="Catalogs: " FontWeight="Bold" />
+                    <Run Text="{x:Static assets:Resources.EvergreenCatalogs}" FontWeight="Bold" />
+                    <Run Text=": " />
                     <ItemsControl ItemsSource="{Binding EvergreenInfo.Catalogs}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>

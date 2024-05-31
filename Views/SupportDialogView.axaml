@@ -3,34 +3,39 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:SupportCompanion.ViewModels"
+             xmlns:assets="clr-namespace:SupportCompanion.Assets"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="SupportCompanion.Views.SupportDialogView"
              x:DataType="vm:SupportDialogViewModel"
              x:CompileBindings="True">
-    <StackPanel Width="450" Margin="2" HorizontalAlignment="Center" VerticalAlignment="Center">
-        <TextBlock Width="320"
+    <StackPanel MinWidth="450" MaxWidth="650" Margin="2" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <TextBlock Width="420"
                    Margin="0,1,0,0"
-                   FontSize="18">
+                   FontSize="18"
+                   TextWrapping="WrapWithOverflow">
             <avalonia:MaterialIcon Kind="Phone" Width="20" Height="20" />
-            <Run Text="Phone: " />
+            <Run Text="{x:Static assets:Resources.SupportDialogPhone}" />
+            <Run Text=": " />
             <Run Text="{Binding SupportPhone}" Foreground="DarkGray" />
         </TextBlock>
-        <TextBlock Width="320"
+        <TextBlock Width="420"
                    Margin="0,1,0,0"
-                   FontSize="18">
+                   FontSize="18"
+                   TextWrapping="Wrap"
+                   PointerPressed="EmailLink_OnPointerPressed">
             <avalonia:MaterialIcon Kind="Email" Width="20" Height="20" />
-            <Run Text="Email: " />
-            <Run Text="{Binding SupportEmail}" Foreground="DarkGray" />
+            <Run Text="{x:Static assets:Resources.SupportDialogEmail}" />
+            <Run Text=": " />
+            <Run Text="{Binding SupportEmail}" Foreground="#029ac8" />
         </TextBlock>
-
         <StackPanel Margin="0,35,0,0"
                     HorizontalAlignment="Right"
                     Orientation="Horizontal"
                     Spacing="15">
             <Button Classes="Rounded"
                     Command="{Binding CloseDialogCommand}"
-                    Content="Close" />
+                    Content="{x:Static assets:Resources.Close}" />
         </StackPanel>
 
     </StackPanel>

@@ -13,7 +13,9 @@
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:HomeViewModel />
     </Design.DataContext>
-    <WrapPanel MaxWidth="1250">
+    <WrapPanel MaxWidth="1250"
+               VerticalAlignment="Center"
+               HorizontalAlignment="Center">
         <ScrollViewer VerticalScrollBarVisibility="Hidden">
             <Grid
                 Margin="15">

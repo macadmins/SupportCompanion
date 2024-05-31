@@ -21,12 +21,14 @@
                         CornerRadius="10"
                         HorizontalAlignment="Stretch"
                         MinWidth="20"
+                        MaxWidth="20"
                         Height="20">
                     <TextBlock Text="{TemplateBinding BadgeContent}"
                                Margin="5"
                                Foreground="White"
                                HorizontalAlignment="Center"
-                               VerticalAlignment="Center" />
+                               VerticalAlignment="Center"
+                               TextWrapping="WrapWithOverflow" />
                 </Border>
             </Grid>
         </ControlTemplate>

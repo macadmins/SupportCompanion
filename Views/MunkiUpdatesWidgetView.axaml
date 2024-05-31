@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:SupportCompanion.ViewModels"
+             xmlns:assets="clr-namespace:SupportCompanion.Assets"
              xmlns:controls="clr-namespace:SukiUI.Controls;assembly=SukiUI"
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
@@ -21,9 +22,9 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" Margin="10">
+                <TextBlock Grid.Row="0" Margin="10" TextWrapping="WrapWithOverflow">
                     <avalonia:MaterialIcon Kind="ProgressTag" Width="20" Height="20" />
-                    <Run Text="Application Patching Progress" FontWeight="Bold" FontSize="15" />
+                    <Run Text="{x:Static assets:Resources.ApplicationInstallProgress}" FontWeight="Bold" FontSize="15" />
                 </TextBlock>
                 <StackPanel Grid.Row="1" Margin="10" VerticalAlignment="Center">
                     <controls:WaveProgress Value="{Binding MunkiUpdatesInfo.InstallPercentage}"
