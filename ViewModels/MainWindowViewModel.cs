@@ -29,6 +29,7 @@ public partial class MainWindowViewModel : ObservableObject
         {
             BrandLogo = new Bitmap(App.Config.BrandLogo);
             ShowLogo = true;
+            ShowMenuToggle = App.Config.ShowMenuToggle;
         }
 
         _actionsService = actionsService;
@@ -38,6 +39,7 @@ public partial class MainWindowViewModel : ObservableObject
     public bool ShowLogo { get; private set; }
     public string BrandName { get; private set; }
     public Bitmap BrandLogo { get; private set; }
+    public bool ShowMenuToggle { get; private set; }
 
     [RelayCommand]
     private void ToggleBaseTheme()
