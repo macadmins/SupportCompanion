@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <key>ShowMenuToggle</key>
 <false/>
 ```
+### Fixed
+- The `BrandName` was always displayed in white text in the side menu, which made it hard to read if light mode was enabled. Text color property has been removed to ensure it is set dynamically based on the user's system preferences
 
 ## [1.0.4] - 2024-05-31
 ### Added
