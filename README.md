@@ -85,7 +85,7 @@ Many aspects of the app can be configured using MDM profiles, the folloing keys 
 | --- | --- | --- | --- | --- |
 | `BrandName` | String | None | False | Configures the brand name shown in the menu |
 | `BrandColor` | String | Blue | False | Configures the brand color shown in the app, available colors are: Blue, Green, Red, Orange |
-| `BrandLogo` | String | None | False | Configures the brand logo shown in the apps side menu. Specify a local path |
+| `BrandLogo` | String | None | False | Configures the brand logo shown in the apps side menu. Specify a local path or base64 string |
 | `SupportPageUrl` | String | None | False | Configures the URL to open when the user clicks on the Get Support button |
 | `ChangePasswordUrl` | String | None | False | Configures the URL to open when the user clicks on the Change Password button |
 | `ChangePasswordMode` | String | local | False | Configures the mode for the Change Password button, available modes are: `local`, `SSOExtension`, `url` |

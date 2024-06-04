@@ -1,6 +1,8 @@
-﻿using Avalonia;
+﻿using System.Text.RegularExpressions;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Logging;
 using Avalonia.Media.Imaging;
 using Avalonia.Styling;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -14,25 +16,35 @@ namespace SupportCompanion.ViewModels;
 public partial class MainWindowViewModel : ObservableObject
 {
     private readonly ActionsService _actionsService;
+    private readonly LoggerService _logger;
     [ObservableProperty] private string _nativeMenuActionsHeader;
-
     [ObservableProperty] private string _nativeMenuOpenText;
     [ObservableProperty] private string _nativeMenuQuitAppText;
     [ObservableProperty] private string _nativeMenuSystemUpdatesText;
 
-    public MainWindowViewModel(ActionsService actionsService)
-
+    public MainWindowViewModel(ActionsService actionsService, LoggerService loggerService)
     {
+        _actionsService = actionsService;
+        _logger = loggerService;
         ShowHeader = !string.IsNullOrEmpty(App.Config.BrandName);
         BrandName = App.Config.BrandName;
         if (File.Exists(App.Config.BrandLogo))
         {
             BrandLogo = new Bitmap(App.Config.BrandLogo);
             ShowLogo = true;
-            ShowMenuToggle = App.Config.ShowMenuToggle;
         }
-
-        _actionsService = actionsService;
+        else if (Regex.IsMatch(App.Config.BrandLogo, 
+                     @"^[a-zA-Z0-9\+/]*={0,3}$") && App.Config.BrandLogo.Length % 4 == 0)
+        {
+            BrandLogo = Base64ToBitmap(App.Config.BrandLogo);
+            ShowLogo = true;
+        }
+        else
+        {
+            _logger.Log("MainWindowViewModel", "Invalid base64 string or path for BrandLogo", 2);
+        }
+        
+        ShowMenuToggle = App.Config.ShowMenuToggle;
     }
 
     public bool ShowHeader { get; private set; }
@@ -40,6 +52,13 @@ public partial class MainWindowViewModel : ObservableObject
     public string BrandName { get; private set; }
     public Bitmap BrandLogo { get; private set; }
     public bool ShowMenuToggle { get; private set; }
+    
+    private Bitmap Base64ToBitmap(string base64String)
+    {
+        var bytes = Convert.FromBase64String(base64String);
+        using var ms = new MemoryStream(bytes);
+        return new Bitmap(ms);
+    }
 
     [RelayCommand]
     private void ToggleBaseTheme()
