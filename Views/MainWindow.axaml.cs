@@ -37,9 +37,12 @@ public partial class MainWindow : SukiWindow
 
     private void OnClosing(object sender, CancelEventArgs e)
     {
-        e.Cancel = true; // Cancel the close event
-        Hide(); // Hide the window instead
-        NotifyViewModelsWindowHidden(); // Notify view models that the window is hidden
+        if (!UrlHandler.ActivatedViaUrl)
+        {
+            e.Cancel = true; // Cancel the close event
+            Hide(); // Hide the window instead
+            NotifyViewModelsWindowHidden(); // Notify view models that the window is hidden
+        }
     }
 
     private void OnIsVisibleChanged(bool isVisible)
