@@ -12,9 +12,8 @@
                      x:DataType="vm:MainWindowViewModel"
                      x:CompileBindings="True"
                      Title=""
-                     Width="1250" Height="765"
                      MinWidth="1300" MaxWidth="1300"
-                     MinHeight="765" MaxHeight="765"
+                     MinHeight="765" MaxHeight="800"
                      controls:SukiHost.ToastLocation="BottomRight"
                      controls:SukiHost.ToastLimit="4"
                      ExtendClientAreaToDecorationsHint="False"
@@ -34,7 +33,7 @@
         <controls:SukiSideMenu.HeaderContent>
             <StackPanel>
                 <Image Source="{Binding BrandLogo}"
-                       Margin="20"
+                       Margin="40"
                        MaxHeight="200"
                        MaxWidth="200"
                        IsVisible="{Binding ShowLogo}" />
