@@ -1,4 +1,4 @@
-# Support Companion
+# [#SupportCompanion](https://macadmins.slack.com/archives/C075C6ZFAJH)
 
 <img width="256" alt="appicon" src="https://github.com/almenscorner/SupportCompanion/assets/78877636/159af7d0-df70-414b-9973-0ab5b6a068e4">
 
