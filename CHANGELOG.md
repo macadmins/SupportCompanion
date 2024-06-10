@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.5] - 2024-06-10
+### Added
+- Added a new configuration to disable the menu toggle button in the app. This allows for admins to disable the menu toggle button if they want to prevent users from hiding the menu. Example configuration: https://github.com/macadmins/SupportCompanion/issues/38
+```xml
+<key>ShowMenuToggle</key>
+<false/>
+```
+- Option to start the app using a URL scheme. This allows for admins to start the app using a URL scheme, which can be useful for starting the app from a script or another app. The URL scheme is `supportcompanion://home`. When started using the URL scheme, the app will exit when the window is closed instead of running in the background https://github.com/macadmins/SupportCompanion/issues/36
+- Option to provide the `BrandLogo` as a base64 string in the configuration. This allows for admins to provide the `BrandLogo` as a base64 string in the configuration instead of a local path. This can be useful for providing the logo as part of a configuration profile. Example configuration:
+```xml
+<key>BrandLogo</key>
+<string>{BASE64 STRING}</string>
+```
+- Norwegian localization, thanks @johnhans for the Norwegian localization
+### Changed
+- Margins around `BrandLogo` has been increased to make it look better in the side menu
+### Fixed
+- The `BrandName` was always displayed in white text in the side menu, which made it hard to read if light mode was enabled. Text color property has been removed to ensure it is set dynamically based on the user's system preferences https://github.com/macadmins/SupportCompanion/issues/39
+
 ## [1.0.4] - 2024-05-31
 ### Added
 - Localized the app to `Swedish` and `French`. The app will now display in the user's preferred language if it is set to one of these languages in macOS. If the user's preferred language is not one of these, the app will default to English. Thank you, @hachirotahoshino, for the French localization https://github.com/macadmins/SupportCompanion/issues/31

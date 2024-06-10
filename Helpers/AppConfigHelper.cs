@@ -141,6 +141,9 @@ public class AppConfigHelper
                 case "IntuneMode":
                     Config.IntuneMode = (bool)pref.Value;
                     break;
+                case "ShowMenuToggle":
+                    Config.ShowMenuToggle = (bool)pref.Value;
+                    break;
             }
 
         if (!string.IsNullOrEmpty(Config.BrandColor))

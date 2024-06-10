@@ -12,9 +12,8 @@
                      x:DataType="vm:MainWindowViewModel"
                      x:CompileBindings="True"
                      Title=""
-                     Width="1250" Height="765"
                      MinWidth="1300" MaxWidth="1300"
-                     MinHeight="765" MaxHeight="765"
+                     MinHeight="765" MaxHeight="800"
                      controls:SukiHost.ToastLocation="BottomRight"
                      controls:SukiHost.ToastLimit="4"
                      ExtendClientAreaToDecorationsHint="False"
@@ -25,18 +24,22 @@
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainWindowViewModel />
     </Design.DataContext>
+    <controls:SukiWindow.Styles>
+        <Style Selector="Button#PART_SidebarToggleButton">
+            <Setter Property="IsVisible" Value="{Binding ShowMenuToggle}"/>
+        </Style>
+    </controls:SukiWindow.Styles>
     <controls:SukiSideMenu>
         <controls:SukiSideMenu.HeaderContent>
             <StackPanel>
                 <Image Source="{Binding BrandLogo}"
-                       Margin="20"
+                       Margin="40"
                        MaxHeight="200"
                        MaxWidth="200"
                        IsVisible="{Binding ShowLogo}" />
                 <TextBlock Text="{Binding BrandName}"
                            FontSize="20"
                            FontWeight="Bold"
-                           Foreground="White"
                            VerticalAlignment="Center"
                            HorizontalAlignment="Center"
                            Margin="0,0,0,10"
