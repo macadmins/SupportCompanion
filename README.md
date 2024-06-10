@@ -104,7 +104,7 @@ Many aspects of the app can be configured using MDM profiles, the folloing keys 
 | `IntuneMode` | Bool | False | False | Configures the app to use Intune for application information. Only supports PKG and DMG type apps, not LOB. |
 | `LogFolders` | Array | /Library/Logs/Microsoft | False | Configures the log folders to gather logs from. Only used when gathering logs. |
 | `Actions` | Array | None | False | Configures custom actions to add to the tray menu. See example below. |
-| `ShowMenuToggle` | Bool | True | False | Configures whether to show the menu toggle button in the app. |
+| `ShowMenuToggle` | Bool | True | False | Configures whether to show the menu toggle button in the apps side menu. |
 
 ### Example Configuration
 
