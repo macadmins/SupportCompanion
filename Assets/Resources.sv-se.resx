@@ -195,4 +195,7 @@
     <data name="SupportDialogPhone" xml:space="preserve">
         <value>Telefon</value>
     </data>
+    <data name="DesktopInfoUsedOn" xml:space="preserve">
+        <value>använt på</value>
+    </data>
 </root>

@@ -213,4 +213,7 @@
     <data name="UserInformationUsername" xml:space="preserve">
         <value>Brukernavn</value>
     </data>
+    <data name="DesktopInfoUsedOn" xml:space="preserve">
+        <value>brukt på</value>
+    </data>
 </root>
