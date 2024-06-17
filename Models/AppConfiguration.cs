@@ -10,7 +10,8 @@ public class AppConfiguration
         "ChangePasswordMode", "SupportEmail", "SupportPhone", "HiddenActions", "NotificationInterval",
         "NotificationTitle", "NotificationImage", "SoftwareUpdateNotificationMessage",
         "SoftwareUpdateNotificationButtonText", "AppUpdateNotificationMessage", "AppUpdateNotificationButtonText",
-        "MunkiMode", "IntuneMode", "LogFolders", "Actions", "BrandLogo", "ShowMenuToggle"
+        "MunkiMode", "IntuneMode", "LogFolders", "Actions", "BrandLogo", "ShowMenuToggle", "ShowDesktopInfo", "FontSize",
+        "DesktopPosition", "DesktopInfoLevel"
     };
 
     public string BrandName { get; set; } = string.Empty;
@@ -42,4 +43,8 @@ public class AppConfiguration
     public bool IntuneMode { get; set; }
     public Dictionary<string, Dictionary<string, string>> Actions { get; set; } = new();
     public bool ShowMenuToggle { get; set; } = true;
+    public bool ShowDesktopInfo { get; set; } = false;
+    public int FontSize { get; set; } = 17;
+    public string DesktopPosition { get; set; } = "TopRight";
+    public string DesktopInfoLevel { get; set; } = "Support";
 }
