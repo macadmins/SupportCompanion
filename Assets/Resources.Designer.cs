@@ -443,5 +443,11 @@ namespace SupportCompanion.Assets {
                 return ResourceManager.GetString("SupportDialogPhone", resourceCulture);
             }
         }
+        
+        public static string DesktopInfoUsedOn {
+            get {
+                return ResourceManager.GetString("DesktopInfoUsedOn", resourceCulture);
+            }
+        }
     }
 }

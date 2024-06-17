@@ -35,6 +35,7 @@ I am only able to test with Intune, so if you have another MDM provider, I would
 - **Pending Updates**: View pending updates for applications.
 - **Applications**: View installed applications and their versions.
 - **Identity**: View the current user's profile information and Kerberos SSO or Platform SSO information.
+- **Desktop Info**: Show information on the desktop such as device name, serial number, macOS version, and IP address.
 
 ## Localization
 
@@ -105,6 +106,10 @@ Many aspects of the app can be configured using MDM profiles, the folloing keys 
 | `LogFolders` | Array | /Library/Logs/Microsoft | False | Configures the log folders to gather logs from. Only used when gathering logs. |
 | `Actions` | Array | None | False | Configures custom actions to add to the tray menu. See example below. |
 | `ShowMenuToggle` | Bool | True | False | Configures whether to show the menu toggle button in the apps side menu. |
+| `ShowDesktopInfo` | Bool | False | False | Configures whether to show information on the desktop. |
+| `DesktopPosition` | String | TopRight | False | Configures the position of the desktop info, available positions are: `TopLeft`, `TopRight`, `BottomLeft`, `BottomRight` |
+| `DesktopInfoLevel` | String | Support | False | Configures the level of information to show on the desktop, available levels are: `Device`, `Support` |
+| `FontSize` | Integer | 17 | False | Configures the font size for the desktop info. |
 
 ### Example Configuration
 

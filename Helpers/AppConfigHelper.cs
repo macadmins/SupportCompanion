@@ -144,6 +144,21 @@ public class AppConfigHelper
                 case "ShowMenuToggle":
                     Config.ShowMenuToggle = (bool)pref.Value;
                     break;
+                case "DesktopPosition":
+                    Config.DesktopPosition = pref.Value as NSString;
+                    break;
+                case "FontSize":
+                    if (pref.Value is NSNumber fontSize)
+                        Config.FontSize = fontSize.Int32Value;
+                    else if (pref.Value is NSString fontSizeString)
+                        Config.FontSize = int.Parse(fontSizeString.ToString());
+                    break;
+                case "ShowDesktopInfo":
+                    Config.ShowDesktopInfo = (bool)pref.Value;
+                    break;
+                case "DesktopInfoLevel":
+                    Config.DesktopInfoLevel = pref.Value as NSString;
+                    break;
             }
 
         if (!string.IsNullOrEmpty(Config.BrandColor))

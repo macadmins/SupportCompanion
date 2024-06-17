@@ -9,6 +9,7 @@ using SupportCompanion.Helpers;
 using SupportCompanion.Models;
 using SupportCompanion.Services;
 using SupportCompanion.ViewModels;
+using SupportCompanion.Views;
 
 namespace SupportCompanion
 {
@@ -79,7 +80,7 @@ namespace SupportCompanion
         {
             RegisterAppServices();
             await InitializeCultureAsync();
-
+            
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
@@ -95,7 +96,11 @@ namespace SupportCompanion
                     new ObjCRuntime.Selector("handleGetURLEvent:withReplyEvent:"),
                     AEEventClass.Internet, AEEventID.GetUrl);
 
-                //desktop.MainWindow = new MainWindow { DataContext = DataContext };
+                if (App.Config.ShowDesktopInfo)
+                {
+                    var transparentWindow = new TransparentWindow();
+                    transparentWindow.Show();
+                }
             }
             
             if (Config.Actions != null && Config.Actions.Count > 0)
@@ -166,6 +171,7 @@ namespace SupportCompanion
             serviceCollection.AddSingleton<IntunePendingAppsViewModel>();
             serviceCollection.AddSingleton<UserViewModel>();
             serviceCollection.AddSingleton<MacPasswordViewModel>();
+            serviceCollection.AddSingleton<TransparentWindowViewModel>();
 
             ServiceProvider = serviceCollection.BuildServiceProvider();
         }
