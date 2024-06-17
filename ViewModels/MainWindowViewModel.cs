@@ -2,7 +2,6 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Logging;
 using Avalonia.Media.Imaging;
 using Avalonia.Styling;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -28,22 +27,41 @@ public partial class MainWindowViewModel : ObservableObject
         _logger = loggerService;
         ShowHeader = !string.IsNullOrEmpty(App.Config.BrandName);
         BrandName = App.Config.BrandName;
-        if (File.Exists(App.Config.BrandLogo))
+        if (string.IsNullOrEmpty(App.Config.BrandLogo))
         {
-            BrandLogo = new Bitmap(App.Config.BrandLogo);
-            ShowLogo = true;
-        }
-        else if (Regex.IsMatch(App.Config.BrandLogo, 
-                     @"^[a-zA-Z0-9\+/]*={0,3}$") && App.Config.BrandLogo.Length % 4 == 0)
-        {
-            BrandLogo = Base64ToBitmap(App.Config.BrandLogo);
-            ShowLogo = true;
+            ShowLogo = false;
         }
         else
         {
-            _logger.Log("MainWindowViewModel", "Invalid base64 string or path for BrandLogo", 2);
+            try
+            {
+                if (Uri.IsWellFormedUriString(App.Config.BrandLogo, UriKind.Absolute))
+                {
+                    BrandLogo = new Bitmap(App.Config.BrandLogo);
+                    ShowLogo = true;
+                }
+                else if (File.Exists(App.Config.BrandLogo))
+                {
+                    BrandLogo = new Bitmap(App.Config.BrandLogo);
+                    ShowLogo = true;
+                }
+                else if (Regex.IsMatch(App.Config.BrandLogo,
+                             @"^[a-zA-Z0-9\+/]+={0,2}$") && App.Config.BrandLogo.Length % 4 == 0)
+                {
+                    BrandLogo = Base64ToBitmap(App.Config.BrandLogo);
+                    ShowLogo = true;
+                }
+                else
+                {
+                    _logger.Log("MainWindowViewModel", "Invalid base64 string or path for BrandLogo", 2);
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.Log("MainWindowViewModel", "Error loading BrandLogo: " + e.Message, 2);
+            }
         }
-        
+
         ShowMenuToggle = App.Config.ShowMenuToggle;
     }
 
