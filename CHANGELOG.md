@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.7] - 2024-06-17
+## [1.0.7] - 2024-06-18
 ### Added
 - The option to show information about the device and support contact information on the desktop background. This allows for admins to show information about the device and support contact information on the desktop background. The information is displayed in any corner of the desktop background and can be customized using the configuration. Example configuration:
 ```xml
@@ -29,6 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <key>DesktopPosition</key>
 <string>BottomRight</string>
 ```
+### Changed
+- Line breaks and white space is removed when `BrandLogo` is parsed as a base64 string to ensure that the logo is displayed correctly in the side menu
+- Post-install script now re-launches the app after the installation is complete to ensure that the app is running with the latest version
 
 ## [1.0.6] - 2024-06-17
 ### Fixed
