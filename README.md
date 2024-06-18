@@ -108,8 +108,12 @@ Many aspects of the app can be configured using MDM profiles, the folloing keys 
 | `ShowMenuToggle` | Bool | True | False | Configures whether to show the menu toggle button in the apps side menu. |
 | `ShowDesktopInfo` | Bool | False | False | Configures whether to show information on the desktop. |
 | `DesktopPosition` | String | TopRight | False | Configures the position of the desktop info, available positions are: `TopLeft`, `TopRight`, `BottomLeft`, `BottomRight` |
-| `DesktopInfoLevel` | String | Support | False | Configures the level of information to show on the desktop, available levels are: `Device`, `Support` |
-| `FontSize` | Integer | 17 | False | Configures the font size for the desktop info. |
+| `DesktopInfoLevel` | String | Support | False | Configures the level of information to show on the desktop, available levels are: `Minimal`, `Hardware`, `Full`, `Custom` |
+| `DesktopInfoCustomItems` | Array | None | False | If `DesktopInfoLevel` is set to `Custom`, use this array to determine which information to show. Available info are: `HostName`, `Model`, `SerialNumber`, `Processor`, `IpAddress`, `MemSize`, `OsBuild`, `OsVersion`, `LastBootTime`, `StorageInfo`, `SupportPhone`, `SupportEmail`, `Separator` |
+| `DesktopInfoBackgroundColor` | String | Transparent | False | Configures the background color for the desktop info. Configure using Hex format |
+| `DesktopInfoBackgroundOpacity` | Real | 1.0 | False | Configures the background opacity for the desktop info. Configure a value between 1.0 - 0.1 |
+| `DesktopInfoColorHighlight` | Bool | True | False | Configures whether to highlight the text in the desktop info. |
+| `DesktopInfoFontSize` | Integer | 17 | False | Configures the font size for the desktop info. |
 
 ### Example Configuration
 
