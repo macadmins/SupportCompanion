@@ -161,7 +161,7 @@ fi
   "distribution_style": true,
   "version": "1.0.0",
   "name": "SupportCompanion_LaunchAgent-1.0.0.pkg",
-  "install_location": "/",
+  "install_location": "/Library/LaunchAgents",
   "signing_info": {
     "identity": "$INSTALLER_SIGNING_IDENTITY",
     "timestamp": true
