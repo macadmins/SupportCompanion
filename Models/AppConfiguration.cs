@@ -10,7 +10,7 @@ public class AppConfiguration
         "ChangePasswordMode", "SupportEmail", "SupportPhone", "HiddenActions", "NotificationInterval",
         "NotificationTitle", "NotificationImage", "SoftwareUpdateNotificationMessage",
         "SoftwareUpdateNotificationButtonText", "AppUpdateNotificationMessage", "AppUpdateNotificationButtonText",
-        "MunkiMode", "IntuneMode", "LogFolders", "Actions", "BrandLogo", "ShowMenuToggle", "ShowDesktopInfo", "FontSize",
+        "MunkiMode", "IntuneMode", "LogFolders", "Actions", "BrandLogo", "ShowMenuToggle", "ShowDesktopInfo", "DesktopInfoFontSize",
         "DesktopPosition", "DesktopInfoLevel", "DesktopInfoColorHighlight", "DesktopInfoBackgroundColor", "DesktopInfoBackgroundOpacity",
         "DesktopInfoCustomItems"
     };
@@ -45,7 +45,7 @@ public class AppConfiguration
     public Dictionary<string, Dictionary<string, string>> Actions { get; set; } = new();
     public bool ShowMenuToggle { get; set; } = true;
     public bool ShowDesktopInfo { get; set; } = false;
-    public int FontSize { get; set; } = 17;
+    public int DesktopInfoFontSize { get; set; } = 17;
     public string DesktopPosition { get; set; } = "TopRight";
     public string DesktopInfoLevel { get; set; } = "Full";
     public bool DesktopInfoColorHighlight { get; set; } = true;

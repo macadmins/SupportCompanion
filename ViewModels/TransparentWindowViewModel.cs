@@ -20,7 +20,7 @@ public class TransparentWindowViewModel : ViewModelBase
     public ITransparentWindow TransparentWindow { get; set; }
     public static string SupportPhoneNumber => App.Config.SupportPhone;
     public static string SupportEmail => App.Config.SupportEmail;
-    public static int FontSize => App.Config.FontSize;
+    public static int FontSize => App.Config.DesktopInfoFontSize;
     public bool ShowSeparator { get; private set; }
     public bool ShowHostname { get; private set; }
     public bool ShowSerialNumber { get; private set; }

@@ -156,9 +156,9 @@ public class AppConfigHelper
                     break;
                 case "FontSize":
                     if (pref.Value is NSNumber fontSize)
-                        Config.FontSize = fontSize.Int32Value;
+                        Config.DesktopInfoFontSize = fontSize.Int32Value;
                     else if (pref.Value is NSString fontSizeString)
-                        Config.FontSize = int.Parse(fontSizeString.ToString());
+                        Config.DesktopInfoFontSize = int.Parse(fontSizeString.ToString());
                     break;
                 case "ShowDesktopInfo":
                     Config.ShowDesktopInfo = (bool)pref.Value;
