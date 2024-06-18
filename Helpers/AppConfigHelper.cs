@@ -35,7 +35,8 @@ public class AppConfigHelper
                 case "BrandLogo":
                     Config.BrandLogo = pref.Value as NSString;
                     // remove line breaks and spaces if it's not a path
-                    if (!Config.BrandLogo.Contains("/"))
+                    bool isPath = System.IO.Path.IsPathRooted(Config.BrandLogo);
+                    if (!isPath)
                     {
                         Config.BrandLogo = Config.BrandLogo.Replace("\n", "").Replace(" ", "");
                     }
