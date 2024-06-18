@@ -13,6 +13,7 @@ public class TransparentWindowViewModel : ViewModelBase
     private IOKitService _iioKit;
     private SystemInfoService _systemInfo;
     private readonly StorageService _storage;
+    private readonly LoggerService _logger;
     private Timer? _timer;
     private StorageModel? _storageInfo;
     private DeviceInfoModel? _deviceInfo;
@@ -40,12 +41,14 @@ public class TransparentWindowViewModel : ViewModelBase
     private static double DesktopInfoBackgroundOpacity => App.Config.DesktopInfoBackgroundOpacity;
     public SolidColorBrush BackgroundColor { get; private set; }
 
-    public TransparentWindowViewModel(IOKitService iioKit, SystemInfoService systemInfo, StorageService storage)
+    public TransparentWindowViewModel(IOKitService iioKit, SystemInfoService systemInfo, StorageService storage,
+        LoggerService logger)
     {
         ShowSeparator = false;
         _iioKit = iioKit;
         _systemInfo = systemInfo;
         _storage = storage;
+        _logger = logger;
         DeviceInfo = new DeviceInfoModel();
         StorageInfo = new StorageModel();
         if (App.Config.DesktopInfoBackgroundColor != "Transparent")
@@ -95,7 +98,7 @@ public class TransparentWindowViewModel : ViewModelBase
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            _logger.Log("TransparentWindowViewModel:GatherSystemInfoSafe", e.Message, 2);
         }
     }
     
