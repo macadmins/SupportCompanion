@@ -159,6 +159,26 @@ public class AppConfigHelper
                 case "DesktopInfoLevel":
                     Config.DesktopInfoLevel = pref.Value as NSString;
                     break;
+                case "DesktopInfoColorHighlight":
+                    Config.DesktopInfoColorHighlight = (bool)pref.Value;
+                    break;
+                case "DesktopInfoBackgroundColor":
+                    Config.DesktopInfoBackgroundColor = pref.Value as NSString;
+                    break;
+                case "DesktopInfoBackgroundOpacity":
+                    if (pref.Value is NSNumber Opacity)
+                        Config.DesktopInfoBackgroundOpacity = Opacity.DoubleValue;
+                    break;
+                case "DesktopInfoCustomItems":
+                    if (pref.Value is NSMutableArray desktopInfoCustomItemsArray)
+                    {
+                        Config.DesktopInfoCustomItems = new List<string>();
+                        foreach (var item in desktopInfoCustomItemsArray)
+                            if (item is NSString desktopInfoCustomItem)
+                                Config.DesktopInfoCustomItems.Add(desktopInfoCustomItem.ToString());
+                    }
+
+                    break;
             }
 
         if (!string.IsNullOrEmpty(Config.BrandColor))

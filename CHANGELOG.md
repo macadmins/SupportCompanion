@@ -13,9 +13,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <key>FontSize</key>
 <integer>19</integer>
 <key>DesktopInfoLevel</key>
-<string>Support</string>
+<string>Custom</string>
+<key>DesktopInfoCustomItems</key>
+<array>
+    <string>HostName</string>
+    <string>SerialNumber</string>
+    <string>SupportEmail</string>
+</array>
+<key>DesktopInfoBackgroundColor</key>
+<string>#000000</string>
+<key>DesktopInfoBackgroundOpacity</key>
+<real>0.6</real>
+<key>DesktopInfoColorHighlight</key>
+<false/>
 <key>DesktopPosition</key>
-<string>BottomLeft</string>
+<string>BottomRight</string>
 ```
 
 ## [1.0.6] - 2024-06-17

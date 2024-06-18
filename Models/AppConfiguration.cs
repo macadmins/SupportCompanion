@@ -11,7 +11,8 @@ public class AppConfiguration
         "NotificationTitle", "NotificationImage", "SoftwareUpdateNotificationMessage",
         "SoftwareUpdateNotificationButtonText", "AppUpdateNotificationMessage", "AppUpdateNotificationButtonText",
         "MunkiMode", "IntuneMode", "LogFolders", "Actions", "BrandLogo", "ShowMenuToggle", "ShowDesktopInfo", "FontSize",
-        "DesktopPosition", "DesktopInfoLevel"
+        "DesktopPosition", "DesktopInfoLevel", "DesktopInfoColorHighlight", "DesktopInfoBackgroundColor", "DesktopInfoBackgroundOpacity",
+        "DesktopInfoCustomItems"
     };
 
     public string BrandName { get; set; } = string.Empty;
@@ -46,5 +47,9 @@ public class AppConfiguration
     public bool ShowDesktopInfo { get; set; } = false;
     public int FontSize { get; set; } = 17;
     public string DesktopPosition { get; set; } = "TopRight";
-    public string DesktopInfoLevel { get; set; } = "Support";
+    public string DesktopInfoLevel { get; set; } = "Full";
+    public bool DesktopInfoColorHighlight { get; set; } = true;
+    public string DesktopInfoBackgroundColor { get; set; } = "Transparent";
+    public double DesktopInfoBackgroundOpacity { get; set; } = 1.0;
+    public List<string> DesktopInfoCustomItems { get; set; } = new() { "" };
 }
