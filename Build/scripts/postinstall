@@ -1,11 +1,23 @@
 #!/bin/bash
 
+AppPath="/Applications/Utilities/SupportCompanion.app"
+ProcessName="SupportCompanion"
 LDName="com.almenscorner.supportcompanion.plist"
 LDPath="/Library/LaunchDaemons/$LDName"
 
 if [[ -z $( sudo launchctl list | grep "$LDName" ) ]]; then
     chmod 755 "$LDPath"
     launchctl load "$LDPath"
+fi
+
+# kill the process if it's running
+if [[ -n $( ps -ef | grep "$ProcessName" | grep -v grep ) ]]; then
+    killall "$ProcessName"
+fi
+AppPath="/Applications/Utilities/SupportCompanion.app"
+# open the app
+if [[ -d "$AppPath" ]]; then
+    open "$AppPath"
 fi
 
 exit 0
