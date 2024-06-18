@@ -1,6 +1,5 @@
-using System.Collections.ObjectModel;
+using Avalonia.Media;
 using Avalonia.Threading;
-using CommunityToolkit.Mvvm.ComponentModel;
 using ReactiveUI;
 using SupportCompanion.Helpers;
 using SupportCompanion.Interfaces;
@@ -38,8 +37,8 @@ public class TransparentWindowViewModel : ViewModelBase
     public string HorizontalAlignment { get; private set; }
     public string VerticalAlignment { get; private set; }
     public object CurrentView { get; private set; }
-    public static string DesktopInfoBackgroundColor => App.Config.DesktopInfoBackgroundColor;
-    public static double DesktopInfoBackgroundOpacity => App.Config.DesktopInfoBackgroundOpacity; 
+    private static double DesktopInfoBackgroundOpacity => App.Config.DesktopInfoBackgroundOpacity;
+    public SolidColorBrush BackgroundColor { get; private set; }
 
     public TransparentWindowViewModel(IOKitService iioKit, SystemInfoService systemInfo, StorageService storage)
     {
@@ -49,16 +48,31 @@ public class TransparentWindowViewModel : ViewModelBase
         _storage = storage;
         DeviceInfo = new DeviceInfoModel();
         StorageInfo = new StorageModel();
+        if (App.Config.DesktopInfoBackgroundColor != "Transparent")
+            SetBackgroundColor();
         SetVisibility(App.Config.DesktopInfoLevel);
         InitializeAsync();
-        if (App.Config.DesktopInfoLevel == "Full" || 
-            App.Config.DesktopInfoCustomItems.Contains("SupportPhone") || 
-            App.Config.DesktopInfoCustomItems.Contains("SupportEmail"))
-        {
+        if (App.Config.DesktopInfoLevel == "Full")
             ShowSeparator = true;
-        }
         VerticalAlignment = App.Config.DesktopPosition.Contains("Bottom") ? "Bottom" : "Top";
         HorizontalAlignment = App.Config.DesktopPosition.Contains("Right") ? "Right" : "Left";
+    }
+
+    private void SetBackgroundColor()
+    {
+        string hexColor = App.Config.DesktopInfoBackgroundColor;
+        BackgroundColor = HexToBrush(hexColor, DesktopInfoBackgroundOpacity);
+    }
+
+    private SolidColorBrush HexToBrush(string hex, double opacity)
+    {
+        hex = hex.Replace("#", "");
+
+        byte r = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+        byte g = byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+        byte b = byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+
+        return new SolidColorBrush(Color.FromArgb((byte)(opacity * 255), r, g, b));
     }
     
     public DeviceInfoModel? DeviceInfo
@@ -111,6 +125,7 @@ public class TransparentWindowViewModel : ViewModelBase
                 ShowSupportEmail = App.Config.DesktopInfoCustomItems.Contains("SupportEmail");
                 ShowSupportPhone = App.Config.DesktopInfoCustomItems.Contains("SupportPhone");
                 ShowLastBootTime = App.Config.DesktopInfoCustomItems.Contains("LastBootTime");
+                ShowSeparator = App.Config.DesktopInfoCustomItems.Contains("Separator");
                 CurrentView = new Views.TransparentWindowCustomView();
                 break;
         }

@@ -20,8 +20,7 @@
           VerticalAlignment="{Binding VerticalAlignment}"
           Margin="45">
         <Border CornerRadius="10" 
-                Background="{Binding DesktopInfoBackgroundColor}" 
-                Opacity="{Binding DesktopInfoBackgroundOpacity}">
+                Background="{Binding BackgroundColor}">
             <StackPanel>
                 <TextBlock>
                     <Run Text="{x:Static assets:Resources.DeviceInfoHostName}"/>

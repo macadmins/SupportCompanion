@@ -13,15 +13,13 @@
             <Setter Property="Margin" Value="10,5,10,5"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Opacity" Value="1.0"/>
         </Style>
     </UserControl.Styles>
     <Grid HorizontalAlignment="{Binding HorizontalAlignment}"
           VerticalAlignment="{Binding VerticalAlignment}"
           Margin="45">
         <Border CornerRadius="10" 
-                Background="{Binding DesktopInfoBackgroundColor}" 
-                Opacity="{Binding DesktopInfoBackgroundOpacity}">
+                Background="{Binding BackgroundColor}">
             <StackPanel>
                 <TextBlock IsVisible="{Binding ShowHostname}">
                     <Run Text="{x:Static assets:Resources.DeviceInfoHostName}"/>
