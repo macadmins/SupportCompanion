@@ -34,8 +34,12 @@ public class AppConfigHelper
                     break;
                 case "BrandLogo":
                     Config.BrandLogo = pref.Value as NSString;
-                    // remove line breaks and spaces
-                    Config.BrandLogo = Config.BrandLogo.Replace("\n", "").Replace(" ", "");
+                    // remove line breaks and spaces if it's not a path
+                    if (!Config.BrandLogo.Contains("/"))
+                    {
+                        Config.BrandLogo = Config.BrandLogo.Replace("\n", "").Replace(" ", "");
+                    }
+
                     break;
                 case "SupportUrl":
                     Config.SupportPageUrl = pref.Value as NSString;
