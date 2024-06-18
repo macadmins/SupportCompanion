@@ -33,6 +33,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Line breaks and white space is removed when `BrandLogo` is parsed as a base64 string to ensure that the logo is displayed correctly in the side menu
 - Post-install script now re-launches the app after the installation is complete to ensure that the app is running with the latest version
+### Fixed
+- AD Password Expiry color was not being set correctly in the UI. This has been fixed by setting the color based on the number of days until the password expires
 
 ## [1.0.6] - 2024-06-17
 ### Fixed
