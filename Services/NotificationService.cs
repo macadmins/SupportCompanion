@@ -28,6 +28,14 @@ public class NotificationService : INotification
 
     public void SendNotification(string message, string buttonText, string command)
     {
+        if (App.Config.NotificationInterval == 0)
+        {
+            _logger.Log(
+                "NotificationService",
+                $"Notification interval set to 0, skipping notification",
+                1);
+            return;
+        }
         var notification = new NSUserNotification
         {
             Title = App.Config.NotificationTitle,
