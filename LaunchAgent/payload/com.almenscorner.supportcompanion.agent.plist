@@ -7,14 +7,14 @@
 		<string>Aqua</string>
 	</array>
 	<key>Label</key>
-	<string>com.almenscorner.supportcompanion</string>
+	<string>com.almenscorner.supportcompanion.agent</string>
 	<key>ProgramArguments</key>
 	<array>
-		<string>/usr/bin/open</string>
-		<string>-a</string>
-		<string>/Applications/Utilities/SupportCompanion.app</string>
+		<string>/Applications/Utilities/SupportCompanion.app/Contents/MacOS/SupportCompanion</string>
 	</array>
 	<key>RunAtLoad</key>
+	<true/>
+	<key>KeepAlive</key>
 	<true/>
 </dict>
 </plist>

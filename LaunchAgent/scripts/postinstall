@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # If you change your agent file name, update the following line
-launch_agent_plist_name='com.almenscorner.supportcompanion.plist'
+launch_agent_plist_name='com.almenscorner.supportcompanion.agent.plist'
 
 # Base paths
 launch_agent_base_path='/Library/LaunchAgents'
