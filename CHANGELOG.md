@@ -4,9 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.7] - 2024-06-18
+## [1.0.7] - 2024-06-19
 ### Added
 - A package for the LaunchAgent which is signed and notarized using the same certificate as the main app
+- An option to disable all notifications, the disable notifications set the value for `NotificationInterval` to 0
 - The option to show information about the device and support contact information on the desktop background. This allows for admins to show information about the device and support contact information on the desktop background. The information is displayed in any corner of the desktop background and can be customized using the configuration. Example configuration:
 ```xml
 <key>ShowDesktopInfo</key>
