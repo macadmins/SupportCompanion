@@ -33,7 +33,7 @@ public class MacPassword
             kerberosSSOInfoDict["password_expires_date"] = daysUntilExpiry;
             var expiryColor = daysUntilExpiry switch
             {
-                < 0 => "#FF4F44",
+                < 2 => "#FF4F44",
                 < 7 => "#FCE100",
                 _ => "LightGreen"
             };

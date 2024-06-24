@@ -35,6 +35,7 @@ I am only able to test with Intune, so if you have another MDM provider, I would
 - **Pending Updates**: View pending updates for applications.
 - **Applications**: View installed applications and their versions.
 - **Identity**: View the current user's profile information and Kerberos SSO or Platform SSO information.
+- **Desktop Info**: Show information on the desktop such as device name, serial number, macOS version, and IP address.
 
 ## Localization
 
@@ -48,6 +49,8 @@ Contributions to other languages are welcome!
 2. Download and install the MacAdmins Python package from [here](https://github.com/macadmins/python/releases/tag/v3.12.1.80742).
    - This is required for the app to run the scripts such as collecting MDM information.
 3. Run the PKG installer.
+4. Optional
+    - Install the Launch Agent package attached to the release to automatically start and keep the app running.
 
 ## Installed files
 
@@ -63,6 +66,14 @@ The app is installed in the `/Applications/Utilities` folder and the following f
 
 An uninstaller script is included in the app bundle. The script can be found in the following location:
 `/Applications/Utilities/Support Companion.app/Contents/Resources/Uninstall.sh`
+
+## About the Launch Agent
+The Launch Agent provided as a signed, notarized and stapled package will, if installed and loaded:
+- Start the app if it is not running
+- Start the app again if quit by the user
+- Start the app on login
+
+This Launch Agent is optional and you are free to create your own Launch Agent if you prefer.
 
 ## Using the app
 
@@ -93,8 +104,8 @@ Many aspects of the app can be configured using MDM profiles, the folloing keys 
 | `SupportPhone` | String | None | False | Configures the phone number shown when the user clicks on the Support Info button |
 | `HiddenWidgets` | Array | None | False | Configures which widgets to hide, available widgets are: `DeviceInfo`, `MunkiPendingApps`, `MunkiUpdates`, `IntunePendingApps`, `IntuneUpdates`, `Storage`, `MdmStatus`, `Actions`, `Battery`, `EvergreenInfo` |
 | `HiddenActions` | Array | None | False | Configures which actions to hide, available actions are: `Support`, `ManagedSoftwareCenter`, `ChangePassword`, `Reboot`, `KillAgent`, `SoftwareUpdates`, `GatherLogs` |
-| `NotificationInterval` | Integer | 4 | False | Configures the interval for notifications in hours for Application Updates and Software Updates notifications |
-| `NotificationTitle` | String | Support Companion | False | Configures the title for notifications for notifications |
+| `NotificationInterval` | Integer | 4 | False | Configures the interval for notifications in hours for Application Updates and Software Updates notifications. Setting to 0 disables notifications |
+| `NotificationTitle` | String | Support Companion | False | Configures the title for notifications |
 | `NotificationImage` | String | None | False | Configures an image to add to notifications. Path should be specified |
 | `SoftwareUpdateNotificationMessage` | String | You have software updates available. Take action now! \ud83c\udf89 | False | Configures the message for notifications for Software Updates notifications |
 | `SoftwareUpdateNotificationButtonText` | String | Details \ud83d\udc40 | False | Configures the button text for notifications for Software Updates notifications |
@@ -105,6 +116,14 @@ Many aspects of the app can be configured using MDM profiles, the folloing keys 
 | `LogFolders` | Array | /Library/Logs/Microsoft | False | Configures the log folders to gather logs from. Only used when gathering logs. |
 | `Actions` | Array | None | False | Configures custom actions to add to the tray menu. See example below. |
 | `ShowMenuToggle` | Bool | True | False | Configures whether to show the menu toggle button in the apps side menu. |
+| `ShowDesktopInfo` | Bool | False | False | Configures whether to show information on the desktop. |
+| `DesktopPosition` | String | TopRight | False | Configures the position of the desktop info, available positions are: `TopLeft`, `TopRight`, `BottomLeft`, `BottomRight` |
+| `DesktopInfoLevel` | String | Full | False | Configures the level of information to show on the desktop, available levels are: `Minimal`, `Hardware`, `Full`, `Custom` |
+| `DesktopInfoCustomItems` | Array | None | False | If `DesktopInfoLevel` is set to `Custom`, use this array to determine which information to show. Available info are: `HostName`, `Model`, `SerialNumber`, `Processor`, `IpAddress`, `MemSize`, `OsBuild`, `OsVersion`, `LastBootTime`, `StorageInfo`, `SupportPhone`, `SupportEmail`, `Separator` |
+| `DesktopInfoBackgroundColor` | String | Transparent | False | Configures the background color for the desktop info. Configure using Hex format |
+| `DesktopInfoBackgroundOpacity` | Real | 1.0 | False | Configures the background opacity for the desktop info. Configure a value between 1.0 - 0.1 |
+| `DesktopInfoColorHighlight` | Bool | True | False | Configures whether to highlight the text in the desktop info. |
+| `DesktopInfoFontSize` | Integer | 17 | False | Configures the font size for the desktop info. |
 
 ### Example Configuration
 
@@ -197,6 +216,8 @@ To switch from Munki to Intune for application information, add the following ke
 ![SCSupportInfo](https://github.com/almenscorner/SupportCompanion/assets/78877636/58ea4438-3de7-46d7-9f67-9de8c6e01a46)
 ### Gather logs
 ![SCLogs102](https://github.com/almenscorner/SupportCompanion/assets/78877636/8cdc3405-8268-4ac8-9210-fd0d5b8c1b85)
+### Desktop Info
+![SCNotification](https://github.com/macadmins/SupportCompanion/assets/78877636/9352c18b-c0a9-496e-8c0c-2c45805edbbb)
 ### Notifications
 ![SCNotification](https://github.com/almenscorner/SupportCompanion/assets/78877636/414a7d55-2925-4312-bd9c-9f11ac450e23)
 

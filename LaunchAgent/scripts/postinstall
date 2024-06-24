@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# If you change your agent file name, update the following line
+launch_agent_plist_name='com.almenscorner.supportcompanion.agent.plist'
+
+# Base paths
+launch_agent_base_path='/Library/LaunchAgents'
+
+# Current console user information
+console_user=$(/usr/bin/stat -f "%Su" /dev/console)
+console_user_uid=$(/usr/bin/id -u "$console_user")
+
+# Only enable the LaunchAgent if there is a user logged in, otherwise rely on built in LaunchAgent behavior
+if [[ -z "$console_user" ]]; then
+  echo "Did not detect user"
+elif [[ "$console_user" == "loginwindow" ]]; then
+  echo "Detected Loginwindow Environment"
+elif [[ "$console_user" == "_mbsetupuser" ]]; then
+  echo "Detect SetupAssistant Environment"
+elif [[ "$console_user" == "root" ]]; then
+  echo "Detect root as currently logged-in user"
+else
+  # Unload the agent so it can be triggered on re-install
+  /bin/launchctl asuser "${console_user_uid}" /bin/launchctl unload -w "${launch_agent_base_path}/${launch_agent_plist_name}"
+  # Kill SupportCompanion just in case (say someone manually opens it and not launched via launchagent
+  /usr/bin/killall SupportCompanion
+  # Load the launch agent
+  /bin/launchctl asuser "${console_user_uid}" /bin/launchctl load -w "${launch_agent_base_path}/${launch_agent_plist_name}"
+fi

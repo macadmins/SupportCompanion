@@ -204,4 +204,7 @@
     <data name="SupportDialogPhone" xml:space="preserve">
         <value>Téléphone</value>
     </data>
+    <data name="DesktopInfoUsedOn" xml:space="preserve">
+        <value>utilisé sur</value>
+    </data>
 </root>

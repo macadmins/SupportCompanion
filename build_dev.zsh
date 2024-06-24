@@ -1,6 +1,7 @@
 #!/bin/zsh
 PROJECT_PATH="."
 BUILD_PATH="./Build"
+BUILD_LA_PATH="./LaunchAgent"
 APP_SUPPORT_PATH="${BUILD_PATH}/payload/Library/Application Support/SupportCompanion"
 PUBLISH_OUTPUT_DIRECTORY="${PROJECT_PATH}/bin/Release/net8.0-macos/SupportCompanion.app"
 PUBLISH_OUTPUT_APP="${PROJECT_PATH}/bin/Release/net8.0-macos/SupportCompanion.app"
@@ -84,3 +85,23 @@ SIGNED_JSONFILE
 
 # Create the signed pkg
 munkipkg "$BUILD_PATH"
+
+# Create the json file for munkipkg Support Companion LA
+/bin/cat << SIGNED_JSONFILE > "$BUILD_LA_PATH/build-info.json"
+{
+  "ownership": "recommended",
+  "suppress_bundle_relocation": true,
+  "identifier": "com.almenscorner.supportcompanion.LaunchAgent",
+  "postinstall_action": "none",
+  "distribution_style": true,
+  "version": "1.0.0",
+  "name": "SupportCompanion_LaunchAgent-1.0.0.pkg",
+  "install_location": "/Library/LaunchAgents"
+}
+SIGNED_JSONFILE
+
+# Create the signed pkg
+munkipkg "$BUILD_LA_PATH"
+
+# Move LA build to the main build
+mv "$BUILD_LA_PATH/build/SupportCompanion_LaunchAgent-1.0.0.pkg" "$BUILD_PATH/build/SupportCompanion_LaunchAgent-1.0.0.pkg"

@@ -7,6 +7,7 @@
 
 # ignore build output
 Build/build
+LaunchAgent/build
 Build/payload/Applications/Utilities/*.app
 
 # ignore macOS files

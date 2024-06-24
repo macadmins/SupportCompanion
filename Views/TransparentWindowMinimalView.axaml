@@ -1,0 +1,48 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:SupportCompanion.ViewModels"
+        xmlns:assets="clr-namespace:SupportCompanion.Assets"
+        Background="Transparent"
+        x:Class="SupportCompanion.Views.TransparentWindowMinimalView"
+        x:DataType="vm:TransparentWindowViewModel"
+        x:CompileBindings="True">
+    <UserControl.Styles>
+        <Style Selector="TextBlock">
+            <Setter Property="FontSize" Value="{Binding FontSize}"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="Margin" Value="10,5,10,5"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Opacity" Value="1.0"/>
+        </Style>
+    </UserControl.Styles>
+    <Grid HorizontalAlignment="{Binding HorizontalAlignment}"
+          VerticalAlignment="{Binding VerticalAlignment}"
+          Margin="45">
+        <Border CornerRadius="10" 
+                Background="{Binding BackgroundColor}">
+            <StackPanel>
+                <TextBlock>
+                    <Run Text="{x:Static assets:Resources.DeviceInfoHostName}"/>
+                    <Run Text=": "/>
+                    <Run Text="{Binding DeviceInfo.HostName}" />
+                </TextBlock>
+                <TextBlock>
+                    <Run Text="{x:Static assets:Resources.DeviceInfoSerialNumber}"/>
+                    <Run Text=": "/>
+                    <Run Text="{Binding DeviceInfo.SerialNumber}" />
+                </TextBlock>
+                <TextBlock>
+                    <Run Text="{x:Static assets:Resources.DeviceInfoModel}"/>
+                    <Run Text=": "/>
+                    <Run Text="{Binding DeviceInfo.Model}" />
+                </TextBlock>
+                <TextBlock>
+                    <Run Text="{x:Static assets:Resources.DeviceInfoOSVersion}"/>
+                    <Run Text=": "/>
+                    <Run Text="{Binding DeviceInfo.OsVersion}" />
+                </TextBlock>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

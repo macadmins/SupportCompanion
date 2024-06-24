@@ -34,6 +34,13 @@ public class AppConfigHelper
                     break;
                 case "BrandLogo":
                     Config.BrandLogo = pref.Value as NSString;
+                    // remove line breaks and spaces if it's not a path
+                    bool isPath = System.IO.Path.IsPathRooted(Config.BrandLogo);
+                    if (!isPath)
+                    {
+                        Config.BrandLogo = Config.BrandLogo.Replace("\n", "").Replace(" ", "");
+                    }
+
                     break;
                 case "SupportUrl":
                     Config.SupportPageUrl = pref.Value as NSString;
@@ -143,6 +150,41 @@ public class AppConfigHelper
                     break;
                 case "ShowMenuToggle":
                     Config.ShowMenuToggle = (bool)pref.Value;
+                    break;
+                case "DesktopPosition":
+                    Config.DesktopPosition = pref.Value as NSString;
+                    break;
+                case "DesktopInfoFontSize":
+                    if (pref.Value is NSNumber fontSize)
+                        Config.DesktopInfoFontSize = fontSize.Int32Value;
+                    else if (pref.Value is NSString fontSizeString)
+                        Config.DesktopInfoFontSize = int.Parse(fontSizeString.ToString());
+                    break;
+                case "ShowDesktopInfo":
+                    Config.ShowDesktopInfo = (bool)pref.Value;
+                    break;
+                case "DesktopInfoLevel":
+                    Config.DesktopInfoLevel = pref.Value as NSString;
+                    break;
+                case "DesktopInfoColorHighlight":
+                    Config.DesktopInfoColorHighlight = (bool)pref.Value;
+                    break;
+                case "DesktopInfoBackgroundColor":
+                    Config.DesktopInfoBackgroundColor = pref.Value as NSString;
+                    break;
+                case "DesktopInfoBackgroundOpacity":
+                    if (pref.Value is NSNumber Opacity)
+                        Config.DesktopInfoBackgroundOpacity = Opacity.DoubleValue;
+                    break;
+                case "DesktopInfoCustomItems":
+                    if (pref.Value is NSMutableArray desktopInfoCustomItemsArray)
+                    {
+                        Config.DesktopInfoCustomItems = new List<string>();
+                        foreach (var item in desktopInfoCustomItemsArray)
+                            if (item is NSString desktopInfoCustomItem)
+                                Config.DesktopInfoCustomItems.Add(desktopInfoCustomItem.ToString());
+                    }
+
                     break;
             }
 

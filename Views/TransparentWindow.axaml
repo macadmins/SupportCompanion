@@ -1,0 +1,15 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:SupportCompanion.ViewModels"
+        xmlns:assets="clr-namespace:SupportCompanion.Assets"
+        Background="Transparent"
+        TransparencyLevelHint="Transparent"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="NoChrome"
+        Width="1000"
+        Height="1000"
+        x:Class="SupportCompanion.Views.TransparentWindow"
+        x:DataType="vm:TransparentWindowViewModel"
+        x:CompileBindings="True">
+    <ContentControl Content="{Binding CurrentView}"/>
+</Window>

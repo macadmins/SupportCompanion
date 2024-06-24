@@ -1,6 +1,7 @@
 #!/bin/bash
 PROJECT_PATH="."
 BUILD_PATH="./Build"
+BUILD_LA_PATH="./LaunchAgent"
 APP_SUPPORT_PATH="${BUILD_PATH}/payload/Library/Application Support/SupportCompanion"
 PUBLISH_OUTPUT_DIRECTORY="${PROJECT_PATH}/bin/Release/net8.0-macos/SupportCompanion.app"
 PUBLISH_OUTPUT_APP="${PROJECT_PATH}/bin/Release/net8.0-macos/SupportCompanion.app"
@@ -148,4 +149,34 @@ else
   # Notarize Support Companion package
   $XCODE_NOTARY_PATH submit "$PKG_PATH/SupportCompanion-$AUTOMATED_SC_BUILD.pkg" --keychain-profile "supportcompanion" --wait
   $XCODE_STAPLER_PATH staple "$PKG_PATH/SupportCompanion-$AUTOMATED_SC_BUILD.pkg"
+fi
+
+# Create the json file for signed munkipkg Support Companion LaunchAgent pkg
+/bin/cat << SIGNED_JSONFILE > "$BUILD_LA_PATH/build-info.json"
+{
+  "ownership": "recommended",
+  "suppress_bundle_relocation": true,
+  "identifier": "com.almenscorner.supportcompanion.LaunchAgent",
+  "postinstall_action": "none",
+  "distribution_style": true,
+  "version": "1.0.0",
+  "name": "SupportCompanion_LaunchAgent-1.0.0.pkg",
+  "install_location": "/Library/LaunchAgents",
+  "signing_info": {
+    "identity": "$INSTALLER_SIGNING_IDENTITY",
+    "timestamp": true
+  }
+}
+SIGNED_JSONFILE
+
+# Create the signed pkg
+python3 "${MP_BINDIR}/munki-pkg-${MP_SHA}/munkipkg" "$BUILD_LA_PATH"
+PKG_RESULT="$?"
+if [ "${PKG_RESULT}" != "0" ]; then
+  echo "Could not sign package: ${PKG_RESULT}" 1>&2
+else
+  mv "$BUILD_LA_PATH/build/SupportCompanion_LaunchAgent-1.0.0.pkg" "$BUILD_PATH/build/SupportCompanion_LaunchAgent-1.0.0.pkg"
+  # Notarize Support Companion LaunchAgent package
+  $XCODE_NOTARY_PATH submit "$PKG_PATH/SupportCompanion_LaunchAgent-1.0.0.pkg" --keychain-profile "supportcompanion" --wait
+  $XCODE_STAPLER_PATH staple "$PKG_PATH/SupportCompanion_LaunchAgent-1.0.0.pkg"
 fi
