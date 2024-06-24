@@ -4,6 +4,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+### [1.1.0] - 2024-06-24
+### Added
+- A package for a LaunchAgent which is signed and notarized using the same certificate as the main app
+  - The LaunchAgent is configured to run the app at login, when activated and also start the app if closed by the user
+- An option to disable all notifications, to disable notifications, set the value for `NotificationInterval` to `0`
+- A new feature to show information about the device and support contact information on the desktop background. This allows for admins to show information about the device and support contact information on the desktop background. The information is displayed in any corner of the desktop background and can be customized using the configuration. Example configuration:
+```xml
+<key>ShowDesktopInfo</key>
+<true/>
+<key>DesktopInfoFontSize</key>
+<integer>19</integer>
+<key>DesktopInfoLevel</key>
+<string>Custom</string>
+<key>DesktopInfoCustomItems</key>
+<array>
+    <string>HostName</string>
+    <string>SerialNumber</string>
+    <string>SupportEmail</string>
+</array>
+<key>DesktopInfoBackgroundColor</key>
+<string>#000000</string>
+<key>DesktopInfoBackgroundOpacity</key>
+<real>0.6</real>
+<key>DesktopInfoColorHighlight</key>
+<false/>
+<key>DesktopPosition</key>
+<string>BottomRight</string>
+```
+### Changed
+- Line breaks and white space is removed when `BrandLogo` is parsed as a base64 string to ensure that the logo is displayed correctly in the side menu
+- Post-install script now re-launches the app after the installation is complete to ensure that the app is running with the latest version
+### Fixed
+- AD Password Expiry color was not being set correctly in the UI. This has been fixed by setting the color based on the number of days until the password expires
+
 ## [1.0.7] - 2024-06-19
 ### Added
 - A package for the LaunchAgent which is signed and notarized using the same certificate as the main app
