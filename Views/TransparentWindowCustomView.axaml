@@ -91,7 +91,8 @@
                     <Run Text=": "/>
                     <Run Text="{Binding SupportPhoneNumber}"/>
                 </TextBlock>
-                <TextBlock IsVisible="{Binding ShowSupportEmail}">
+                <TextBlock IsVisible="{Binding ShowSupportEmail}"
+                           MaxWidth="500">
                     <Run Text="{x:Static assets:Resources.SupportDialogEmail}"/>
                     <Run Text=": "/>
                     <Run Text="{Binding SupportEmail}"/>
