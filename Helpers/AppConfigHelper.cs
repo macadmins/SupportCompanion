@@ -154,7 +154,7 @@ public class AppConfigHelper
                 case "DesktopPosition":
                     Config.DesktopPosition = pref.Value as NSString;
                     break;
-                case "FontSize":
+                case "DesktopInfoFontSize":
                     if (pref.Value is NSNumber fontSize)
                         Config.DesktopInfoFontSize = fontSize.Int32Value;
                     else if (pref.Value is NSString fontSizeString)
