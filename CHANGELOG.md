@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2024-06-27
+### Added
+- A new suite package that contains the main app and the LaunchAgent package. This allows for admins to install both the main app and the LaunchAgent using a single package
+### Changed
+- Updated the LaunchAgent to launch the process using `ProcessType` `Interactive` as the UI was sluggish when launched as a background process
+- Tray Icon is now a outlined version of the logo to make it look more native on macOS. It's also a macOS template image which means it will change color based on the user's wallpaper
+- Avalonia has been updated to 11.0.11
+
 ## [1.1.0] - 2024-06-24
 ### Added
 - A package for a LaunchAgent which is signed and notarized using the same certificate as the main app
