@@ -14,7 +14,9 @@
     </Application.DataTemplates>
     <TrayIcon.Icons>
         <TrayIcons>
-            <TrayIcon Icon="/Assets/trayicon.png" ToolTipText="Support Companion">
+            <TrayIcon Icon="/Assets/trayiconTemplate.png" 
+                      ToolTipText="Support Companion"
+                      MacOSProperties.IsTemplateIcon="True">
                 <TrayIcon.Menu>
                     <NativeMenu>
                         <NativeMenuItem Header="{Binding NativeMenuOpenText}" Command="{Binding OpenApp}" />
