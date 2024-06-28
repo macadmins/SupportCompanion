@@ -124,6 +124,7 @@ Many aspects of the app can be configured using MDM profiles, the folloing keys 
 | `DesktopInfoBackgroundOpacity` | Real | 1.0 | False | Configures the background opacity for the desktop info. Configure a value between 1.0 - 0.1 |
 | `DesktopInfoColorHighlight` | Bool | True | False | Configures whether to highlight the text in the desktop info. |
 | `DesktopInfoFontSize` | Integer | 17 | False | Configures the font size for the desktop info. |
+| `CustomWidgetsPath` | String | None | False | Configures a path to a JSON file containing custom widgets to show on the Home view. |
 
 ### Example Configuration
 
