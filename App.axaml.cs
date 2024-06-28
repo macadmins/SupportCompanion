@@ -172,6 +172,7 @@ namespace SupportCompanion
             serviceCollection.AddSingleton<UserViewModel>();
             serviceCollection.AddSingleton<MacPasswordViewModel>();
             serviceCollection.AddSingleton<TransparentWindowViewModel>();
+            serviceCollection.AddSingleton<CustomWidgetsBaseViewModel>();
 
             ServiceProvider = serviceCollection.BuildServiceProvider();
         }

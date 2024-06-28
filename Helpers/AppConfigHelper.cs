@@ -186,6 +186,9 @@ public class AppConfigHelper
                     }
 
                     break;
+                case "CustomWidgetsPath":
+                    Config.CustomWidgetsPath = pref.Value as NSString;
+                    break;
             }
 
         if (!string.IsNullOrEmpty(Config.BrandColor))

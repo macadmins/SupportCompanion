@@ -9,29 +9,29 @@
              x:DataType="vm:HomeViewModel"
              x:CompileBindings="True">
     <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:HomeViewModel />
     </Design.DataContext>
     <WrapPanel MaxWidth="1250"
                VerticalAlignment="Center"
                HorizontalAlignment="Center">
         <ScrollViewer VerticalScrollBarVisibility="Hidden">
-            <Grid
-                Margin="15">
+            <Grid Margin="15">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
+                
+                <!-- Top Row -->
                 <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal">
                     <views:DeviceInfoWidgetView IsVisible="{Binding ShowDeviceWidget}" />
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
                         <views:EvergreenInfoWidgetView Grid.Row="0" IsVisible="{Binding ShowEvergreenInfo}" />
@@ -39,6 +39,8 @@
                     </Grid>
                     <views:ActionsWidgetView IsVisible="{Binding ShowActions}" />
                 </StackPanel>
+
+                <!-- Middle Row -->
                 <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical">
                     <views:MdmStatusWidgetView IsVisible="{Binding ShowMdmStatus}" />
                     <views:StorageWidgetView IsVisible="{Binding ShowStorage}" />
@@ -49,6 +51,22 @@
                     <views:MunkiPendingAppsWidgetView IsVisible="{Binding ShowMunkiPendingApps}" />
                     <views:IntunePendingAppsWidgetView IsVisible="{Binding ShowIntunePendingApps}" />
                 </StackPanel>
+
+                <!-- Bottom Row -->
+                <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <ItemsControl ItemsSource="{Binding CustomWidgets}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="3"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </Grid>
             </Grid>
         </ScrollViewer>
     </WrapPanel>
