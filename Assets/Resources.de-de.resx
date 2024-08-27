@@ -1,0 +1,170 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Actions" xml:space="preserve">
+        <value>Aktionen</value>
+    </data>
+    <data name="ActionsChangePassword" xml:space="preserve">
+        <value>Passwort wechsel</value>
+    </data>
+    <data name="ActionsGatherLogs" xml:space="preserve">
+        <value>Logs</value>
+    </data>
+    <data name="ActionsGetSupport" xml:space="preserve">
+        <value>Erhalte Support</value>
+    </data>
+    <data name="ActionsOpenMSC" xml:space="preserve">
+        <value>Öffne Kiosk</value>
+    </data>
+    <data name="ActionsReboot" xml:space="preserve">
+        <value>Neustart</value>
+    </data>
+    <data name="ActionsRestartIntuneAgent" xml:space="preserve">
+        <value>Neustart: Intune Agent</value>
+    </data>
+    <data name="ApplicationInstallProgress" xml:space="preserve">
+        <value>Installations Fortschritt</value>
+    </data>
+    <data name="Battery" xml:space="preserve">
+        <value>Batterie</value>
+    </data>
+    <data name="BatteryCycleCount" xml:space="preserve">
+        <value>Ladezyklen</value>
+    </data>
+    <data name="BatteryHealth" xml:space="preserve">
+        <value>Batterie Zustand</value>
+    </data>
+    <data name="Close" xml:space="preserve">
+        <value>Schließen</value>
+    </data>
+    <data name="Days" xml:space="preserve">
+        <value>Tage</value>
+    </data>
+    <data name="DaysAgo" xml:space="preserve">
+        <value>Tage her</value>
+    </data>
+    <data name="DesktopInfoUsedOn" xml:space="preserve">
+        <value>Benutz von</value>
+    </data>
+    <data name="DeviceInfo" xml:space="preserve">
+        <value>Geräteinformationen</value>
+    </data>
+    <data name="DeviceInfoIP" xml:space="preserve">
+        <value>IP Adresse</value>
+    </data>
+    <data name="DeviceInfoLastReboot" xml:space="preserve">
+        <value>Letzter Neustart</value>
+    </data>
+    <data name="DeviceInfoLastRebootToolTip" xml:space="preserve">
+        <value>Regelmäßige Neustarts können die Leistung und Langlebigkeit verbessern&amp;#10, indem temporäre Dateien entfernt und Systemressourcen freigegeben werden.</value>
+    </data>
+    <data name="DeviceInfoMemory" xml:space="preserve">
+        <value>Speicher</value>
+    </data>
+    <data name="DeviceInfoModel" xml:space="preserve">
+        <value>Modell</value>
+    </data>
+    <data name="DeviceInfoProcessor" xml:space="preserve">
+        <value>CPU</value>
+    </data>
+    <data name="DeviceInfoSerialNumber" xml:space="preserve">
+        <value>Seriennummer</value>
+    </data>
+    <data name="DeviceManagement" xml:space="preserve">
+        <value>Geräte Management</value>
+    </data>
+    <data name="DeviceManagementEnrollmentDate" xml:space="preserve">
+        <value>Enrollment Datum</value>
+    </data>
+    <data name="EvergreenCatalogs" xml:space="preserve">
+        <value>Katalog</value>
+    </data>
+    <data name="Exit" xml:space="preserve">
+        <value>Verlassen</value>
+    </data>
+    <data name="InstalledApps" xml:space="preserve">
+        <value>Installierte Programme</value>
+    </data>
+    <data name="InstalledAppsManage" xml:space="preserve">
+        <value>Verwalten</value>
+    </data>
+    <data name="KerberosSSOADPasswordExpiry" xml:space="preserve">
+        <value>AD Passwort Ablaufdatum</value>
+    </data>
+    <data name="KerberosSSOADUsername" xml:space="preserve">
+        <value>AD Nutzername</value>
+    </data>
+    <data name="KerberosSSOLastADPasswordChange" xml:space="preserve">
+        <value>Letzte AD Passwort Änderung</value>
+    </data>
+    <data name="KerberosSSOLastLocalPasswordChange" xml:space="preserve">
+        <value>Letzte lokale Passwortänderung</value>
+    </data>
+    <data name="MenuApplications" xml:space="preserve">
+        <value>Programme</value>
+    </data>
+    <data name="MenuIdentity" xml:space="preserve">
+        <value>Identität</value>
+    </data>
+    <data name="Open" xml:space="preserve">
+        <value>Öffnen</value>
+    </data>
+    <data name="PendingUpdates" xml:space="preserve">
+        <value>Austehende Updates</value>
+    </data>
+    <data name="PendingUpdatesOpenCompanyPortal" xml:space="preserve">
+        <value>Öffne Firmen Portal</value>
+    </data>
+    <data name="PendingUpdatesOpenMSC" xml:space="preserve">
+        <value>Öffne MSC Updates</value>
+    </data>
+    <data name="PlatformSSOLoginFrequency" xml:space="preserve">
+        <value>Login Frequenz</value>
+    </data>
+    <data name="PlatformSSOLoginType" xml:space="preserve">
+        <value>Login Typ</value>
+    </data>
+    <data name="PlatformSSONewUserAuthorizationMode" xml:space="preserve">
+        <value>Autorisierungs Methode für neue Nutzer</value>
+    </data>
+    <data name="PlatformSSORegistrationCompleted" xml:space="preserve">
+        <value>Registrierung komplett</value>
+    </data>
+    <data name="PlatformSSOSharedDeviceKeys" xml:space="preserve">
+        <value>Geteilte Geräte Schlüssel</value>
+    </data>
+    <data name="PlatformSSOUserAuthorizationMode" xml:space="preserve">
+        <value>Nutzer Authorisierungs Modus</value>
+    </data>
+    <data name="Storage" xml:space="preserve">
+        <value>Speicher</value>
+    </data>
+    <data name="StorageUsage" xml:space="preserve">
+        <value>Speichernutzung</value>
+    </data>
+    <data name="SupportDialogEmail" xml:space="preserve">
+        <value>E-Mail</value>
+    </data>
+    <data name="SupportDialogPhone" xml:space="preserve">
+        <value>Telefon</value>
+    </data>
+    <data name="UserInformation" xml:space="preserve">
+        <value>Nutzerinformationen</value>
+    </data>
+    <data name="UserInformationHomeDirectory" xml:space="preserve">
+        <value>Heimverzeichnis</value>
+    </data>
+    <data name="UserInformationUsername" xml:space="preserve">
+        <value>Nutzername</value>
+    </data>
+</root>

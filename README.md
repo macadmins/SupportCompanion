@@ -39,7 +39,7 @@ I am only able to test with Intune, so if you have another MDM provider, I would
 
 ## Localization
 
-The app is localized to `Swedish`, `Norwegian` and `French`. The app will display in the user's preferred language if it is set to one of these languages in macOS. If the user's preferred language is not one of these, the app will default to English.
+The app is localized to `Swedish`, `Norwegian`, `French` and `German`. The app will display in the user's preferred language if it is set to one of these languages in macOS. If the user's preferred language is not one of these, the app will default to English.
 
 Contributions to other languages are welcome!
 
