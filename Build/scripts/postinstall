@@ -8,10 +8,12 @@ launch_daemon_path="/Library/LaunchDaemons/${launchd_name}"
 launch_agent_path="/Library/LaunchAgents/${launcha_name}"
 console_user=$(/usr/bin/stat -f "%Su" /dev/console)
 console_user_uid=$(/usr/bin/id -u "$console_user")
+launchctl_output=$(sudo launchctl list | grep "${launchd_name}")
 
-if [[ -z $( sudo launchctl list | grep "${launchD_name}" ) ]]; then
-    chmod 755 "${launch_daemon_path}"
-    launchctl load "${launch_daemon_path}"
+if [[ -z $launchctl_output ]]; then
+    chown root:wheel "${launch_daemon_path}"
+    chmod 644 "${launch_daemon_path}"
+    launchctl load -w "${launch_daemon_path}"
 fi
 
 # kill the process if it's running

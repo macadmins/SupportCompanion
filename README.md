@@ -36,10 +36,12 @@ I am only able to test with Intune, so if you have another MDM provider, I would
 - **Applications**: View installed applications and their versions.
 - **Identity**: View the current user's profile information and Kerberos SSO or Platform SSO information.
 - **Desktop Info**: Show information on the desktop such as device name, serial number, macOS version, and IP address.
+- **Custom Widgets**: Add custom widgets to the Home view, this allows for displaying information specific to your
+  organization.
 
 ## Localization
 
-The app is localized to `Swedish`, `Norwegian` and `French`. The app will display in the user's preferred language if it is set to one of these languages in macOS. If the user's preferred language is not one of these, the app will default to English.
+The app is localized to `Swedish`, `Norwegian`, `French` and `German`. The app will display in the user's preferred language if it is set to one of these languages in macOS. If the user's preferred language is not one of these, the app will default to English.
 
 Contributions to other languages are welcome!
 
@@ -74,6 +76,13 @@ The Launch Agent provided as a signed, notarized and stapled package will, if in
 - Start the app on login
 
 This Launch Agent is optional and you are free to create your own Launch Agent if you prefer.
+
+## About the suite package
+The suite package is a signed, notarized and stapled package that contains the app and the Launch Agent package. 
+This package is provided for convenience and can be used to install the app and the Launch Agent at the same time.
+
+## AutoPkg
+A recipe for AutoPkg is available [here](https://github.com/autopkg/almenscorner-recipes/tree/main/SupportCompanion).
 
 ## Using the app
 
@@ -124,6 +133,7 @@ Many aspects of the app can be configured using MDM profiles, the folloing keys 
 | `DesktopInfoBackgroundOpacity` | Real | 1.0 | False | Configures the background opacity for the desktop info. Configure a value between 1.0 - 0.1 |
 | `DesktopInfoColorHighlight` | Bool | True | False | Configures whether to highlight the text in the desktop info. |
 | `DesktopInfoFontSize` | Integer | 17 | False | Configures the font size for the desktop info. |
+| `CustomWidgetsPath` | String | None | False | Configures a path to a JSON file containing custom widgets to show on the Home view. |
 
 ### Example Configuration
 

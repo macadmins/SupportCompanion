@@ -10,7 +10,7 @@ SUKIUI_LICENSE_FILE="${PROJECT_PATH}/SUKIUI_LICENSE"
 UNINSTALL_SCRIPT="${PROJECT_PATH}/Assets/Uninstall.sh"
 APP_SIGNING_IDENTITY="Developer ID Application: Mac Admins Open Source (T4SK8ZXCXG)"
 INSTALLER_SIGNING_IDENTITY="Developer ID Installer: Mac Admins Open Source (T4SK8ZXCXG)"
-XCODE_PATH="/Applications/Xcode_15.2.app"
+XCODE_PATH="/Applications/Xcode_15.4.app"
 XCODE_NOTARY_PATH="$XCODE_PATH/Contents/Developer/usr/bin/notarytool"
 XCODE_STAPLER_PATH="$XCODE_PATH/Contents/Developer/usr/bin/stapler"
 VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleVersion" "${PROJECT_PATH}/Info.plist")
@@ -152,6 +152,7 @@ else
 fi
 
 # Create the json file for signed munkipkg Support Companion LaunchAgent pkg
+LAUNCHAGENT_VERSION="1.0.1"
 /bin/cat << SIGNED_JSONFILE > "$BUILD_LA_PATH/build-info.json"
 {
   "ownership": "recommended",
@@ -159,8 +160,8 @@ fi
   "identifier": "com.almenscorner.supportcompanion.LaunchAgent",
   "postinstall_action": "none",
   "distribution_style": true,
-  "version": "1.0.0",
-  "name": "SupportCompanion_LaunchAgent-1.0.0.pkg",
+  "version": "$LAUNCHAGENT_VERSION",
+  "name": "SupportCompanion_LaunchAgent-$LAUNCHAGENT_VERSION.pkg",
   "install_location": "/Library/LaunchAgents",
   "signing_info": {
     "identity": "$INSTALLER_SIGNING_IDENTITY",
@@ -175,8 +176,39 @@ PKG_RESULT="$?"
 if [ "${PKG_RESULT}" != "0" ]; then
   echo "Could not sign package: ${PKG_RESULT}" 1>&2
 else
-  mv "$BUILD_LA_PATH/build/SupportCompanion_LaunchAgent-1.0.0.pkg" "$BUILD_PATH/build/SupportCompanion_LaunchAgent-1.0.0.pkg"
+  mv "$BUILD_LA_PATH/build/SupportCompanion_LaunchAgent-$LAUNCHAGENT_VERSION.pkg" "$BUILD_PATH/build/SupportCompanion_LaunchAgent-$LAUNCHAGENT_VERSION.pkg"
   # Notarize Support Companion LaunchAgent package
-  $XCODE_NOTARY_PATH submit "$PKG_PATH/SupportCompanion_LaunchAgent-1.0.0.pkg" --keychain-profile "supportcompanion" --wait
-  $XCODE_STAPLER_PATH staple "$PKG_PATH/SupportCompanion_LaunchAgent-1.0.0.pkg"
+  $XCODE_NOTARY_PATH submit "$PKG_PATH/SupportCompanion_LaunchAgent-$LAUNCHAGENT_VERSION.pkg" --keychain-profile "supportcompanion" --wait
+  $XCODE_STAPLER_PATH staple "$PKG_PATH/SupportCompanion_LaunchAgent-$LAUNCHAGENT_VERSION.pkg"
+fi
+
+# Create the json file for signed munkipkg Support Companion suite pkg
+mkdir "$BUILD_PATH/payload/Library/LaunchAgents"
+cp "$BUILD_LA_PATH/payload/com.almenscorner.supportcompanion.agent.plist" "$BUILD_PATH/payload/Library/LaunchAgents/com.almenscorner.supportcompanion.agent.plist"
+
+/bin/cat << SIGNED_JSONFILE > "$BUILD_PATH/build-info.json"
+{
+  "ownership": "recommended",
+  "suppress_bundle_relocation": true,
+  "identifier": "com.almenscorner.supportcompanion.suite",
+  "postinstall_action": "none",
+  "distribution_style": true,
+  "version": "$AUTOMATED_SC_BUILD",
+  "name": "SupportCompanion_Suite-$AUTOMATED_SC_BUILD.pkg",
+  "install_location": "/",
+  "signing_info": {
+    "identity": "$INSTALLER_SIGNING_IDENTITY",
+    "timestamp": true
+  }
+}
+SIGNED_JSONFILE
+
+python3 "${MP_BINDIR}/munki-pkg-${MP_SHA}/munkipkg" "$BUILD_PATH"
+PKG_RESULT="$?"
+if [ "${PKG_RESULT}" != "0" ]; then
+  echo "Could not sign package: ${PKG_RESULT}" 1>&2
+else
+  # Notarize Support Companion Suite package
+  $XCODE_NOTARY_PATH submit "$PKG_PATH/SupportCompanion_Suite-$AUTOMATED_SC_BUILD.pkg" --keychain-profile "supportcompanion" --wait
+  $XCODE_STAPLER_PATH staple "$PKG_PATH/SupportCompanion_Suite-$AUTOMATED_SC_BUILD.pkg"
 fi

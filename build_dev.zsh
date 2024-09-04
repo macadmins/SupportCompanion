@@ -87,6 +87,7 @@ SIGNED_JSONFILE
 munkipkg "$BUILD_PATH"
 
 # Create the json file for munkipkg Support Companion LA
+LAUNCHAGENT_VERSION="1.0.1"
 /bin/cat << SIGNED_JSONFILE > "$BUILD_LA_PATH/build-info.json"
 {
   "ownership": "recommended",
@@ -94,8 +95,8 @@ munkipkg "$BUILD_PATH"
   "identifier": "com.almenscorner.supportcompanion.LaunchAgent",
   "postinstall_action": "none",
   "distribution_style": true,
-  "version": "1.0.0",
-  "name": "SupportCompanion_LaunchAgent-1.0.0.pkg",
+  "version": "$LAUNCHAGENT_VERSION",
+  "name": "SupportCompanion_LaunchAgent-$LAUNCHAGENT_VERSION.pkg",
   "install_location": "/Library/LaunchAgents"
 }
 SIGNED_JSONFILE
@@ -104,4 +105,25 @@ SIGNED_JSONFILE
 munkipkg "$BUILD_LA_PATH"
 
 # Move LA build to the main build
-mv "$BUILD_LA_PATH/build/SupportCompanion_LaunchAgent-1.0.0.pkg" "$BUILD_PATH/build/SupportCompanion_LaunchAgent-1.0.0.pkg"
+mv "$BUILD_LA_PATH/build/SupportCompanion_LaunchAgent-$LAUNCHAGENT_VERSION.pkg" "$BUILD_PATH/build/SupportCompanion_LaunchAgent-$LAUNCHAGENT_VERSION.pkg"
+
+# Create the json file for munkipkg Support Companion suite
+mkdir "$BUILD_PATH/payload/Library/LaunchAgents"
+cp "$BUILD_LA_PATH/payload/com.almenscorner.supportcompanion.agent.plist" "$BUILD_PATH/payload/Library/LaunchAgents/com.almenscorner.supportcompanion.agent.plist"
+
+/bin/cat << SIGNED_JSONFILE > "$BUILD_PATH/build-info.json"
+{
+  "ownership": "recommended",
+  "suppress_bundle_relocation": true,
+  "identifier": "com.almenscorner.supportcompanion.suite",
+  "postinstall_action": "none",
+  "distribution_style": true,
+  "version": "$AUTOMATED_SC_BUILD",
+  "name": "SupportCompanion_Suite-$AUTOMATED_SC_BUILD.pkg",
+  "install_location": "/"
+}
+SIGNED_JSONFILE
+
+munkipkg "$BUILD_PATH"
+
+rm -rf "$BUILD_PATH/payload/Library/LaunchAgents"

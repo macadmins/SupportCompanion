@@ -4,6 +4,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2024-09-04
+### Added
+- German localization, thanks @motodotsh for the German localization
+- A new suite package that contains the main app and the LaunchAgent package. This allows for admins to install both the main app and the LaunchAgent using a single package
+- A new option to use custom widgets on the Home view of the app. This allows for admins to add custom widgets to the Home view of the app to display information that is relevant to the user. This is done by using a JSON file populated any way the admin sees fit. To add custom widgets, add the below key to the mobileconfig and configure a JSON like the below example
+  - The `icon` key should be a material icon name from https://pictogrammers.com/library/mdi/. For example `apple-finder` would be `AppleFinder`
+```xml
+<key>CustomWidgetsPath</key>
+<string>/path/to/custom/widgets.json</string>
+```
+```json
+[
+  {
+    "icon": "Laptop",
+    "header": "Custom Widget",
+    "data": {
+      "Custom Label1": "A long example of a custom value with word wrap",
+      "Custom Label2": "Custom Value2"
+    }
+  }
+]
+```
+
+### Changed
+- Updated the LaunchAgent to launch the process using `ProcessType` `Interactive` as the UI was sluggish when launched as a background process
+- Tray Icon is now a outlined version of the logo to make it look more native on macOS. It's also a macOS template image which means it will change color based on the user's wallpaper
+- Avalonia has been updated to 11.1.3
+
 ## [1.1.0] - 2024-06-24
 ### Added
 - A package for a LaunchAgent which is signed and notarized using the same certificate as the main app
