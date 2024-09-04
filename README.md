@@ -36,6 +36,8 @@ I am only able to test with Intune, so if you have another MDM provider, I would
 - **Applications**: View installed applications and their versions.
 - **Identity**: View the current user's profile information and Kerberos SSO or Platform SSO information.
 - **Desktop Info**: Show information on the desktop such as device name, serial number, macOS version, and IP address.
+- **Custom Widgets**: Add custom widgets to the Home view, this allows for displaying information specific to your
+  organization.
 
 ## Localization
 
@@ -74,6 +76,13 @@ The Launch Agent provided as a signed, notarized and stapled package will, if in
 - Start the app on login
 
 This Launch Agent is optional and you are free to create your own Launch Agent if you prefer.
+
+## About the suite package
+The suite package is a signed, notarized and stapled package that contains the app and the Launch Agent package. 
+This package is provided for convenience and can be used to install the app and the Launch Agent at the same time.
+
+## AutoPkg
+A recipe for AutoPkg is available [here](https://github.com/autopkg/almenscorner-recipes/tree/main/SupportCompanion).
 
 ## Using the app
 
