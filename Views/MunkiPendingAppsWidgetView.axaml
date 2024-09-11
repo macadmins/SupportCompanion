@@ -15,9 +15,9 @@
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MunkiPendingAppsViewModel />
     </Design.DataContext>
-    <Grid Margin="10">
-        <controls:GlassCard CornerRadius="10">
-            <Grid>
+    <Grid Margin="10" IsVisible="{Binding ShowGrid}">
+        <controls:GlassCard CornerRadius="10" MinWidth="290">
+            <Grid IsVisible="{Binding ShowData}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />

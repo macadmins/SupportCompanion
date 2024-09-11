@@ -21,6 +21,7 @@ public partial class ActionsViewModel : ObservableObject, IWindowStateAware
     private const string ChangePasswordLocal = "open /System/Library/PreferencePanes/Accounts.prefPane";
     private readonly ActionsService _actionsService;
     private readonly LoggerService _logger;
+    public bool ShowData { get; private set; } = true;
     [ObservableProperty] private bool _hasUpdates;
     [ObservableProperty] private string _updateCount = "0";
 
@@ -35,8 +36,14 @@ public partial class ActionsViewModel : ObservableObject, IWindowStateAware
         HideKillAgentButton = !App.Config.HiddenActions.Contains("KillAgent");
         HideSoftwareUpdatesButton = !App.Config.HiddenActions.Contains("SoftwareUpdates");
         HideGatherLogsButton = !App.Config.HiddenActions.Contains("GatherLogs");
-        if (!App.Config.HiddenActions.Contains("SoftwareUpdates"))
+        if (!App.Config.HiddenWidgets.Contains("Actions"))
+        {
             Dispatcher.UIThread.Post(InitializeAsync);
+        }
+        else
+        {
+            ShowData = false;
+        }
     }
 
     public bool HideSupportButton { get; private set; }

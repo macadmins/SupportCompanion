@@ -16,8 +16,8 @@
         <vm:BatteryWidgetViewModel />
     </Design.DataContext>
     <Grid Margin="10">
-        <controls:GlassCard CornerRadius="10">
-            <Grid>
+        <controls:GlassCard CornerRadius="10" MinHeight="130" MinWidth="160">
+            <Grid IsVisible="{Binding ShowData}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />

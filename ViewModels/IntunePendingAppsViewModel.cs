@@ -14,11 +14,14 @@ public class IntunePendingAppsViewModel : IWindowStateAware
     private readonly LoggerService _logger;
     private Timer? _pendingAppsTimer;
     private bool _showInfoIcon = true;
+    public bool ShowData { get; private set; } = true;
 
     public IntunePendingAppsViewModel(IntuneAppsService intuneApps, ActionsService actions, LoggerService loggerService)
     {
         if (App.Config.IntuneMode)
             Dispatcher.UIThread.Post(InitializeAsync);
+        if (!App.Config.IntuneMode || App.Config.HiddenWidgets.Contains("IntunePendingApps"))
+            ShowData = false;
         _intuneApps = intuneApps;
         _actions = actions;
         _logger = loggerService;

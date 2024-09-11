@@ -10,6 +10,7 @@ public class StorageViewModel : ViewModelBase, IWindowStateAware
 {
     private readonly LoggerService _logger;
     private readonly StorageService _storage;
+    public bool ShowData { get; private set; } = true;
 
     private StorageModel? _storageInfo;
     private Timer? _timer;
@@ -22,6 +23,10 @@ public class StorageViewModel : ViewModelBase, IWindowStateAware
         ShowManageStorageButton = Environment.OSVersion.Version.Major >= 13;
         if (!App.Config.HiddenWidgets.Contains("Storage"))
             Dispatcher.UIThread.Post(InitializeAsync);
+        else
+        {
+            ShowData = false;
+        }
     }
 
     public StorageModel? StorageInfo

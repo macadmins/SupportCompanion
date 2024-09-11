@@ -28,28 +28,28 @@
                 
                 <!-- Top Row -->
                 <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal">
-                    <views:DeviceInfoWidgetView IsVisible="{Binding ShowDeviceWidget}" />
+                    <views:DeviceInfoWidgetView />
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
-                        <views:EvergreenInfoWidgetView Grid.Row="0" IsVisible="{Binding ShowEvergreenInfo}" />
-                        <views:BatteryWidgetView Grid.Row="1" IsVisible="{Binding ShowBattery}" />
+                        <views:EvergreenInfoWidgetView Grid.Row="0" />
+                        <views:BatteryWidgetView Grid.Row="1" />
                     </Grid>
-                    <views:ActionsWidgetView IsVisible="{Binding ShowActions}" />
+                    <views:ActionsWidgetView />
                 </StackPanel>
 
                 <!-- Middle Row -->
                 <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical">
-                    <views:MdmStatusWidgetView IsVisible="{Binding ShowMdmStatus}" />
-                    <views:StorageWidgetView IsVisible="{Binding ShowStorage}" />
+                    <views:MdmStatusWidgetView />
+                    <views:StorageWidgetView />
                 </StackPanel>
                 <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
-                    <views:MunkiUpdatesWidgetView IsVisible="{Binding ShowMunkiUpdates}" />
-                    <views:IntuneUpdatesWidgetView IsVisible="{Binding ShowIntuneUpdates}" />
-                    <views:MunkiPendingAppsWidgetView IsVisible="{Binding ShowMunkiPendingApps}" />
-                    <views:IntunePendingAppsWidgetView IsVisible="{Binding ShowIntunePendingApps}" />
+                    <views:MunkiUpdatesWidgetView />
+                    <views:IntuneUpdatesWidgetView />
+                    <views:MunkiPendingAppsWidgetView />
+                    <views:IntunePendingAppsWidgetView />
                 </StackPanel>
 
                 <!-- Bottom Row -->

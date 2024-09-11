@@ -15,11 +15,19 @@ public class MunkiPendingAppsViewModel : IWindowStateAware
     private readonly MunkiAppsService _munkiApps;
     private IList _pendingAppsList = new List<string>();
     private Timer? _pendingAppsTimer;
+    public bool ShowData { get; private set; } = true;
+    public bool ShowGrid { get; private set; } = true;
 
     public MunkiPendingAppsViewModel(MunkiAppsService munkiApps, LoggerService loggerService)
     {
         if (App.Config.MunkiMode && App.Config.HiddenWidgets.Contains("MunkiPendingApps") == false)
             Dispatcher.UIThread.Post(InitializeAsync);
+        if (App.Config.HiddenWidgets.Contains("MunkiPendingApps") || !App.Config.MunkiMode)
+        {
+            ShowData = false;
+            if (App.Config.IntuneMode)
+                ShowGrid = false;
+        }
         _munkiApps = munkiApps;
         _logger = loggerService;
     }

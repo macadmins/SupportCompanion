@@ -13,11 +13,16 @@ public partial class BatteryWidgetViewModel : ObservableObject, IWindowStateAwar
     [ObservableProperty] private int _batteryHealth;
     [ObservableProperty] private string _batteryHealthTextColor;
     private int _batteryMaxCapacity;
+    public bool ShowData { get; private set; } = true;
 
     public BatteryWidgetViewModel(IOKitService iokit)
     {
         _iokit = iokit;
         Dispatcher.UIThread.Post(Initialize);
+        if (App.Config.HiddenWidgets.Contains("Battery"))
+        {
+            ShowData = false;
+        }
     }
 
     public void OnWindowHidden()
