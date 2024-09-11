@@ -189,6 +189,9 @@ public class AppConfigHelper
                 case "CustomWidgetsPath":
                     Config.CustomWidgetsPath = pref.Value as NSString;
                     break;
+                case "SystemProfilerApps":
+                    Config.AppProfilerMode = (bool)pref.Value;
+                    break;
             }
 
         if (!string.IsNullOrEmpty(Config.BrandColor))

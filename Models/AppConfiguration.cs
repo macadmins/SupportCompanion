@@ -12,7 +12,7 @@ public class AppConfiguration
         "SoftwareUpdateNotificationButtonText", "AppUpdateNotificationMessage", "AppUpdateNotificationButtonText",
         "MunkiMode", "IntuneMode", "LogFolders", "Actions", "BrandLogo", "ShowMenuToggle", "ShowDesktopInfo", "DesktopInfoFontSize",
         "DesktopPosition", "DesktopInfoLevel", "DesktopInfoColorHighlight", "DesktopInfoBackgroundColor", "DesktopInfoBackgroundOpacity",
-        "DesktopInfoCustomItems", "CustomWidgetsPath"
+        "DesktopInfoCustomItems", "CustomWidgetsPath", "SystemProfilerApps"
     };
 
     public string BrandName { get; set; } = string.Empty;
@@ -53,4 +53,5 @@ public class AppConfiguration
     public double DesktopInfoBackgroundOpacity { get; set; } = 1.0;
     public List<string> DesktopInfoCustomItems { get; set; } = new() { "" };
     public string CustomWidgetsPath { get; set; } = string.Empty;
+    public bool AppProfilerMode { get; set; }
 }

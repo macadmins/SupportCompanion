@@ -24,6 +24,7 @@
     </UserControl.Styles>
     <Grid Margin="30">
         <controls:GlassCard CornerRadius="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <controls:BusyArea BusyText="{x:Static assets:Resources.BusyLoading}" IsBusy="{Binding IsLoading}">
             <Grid Margin="15">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -40,7 +41,7 @@
                           Name="ApplicationsTable"
                           ItemsSource="{Binding InstalledApps}"
                           GridLinesVisibility="None"
-                          ColumnWidth="*">
+                          ColumnWidth="*" >
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="{x:Static assets:Resources.Name}" Binding="{Binding Name}" />
                         <DataGridTextColumn Header="{x:Static assets:Resources.Version}" Binding="{Binding Version}" />
@@ -57,9 +58,11 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Arch" Binding="{Binding Arch}" IsVisible="{Binding ShowArch}" />
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
+            </controls:BusyArea>
         </controls:GlassCard>
     </Grid>
 </UserControl>

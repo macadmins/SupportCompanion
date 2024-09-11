@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.ObjectModel;
 using Avalonia.Threading;
+using ReactiveUI;
+using SupportCompanion.Helpers;
 using SupportCompanion.Interfaces;
 using SupportCompanion.Models;
 using SupportCompanion.Services;
@@ -16,6 +18,12 @@ public class ApplicationsViewModel : ViewModelBase, IWindowStateAware
     private IList _installedAppsList = new List<string>();
     private IList _selfServeAppsList = new List<string>();
     private Timer? _timer;
+    private bool _isLoading;
+    public bool IsLoading
+    {
+        get => _isLoading;
+        set => this.RaiseAndSetIfChanged(ref _isLoading, value);
+    }
 
     public ApplicationsViewModel(ActionsService actions, IntuneAppsService intuneApps, LoggerService loggerService)
     {
@@ -27,6 +35,7 @@ public class ApplicationsViewModel : ViewModelBase, IWindowStateAware
     }
 
     public bool ShowActionButton { get; }
+    public bool ShowArch { get; } = App.Config.AppProfilerMode;
 
     public ObservableCollection<InstalledApp> InstalledApps { get; } = new();
 
@@ -61,6 +70,8 @@ public class ApplicationsViewModel : ViewModelBase, IWindowStateAware
             await GetInstalledApps();
         else if (App.Config.IntuneMode)
             await GetIntuneInstalledApps();
+        else if (App.Config.AppProfilerMode)
+            await GetSystemProfilerApps();
     }
 
     public async Task ManageAppClick(string action)
@@ -95,7 +106,7 @@ public class ApplicationsViewModel : ViewModelBase, IWindowStateAware
                         isSelfServe = true;
                     }
 
-                    InstalledApps.Add(new InstalledApp(name, version, action, isSelfServe));
+                    InstalledApps.Add(new InstalledApp(name, version, action, string.Empty ,isSelfServe));
                 }
             }
         });
@@ -114,11 +125,26 @@ public class ApplicationsViewModel : ViewModelBase, IWindowStateAware
                     continue;
                 var name = app.Value.ApplicationName;
                 var version = app.Value.ComplianceStateMessage.ProductVersion;
-                InstalledApps.Add(new InstalledApp(name, version, string.Empty));
+                InstalledApps.Add(new InstalledApp(name, version, string.Empty, string.Empty));
             }
         });
     }
 
+    private async Task GetSystemProfilerApps()
+    {
+        IsLoading = true;
+        var apps = await new ProfilerApplications().GetInstalledApps();
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            InstalledApps.Clear();
+            foreach (var app in apps)
+            {
+                var installedApp = app as InstalledAppProfiler;
+                InstalledApps.Add(new InstalledApp(installedApp.Name, installedApp.Version, string.Empty, installedApp.Arch));
+            }
+        });
+        IsLoading = false;
+    }
     private void CleanUp()
     {
         InstalledApps.Clear();
