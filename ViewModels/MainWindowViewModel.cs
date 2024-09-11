@@ -16,6 +16,7 @@ public partial class MainWindowViewModel : ObservableObject
 {
     private readonly ActionsService _actionsService;
     private readonly LoggerService _logger;
+    public bool SelfServiceVisible { get; set; }
     [ObservableProperty] private string _nativeMenuActionsHeader;
     [ObservableProperty] private string _nativeMenuOpenText;
     [ObservableProperty] private string _nativeMenuQuitAppText;
@@ -26,6 +27,7 @@ public partial class MainWindowViewModel : ObservableObject
         _actionsService = actionsService;
         _logger = loggerService;
         ShowHeader = !string.IsNullOrEmpty(App.Config.BrandName);
+        SelfServiceVisible = App.Config.Actions.Count > 0;
         BrandName = App.Config.BrandName;
         if (string.IsNullOrEmpty(App.Config.BrandLogo))
         {
