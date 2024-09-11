@@ -44,7 +44,7 @@ namespace SupportCompanion
         {
             var actionService = ServiceProvider.GetRequiredService<ActionsService>();
             var mainViewModel = ServiceProvider.GetRequiredService<MainWindowViewModel>();
-
+            
             try
             {
                 var locale = await actionService.RunCommandWithOutput("defaults read NSGlobalDomain AppleLocale");
@@ -88,6 +88,11 @@ namespace SupportCompanion
                 DataContext = ServiceProvider.GetRequiredService<MainWindowViewModel>();
                 if (Config.IntuneMode)
                     Config.MunkiMode = false;
+                if (Config.AppProfilerMode)
+                {
+                    Config.MunkiMode = false;
+                    Config.IntuneMode = false;
+                }
                 var updateNotifications = ServiceProvider.GetRequiredService<UpdateNotifications>();
 
                 // Register the URL handler
@@ -155,6 +160,8 @@ namespace SupportCompanion
             serviceCollection.AddSingleton<MacPasswordService>();
             serviceCollection.AddSingleton<UpdateNotifications>();
             serviceCollection.AddSingleton<LoggerService>();
+            serviceCollection.AddSingleton<NotificationService>();
+            serviceCollection.AddSingleton<ProfilerApplications>();
 
             serviceCollection.AddSingleton<DeviceWidgetViewModel>();
             serviceCollection.AddSingleton<MunkiPendingAppsViewModel>();
@@ -173,6 +180,7 @@ namespace SupportCompanion
             serviceCollection.AddSingleton<MacPasswordViewModel>();
             serviceCollection.AddSingleton<TransparentWindowViewModel>();
             serviceCollection.AddSingleton<CustomWidgetsBaseViewModel>();
+            serviceCollection.AddSingleton<SelfServiceViewModel>();
 
             ServiceProvider = serviceCollection.BuildServiceProvider();
         }
