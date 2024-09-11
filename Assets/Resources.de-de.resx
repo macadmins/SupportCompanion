@@ -167,4 +167,10 @@
     <data name="UserInformationUsername" xml:space="preserve">
         <value>Nutzername</value>
     </data>
+    <data name="MenuSelfService" xml:space="preserve">
+        <value>Selbstbedienung</value>
+    </data>
+    <data name="BusyLoading" xml:space="preserve">
+        <value>Laden...</value>
+    </data>
 </root>

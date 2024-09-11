@@ -216,4 +216,10 @@
     <data name="DesktopInfoUsedOn" xml:space="preserve">
         <value>brukt på</value>
     </data>
+    <data name="MenuSelfService" xml:space="preserve">
+        <value>Selvbetjening</value>
+    </data>
+    <data name="BusyLoading" xml:space="preserve">
+        <value>Laster...</value>
+    </data>
 </root>

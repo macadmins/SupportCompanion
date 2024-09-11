@@ -449,5 +449,17 @@ namespace SupportCompanion.Assets {
                 return ResourceManager.GetString("DesktopInfoUsedOn", resourceCulture);
             }
         }
+        
+        public static string MenuSelfService {
+            get {
+                return ResourceManager.GetString("MenuSelfService", resourceCulture);
+            }
+        }
+        
+        public static string BusyLoading {
+            get {
+                return ResourceManager.GetString("BusyLoading", resourceCulture);
+            }
+        }
     }
 }
