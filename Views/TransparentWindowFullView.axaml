@@ -1,100 +1,100 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="clr-namespace:SupportCompanion.ViewModels"
-        xmlns:assets="clr-namespace:SupportCompanion.Assets"
-        Background="Transparent"
-        x:Class="SupportCompanion.Views.TransparentWindowFullView"
-        x:DataType="vm:TransparentWindowViewModel"
-        x:CompileBindings="True">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:SupportCompanion.ViewModels"
+             xmlns:assets="clr-namespace:SupportCompanion.Assets"
+             Background="Transparent"
+             x:Class="SupportCompanion.Views.TransparentWindowFullView"
+             x:DataType="vm:TransparentWindowViewModel"
+             x:CompileBindings="True">
     <UserControl.Styles>
         <Style Selector="TextBlock">
-            <Setter Property="FontSize" Value="{Binding FontSize}"/>
-            <Setter Property="TextWrapping" Value="Wrap"/>
-            <Setter Property="Margin" Value="10,5,10,5"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Opacity" Value="1.0"/>
+            <Setter Property="FontSize" Value="{Binding FontSize}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Margin" Value="10,5,10,5" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Opacity" Value="1.0" />
         </Style>
     </UserControl.Styles>
     <Grid HorizontalAlignment="{Binding HorizontalAlignment}"
           VerticalAlignment="{Binding VerticalAlignment}"
           Margin="45">
-        <Border CornerRadius="10" 
+        <Border CornerRadius="10"
                 Background="{Binding BackgroundColor}">
             <StackPanel>
                 <TextBlock>
-                    <Run Text="{x:Static assets:Resources.DeviceInfoHostName}"/>
-                    <Run Text=": "/>
+                    <Run Text="{x:Static assets:Resources.DeviceInfoHostName}" />
+                    <Run Text=": " />
                     <Run Text="{Binding DeviceInfo.HostName}" />
                 </TextBlock>
                 <TextBlock>
-                    <Run Text="{x:Static assets:Resources.DeviceInfoSerialNumber}"/>
-                    <Run Text=": "/>
+                    <Run Text="{x:Static assets:Resources.DeviceInfoSerialNumber}" />
+                    <Run Text=": " />
                     <Run Text="{Binding DeviceInfo.SerialNumber}" />
                 </TextBlock>
                 <TextBlock>
-                    <Run Text="{x:Static assets:Resources.DeviceInfoModel}"/>
-                    <Run Text=": "/>
+                    <Run Text="{x:Static assets:Resources.DeviceInfoModel}" />
+                    <Run Text=": " />
                     <Run Text="{Binding DeviceInfo.Model}" />
                 </TextBlock>
                 <TextBlock>
-                    <Run Text="{x:Static assets:Resources.DeviceInfoProcessor}"/>
-                    <Run Text=": "/>
+                    <Run Text="{x:Static assets:Resources.DeviceInfoProcessor}" />
+                    <Run Text=": " />
                     <Run Text="{Binding DeviceInfo.Processor}" />
                 </TextBlock>
                 <TextBlock>
-                    <Run Text="{x:Static assets:Resources.DeviceInfoMemory}"/>
-                    <Run Text=": "/>
+                    <Run Text="{x:Static assets:Resources.DeviceInfoMemory}" />
+                    <Run Text=": " />
                     <Run Text="{Binding DeviceInfo.MemSize}" />
                     <Run Text=" GB" />
                 </TextBlock>
                 <TextBlock>
-                    <Run Text="{x:Static assets:Resources.DeviceInfoOSVersion}"/>
-                    <Run Text=": "/>
+                    <Run Text="{x:Static assets:Resources.DeviceInfoOSVersion}" />
+                    <Run Text=": " />
                     <Run Text="{Binding DeviceInfo.OsVersion}" />
                 </TextBlock>
                 <TextBlock>
-                    <Run Text="{x:Static assets:Resources.DeviceInfoOSBuild}"/>
-                    <Run Text=": "/>
+                    <Run Text="{x:Static assets:Resources.DeviceInfoOSBuild}" />
+                    <Run Text=": " />
                     <Run Text="{Binding DeviceInfo.OsBuild}" />
                 </TextBlock>
                 <TextBlock>
-                    <Run Text="{x:Static assets:Resources.DeviceInfoIP}"/>
-                    <Run Text=": "/>
+                    <Run Text="{x:Static assets:Resources.DeviceInfoIP}" />
+                    <Run Text=": " />
                     <Run Text="{Binding DeviceInfo.IpAddress}" />
                 </TextBlock>
                 <TextBlock>
-                    <Run Text="{x:Static assets:Resources.DeviceInfoLastReboot}"/>
-                    <Run Text=": "/>
+                    <Run Text="{x:Static assets:Resources.DeviceInfoLastReboot}" />
+                    <Run Text=": " />
                     <Run Text="{Binding DeviceInfo.LastBootTime}"
-                         Foreground="{Binding DeviceInfo.LastBootTimeColor}"/>
-                    <Run Text="{x:Static assets:Resources.Days}"/>
+                         Foreground="{Binding DeviceInfo.LastBootTimeColor}" />
+                    <Run Text="{x:Static assets:Resources.Days}" />
                 </TextBlock>
 
                 <TextBlock>
-                    <Run Text="FileVault: "/>
+                    <Run Text="FileVault: " />
                     <Run Text="{Binding StorageInfo.FileVaultEnabled}"
-                         Foreground="{Binding StorageInfo.IsEncryptedColor}"/>
+                         Foreground="{Binding StorageInfo.IsEncryptedColor}" />
                 </TextBlock>
                 <TextBlock>
                     <Run Text="{Binding StorageInfo.VolumeUsedPercentage}"
-                         Foreground="{Binding StorageInfo.VolumeUsedPercentageColor}"/>
-                    <Run Text="% "/>
-                    <Run Text="{x:Static assets:Resources.DesktopInfoUsedOn}"/>
-                    <Run Text="{Binding StorageInfo.VolumeName}"/>
+                         Foreground="{Binding StorageInfo.VolumeUsedPercentageColor}" />
+                    <Run Text="% " />
+                    <Run Text="{x:Static assets:Resources.DesktopInfoUsedOn}" />
+                    <Run Text="{Binding StorageInfo.VolumeName}" />
                 </TextBlock>
-                <Separator Background="Gray" 
-                           Opacity="0.5" 
-                           Height="1" Margin="0,10"/>
+                <Separator Background="Gray"
+                           Opacity="0.5"
+                           Height="1" Margin="0,10" />
                 <TextBlock>
-                    <Run Text="{x:Static assets:Resources.SupportDialogPhone}"/>
-                    <Run Text=": "/>
-                    <Run Text="{Binding SupportPhoneNumber}"/>
+                    <Run Text="{x:Static assets:Resources.SupportDialogPhone}" />
+                    <Run Text=": " />
+                    <Run Text="{Binding SupportPhoneNumber}" />
                 </TextBlock>
                 <TextBlock MaxWidth="500">
-                    <Run Text="{x:Static assets:Resources.SupportDialogEmail}"/>
-                    <Run Text=": "/>
-                    <Run Text="{Binding SupportEmail}"/>
+                    <Run Text="{x:Static assets:Resources.SupportDialogEmail}" />
+                    <Run Text=": " />
+                    <Run Text="{Binding SupportEmail}" />
                 </TextBlock>
             </StackPanel>
         </Border>

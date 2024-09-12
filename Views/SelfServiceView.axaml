@@ -12,44 +12,44 @@
     </Design.DataContext>
     <UserControl.Styles>
         <Style Selector="TextBlock">
-            <Setter Property="TextWrapping" Value="Wrap"/>
-            <Setter Property="Margin" Value="0,0,0,5"></Setter>
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Margin" Value="0,0,0,5" />
         </Style>
     </UserControl.Styles>
     <Grid Margin="15">
         <ScrollViewer VerticalScrollBarVisibility="Hidden">
-        <ItemsControl ItemsSource="{Binding ActionsList.ConfigActions}">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <WrapPanel Orientation="Horizontal" />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Button Background="Transparent"
-                            BorderBrush="Transparent"
-                            BorderThickness="0"
-                            CornerRadius="0"
-                            Command="{Binding Command}"
-                            Margin="0,0,0,5">            
-                        <Button.Content>
+            <ItemsControl ItemsSource="{Binding ActionsList.ConfigActions}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Background="Transparent"
+                                BorderBrush="Transparent"
+                                BorderThickness="0"
+                                CornerRadius="0"
+                                Command="{Binding Command}"
+                                Margin="0,0,0,5">
+                            <Button.Content>
                                 <controls:GlassCard CornerRadius="10">
                                     <controls:BusyArea IsBusy="{Binding IsRunning}" BusyText="">
                                         <StackPanel>
                                             <avalonia:MaterialIcon Kind="{Binding Icon}"
                                                                    Margin="0,0,0,10"
-                                                                   Width="20" Height="20"/>
+                                                                   Width="20" Height="20" />
                                             <TextBlock VerticalAlignment="Center" Text="{Binding Name, Mode=OneTime}">
                                                 <Run FontWeight="Bold" />
                                             </TextBlock>
                                         </StackPanel>
                                     </controls:BusyArea>
                                 </controls:GlassCard>
-                        </Button.Content>
-                    </Button>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+                            </Button.Content>
+                        </Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
         </ScrollViewer>
     </Grid>
 </UserControl>

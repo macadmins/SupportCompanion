@@ -1,3 +1,4 @@
+using System.Globalization;
 using Avalonia.Media;
 using Avalonia.Threading;
 using ReactiveUI;
@@ -5,18 +6,40 @@ using SupportCompanion.Helpers;
 using SupportCompanion.Interfaces;
 using SupportCompanion.Models;
 using SupportCompanion.Services;
+using SupportCompanion.Views;
 
 namespace SupportCompanion.ViewModels;
 
 public class TransparentWindowViewModel : ViewModelBase
 {
-    private IOKitService _iioKit;
-    private SystemInfoService _systemInfo;
-    private readonly StorageService _storage;
     private readonly LoggerService _logger;
-    private Timer? _timer;
-    private StorageModel? _storageInfo;
+    private readonly StorageService _storage;
     private DeviceInfoModel? _deviceInfo;
+    private readonly IOKitService _iioKit;
+    private StorageModel? _storageInfo;
+    private readonly SystemInfoService _systemInfo;
+    private Timer? _timer;
+
+    public TransparentWindowViewModel(IOKitService iioKit, SystemInfoService systemInfo, StorageService storage,
+        LoggerService logger)
+    {
+        ShowSeparator = false;
+        _iioKit = iioKit;
+        _systemInfo = systemInfo;
+        _storage = storage;
+        _logger = logger;
+        DeviceInfo = new DeviceInfoModel();
+        StorageInfo = new StorageModel();
+        if (App.Config.DesktopInfoBackgroundColor != "Transparent")
+            SetBackgroundColor();
+        SetVisibility(App.Config.DesktopInfoLevel);
+        InitializeAsync();
+        if (App.Config.DesktopInfoLevel == "Full")
+            ShowSeparator = true;
+        VerticalAlignment = App.Config.DesktopPosition.Contains("Bottom") ? "Bottom" : "Top";
+        HorizontalAlignment = App.Config.DesktopPosition.Contains("Right") ? "Right" : "Left";
+    }
+
     private string ModelValue { get; set; } = string.Empty;
     public ITransparentWindow TransparentWindow { get; set; }
     public static string SupportPhoneNumber => App.Config.SupportPhone;
@@ -41,29 +64,21 @@ public class TransparentWindowViewModel : ViewModelBase
     private static double DesktopInfoBackgroundOpacity => App.Config.DesktopInfoBackgroundOpacity;
     public SolidColorBrush BackgroundColor { get; private set; }
 
-    public TransparentWindowViewModel(IOKitService iioKit, SystemInfoService systemInfo, StorageService storage,
-        LoggerService logger)
+    public DeviceInfoModel? DeviceInfo
     {
-        ShowSeparator = false;
-        _iioKit = iioKit;
-        _systemInfo = systemInfo;
-        _storage = storage;
-        _logger = logger;
-        DeviceInfo = new DeviceInfoModel();
-        StorageInfo = new StorageModel();
-        if (App.Config.DesktopInfoBackgroundColor != "Transparent")
-            SetBackgroundColor();
-        SetVisibility(App.Config.DesktopInfoLevel);
-        InitializeAsync();
-        if (App.Config.DesktopInfoLevel == "Full")
-            ShowSeparator = true;
-        VerticalAlignment = App.Config.DesktopPosition.Contains("Bottom") ? "Bottom" : "Top";
-        HorizontalAlignment = App.Config.DesktopPosition.Contains("Right") ? "Right" : "Left";
+        get => _deviceInfo;
+        private set => this.RaiseAndSetIfChanged(ref _deviceInfo, value);
+    }
+
+    public StorageModel? StorageInfo
+    {
+        get => _storageInfo;
+        private set => this.RaiseAndSetIfChanged(ref _storageInfo, value);
     }
 
     private void SetBackgroundColor()
     {
-        string hexColor = App.Config.DesktopInfoBackgroundColor;
+        var hexColor = App.Config.DesktopInfoBackgroundColor;
         BackgroundColor = HexToBrush(hexColor, DesktopInfoBackgroundOpacity);
     }
 
@@ -71,25 +86,13 @@ public class TransparentWindowViewModel : ViewModelBase
     {
         hex = hex.Replace("#", "");
 
-        byte r = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
-        byte g = byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
-        byte b = byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+        var r = byte.Parse(hex.Substring(0, 2), NumberStyles.HexNumber);
+        var g = byte.Parse(hex.Substring(2, 2), NumberStyles.HexNumber);
+        var b = byte.Parse(hex.Substring(4, 2), NumberStyles.HexNumber);
 
         return new SolidColorBrush(Color.FromArgb((byte)(opacity * 255), r, g, b));
     }
-    
-    public DeviceInfoModel? DeviceInfo
-    {
-        get => _deviceInfo;
-        private set => this.RaiseAndSetIfChanged(ref _deviceInfo, value);
-    }
-    
-    public StorageModel? StorageInfo
-    {
-        get => _storageInfo;
-        private set => this.RaiseAndSetIfChanged(ref _storageInfo, value);
-    }
-   
+
     private async void GatherSystemInfoSafe()
     {
         try
@@ -101,19 +104,19 @@ public class TransparentWindowViewModel : ViewModelBase
             _logger.Log("TransparentWindowViewModel:GatherSystemInfoSafe", e.Message, 2);
         }
     }
-    
+
     public void SetVisibility(string level)
     {
         switch (level)
         {
             case "Minimal":
-                CurrentView = new Views.TransparentWindowMinimalView();
+                CurrentView = new TransparentWindowMinimalView();
                 break;
             case "Full":
-                CurrentView = new Views.TransparentWindowFullView();
+                CurrentView = new TransparentWindowFullView();
                 break;
             case "Hardware":
-                CurrentView = new Views.TransparentWindowHardwareView();
+                CurrentView = new TransparentWindowHardwareView();
                 break;
             case "Custom":
                 ShowHostname = App.Config.DesktopInfoCustomItems.Contains("HostName");
@@ -129,11 +132,11 @@ public class TransparentWindowViewModel : ViewModelBase
                 ShowSupportPhone = App.Config.DesktopInfoCustomItems.Contains("SupportPhone");
                 ShowLastBootTime = App.Config.DesktopInfoCustomItems.Contains("LastBootTime");
                 ShowSeparator = App.Config.DesktopInfoCustomItems.Contains("Separator");
-                CurrentView = new Views.TransparentWindowCustomView();
+                CurrentView = new TransparentWindowCustomView();
                 break;
         }
     }
-    
+
     private async Task InitializeAsync()
     {
         var interval = (int)TimeSpan.FromSeconds(30).TotalMilliseconds;
@@ -153,14 +156,12 @@ public class TransparentWindowViewModel : ViewModelBase
         DeviceInfo.MemSize = _systemInfo.GetMemSize();
         DeviceInfo.LastBootTime = await _systemInfo.GetLastBootTime();
         if (App.Config.DesktopInfoColorHighlight)
-        {
             DeviceInfo.LastBootTimeColor = DeviceInfo.LastBootTime switch
             {
                 < 7 => "LightGreen",
                 < 14 => "#FCE100",
                 _ => "#FF4F44"
             };
-        }
     }
 
     private async Task GetStorageInfo()
@@ -181,12 +182,12 @@ public class TransparentWindowViewModel : ViewModelBase
             };
         }
     }
-    
+
     private async Task GatherSystemInfo()
     {
         await GetDeviceInfo();
         await GetStorageInfo();
-        Dispatcher.UIThread.InvokeAsync( async () =>
+        Dispatcher.UIThread.InvokeAsync(async () =>
         {
             TransparentWindow.invalidateVisual();
             TransparentWindow.hide();

@@ -26,52 +26,54 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                
+
                 <!-- Top Row -->
                 <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal">
-                    <views:DeviceInfoWidgetView IsVisible="{Binding ShowDeviceWidget}"/>
-                    <placeholders:LargeWidgetPlaceholderView IsVisible="{Binding ShowDeviceWidgetPlaceholder}"/>
+                    <views:DeviceInfoWidgetView IsVisible="{Binding ShowDeviceWidget}" />
+                    <placeholders:LargeWidgetPlaceholderView IsVisible="{Binding ShowDeviceWidgetPlaceholder}" />
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
-                        <views:EvergreenInfoWidgetView Grid.Row="0" IsVisible="{Binding ShowEvergreenInfo}"/>
-                        <placeholders:SmallWidgetPlaceholderView Grid.Row="0" IsVisible="{Binding ShowEvergreenInfoPlaceholder}"/>
-                        <views:BatteryWidgetView Grid.Row="1" IsVisible="{Binding ShowBattery}"/>
-                        <placeholders:SmallWidgetPlaceholderView Grid.Row="1" IsVisible="{Binding ShowBatteryPlaceholder}"/>
+                        <views:EvergreenInfoWidgetView Grid.Row="0" IsVisible="{Binding ShowEvergreenInfo}" />
+                        <placeholders:SmallWidgetPlaceholderView Grid.Row="0"
+                                                                 IsVisible="{Binding ShowEvergreenInfoPlaceholder}" />
+                        <views:BatteryWidgetView Grid.Row="1" IsVisible="{Binding ShowBattery}" />
+                        <placeholders:SmallWidgetPlaceholderView Grid.Row="1"
+                                                                 IsVisible="{Binding ShowBatteryPlaceholder}" />
                     </Grid>
-                    <views:ActionsWidgetView IsVisible="{Binding ShowActions}"/>
-                    <placeholders:LargeWidgetPlaceholderView IsVisible="{Binding ShowActionsPlaceholder}"/>
+                    <views:ActionsWidgetView IsVisible="{Binding ShowActions}" />
+                    <placeholders:LargeWidgetPlaceholderView IsVisible="{Binding ShowActionsPlaceholder}" />
                 </StackPanel>
 
                 <!-- Middle Row -->
                 <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical">
-                    <views:MdmStatusWidgetView IsVisible="{Binding ShowMdmStatus}"/>
-                    <placeholders:MediumWidgetPlaceholderView IsVisible="{Binding ShowMdmPlaceholder}"/>
-                    <views:StorageWidgetView IsVisible="{Binding ShowStorage}"/>
-                    <placeholders:MediumWidgetPlaceholderView IsVisible="{Binding ShowStoragePlaceholder}"/>
+                    <views:MdmStatusWidgetView IsVisible="{Binding ShowMdmStatus}" />
+                    <placeholders:MediumWidgetPlaceholderView IsVisible="{Binding ShowMdmPlaceholder}" />
+                    <views:StorageWidgetView IsVisible="{Binding ShowStorage}" />
+                    <placeholders:MediumWidgetPlaceholderView IsVisible="{Binding ShowStoragePlaceholder}" />
                 </StackPanel>
                 <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
-                    <views:MunkiUpdatesWidgetView IsVisible="{Binding ShowMunkiUpdates}"/>
-                    <views:IntuneUpdatesWidgetView IsVisible="{Binding ShowIntuneUpdates}"/>
-                    <placeholders:LargeWidgetPlaceholderView IsVisible="{Binding ShowUpdatesProgressPlaceholder}"/>
-                    <views:MunkiPendingAppsWidgetView IsVisible="{Binding ShowMunkiPendingApps}"/>
-                    <views:IntunePendingAppsWidgetView IsVisible="{Binding ShowIntunePendingApps}"/>
-                    <placeholders:LargeWidgetPlaceholderView IsVisible="{Binding ShowAppsListPlaceholder}"/>
+                    <views:MunkiUpdatesWidgetView IsVisible="{Binding ShowMunkiUpdates}" />
+                    <views:IntuneUpdatesWidgetView IsVisible="{Binding ShowIntuneUpdates}" />
+                    <placeholders:LargeWidgetPlaceholderView IsVisible="{Binding ShowUpdatesProgressPlaceholder}" />
+                    <views:MunkiPendingAppsWidgetView IsVisible="{Binding ShowMunkiPendingApps}" />
+                    <views:IntunePendingAppsWidgetView IsVisible="{Binding ShowIntunePendingApps}" />
+                    <placeholders:LargeWidgetPlaceholderView IsVisible="{Binding ShowAppsListPlaceholder}" />
                 </StackPanel>
 
                 <!-- Bottom Row -->
                 <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <ItemsControl ItemsSource="{Binding CustomWidgets}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <UniformGrid Columns="3"/>
+                                <UniformGrid Columns="3" />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                     </ItemsControl>

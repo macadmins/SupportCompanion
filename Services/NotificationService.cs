@@ -32,10 +32,11 @@ public class NotificationService : INotification
         {
             _logger.Log(
                 "NotificationService",
-                $"Notification interval set to 0, skipping notification",
+                "Notification interval set to 0, skipping notification",
                 1);
             return;
         }
+
         var notification = new NSUserNotification
         {
             Title = App.Config.NotificationTitle,

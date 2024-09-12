@@ -4,9 +4,9 @@ namespace SupportCompanion.Models;
 
 public partial class ProfilerApplicationsModel : ObservableObject
 {
-    [ObservableProperty] private string _name = string.Empty;
-    [ObservableProperty] private string _installedVersion = string.Empty;
     [ObservableProperty] private bool _arch;
+    [ObservableProperty] private string _installedVersion = string.Empty;
+    [ObservableProperty] private string _name = string.Empty;
 }
 
 public class InstalledAppProfiler

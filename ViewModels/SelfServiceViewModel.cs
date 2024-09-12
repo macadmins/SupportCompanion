@@ -10,32 +10,41 @@ namespace SupportCompanion.ViewModels;
 
 public class SelfServiceViewModel : ViewModelBase, IWindowStateAware
 {
-    private readonly LoggerService _logger;
-    private readonly ActionsService _actionsService;
     private static readonly string defaultIcon = "ServiceToolbox";
+    private readonly ActionsService _actionsService;
+    private readonly LoggerService _logger;
     private ActionsModel? _actionsList;
-    public ActionsModel? ActionsList
-    {
-        get => _actionsList;
-        set => this.RaiseAndSetIfChanged(ref _actionsList, value);
-    }
-    
+
     public SelfServiceViewModel(LoggerService loggerService, ActionsService actionsService)
     {
         _logger = loggerService;
         _actionsService = actionsService;
         ActionsList = new ActionsModel { ConfigActions = new List<ConfigAction>() };
-        if (App.Config.Actions.Count > 0)
-        {
-            Dispatcher.UIThread.Post(InitializeAsync);
-        }
+        if (App.Config.Actions.Count > 0) Dispatcher.UIThread.Post(InitializeAsync);
     }
-    
+
+    public ActionsModel? ActionsList
+    {
+        get => _actionsList;
+        set => this.RaiseAndSetIfChanged(ref _actionsList, value);
+    }
+
+    public void OnWindowHidden()
+    {
+        CleanUp();
+    }
+
+    public void OnWindowShown()
+    {
+        ActionsList = new ActionsModel { ConfigActions = new List<ConfigAction>() };
+        Dispatcher.UIThread.Post(InitializeAsync);
+    }
+
     private async void InitializeAsync()
     {
         await GetActions();
     }
-    
+
     private async Task GetActions()
     {
         var actions = new List<ConfigAction>();
@@ -55,6 +64,7 @@ public class SelfServiceViewModel : ViewModelBase, IWindowStateAware
                     Icon = icon
                 });
             }
+
         ActionsList = new ActionsModel { ConfigActions = actions };
     }
 
@@ -62,7 +72,7 @@ public class SelfServiceViewModel : ViewModelBase, IWindowStateAware
     {
         var action = ActionsList?.ConfigActions.FirstOrDefault(a => a.CommandString == command);
         if (action == null) return;
-        
+
         try
         {
             action.IsRunning = true;
@@ -77,17 +87,7 @@ public class SelfServiceViewModel : ViewModelBase, IWindowStateAware
             await SukiHost.ShowToast("Self Service", "Command failed to execute!");
         }
     }
-    public void OnWindowHidden()
-    {
-        CleanUp();
-    }
-    
-    public void OnWindowShown()
-    {
-        ActionsList = new ActionsModel { ConfigActions = new List<ConfigAction>() };
-        Dispatcher.UIThread.Post(InitializeAsync);
-    }
-    
+
     private void CleanUp()
     {
         ActionsList?.ConfigActions.Clear();

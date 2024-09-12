@@ -17,10 +17,7 @@ public class MdmStatusViewModel : ViewModelBase, IWindowStateAware
     {
         _mdmStatusService = mdmStatus;
         MdmStatusInfo = new MdmStatusModel();
-        if (!App.Config.HiddenWidgets.Contains("MdmStatus"))
-        {
-            Dispatcher.UIThread.Post(InitializeAsync);
-        }
+        if (!App.Config.HiddenWidgets.Contains("MdmStatus")) Dispatcher.UIThread.Post(InitializeAsync);
     }
 
     public MdmStatusModel? MdmStatusInfo

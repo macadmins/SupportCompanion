@@ -13,6 +13,7 @@ public partial class BatteryWidgetViewModel : ObservableObject, IWindowStateAwar
     [ObservableProperty] private int _batteryHealth;
     [ObservableProperty] private string _batteryHealthTextColor;
     private int _batteryMaxCapacity;
+
     public BatteryWidgetViewModel(IOKitService iokit)
     {
         _iokit = iokit;

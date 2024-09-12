@@ -16,14 +16,9 @@ public class ApplicationsViewModel : ViewModelBase, IWindowStateAware
     private readonly IntuneAppsService _intuneApps;
     private readonly LoggerService _logger;
     private IList _installedAppsList = new List<string>();
+    private bool _isLoading;
     private IList _selfServeAppsList = new List<string>();
     private Timer? _timer;
-    private bool _isLoading;
-    public bool IsLoading
-    {
-        get => _isLoading;
-        set => this.RaiseAndSetIfChanged(ref _isLoading, value);
-    }
 
     public ApplicationsViewModel(ActionsService actions, IntuneAppsService intuneApps, LoggerService loggerService)
     {
@@ -32,6 +27,12 @@ public class ApplicationsViewModel : ViewModelBase, IWindowStateAware
         _logger = loggerService;
         Dispatcher.UIThread.Post(InitializeAsync);
         ShowActionButton = App.Config.MunkiMode;
+    }
+
+    public bool IsLoading
+    {
+        get => _isLoading;
+        set => this.RaiseAndSetIfChanged(ref _isLoading, value);
     }
 
     public bool ShowActionButton { get; }
@@ -106,7 +107,7 @@ public class ApplicationsViewModel : ViewModelBase, IWindowStateAware
                         isSelfServe = true;
                     }
 
-                    InstalledApps.Add(new InstalledApp(name, version, action, string.Empty ,isSelfServe));
+                    InstalledApps.Add(new InstalledApp(name, version, action, string.Empty, isSelfServe));
                 }
             }
         });
@@ -140,11 +141,13 @@ public class ApplicationsViewModel : ViewModelBase, IWindowStateAware
             foreach (var app in apps)
             {
                 var installedApp = app as InstalledAppProfiler;
-                InstalledApps.Add(new InstalledApp(installedApp.Name, installedApp.Version, string.Empty, installedApp.Arch));
+                InstalledApps.Add(new InstalledApp(installedApp.Name, installedApp.Version, string.Empty,
+                    installedApp.Arch));
             }
         });
         IsLoading = false;
     }
+
     private void CleanUp()
     {
         InstalledApps.Clear();

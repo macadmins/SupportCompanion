@@ -7,6 +7,6 @@
              x:Class="SupportCompanion.Views.Placeholders.MediumWidgetPlaceholderView"
              x:CompileBindings="True">
     <Grid Margin="10">
-        <controls:GlassCard CornerRadius="10" Width="300" Height="150"/>
+        <controls:GlassCard CornerRadius="10" Width="300" Height="150" />
     </Grid>
 </UserControl>

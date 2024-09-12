@@ -35,10 +35,7 @@ public partial class ActionsViewModel : ObservableObject, IWindowStateAware
         HideKillAgentButton = !App.Config.HiddenActions.Contains("KillAgent");
         HideSoftwareUpdatesButton = !App.Config.HiddenActions.Contains("SoftwareUpdates");
         HideGatherLogsButton = !App.Config.HiddenActions.Contains("GatherLogs");
-        if (!App.Config.HiddenWidgets.Contains("Actions"))
-        {
-            Dispatcher.UIThread.Post(InitializeAsync);
-        }
+        if (!App.Config.HiddenWidgets.Contains("Actions")) Dispatcher.UIThread.Post(InitializeAsync);
     }
 
     public bool HideSupportButton { get; private set; }

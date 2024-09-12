@@ -6,50 +6,43 @@ using Microsoft.Extensions.DependencyInjection;
 using SupportCompanion.ViewModels;
 using SupportCompanion.Views;
 
-namespace SupportCompanion
+namespace SupportCompanion;
+
+public class UrlHandler : NSObject
 {
-    public class UrlHandler : NSObject
+    // Define the AEKeywordDirectObject manually
+    private const uint AEKeywordDirectObject = 0x2D2D2D2D;
+    private readonly IClassicDesktopStyleApplicationLifetime _desktop;
+
+    public UrlHandler(IClassicDesktopStyleApplicationLifetime desktop)
     {
-        private readonly IClassicDesktopStyleApplicationLifetime _desktop;
-        public static bool ActivatedViaUrl { get; private set; }
+        _desktop = desktop;
+    }
 
-        public UrlHandler(IClassicDesktopStyleApplicationLifetime desktop)
+    public static bool ActivatedViaUrl { get; private set; }
+
+    [Export("handleGetURLEvent:withReplyEvent:")]
+    public void HandleGetURLEvent(NSAppleEventDescriptor descriptor, NSAppleEventDescriptor replyEvent)
+    {
+        var paramDescriptor = descriptor.ParamDescriptorForKeyword(AEKeywordDirectObject);
+        if (paramDescriptor != null)
         {
-            _desktop = desktop;
+            var url = paramDescriptor.StringValue;
+            if (url != null) Dispatcher.UIThread.Post(() => HandleUri(url));
         }
-        
-        [Export("handleGetURLEvent:withReplyEvent:")]
-        public void HandleGetURLEvent(NSAppleEventDescriptor descriptor, NSAppleEventDescriptor replyEvent)
-        {
-            var paramDescriptor = descriptor.ParamDescriptorForKeyword(AEKeywordDirectObject);
-            if (paramDescriptor != null)
+    }
+
+    private void HandleUri(string uri)
+    {
+        if (uri == "supportcompanion://home")
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktopApp)
             {
-                var url = paramDescriptor.StringValue;
-                if (url != null)
-                {
-                    Dispatcher.UIThread.Post(() => HandleUri(url));
-                }
+                ActivatedViaUrl = true;
+                desktopApp.ShutdownMode = ShutdownMode.OnMainWindowClose;
+                var mainWindowViewModel =
+                    ((App)Application.Current).ServiceProvider.GetRequiredService<MainWindowViewModel>();
+                desktopApp.MainWindow = new MainWindow { DataContext = mainWindowViewModel };
+                desktopApp.MainWindow.Show();
             }
-        }
-
-        private void HandleUri(string uri)
-        {
-            if (uri == "supportcompanion://home")
-            {
-                if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktopApp)
-                {
-                    
-                    ActivatedViaUrl = true;
-                    desktopApp.ShutdownMode = ShutdownMode.OnMainWindowClose;
-                    var mainWindowViewModel =
-                        ((App)Application.Current).ServiceProvider.GetRequiredService<MainWindowViewModel>();
-                    desktopApp.MainWindow = new MainWindow { DataContext = mainWindowViewModel };
-                    desktopApp.MainWindow.Show();
-                }
-            }
-        }
-
-        // Define the AEKeywordDirectObject manually
-        private const uint AEKeywordDirectObject = 0x2D2D2D2D;
     }
 }

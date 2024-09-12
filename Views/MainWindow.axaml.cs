@@ -15,7 +15,6 @@ public partial class MainWindow : SukiWindow
     private bool _isHiddenNotificationPending;
     private bool _isShownNotificationPending;
     private bool _isWindowCurrentlyVisible;
-    public bool ShowMunkiUpdates { get; }
 
     public MainWindow()
     {
@@ -24,6 +23,8 @@ public partial class MainWindow : SukiWindow
         this.GetObservable(IsVisibleProperty).Subscribe(OnIsVisibleChanged); // Subscribe to visibility changes
         ShowMunkiUpdates = !App.Config.HiddenWidgets.Contains("MunkiUpdates") && App.Config.MunkiMode;
     }
+
+    public bool ShowMunkiUpdates { get; }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {

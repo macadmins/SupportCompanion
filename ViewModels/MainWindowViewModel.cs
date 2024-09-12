@@ -16,7 +16,6 @@ public partial class MainWindowViewModel : ObservableObject
 {
     private readonly ActionsService _actionsService;
     private readonly LoggerService _logger;
-    public bool SelfServiceVisible { get; set; }
     [ObservableProperty] private string _nativeMenuActionsHeader;
     [ObservableProperty] private string _nativeMenuOpenText;
     [ObservableProperty] private string _nativeMenuQuitAppText;
@@ -30,11 +29,8 @@ public partial class MainWindowViewModel : ObservableObject
         SelfServiceVisible = App.Config.Actions.Count > 0;
         BrandName = App.Config.BrandName;
         if (string.IsNullOrEmpty(App.Config.BrandLogo))
-        {
             ShowLogo = false;
-        }
         else
-        {
             try
             {
                 if (Uri.IsWellFormedUriString(App.Config.BrandLogo, UriKind.Absolute))
@@ -62,17 +58,18 @@ public partial class MainWindowViewModel : ObservableObject
             {
                 _logger.Log("MainWindowViewModel", "Error loading BrandLogo: " + e.Message, 2);
             }
-        }
 
         ShowMenuToggle = App.Config.ShowMenuToggle;
     }
+
+    public bool SelfServiceVisible { get; set; }
 
     public bool ShowHeader { get; private set; }
     public bool ShowLogo { get; private set; }
     public string BrandName { get; private set; }
     public Bitmap BrandLogo { get; private set; }
     public bool ShowMenuToggle { get; private set; }
-    
+
     private Bitmap Base64ToBitmap(string base64String)
     {
         var bytes = Convert.FromBase64String(base64String);
