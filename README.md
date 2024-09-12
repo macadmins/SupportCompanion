@@ -85,6 +85,9 @@ This package is provided for convenience and can be used to install the app and 
 ## AutoPkg
 A recipe for AutoPkg is available [here](https://github.com/autopkg/almenscorner-recipes/tree/main/SupportCompanion).
 
+## A note on icons
+When configuring icons for custom widgets or actions, the icon name should be a material icon name from https://pictogrammers.com/library/mdi/. For example apple-finder would be AppleFinder.
+
 ## Using the app
 
 When the app is started, a menu bar icon will appear. Clicking the icon will show available actions to take like
@@ -180,6 +183,15 @@ To switch from Munki to Intune for application information, add the following ke
                <key>Command</key>
                <string>/usr/bin/osascript -e 'do shell script \"sudo killall IntuneMdmAgent\" with administrator privileges'</string>
            </dict>
+            <dict>
+                <key>Name</key>
+                <string>️Some awesome action</string>
+                <key>Command</key>
+                <string>echo "I am awesome"</string>
+                <!-- Optional key to specify an icon for the action which will display in the self service view -->
+                <key>Icon</key>
+                <string>AppleFinder</string>
+            </dict>
         </array>
         <key>NotificationTitle</key>
         <string>AwesomeCorp IT</string>
