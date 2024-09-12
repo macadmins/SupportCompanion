@@ -12,6 +12,7 @@ public class SelfServiceViewModel : ViewModelBase, IWindowStateAware
 {
     private readonly LoggerService _logger;
     private readonly ActionsService _actionsService;
+    private static readonly string defaultIcon = "ServiceToolbox";
     private ActionsModel? _actionsList;
     public ActionsModel? ActionsList
     {
@@ -42,12 +43,16 @@ public class SelfServiceViewModel : ViewModelBase, IWindowStateAware
             if (action.Value.TryGetValue("Name", out var name) &&
                 action.Value.TryGetValue("Command", out var command))
             {
+                // get the icon if it exists
+                action.Value.TryGetValue("Icon", out var icon);
+                icon ??= defaultIcon;
                 actions.Add(new ConfigAction
                 {
                     Name = name,
                     Command = new RelayCommand(async () => await RunCommand(command)),
                     CommandString = command,
-                    IsRunning = false
+                    IsRunning = false,
+                    Icon = icon
                 });
             }
         ActionsList = new ActionsModel { ConfigActions = actions };
@@ -85,6 +90,7 @@ public class SelfServiceViewModel : ViewModelBase, IWindowStateAware
     
     private void CleanUp()
     {
+        ActionsList?.ConfigActions.Clear();
         ActionsList = null;
     }
 }

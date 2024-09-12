@@ -10,6 +10,7 @@ public partial class ConfigAction : ObservableObject
     public RelayCommand Command { get; set; }
     public string CommandString { get; set; }
     [ObservableProperty] bool _isRunning;
+    public string Icon { get; set; }
 }
 
 public class ActionsModel
