@@ -21,5 +21,6 @@ public partial class SelfServiceView : UserControl
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnDetachedFromVisualTree(e);
+        DataContext = null;
     }
 }

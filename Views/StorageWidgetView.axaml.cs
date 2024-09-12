@@ -14,6 +14,7 @@ public partial class StorageWidgetView : UserControl
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        if (App.Config.HiddenWidgets.Contains("Storage")) return;
         base.OnAttachedToVisualTree(e);
         DataContext = ((App)Application.Current).ServiceProvider.GetRequiredService<StorageViewModel>();
     }

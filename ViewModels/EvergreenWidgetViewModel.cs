@@ -11,8 +11,6 @@ public class EvergreenWidgetViewModel : ViewModelBase, IWindowStateAware
 {
     private readonly ObservableCollection<string> _catalogs = new();
     private readonly CatalogsService _catalogsService;
-    public bool ShowData { get; private set; } = true;
-
     private EvergreenInfoModel? _evergreenInfo;
 
     public EvergreenWidgetViewModel(CatalogsService catalogs)
@@ -25,10 +23,6 @@ public class EvergreenWidgetViewModel : ViewModelBase, IWindowStateAware
                 Catalogs = _catalogs
             };
             Dispatcher.UIThread.Post(InitializeAsync);
-        }
-        if (App.Config.HiddenWidgets.Contains("EvergreenInfo") || App.Config.MunkiMode == false)
-        {
-            ShowData = false;
         }
     }
 

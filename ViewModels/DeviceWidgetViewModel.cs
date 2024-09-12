@@ -15,7 +15,6 @@ public class DeviceWidgetViewModel : ViewModelBase, IWindowStateAware
     private readonly ClipboardService _clipboard;
     private readonly IOKitService _iioKit;
     private readonly SystemInfoService _systemInfo;
-    public bool ShowData { get; private set; } = true;
 
     private DeviceInfoModel? _deviceInfo;
 
@@ -27,10 +26,6 @@ public class DeviceWidgetViewModel : ViewModelBase, IWindowStateAware
         _clipboard = clipboard;
         DeviceInfo = new DeviceInfoModel();
         Dispatcher.UIThread.Post(InitializeAsync);
-        if (App.Config.HiddenWidgets.Contains("DeviceInfo"))
-        {
-            ShowData = false;
-        }
     }
 
     public DeviceInfoModel? DeviceInfo

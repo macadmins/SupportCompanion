@@ -1,7 +1,6 @@
 using System.Collections.ObjectModel;
 using Newtonsoft.Json;
 using ReactiveUI;
-using SupportCompanion.Helpers;
 using SupportCompanion.Services;
 
 namespace SupportCompanion.ViewModels
@@ -25,8 +24,25 @@ namespace SupportCompanion.ViewModels
             ShowMdmStatus = !App.Config.HiddenWidgets.Contains("MdmStatus");
             ShowActions = !App.Config.HiddenWidgets.Contains("Actions");
             ShowBattery = !App.Config.HiddenWidgets.Contains("Battery");
-            ShowEvergreenInfo = !App.Config.HiddenWidgets.Contains("EvergreenInfo");
+            ShowEvergreenInfo = !App.Config.HiddenWidgets.Contains("EvergreenInfo") && App.Config.MunkiMode;
             CustomWidgets = new ObservableCollection<CustomWidgetsBaseViewModel>();
+            
+            ShowUpdatesProgressPlaceholder = !App.Config.IntuneMode || 
+                                             !App.Config.MunkiMode || 
+                                             !App.Config.HiddenWidgets.Contains("MunkiUpdates") || 
+                                             !App.Config.HiddenWidgets.Contains("IntuneUpdates");
+
+            ShowAppsListPlaceholder = App.Config.IntuneMode || 
+                                      App.Config.MunkiMode || 
+                                      !App.Config.HiddenWidgets.Contains("MunkiPendingApps") || 
+                                      !App.Config.HiddenWidgets.Contains("IntunePendingApps");
+            ShowDeviceWidgetPlaceholder = App.Config.HiddenWidgets.Contains("DeviceInfo");
+            ShowStoragePlaceholder = App.Config.HiddenWidgets.Contains("Storage");
+            ShowMdmPlaceholder = App.Config.HiddenWidgets.Contains("MdmStatus");
+            ShowEvergreenInfoPlaceholder = App.Config.HiddenWidgets.Contains("EvergreenInfo") || !App.Config.MunkiMode;
+            ShowBatteryPlaceholder = App.Config.HiddenWidgets.Contains("Battery");
+            ShowActionsPlaceholder = App.Config.HiddenWidgets.Contains("Actions");
+            
             _logger = logger;
         }
 
@@ -81,5 +97,13 @@ namespace SupportCompanion.ViewModels
         public bool ShowActions { get; private set; }
         public bool ShowBattery { get; private set; }
         public bool ShowEvergreenInfo { get; private set; }
+        public bool ShowUpdatesProgressPlaceholder { get; private set; } = false;
+        public bool ShowAppsListPlaceholder { get; private set; } = false;
+        public bool ShowDeviceWidgetPlaceholder { get; private set; } = false;
+        public bool ShowStoragePlaceholder { get; private set; } = false;
+        public bool ShowMdmPlaceholder { get; private set; } = false;
+        public bool ShowEvergreenInfoPlaceholder { get; private set; } = false;
+        public bool ShowBatteryPlaceholder { get; private set; } = false;
+        public bool ShowActionsPlaceholder { get; private set; } = false;
     }
 }

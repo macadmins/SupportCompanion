@@ -14,6 +14,7 @@ public partial class MdmStatusWidgetView : UserControl
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        if (App.Config.HiddenWidgets.Contains("MdmStatus")) return;
         base.OnAttachedToVisualTree(e);
         DataContext = ((App)Application.Current).ServiceProvider.GetRequiredService<MdmStatusViewModel>();
     }

@@ -14,7 +14,7 @@ public partial class MunkiPendingAppsWidgetView : UserControl
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
-        //if (!App.Config.MunkiMode) return;
+        if (!App.Config.MunkiMode) return;
 
         base.OnAttachedToVisualTree(e);
         DataContext = ((App)Application.Current).ServiceProvider.GetRequiredService<MunkiPendingAppsViewModel>();

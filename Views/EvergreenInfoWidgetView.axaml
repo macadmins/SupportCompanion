@@ -16,8 +16,8 @@
         <vm:EvergreenWidgetViewModel />
     </Design.DataContext>
     <Grid Margin="10">
-        <controls:GlassCard CornerRadius="10" MinHeight="130">
-            <Grid IsVisible="{Binding ShowData}">
+        <controls:GlassCard CornerRadius="10">
+            <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />

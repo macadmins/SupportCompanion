@@ -28,7 +28,7 @@
             </Border>
         </DataTemplate>
     </UserControl.Resources>
-    <Grid Margin="10" IsVisible="{Binding ShowData}">
+    <Grid Margin="10">
         <controls:GlassCard CornerRadius="10">
             <Grid>
                 <Grid.RowDefinitions>

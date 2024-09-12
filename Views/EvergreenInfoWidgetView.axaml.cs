@@ -14,6 +14,7 @@ public partial class EvergreenInfoWidgetView : UserControl
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        if (App.Config.HiddenWidgets.Contains("EvergreenInfo") || App.Config.MunkiMode == false) return;
         base.OnAttachedToVisualTree(e);
         DataContext = ((App)Application.Current).ServiceProvider.GetRequiredService<EvergreenWidgetViewModel>();
     }

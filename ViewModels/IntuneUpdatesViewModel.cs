@@ -10,8 +10,6 @@ public partial class IntuneUpdatesViewModel : ObservableObject, IWindowStateAwar
     private readonly IntuneAppsService _intuneApps;
     private readonly LoggerService _logger;
     [ObservableProperty] private int _installPercentage;
-    public bool ShowData { get; private set; } = true;
-
     private int _intuneUpdatesCount;
     private Timer? _timer;
 
@@ -21,10 +19,6 @@ public partial class IntuneUpdatesViewModel : ObservableObject, IWindowStateAwar
         _intuneApps = intuneApps;
         if (App.Config.IntuneMode)
             Dispatcher.UIThread.Post(InitializeAsync);
-        if (App.Config.HiddenWidgets.Contains("IntuneUpdates") || !App.Config.IntuneMode)
-        {
-            ShowData = false;
-        }
     }
 
     public void OnWindowHidden()

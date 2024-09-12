@@ -14,7 +14,7 @@ public partial class IntuneUpdatesWidgetView : UserControl
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
-        //if (!App.Config.IntuneMode) return;
+        if (!App.Config.IntuneMode) return;
 
         base.OnAttachedToVisualTree(e);
         DataContext = ((App)Application.Current).ServiceProvider.GetRequiredService<IntuneUpdatesViewModel>();

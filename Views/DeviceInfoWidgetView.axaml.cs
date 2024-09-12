@@ -1,3 +1,4 @@
+using System.Reflection.Metadata.Ecma335;
 using Avalonia;
 using Avalonia.Controls;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +15,7 @@ public partial class DeviceInfoWidgetView : UserControl
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        if (App.Config.HiddenWidgets.Contains("DeviceInfo")) return;
         base.OnAttachedToVisualTree(e);
         DataContext = ((App)Application.Current).ServiceProvider.GetRequiredService<DeviceWidgetViewModel>();
     }

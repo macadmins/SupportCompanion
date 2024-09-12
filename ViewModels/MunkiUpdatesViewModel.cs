@@ -12,9 +12,6 @@ public class MunkiUpdatesViewModel : ViewModelBase, IWindowStateAware
     private readonly MunkiAppsService _munkiApps;
     private int _installedAppsCount;
     private int _munkiUpdatesCount;
-    public bool ShowData { get; private set; } = true;
-    public bool ShowGrid { get; private set; } = true;
-
     private MunkiUpdatesModel? _munkiUpdatesInfo;
     private Timer? _timer;
 
@@ -26,12 +23,6 @@ public class MunkiUpdatesViewModel : ViewModelBase, IWindowStateAware
         {
             MunkiUpdatesInfo = new MunkiUpdatesModel();
             Dispatcher.UIThread.Post(InitializeAsync);
-        }
-        if (App.Config.HiddenWidgets.Contains("MunkiUpdates") || !App.Config.MunkiMode)
-        {
-            ShowData = false;
-            if (App.Config.IntuneMode)
-                ShowGrid = false;
         }
     }
 
