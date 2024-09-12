@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:controls="clr-namespace:SukiUI.Controls;assembly=SukiUI"
              xmlns:vm="clr-namespace:SupportCompanion.ViewModels"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              x:Class="SupportCompanion.Views.SelfServiceView"
              x:DataType="vm:SelfServiceViewModel"
              x:CompileBindings="False"
@@ -16,6 +17,7 @@
         </Style>
     </UserControl.Styles>
     <Grid Margin="15">
+        <ScrollViewer VerticalScrollBarVisibility="Hidden">
         <ItemsControl ItemsSource="{Binding ActionsList.ConfigActions}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -24,16 +26,23 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Button Classes="Basic"
-                            Command="{Binding Command}">            
+                    <Button Background="Transparent"
+                            BorderBrush="Transparent"
+                            BorderThickness="0"
+                            CornerRadius="0"
+                            Command="{Binding Command}"
+                            Margin="0,0,0,5">            
                         <Button.Content>
-                                <controls:GlassCard 
-                                    CornerRadius="10">
-                                    <controls:BusyArea IsBusy="{Binding IsRunning}"
-                                                       BusyText="">
-                                            <TextBlock VerticalAlignment="Center">
-                                                <Run Text="{Binding Name}" FontWeight="Bold" />
+                                <controls:GlassCard CornerRadius="10">
+                                    <controls:BusyArea IsBusy="{Binding IsRunning}" BusyText="">
+                                        <StackPanel>
+                                            <avalonia:MaterialIcon Kind="{Binding Icon}"
+                                                                   Margin="0,0,0,10"
+                                                                   Width="20" Height="20"/>
+                                            <TextBlock VerticalAlignment="Center" Text="{Binding Name, Mode=OneTime}">
+                                                <Run FontWeight="Bold" />
                                             </TextBlock>
+                                        </StackPanel>
                                     </controls:BusyArea>
                                 </controls:GlassCard>
                         </Button.Content>
@@ -41,5 +50,6 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
+        </ScrollViewer>
     </Grid>
 </UserControl>
