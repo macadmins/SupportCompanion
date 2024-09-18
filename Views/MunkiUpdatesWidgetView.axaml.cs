@@ -14,7 +14,7 @@ public partial class MunkiUpdatesWidgetView : UserControl
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
-        if (!App.Config.MunkiMode) return;
+        if (!App.Config.MunkiMode || App.Config.HiddenWidgets.Contains("MunkiUpdates")) return;
 
         base.OnAttachedToVisualTree(e);
         DataContext = ((App)Application.Current).ServiceProvider.GetRequiredService<MunkiUpdatesViewModel>();

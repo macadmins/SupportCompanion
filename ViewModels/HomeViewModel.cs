@@ -17,7 +17,7 @@ public class HomeViewModel : ReactiveObject
 
     private HomeViewModel(LoggerService logger)
     {
-        ShowDeviceWidget = !App.Config.HiddenWidgets.Contains("DeviceInfo");
+        ShowDeviceWidget = !App.Config.HiddenWidgets.Contains("DeviceInfo"); 
         ShowMunkiPendingApps = !App.Config.HiddenWidgets.Contains("MunkiPendingApps") && App.Config.MunkiMode;
         ShowIntunePendingApps = !App.Config.HiddenWidgets.Contains("IntunePendingApps") && App.Config.IntuneMode;
         ShowMunkiUpdates = !App.Config.HiddenWidgets.Contains("MunkiUpdates") && App.Config.MunkiMode;
@@ -28,16 +28,14 @@ public class HomeViewModel : ReactiveObject
         ShowBattery = !App.Config.HiddenWidgets.Contains("Battery");
         ShowEvergreenInfo = !App.Config.HiddenWidgets.Contains("EvergreenInfo") && App.Config.MunkiMode;
         CustomWidgets = new ObservableCollection<CustomWidgetsBaseViewModel>();
-
-        ShowUpdatesProgressPlaceholder = !App.Config.IntuneMode ||
-                                         !App.Config.MunkiMode ||
-                                         !App.Config.HiddenWidgets.Contains("MunkiUpdates") ||
-                                         !App.Config.HiddenWidgets.Contains("IntuneUpdates");
-
-        ShowAppsListPlaceholder = App.Config.IntuneMode ||
-                                  App.Config.MunkiMode ||
-                                  !App.Config.HiddenWidgets.Contains("MunkiPendingApps") ||
-                                  !App.Config.HiddenWidgets.Contains("IntunePendingApps");
+        ShowUpdatesProgressPlaceholder =
+            (App.Config.IntuneMode && App.Config.HiddenWidgets.Contains("IntuneUpdates")) ||
+            (App.Config.MunkiMode && App.Config.HiddenWidgets.Contains("MunkiUpdates")) ||
+            App.Config.AppProfilerMode;
+        ShowAppsListPlaceholder =
+            (App.Config.MunkiMode && App.Config.HiddenWidgets.Contains("MunkiPendingApps")) ||
+            (App.Config.IntuneMode && App.Config.HiddenWidgets.Contains("IntunePendingApps")) ||
+            App.Config.AppProfilerMode;
         ShowDeviceWidgetPlaceholder = App.Config.HiddenWidgets.Contains("DeviceInfo");
         ShowStoragePlaceholder = App.Config.HiddenWidgets.Contains("Storage");
         ShowMdmPlaceholder = App.Config.HiddenWidgets.Contains("MdmStatus");
