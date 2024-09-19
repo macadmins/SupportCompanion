@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -16,8 +17,8 @@ public class ActionsModel
 {
     public ActionsModel()
     {
-        ConfigActions = new List<ConfigAction>();
+        ConfigActions = new ObservableCollection<ConfigAction>();
     }
 
-    public List<ConfigAction> ConfigActions { get; set; }
+    public ObservableCollection<ConfigAction> ConfigActions { get; set; }
 }

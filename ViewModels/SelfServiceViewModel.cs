@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
 using ReactiveUI;
@@ -19,7 +20,7 @@ public class SelfServiceViewModel : ViewModelBase, IWindowStateAware
     {
         _logger = loggerService;
         _actionsService = actionsService;
-        ActionsList = new ActionsModel { ConfigActions = new List<ConfigAction>() };
+        ActionsList = new ActionsModel { ConfigActions = new ObservableCollection<ConfigAction>() };
         if (App.Config.Actions.Count > 0) Dispatcher.UIThread.Post(InitializeAsync);
     }
 
@@ -36,8 +37,11 @@ public class SelfServiceViewModel : ViewModelBase, IWindowStateAware
 
     public void OnWindowShown()
     {
-        ActionsList = new ActionsModel { ConfigActions = new List<ConfigAction>() };
-        Dispatcher.UIThread.Post(InitializeAsync);
+        if (ActionsList?.ConfigActions == null || ActionsList.ConfigActions.Count == 0)
+        {
+            ActionsList = new ActionsModel { ConfigActions = new ObservableCollection<ConfigAction>() };
+            Dispatcher.UIThread.Post(InitializeAsync);
+        }
     }
 
     private async void InitializeAsync()
@@ -47,15 +51,19 @@ public class SelfServiceViewModel : ViewModelBase, IWindowStateAware
 
     private async Task GetActions()
     {
-        var actions = new List<ConfigAction>();
+        // Clear the collection before fetching new actions
+        ActionsList?.ConfigActions.Clear();
+
         foreach (var action in App.Config.Actions)
+        {
             if (action.Value.TryGetValue("Name", out var name) &&
                 action.Value.TryGetValue("Command", out var command))
             {
                 // get the icon if it exists
                 action.Value.TryGetValue("Icon", out var icon);
                 icon ??= defaultIcon;
-                actions.Add(new ConfigAction
+
+                ActionsList.ConfigActions.Add(new ConfigAction
                 {
                     Name = name,
                     Command = new RelayCommand(async () => await RunCommand(command)),
@@ -64,8 +72,7 @@ public class SelfServiceViewModel : ViewModelBase, IWindowStateAware
                     Icon = icon
                 });
             }
-
-        ActionsList = new ActionsModel { ConfigActions = actions };
+        }
     }
 
     private async Task RunCommand(string command)
