@@ -5,25 +5,22 @@ using SupportCompanion.ViewModels;
 
 namespace SupportCompanion.Views;
 
-public partial class IntuneUpdatesWidgetView : UserControl
+public partial class SelfServiceView : UserControl
 {
-    public IntuneUpdatesWidgetView()
+    public SelfServiceView()
     {
         InitializeComponent();
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
-        if (!App.Config.IntuneMode || App.Config.HiddenWidgets.Contains("IntuneUpdates")) return;
-
         base.OnAttachedToVisualTree(e);
-        DataContext = ((App)Application.Current).ServiceProvider.GetRequiredService<IntuneUpdatesViewModel>();
+        DataContext = ((App)Application.Current).ServiceProvider.GetRequiredService<SelfServiceViewModel>();
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
-        if (!App.Config.IntuneMode) return;
-
         base.OnDetachedFromVisualTree(e);
+        DataContext = null;
     }
 }

@@ -12,7 +12,6 @@ public class MunkiUpdatesViewModel : ViewModelBase, IWindowStateAware
     private readonly MunkiAppsService _munkiApps;
     private int _installedAppsCount;
     private int _munkiUpdatesCount;
-
     private MunkiUpdatesModel? _munkiUpdatesInfo;
     private Timer? _timer;
 

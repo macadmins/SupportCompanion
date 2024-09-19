@@ -207,4 +207,10 @@
     <data name="DesktopInfoUsedOn" xml:space="preserve">
         <value>utilisé sur</value>
     </data>
+    <data name="MenuSelfService" xml:space="preserve">
+        <value>Libre-service</value>
+    </data>
+    <data name="BusyLoading" xml:space="preserve">
+        <value>Chargement...</value>
+    </data>
 </root>

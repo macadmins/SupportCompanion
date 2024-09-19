@@ -10,7 +10,6 @@ public class StorageViewModel : ViewModelBase, IWindowStateAware
 {
     private readonly LoggerService _logger;
     private readonly StorageService _storage;
-
     private StorageModel? _storageInfo;
     private Timer? _timer;
 

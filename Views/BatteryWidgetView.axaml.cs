@@ -14,6 +14,7 @@ public partial class BatteryWidgetView : UserControl
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        if (App.Config.HiddenWidgets.Contains("Battery")) return;
         base.OnAttachedToVisualTree(e);
         DataContext = ((App)Application.Current).ServiceProvider.GetRequiredService<BatteryWidgetViewModel>();
     }

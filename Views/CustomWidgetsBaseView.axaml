@@ -14,12 +14,12 @@
     </Design.DataContext>
     <UserControl.Styles>
         <Style Selector="TextBlock">
-            <Setter Property="TextWrapping" Value="Wrap"/>
-            <Setter Property="Margin" Value="0,0,0,5"></Setter>
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Margin" Value="0,0,0,5" />
         </Style>
     </UserControl.Styles>
     <Grid Margin="10">
-        <controls:GlassCard 
+        <controls:GlassCard
             CornerRadius="10"
             MaxWidth="315">
             <Grid>
@@ -39,9 +39,9 @@
                             <DataTemplate>
                                 <StackPanel>
                                     <TextBlock>
-                                        <Run Text="{Binding Key}" FontWeight="Bold"/>
-                                        <Run Text=": " FontWeight="Bold"/>
-                                        <Run Text="{Binding Value}"/>
+                                        <Run Text="{Binding Key}" FontWeight="Bold" />
+                                        <Run Text=": " FontWeight="Bold" />
+                                        <Run Text="{Binding Value}" />
                                     </TextBlock>
                                 </StackPanel>
                             </DataTemplate>

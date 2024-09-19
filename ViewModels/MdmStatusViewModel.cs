@@ -11,14 +11,13 @@ public class MdmStatusViewModel : ViewModelBase, IWindowStateAware
     private readonly MdmStatusService _mdmStatusService;
     private bool _disposed;
     private Dictionary<string, string> _mdmStatus = new();
-
     private MdmStatusModel? _mdmStatusInfo;
 
     public MdmStatusViewModel(MdmStatusService mdmStatus)
     {
         _mdmStatusService = mdmStatus;
         MdmStatusInfo = new MdmStatusModel();
-        Dispatcher.UIThread.Post(InitializeAsync);
+        if (!App.Config.HiddenWidgets.Contains("MdmStatus")) Dispatcher.UIThread.Post(InitializeAsync);
     }
 
     public MdmStatusModel? MdmStatusInfo

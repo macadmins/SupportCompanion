@@ -10,7 +10,6 @@ public partial class IntuneUpdatesViewModel : ObservableObject, IWindowStateAwar
     private readonly IntuneAppsService _intuneApps;
     private readonly LoggerService _logger;
     [ObservableProperty] private int _installPercentage;
-
     private int _intuneUpdatesCount;
     private Timer? _timer;
 

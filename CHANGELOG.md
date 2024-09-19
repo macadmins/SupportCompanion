@@ -4,6 +4,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2024-09-19
+### Added
+- A new mode for the app called `SystemProfilerApps` which allows for the app to display applications installed under `/Applications` and their version numbers as well as Architecture. This mode is useful for admins who want to see what applications are installed on the device and their version numbers. To enable this mode, set `SystemProfilerApps` to `true` in the configuration. Example configuration:
+```xml
+<key>SystemProfilerApps</key>
+<true/>
+```
+- A new page called `Self Service` that will display all actions configured by an admin in the mobileconfig using the `Actions` array. This allows for easy access to self-service actions that the user can perform on their device. If no actions are configured, the page will not be displayed.
+- A new key for configuring an icon for actions that will be displayed in the `Self Service` page. This allows for admins to configure an icon for each action that is displayed in the `Self Service` page. The icon should be a material icon name from https://pictogrammers.com/library/mdi/. For example `apple-finder` would be `AppleFinder`. Example configuration:
+```xml
+<key>Actions</key>
+<array>
+    <dict>
+        <key>Name</key>
+        <string>Restart clipboard</string>
+        <key>Command</key>
+        <string>killall pboard</string>
+        <key>Icon</key>
+        <string>AppleFinder</string>
+    </dict>
+```
+### Changed
+- If a widget is configured to not be shown or otherwise should not be shown, the widget will now be blanked out instead of being hidden. This is to ensure that the layout of the widgets is consistent and that the user knows that the widget is not available.
+
 ## [1.2.0] - 2024-09-04
 ### Added
 - German localization, thanks @motodotsh for the German localization

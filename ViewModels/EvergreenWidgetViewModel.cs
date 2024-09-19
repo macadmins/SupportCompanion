@@ -11,14 +11,13 @@ public class EvergreenWidgetViewModel : ViewModelBase, IWindowStateAware
 {
     private readonly ObservableCollection<string> _catalogs = new();
     private readonly CatalogsService _catalogsService;
-
     private EvergreenInfoModel? _evergreenInfo;
 
     public EvergreenWidgetViewModel(CatalogsService catalogs)
     {
-        _catalogsService = catalogs;
         if (App.Config.MunkiMode)
         {
+            _catalogsService = catalogs;
             EvergreenInfo = new EvergreenInfoModel
             {
                 Catalogs = _catalogs

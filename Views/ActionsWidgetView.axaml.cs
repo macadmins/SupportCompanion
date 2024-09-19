@@ -14,6 +14,7 @@ public partial class ActionsWidgetView : UserControl
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        if (App.Config.HiddenWidgets.Contains("Actions")) return;
         base.OnAttachedToVisualTree(e);
         DataContext = ((App)Application.Current).ServiceProvider.GetRequiredService<ActionsViewModel>();
     }

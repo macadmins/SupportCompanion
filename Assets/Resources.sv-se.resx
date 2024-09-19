@@ -198,4 +198,10 @@
     <data name="DesktopInfoUsedOn" xml:space="preserve">
         <value>använt på</value>
     </data>
+    <data name="MenuSelfService" xml:space="preserve">
+        <value>Självbetjäning</value>
+    </data>
+    <data name="BusyLoading" xml:space="preserve">
+        <value>Laddar...</value>
+    </data>
 </root>

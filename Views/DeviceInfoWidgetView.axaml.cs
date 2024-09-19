@@ -14,6 +14,7 @@ public partial class DeviceInfoWidgetView : UserControl
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        if (App.Config.HiddenWidgets.Contains("DeviceInfo")) return;
         base.OnAttachedToVisualTree(e);
         DataContext = ((App)Application.Current).ServiceProvider.GetRequiredService<DeviceWidgetViewModel>();
     }

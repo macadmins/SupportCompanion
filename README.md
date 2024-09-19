@@ -38,7 +38,8 @@ I am only able to test with Intune, so if you have another MDM provider, I would
 - **Desktop Info**: Show information on the desktop such as device name, serial number, macOS version, and IP address.
 - **Custom Widgets**: Add custom widgets to the Home view, this allows for displaying information specific to your
   organization.
-
+- **Self Service**: Shows all actions in the app configured in the MDM profile. This allows for a self-service
+  experience for the user using the UI and not only the menu bar icon.
 ## Localization
 
 The app is localized to `Swedish`, `Norwegian`, `French` and `German`. The app will display in the user's preferred language if it is set to one of these languages in macOS. If the user's preferred language is not one of these, the app will default to English.
@@ -83,6 +84,9 @@ This package is provided for convenience and can be used to install the app and 
 
 ## AutoPkg
 A recipe for AutoPkg is available [here](https://github.com/autopkg/almenscorner-recipes/tree/main/SupportCompanion).
+
+## A note on icons
+When configuring icons for custom widgets or actions, the icon name should be a material icon name from https://pictogrammers.com/library/mdi/. For example apple-finder would be AppleFinder.
 
 ## Using the app
 
@@ -134,6 +138,7 @@ Many aspects of the app can be configured using MDM profiles, the folloing keys 
 | `DesktopInfoColorHighlight` | Bool | True | False | Configures whether to highlight the text in the desktop info. |
 | `DesktopInfoFontSize` | Integer | 17 | False | Configures the font size for the desktop info. |
 | `CustomWidgetsPath` | String | None | False | Configures a path to a JSON file containing custom widgets to show on the Home view. |
+| `SystemProfilerApps` | Bool | None | False | Configures the app to list all applications installed under `/Applications` and their versions. Useful if Munki or Intune is not used. |
 
 ### Example Configuration
 
@@ -178,6 +183,15 @@ To switch from Munki to Intune for application information, add the following ke
                <key>Command</key>
                <string>/usr/bin/osascript -e 'do shell script \"sudo killall IntuneMdmAgent\" with administrator privileges'</string>
            </dict>
+            <dict>
+                <key>Name</key>
+                <string>️Some awesome action</string>
+                <key>Command</key>
+                <string>echo "I am awesome"</string>
+                <!-- Optional key to specify an icon for the action which will display in the self service view -->
+                <key>Icon</key>
+                <string>AppleFinder</string>
+            </dict>
         </array>
         <key>NotificationTitle</key>
         <string>AwesomeCorp IT</string>

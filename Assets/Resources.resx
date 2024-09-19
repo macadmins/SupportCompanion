@@ -219,4 +219,10 @@
     <data name="DesktopInfoUsedOn" xml:space="preserve">
         <value>used on</value>
     </data>
+    <data name="MenuSelfService" xml:space="preserve">
+        <value>Self Service</value>
+    </data>
+    <data name="BusyLoading" xml:space="preserve">
+        <value>Loading...</value>
+    </data>
 </root>

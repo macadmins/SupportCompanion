@@ -21,7 +21,10 @@ public partial class MainWindow : SukiWindow
         InitializeComponent();
         Closing += OnClosing; // Subscribe to the Closing event
         this.GetObservable(IsVisibleProperty).Subscribe(OnIsVisibleChanged); // Subscribe to visibility changes
+        ShowMunkiUpdates = !App.Config.HiddenWidgets.Contains("MunkiUpdates") && App.Config.MunkiMode;
     }
+
+    public bool ShowMunkiUpdates { get; }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {

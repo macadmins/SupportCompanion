@@ -12,16 +12,18 @@ public partial class ApplicationsModel : ObservableObject
 
 public class InstalledApp
 {
-    public InstalledApp(string name, string version, string action, bool isSelfServe = false)
+    public InstalledApp(string name, string version, string action, string arch, bool isSelfServe = false)
     {
         Name = name;
         Version = version;
         Action = action;
+        Arch = arch;
         IsSelfServe = isSelfServe;
     }
 
     public string Name { get; set; }
     public string Version { get; set; }
     public string Action { get; set; }
+    public string Arch { get; set; }
     public bool IsSelfServe { get; set; }
 }

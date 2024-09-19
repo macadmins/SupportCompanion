@@ -14,7 +14,7 @@
     </Application.DataTemplates>
     <TrayIcon.Icons>
         <TrayIcons>
-            <TrayIcon Icon="/Assets/trayiconTemplate.png" 
+            <TrayIcon Icon="/Assets/trayiconTemplate.png"
                       ToolTipText="Support Companion"
                       MacOSProperties.IsTemplateIcon="True">
                 <TrayIcon.Menu>

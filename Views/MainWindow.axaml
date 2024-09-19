@@ -26,7 +26,7 @@
     </Design.DataContext>
     <controls:SukiWindow.Styles>
         <Style Selector="Button#PART_SidebarToggleButton">
-            <Setter Property="IsVisible" Value="{Binding ShowMenuToggle}"/>
+            <Setter Property="IsVisible" Value="{Binding ShowMenuToggle}" />
         </Style>
     </controls:SukiWindow.Styles>
     <controls:SukiSideMenu>
@@ -69,6 +69,16 @@
                 </controls:SukiSideMenuItem.Icon>
                 <controls:SukiSideMenuItem.PageContent>
                     <views:IdentityView />
+                </controls:SukiSideMenuItem.PageContent>
+            </controls:SukiSideMenuItem>
+
+            <controls:SukiSideMenuItem Header="{x:Static assets:Resources.MenuSelfService}"
+                                       IsVisible="{Binding SelfServiceVisible}">
+                <controls:SukiSideMenuItem.Icon>
+                    <avalonia:MaterialIcon Kind="ServiceToolbox" />
+                </controls:SukiSideMenuItem.Icon>
+                <controls:SukiSideMenuItem.PageContent>
+                    <views:SelfServiceView />
                 </controls:SukiSideMenuItem.PageContent>
             </controls:SukiSideMenuItem>
         </controls:SukiSideMenu.Items>
