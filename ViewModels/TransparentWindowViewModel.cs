@@ -12,12 +12,12 @@ namespace SupportCompanion.ViewModels;
 
 public class TransparentWindowViewModel : ViewModelBase
 {
+    private readonly IOKitService _iioKit;
     private readonly LoggerService _logger;
     private readonly StorageService _storage;
-    private DeviceInfoModel? _deviceInfo;
-    private readonly IOKitService _iioKit;
-    private StorageModel? _storageInfo;
     private readonly SystemInfoService _systemInfo;
+    private DeviceInfoModel? _deviceInfo;
+    private StorageModel? _storageInfo;
     private Timer? _timer;
 
     public TransparentWindowViewModel(IOKitService iioKit, SystemInfoService systemInfo, StorageService storage,
