@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using SukiUI.Controls;
+using Avalonia.Controls.Notifications;
+using SukiUI.Toasts;
 using SupportCompanion.Helpers;
 using SupportCompanion.Interfaces;
 
@@ -12,10 +13,13 @@ public class ActionsService : IActions
     private const string OpenMmcUpdates = "open munki://updates.html";
     private readonly LoggerService _logger;
 
-    public ActionsService(LoggerService loggerService)
+    public ActionsService(LoggerService loggerService, ISukiToastManager toastManager)
     {
         _logger = loggerService;
+        ToastManager = toastManager;
     }
+
+    public ISukiToastManager ToastManager { get; }
 
     public async Task KillAgent()
     {
@@ -37,10 +41,20 @@ public class ActionsService : IActions
         if (process.ExitCode != 0)
         {
             _logger.Log("ActionsService:KillAgent", $"Failed to kill agent: {error}", 2);
-            await SukiHost.ShowToast("Kill Agent", "Failed to kill agent");
+            ToastManager.CreateSimpleInfoToast()
+                .WithTitle("Kill Agent")
+                .OfType(NotificationType.Error)
+                .WithContent("Failed to kill agent")
+                .Queue();
         }
-
-        await SukiHost.ShowToast("Kill Agent", "Agent successfully killed");
+        else
+        {
+            ToastManager.CreateSimpleInfoToast()
+                .WithTitle("Kill Agent")
+                .OfType(NotificationType.Success)
+                .WithContent("Agent successfully killed")
+                .Queue();
+        }
     }
 
     public async Task Reboot()
@@ -63,7 +77,11 @@ public class ActionsService : IActions
         if (process.ExitCode != 0)
         {
             _logger.Log("ActionsService:Reboot", $"Reboot failed: {error}", 2);
-            await SukiHost.ShowToast("Reboot", "Reboot failed");
+            ToastManager.CreateSimpleInfoToast()
+                .WithTitle("Reboot")
+                .OfType(NotificationType.Error)
+                .WithContent("Reboot failed")
+                .Queue();
         }
     }
 

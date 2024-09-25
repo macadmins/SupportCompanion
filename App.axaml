@@ -3,14 +3,14 @@
              x:Class="SupportCompanion.App"
              x:DataType="vm:MainWindowViewModel"
              Name="Support Companion"
-             xmlns:local="using:SupportCompanion"
+             xmlns:common="using:SupportCompanion.Common"
              xmlns:sukiUi="clr-namespace:SukiUI;assembly=SukiUI"
              xmlns:vm="clr-namespace:SupportCompanion.ViewModels"
              xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              RequestedThemeVariant="Default">
 
     <Application.DataTemplates>
-        <local:ViewLocator />
+        <common:ViewLocator />
     </Application.DataTemplates>
     <TrayIcon.Icons>
         <TrayIcons>

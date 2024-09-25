@@ -1,7 +1,8 @@
 using System.Net;
+using Avalonia.Controls.Notifications;
 using Avalonia.Threading;
 using ReactiveUI;
-using SukiUI.Controls;
+using SukiUI.Toasts;
 using SupportCompanion.Assets;
 using SupportCompanion.Helpers;
 using SupportCompanion.Interfaces;
@@ -15,18 +16,21 @@ public class DeviceWidgetViewModel : ViewModelBase, IWindowStateAware
     private readonly ClipboardService _clipboard;
     private readonly IOKitService _iioKit;
     private readonly SystemInfoService _systemInfo;
-
+    private readonly ISukiToastManager _toastManager;
     private DeviceInfoModel? _deviceInfo;
 
     public DeviceWidgetViewModel(SystemInfoService systemInfo,
-        ClipboardService clipboard, IOKitService iioKit)
+        ClipboardService clipboard, IOKitService iioKit, ISukiToastManager toastManager)
     {
         _iioKit = iioKit;
         _systemInfo = systemInfo;
         _clipboard = clipboard;
+        ToastManager = toastManager;
         DeviceInfo = new DeviceInfoModel();
         Dispatcher.UIThread.Post(InitializeAsync);
     }
+
+    public ISukiToastManager ToastManager { get; }
 
     public DeviceInfoModel? DeviceInfo
     {
@@ -89,11 +93,19 @@ public class DeviceWidgetViewModel : ViewModelBase, IWindowStateAware
         try
         {
             await _clipboard.SetClipboardTextAsync(systemInfo);
-            await SukiHost.ShowToast("Copy System Info", "System Info successfully copied");
+            ToastManager.CreateSimpleInfoToast()
+                .WithTitle("Copy System Info")
+                .OfType(NotificationType.Success)
+                .WithContent("System Info successfully copied")
+                .Queue();
         }
         catch (Exception e)
         {
-            await SukiHost.ShowToast("Copy System Info", "Failed to copy System Info");
+            ToastManager.CreateSimpleInfoToast()
+                .WithTitle("Copy System Info")
+                .OfType(NotificationType.Error)
+                .WithContent("Failed to copy System Info")
+                .Queue();
         }
     }
 

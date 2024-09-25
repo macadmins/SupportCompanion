@@ -12,9 +12,7 @@
     <Design.DataContext>
         <vm:HomeViewModel />
     </Design.DataContext>
-    <WrapPanel MaxWidth="1250"
-               VerticalAlignment="Center"
-               HorizontalAlignment="Center">
+    <WrapPanel MaxWidth="1250">
         <ScrollViewer VerticalScrollBarVisibility="Hidden">
             <Grid Margin="15">
                 <Grid.RowDefinitions>

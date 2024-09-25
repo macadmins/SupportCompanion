@@ -1,10 +1,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using SukiUI.Controls;
 
 namespace SupportCompanion.ViewModels;
 
-public partial class SupportDialogViewModel : ObservableObject
+public class SupportDialogViewModel : ObservableObject
 {
     public SupportDialogViewModel()
     {
@@ -14,10 +12,4 @@ public partial class SupportDialogViewModel : ObservableObject
 
     public string SupportEmail { get; set; }
     public string SupportPhone { get; set; }
-
-    [RelayCommand]
-    private static void CloseDialog()
-    {
-        SukiHost.CloseDialog();
-    }
 }
