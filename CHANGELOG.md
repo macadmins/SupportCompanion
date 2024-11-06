@@ -4,11 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.4.0] - 2024-09-25
+## [1.4.0] - 2024-11-06
 ### Changed
 - Avalonia and SukiUI has been updated.
 - As part of the SukiUI update, the SukiHost has been updated to use the new scalable style of hosts.
 - Mainwindow height has been slightly increased.
+- Uninstall script updated with a check for root and use of Apple best practices. #50 thanks @pboushy
 
 ### Fixed
 - When a app or system update notification was clicked, the command was not run resulting in nothing happening.
