@@ -3,10 +3,12 @@ using System.Net.NetworkInformation;
 using System.Text.Json;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Controls.Notifications;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
-using SukiUI.Controls;
+using SukiUI.Dialogs;
+using SukiUI.Toasts;
 using SupportCompanion.Interfaces;
 using SupportCompanion.Services;
 
@@ -24,10 +26,13 @@ public partial class ActionsViewModel : ObservableObject, IWindowStateAware
     [ObservableProperty] private bool _hasUpdates;
     [ObservableProperty] private string _updateCount = "0";
 
-    public ActionsViewModel(ActionsService actionsService, LoggerService loggerService)
+    public ActionsViewModel(ActionsService actionsService, LoggerService loggerService,
+        ISukiDialogManager dialogManager, ISukiToastManager toastManager)
     {
         _actionsService = actionsService;
         _logger = loggerService;
+        ToastManager = toastManager;
+        DialogManager = dialogManager;
         HideSupportButton = !App.Config.HiddenActions.Contains("Support");
         HideMmcButton = !App.Config.HiddenActions.Contains("ManagedSoftwareCenter") && App.Config.MunkiMode;
         HideChangePasswordButton = !App.Config.HiddenActions.Contains("ChangePassword");
@@ -37,6 +42,9 @@ public partial class ActionsViewModel : ObservableObject, IWindowStateAware
         HideGatherLogsButton = !App.Config.HiddenActions.Contains("GatherLogs");
         if (!App.Config.HiddenWidgets.Contains("Actions")) Dispatcher.UIThread.Post(InitializeAsync);
     }
+
+    public ISukiToastManager ToastManager { get; }
+    public ISukiDialogManager DialogManager { get; }
 
     public bool HideSupportButton { get; private set; }
     public bool HideChangePasswordButton { get; private set; }
@@ -134,8 +142,11 @@ public partial class ActionsViewModel : ObservableObject, IWindowStateAware
             // Do we have a network connection?
             if (!await CheckForInternetConnection())
             {
-                await SukiHost.ShowToast("Change Password",
-                    "No network connection");
+                ToastManager.CreateSimpleInfoToast()
+                    .WithTitle("Change Password")
+                    .OfType(NotificationType.Warning)
+                    .WithContent("No network connection")
+                    .Queue();
                 return;
             }
 
@@ -158,19 +169,30 @@ public partial class ActionsViewModel : ObservableObject, IWindowStateAware
                         // open the SSO extension with the realm name
                         await _actionsService.RunCommandWithoutOutput($"/usr/bin/app-sso -c {realmName}");
                     else
-                        await SukiHost.ShowToast("Change Password",
-                            $"Cannot reach {realmName}, make sure to connect to VPN or corporate network.");
+                        ToastManager.CreateSimpleInfoToast()
+                            .WithTitle("Change Password")
+                            .OfType(NotificationType.Warning)
+                            .WithContent($"Cannot reach {realmName}, make sure to connect to VPN or corporate network.")
+                            .Queue();
                 }
                 catch (Exception)
                 {
-                    await SukiHost.ShowToast("Change Password",
-                        "Change request failed for unknown reason");
+                    //await SukiHost.ShowToast("Change Password",
+                    //    "Change request failed for unknown reason");
+                    ToastManager.CreateSimpleInfoToast()
+                        .WithTitle("Change Password")
+                        .OfType(NotificationType.Error)
+                        .WithContent("Change request failed for unknown reason")
+                        .Queue();
                 }
             }
             else
             {
-                await SukiHost.ShowToast("Change Password",
-                    "Change password mode not configured");
+                ToastManager.CreateSimpleInfoToast()
+                    .WithTitle("Change Password")
+                    .OfType(NotificationType.Warning)
+                    .WithContent("Change password mode not configured")
+                    .Queue();
             }
         }
     }
@@ -187,8 +209,11 @@ public partial class ActionsViewModel : ObservableObject, IWindowStateAware
         // Check if the zip command was successful
         if (!File.Exists(archivePath))
         {
-            await SukiHost.ShowToast("Gather Logs",
-                "Failed to gather logs");
+            ToastManager.CreateSimpleInfoToast()
+                .WithTitle("Gather Logs")
+                .OfType(NotificationType.Error)
+                .WithContent("Failed to gather logs")
+                .Queue();
             return;
         }
 
@@ -216,20 +241,29 @@ public partial class ActionsViewModel : ObservableObject, IWindowStateAware
 
                 File.Delete(archivePath); // Delete the source file after successful copy
 
-                await SukiHost.ShowToast("Gather Logs",
-                    "Logs saved successfully");
+                ToastManager.CreateSimpleInfoToast()
+                    .WithTitle("Gather Logs")
+                    .OfType(NotificationType.Success)
+                    .WithContent("Logs saved successfully")
+                    .Queue();
             }
             else
             {
-                await SukiHost.ShowToast("Gather Logs",
-                    "Logs not saved");
+                ToastManager.CreateSimpleInfoToast()
+                    .WithTitle("Gather Logs")
+                    .OfType(NotificationType.Warning)
+                    .WithContent("Logs not saved")
+                    .Queue();
             }
         }
     }
 
     public void ShowSupportInfoDialog()
     {
-        SukiHost.ShowDialog(new SupportDialogViewModel(), allowBackgroundClose: true);
+        DialogManager.CreateDialog()
+            .WithViewModel(dialog => new SupportDialogViewModel())
+            .Dismiss().ByClickingBackground()
+            .TryShow();
     }
 
     private void CleanUp()

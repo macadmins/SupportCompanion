@@ -7,6 +7,8 @@ using Avalonia.Styling;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
+using SukiUI.Dialogs;
+using SukiUI.Toasts;
 using SupportCompanion.Services;
 using SupportCompanion.Views;
 
@@ -21,10 +23,13 @@ public partial class MainWindowViewModel : ObservableObject
     [ObservableProperty] private string _nativeMenuQuitAppText;
     [ObservableProperty] private string _nativeMenuSystemUpdatesText;
 
-    public MainWindowViewModel(ActionsService actionsService, LoggerService loggerService)
+    public MainWindowViewModel(ActionsService actionsService, LoggerService loggerService,
+        ISukiToastManager toastManager, ISukiDialogManager dialogManager)
     {
         _actionsService = actionsService;
         _logger = loggerService;
+        ToastManager = toastManager;
+        DialogManager = dialogManager;
         ShowHeader = !string.IsNullOrEmpty(App.Config.BrandName);
         SelfServiceVisible = App.Config.Actions.Count > 0;
         BrandName = App.Config.BrandName;
@@ -61,6 +66,9 @@ public partial class MainWindowViewModel : ObservableObject
 
         ShowMenuToggle = App.Config.ShowMenuToggle;
     }
+
+    public ISukiToastManager ToastManager { get; }
+    public ISukiDialogManager DialogManager { get; }
 
     public bool SelfServiceVisible { get; set; }
 

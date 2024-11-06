@@ -6,6 +6,8 @@ using Avalonia.Markup.Xaml;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using ObjCRuntime;
+using SukiUI.Dialogs;
+using SukiUI.Toasts;
 using SupportCompanion.Helpers;
 using SupportCompanion.Models;
 using SupportCompanion.Services;
@@ -27,6 +29,7 @@ public class App : Application
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
+        RegisterAppServices();
         var prefs = new AppConfigHelper();
         try
         {
@@ -76,7 +79,7 @@ public class App : Application
 
     public override async void OnFrameworkInitializationCompleted()
     {
-        RegisterAppServices();
+        //RegisterAppServices();
         await InitializeCultureAsync();
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
@@ -161,6 +164,8 @@ public class App : Application
         serviceCollection.AddSingleton<LoggerService>();
         serviceCollection.AddSingleton<NotificationService>();
         serviceCollection.AddSingleton<ProfilerApplications>();
+        serviceCollection.AddSingleton<ISukiToastManager, SukiToastManager>();
+        serviceCollection.AddSingleton<ISukiDialogManager, SukiDialogManager>();
 
         serviceCollection.AddSingleton<DeviceWidgetViewModel>();
         serviceCollection.AddSingleton<MunkiPendingAppsViewModel>();

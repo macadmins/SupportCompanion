@@ -16,6 +16,9 @@
             <Setter Property="Margin" Value="0,0,0,5" />
         </Style>
     </UserControl.Styles>
+    <controls:SukiWindow.Hosts>
+        <controls:SukiToastHost Manager="{Binding ToastManager}" />
+    </controls:SukiWindow.Hosts>
     <Grid Margin="15">
         <ScrollViewer VerticalScrollBarVisibility="Hidden">
             <ItemsControl ItemsSource="{Binding ActionsList.ConfigActions}">

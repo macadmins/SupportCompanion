@@ -7,6 +7,7 @@ PUBLISH_OUTPUT_DIRECTORY="${PROJECT_PATH}/bin/Release/net8.0-macos/SupportCompan
 PUBLISH_OUTPUT_APP="${PROJECT_PATH}/bin/Release/net8.0-macos/SupportCompanion.app"
 ICON_FILE="${PROJECT_PATH}/Assets/appicon.icns"
 SUKIUI_LICENSE_FILE="${PROJECT_PATH}/SUKIUI_LICENSE"
+AVALONIA_LICENSE_FILE="${PROJECT_PATH}/LICENSE"
 UNINSTALL_SCRIPT="${PROJECT_PATH}/Assets/Uninstall.sh"
 VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleVersion" "${PROJECT_PATH}/Info.plist")
 CURRENT_SC_MAIN_BUILD_VERSION=$VERSION
@@ -47,10 +48,14 @@ dotnet publish --configuration Release -p:UseAppHost=true
 # Create the Applications directory and utilities directory
 mkdir -p "${BUILD_PATH}/payload/Applications/Utilities"
 
+# Create resources directory
+mkdir -p "$PUBLISH_OUTPUT_DIRECTORY/Contents/Resources"
+
 rm -f "$PUBLISH_OUTPUT_DIRECTORY/Contents/Resources/suki_photo.ico"
 cp "$ICON_FILE" "$PUBLISH_OUTPUT_DIRECTORY/Contents/Resources/"
 cp "$UNINSTALL_SCRIPT" "$PUBLISH_OUTPUT_DIRECTORY/Contents/Resources/"
 cp "$SUKIUI_LICENSE_FILE" "$PUBLISH_OUTPUT_DIRECTORY/Contents/Resources/"
+cp "$AVALONIA_LICENSE_FILE" "$PUBLISH_OUTPUT_DIRECTORY/Contents/Resources/"
 chmod +x "$PUBLISH_OUTPUT_DIRECTORY/Contents/Resources/Uninstall.sh"
 cp -a "${PROJECT_PATH}/Assets/scripts" "${BUILD_PATH}/payload/Library/Application Support/SupportCompanion/"
 

@@ -13,6 +13,9 @@
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:DeviceWidgetViewModel />
     </Design.DataContext>
+    <controls:SukiWindow.Hosts>
+        <controls:SukiToastHost Manager="{Binding ToastManager}" />
+    </controls:SukiWindow.Hosts>
     <Grid Margin="10">
         <controls:GlassCard CornerRadius="10" MinWidth="350">
             <Grid>

@@ -1,8 +1,9 @@
 using System.Collections.ObjectModel;
+using Avalonia.Controls.Notifications;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
 using ReactiveUI;
-using SukiUI.Controls;
+using SukiUI.Toasts;
 using SupportCompanion.Interfaces;
 using SupportCompanion.Models;
 using SupportCompanion.Services;
@@ -16,13 +17,17 @@ public class SelfServiceViewModel : ViewModelBase, IWindowStateAware
     private readonly LoggerService _logger;
     private ActionsModel? _actionsList;
 
-    public SelfServiceViewModel(LoggerService loggerService, ActionsService actionsService)
+    public SelfServiceViewModel(LoggerService loggerService, ActionsService actionsService,
+        ISukiToastManager toastManager)
     {
         _logger = loggerService;
         _actionsService = actionsService;
+        ToastManager = toastManager;
         ActionsList = new ActionsModel { ConfigActions = new ObservableCollection<ConfigAction>() };
         if (App.Config.Actions.Count > 0) Dispatcher.UIThread.Post(InitializeAsync);
     }
+
+    public ISukiToastManager ToastManager { get; }
 
     public ActionsModel? ActionsList
     {
@@ -55,7 +60,6 @@ public class SelfServiceViewModel : ViewModelBase, IWindowStateAware
         ActionsList?.ConfigActions.Clear();
 
         foreach (var action in App.Config.Actions)
-        {
             if (action.Value.TryGetValue("Name", out var name) &&
                 action.Value.TryGetValue("Command", out var command))
             {
@@ -72,7 +76,6 @@ public class SelfServiceViewModel : ViewModelBase, IWindowStateAware
                     Icon = icon
                 });
             }
-        }
     }
 
     private async Task RunCommand(string command)
@@ -84,14 +87,24 @@ public class SelfServiceViewModel : ViewModelBase, IWindowStateAware
         {
             action.IsRunning = true;
             await _actionsService.RunCommandWithoutOutput(command);
-            await SukiHost.ShowToast("Self Service", "Command executed successfully!");
+            //await SukiHost.ShowToast("Self Service", "Command executed successfully!");
+            ToastManager.CreateSimpleInfoToast()
+                .WithTitle("Self Service")
+                .OfType(NotificationType.Success)
+                .WithContent("Command executed successfully!")
+                .Queue();
             action.IsRunning = false;
         }
         catch (Exception e)
         {
             action.IsRunning = false;
             _logger.Log("SelfServiceViewModel", e.Message, 3);
-            await SukiHost.ShowToast("Self Service", "Command failed to execute!");
+            //await SukiHost.ShowToast("Self Service", "Command failed to execute!");
+            ToastManager.CreateSimpleInfoToast()
+                .WithTitle("Self Service")
+                .OfType(NotificationType.Error)
+                .WithContent("Command failed to execute!")
+                .Queue();
         }
     }
 

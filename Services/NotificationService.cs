@@ -7,11 +7,10 @@ public class NotificationService : INotification
 {
     private readonly LoggerService _logger;
 
-    public NotificationService(LoggerService loggerService)
+    public NotificationService(LoggerService loggerService) : this()
     {
         _logger = loggerService;
     }
-
     public NotificationService()
     {
         NSUserNotificationCenter.DefaultUserNotificationCenter.DidActivateNotification += (sender, args) =>

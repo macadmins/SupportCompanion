@@ -23,7 +23,7 @@
         </Style>
     </UserControl.Styles>
     <Grid Margin="30">
-        <controls:GlassCard CornerRadius="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <controls:GlassCard CornerRadius="10">
             <controls:BusyArea BusyText="{x:Static assets:Resources.BusyLoading}" IsBusy="{Binding IsLoading}">
                 <Grid Margin="15">
                     <Grid.RowDefinitions>
@@ -35,19 +35,19 @@
                         <Run Text="{x:Static assets:Resources.InstalledApps}" FontWeight="DemiBold" FontSize="16" />
                     </TextBlock>
                     <DataGrid Grid.Row="1" Margin="15"
-                              VerticalAlignment="Stretch"
-                              HorizontalAlignment="Stretch"
                               IsReadOnly="True"
                               Name="ApplicationsTable"
                               ItemsSource="{Binding InstalledApps}"
                               GridLinesVisibility="None"
-                              ColumnWidth="*">
+                              ColumnWidth="350">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="{x:Static assets:Resources.Name}" Binding="{Binding Name}" />
+                            <DataGridTextColumn Header="{x:Static assets:Resources.Name}" Binding="{Binding Name}"
+                                                Width="300" />
                             <DataGridTextColumn Header="{x:Static assets:Resources.Version}"
                                                 Binding="{Binding Version}" />
                             <DataGridTemplateColumn Header="{x:Static assets:Resources.Actions}"
-                                                    IsVisible="{Binding ShowActionButton}">
+                                                    IsVisible="{Binding ShowActionButton}"
+                                                    Width="Auto">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Button
@@ -59,7 +59,10 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTextColumn Header="Arch" Binding="{Binding Arch}" IsVisible="{Binding ShowArch}" />
+                            <DataGridTextColumn Header="Arch"
+                                                Binding="{Binding Arch}"
+                                                IsVisible="{Binding ShowArch}"
+                                                Width="Auto" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>

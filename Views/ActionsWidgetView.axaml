@@ -15,6 +15,10 @@
         <!-- This only sets the DataContext for the previewer in an IDE. -->
         <vm:ActionsViewModel />
     </Design.DataContext>
+    <controls:SukiWindow.Hosts>
+        <controls:SukiToastHost Manager="{Binding ToastManager}" />
+        <controls:SukiDialogHost Manager="{Binding DialogManager}" />
+    </controls:SukiWindow.Hosts>
     <Grid Margin="10">
         <controls:GlassCard CornerRadius="10">
             <Grid>

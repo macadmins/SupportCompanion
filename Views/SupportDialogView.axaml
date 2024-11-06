@@ -29,14 +29,14 @@
             <Run Text=": " />
             <Run Text="{Binding SupportEmail}" Foreground="#029ac8" />
         </TextBlock>
-        <StackPanel Margin="0,35,0,0"
+        <!--<StackPanel Margin="0,35,0,0"
                     HorizontalAlignment="Right"
                     Orientation="Horizontal"
                     Spacing="15">
             <Button Classes="Rounded"
                     Command="{Binding CloseDialogCommand}"
                     Content="{x:Static assets:Resources.Close}" />
-        </StackPanel>
+        </StackPanel>-->
 
     </StackPanel>
 </UserControl>
