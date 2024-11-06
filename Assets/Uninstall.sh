@@ -6,7 +6,7 @@ if [ $(id -u) -ne 0 ]; then
 fi
 # Use Apple Recommended Method to detect the user signed in to the desktop
 current_user=$(echo "show State:/Users/ConsoleUser" | scutil | awk '/Name :/ && ! /loginwindow/ { print $3 }')
-console_user_uid=$(echo "show State:/Users/ConsoleUser" | scutil | awk '/UID :/ && ! /loginwindow/ { print $3 }' )
+console_user_uid=$(echo "show State:/Users/ConsoleUser" | scutil | awk '/kCGSSessionUserIDKey/ {print $NF; exit}' )
 # Kill the process
 echo "Killing the process..."
 pkill -f SupportCompanion
