@@ -1,5 +1,12 @@
-current_user=$(ls -l /dev/console | awk '{print $3}')
-console_user_uid=$(/usr/bin/id -u "$current_user")
+#!/bin/sh
+# Script requires root so check for root access
+if [ $(id -u) -ne 0 ]; then
+    echo "Please run this script as root or using sudo"
+    exit 1
+fi
+# Use Apple Recommended Method to detect the user signed in to the desktop
+current_user=$(echo "show State:/Users/ConsoleUser" | scutil | awk '/Name :/ && ! /loginwindow/ { print $3 }')
+console_user_uid=$(echo "show State:/Users/ConsoleUser" | scutil | awk '/kCGSSessionUserIDKey/ {print $NF; exit}' )
 # Kill the process
 echo "Killing the process..."
 pkill -f SupportCompanion
