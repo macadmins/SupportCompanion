@@ -104,11 +104,13 @@ if [ "$CONFIGURATION" = "Debug" ]; then
     SIGNING_IDENTITY_APP="Developer ID Application: ANDERS TOBIAS ALMÉN (H92SB6Z7S4)"
     KEYCHAIN_PROFILE="AC-creds"
     XCODE_PATH="/Applications/Xcode.app"
+    TEAM_ID="H92SB6Z7S4"
 elif [ "$CONFIGURATION" = "Release" ]; then
     SIGNING_IDENTITY_APP="Developer ID Application: Mac Admins Open Source (T4SK8ZXCXG)"
     SIGNING_IDENTITY="Developer ID Installer: Mac Admins Open Source (T4SK8ZXCXG)"
     KEYCHAIN_PROFILE="supportcompanion"
     XCODE_PATH="/Applications/Xcode_16.app"
+    TEAM_ID="T4SK8ZXCXG"
 else
     echo "No configuration set, exiting..."
     exit 1
@@ -138,8 +140,10 @@ sudo xcode-select -s "$XCODE_PATH"
 # Resolve package dependencies
 $XCODE_BUILD_PATH -resolvePackageDependencies
 
+if [ "$CONFIGURATION" = "Release" ]; then
 # Setup notary item
 $XCODE_NOTARY_PATH store-credentials --apple-id "opensource@macadmins.io" --team-id "T4SK8ZXCXG" --password "$2" supportcompanion
+fi
 
 # Create release folder
 if [ -e $RELEASEDIR ]; then
@@ -163,6 +167,7 @@ $XCODE_BUILD_PATH clean archive -scheme SupportCompanion -project "$TOOLSDIR/Sup
 -configuration $CONFIGURATION \
 CODE_SIGN_IDENTITY="$SIGNING_IDENTITY_APP" \
 OTHER_CODE_SIGN_FLAGS="--timestamp --options runtime --deep" \
+DEVELOPMENT_TEAM="$TEAM_ID" \
 -archivePath "$BUILDSDIR/SupportCompanion"
 
 check_exit_code "$?" "Error running xcodebuild"
