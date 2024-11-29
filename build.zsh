@@ -115,6 +115,7 @@ else
 fi
 XCODE_NOTARY_PATH="$XCODE_PATH/Contents/Developer/usr/bin/notarytool"
 XCODE_STAPLER_PATH="$XCODE_PATH/Contents/Developer/usr/bin/stapler"
+XCODE_BUILD_PATH="$XCODE_PATH/Contents/Developer/usr/bin/xcodebuild"
 TOOLSDIR=$(dirname $0)
 BUILDSDIR="$TOOLSDIR/build"
 PKGBUILDDIR="$BUILDSDIR/pkgbuild"
@@ -133,6 +134,9 @@ AUTOMATED_SC_BUILD="$CURRENT_SC_MAIN_BUILD_VERSION.$NEWSUBBUILD"
 
 # Ensure Xcode is set to run-time
 sudo xcode-select -s "$XCODE_PATH"
+
+# Resolve package dependencies
+$XCODE_BUILD_PATH -resolvePackageDependencies
 
 # Setup notary item
 $XCODE_NOTARY_PATH store-credentials --apple-id "opensource@macadmins.io" --team-id "T4SK8ZXCXG" --password "$2" supportcompanion
@@ -155,7 +159,7 @@ echo "=========== Building SupportCompanion $CONFIGURATION ==========="
 echo "$AUTOMATED_SC_BUILD" > "$BUILDSDIR/build_info.txt"
 echo "$CURRENT_SC_MAIN_BUILD_VERSION" > "$BUILDSDIR/build_info_main.txt"
 
-xcodebuild clean archive -scheme SupportCompanion -project "$TOOLSDIR/SupportCompanion.xcodeproj" \
+$XCODE_BUILD_PATH clean archive -scheme SupportCompanion -project "$TOOLSDIR/SupportCompanion.xcodeproj" \
 -configuration $CONFIGURATION \
 CODE_SIGN_IDENTITY="$SIGNING_IDENTITY_APP" \
 OTHER_CODE_SIGN_FLAGS="--timestamp --options runtime --deep" \
