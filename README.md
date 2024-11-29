@@ -1,6 +1,6 @@
 # [#SupportCompanion](https://macadmins.slack.com/archives/C075C6ZFAJH)
 
-<img width="256" alt="appicon" src="https://github.com/user-attachments/assets/e13dbdda-452c-47e1-967b-46d0b57eaa56">
+<img width="256" alt="AppIcon" src="https://github.com/user-attachments/assets/8d9dea5d-230d-4c77-9b11-3e3f39e63f5f">
 
 ## Description
 
