@@ -109,8 +109,6 @@ elif [ "$CONFIGURATION" = "Release" ]; then
     SIGNING_IDENTITY="Developer ID Installer: Mac Admins Open Source (T4SK8ZXCXG)"
     KEYCHAIN_PROFILE="supportcompanion"
     XCODE_PATH="/Applications/Xcode_16.app"
-    # Setup notary item
-    $XCODE_NOTARY_PATH store-credentials --apple-id "opensource@macadmins.io" --team-id "T4SK8ZXCXG" --password "$2" supportcompanion
 else
     echo "No configuration set, exiting..."
     exit 1
@@ -135,6 +133,9 @@ AUTOMATED_SC_BUILD="$CURRENT_SC_MAIN_BUILD_VERSION.$NEWSUBBUILD"
 
 # Ensure Xcode is set to run-time
 sudo xcode-select -s "$XCODE_PATH"
+
+# Setup notary item
+$XCODE_NOTARY_PATH store-credentials --apple-id "opensource@macadmins.io" --team-id "T4SK8ZXCXG" --password "$2" supportcompanion
 
 # Create release folder
 if [ -e $RELEASEDIR ]; then
