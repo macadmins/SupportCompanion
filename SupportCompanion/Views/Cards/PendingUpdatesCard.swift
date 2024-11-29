@@ -13,23 +13,25 @@ struct PendingUpdatesCard: View {
     @EnvironmentObject var appState: AppStateManager
 
     var body: some View {
-        VStack {
-            CustomCard(
-                title: "\(Constants.CardTitle.pendingUpdates)",
-                titleImageName: "clock.fill",
-                content: {
-                    VStack {
-                        headerView
-                        pendingUpdatesList
-                        viewModel.createOpenManagementAppButton(type: .update)
+        if viewModel.isCardVisible("PendingAppUpdates") {
+            VStack {
+                CustomCard(
+                    title: "\(Constants.CardTitle.pendingUpdates)",
+                    titleImageName: "clock.fill",
+                    content: {
+                        VStack {
+                            headerView
+                            pendingUpdatesList
+                            viewModel.createOpenManagementAppButton(type: .update)
+                        }
                     }
-                }
-            )
-        }
-        .onAppear(perform: startFetching)
-        .onDisappear(perform: stopFetching)
-        .onChange(of: appState.windowIsVisible) { oldValue, newValue in
-            handleVisibilityChange(newValue)
+                )
+            }
+            .onAppear(perform: startFetching)
+            .onDisappear(perform: stopFetching)
+            .onChange(of: appState.windowIsVisible) { oldValue, newValue in
+                handleVisibilityChange(newValue)
+            }
         }
     }
     

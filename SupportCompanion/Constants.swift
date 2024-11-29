@@ -255,7 +255,8 @@ enum Constants {
         }
         
         enum Keys {
-            static let name = "Name"
+            static let name = "StorageName"
+            static let fileVault = "FileVault"
         }
     }
     

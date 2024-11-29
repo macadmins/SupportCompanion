@@ -35,10 +35,12 @@ I am only able to test with Intune, so if you have another MDM provider, I would
 - **Applications**: View installed applications and their versions.
 - **Identity**: View the current user's profile information and Kerberos SSO or Platform SSO information.
 - **Desktop Info**: Show information on the desktop such as device name, serial number, macOS version, and IP address.
-- **Custom Widgets**: Add custom widgets to the Home view, this allows for displaying information specific to your
+- **Custom Cards**: Add custom cards to the Home view, this allows for displaying information specific to your
   organization.
 - **Self Service**: Shows all actions in the app configured in the MDM profile. This allows for a self-service
   experience for the user using the UI and not only the menu bar icon.
+- **Company Portal**: If mode is set to `Intune` or if Company Portal is installed, a web view of Company Portal will show in the navigation.
+- **Knowledge Base**: If a knowledge base URL is configured, a menu item for a web view will show up.
 ## Localization
 
 The app is localized to `Swedish`, `Norwegian`, `French` and `German`. The app will display in the user's preferred language if it is set to one of these languages in macOS. If the user's preferred language is not one of these, the app will default to English.
@@ -109,8 +111,8 @@ Many aspects of the app can be configured using MDM profiles, the folloing keys 
 | `ChangePasswordMode` | String | local | False | Configures the mode for the Change Password button, available modes are: `local`, `SSOExtension`, `url` |
 | `SupportEmail` | String | None | False | Configures the email address shown when the user clicks on the Support Info button |
 | `SupportPhone` | String | None | False | Configures the phone number shown when the user clicks on the Support Info button |
-| `HiddenCards` | Array | None | False | Configures which widgets to hide, available widgets are: `DeviceInfo`, `MunkiPendingApps`, `MunkiUpdates`, `IntunePendingApps`, `IntuneUpdates`, `Storage`, `MdmStatus`, `Actions`, `Battery`, `EvergreenInfo` |
-| `HiddenActions` | Array | None | False | Configures which actions to hide, available actions are: `Support`, `ManagedSoftwareCenter`, `ChangePassword`, `Reboot`, `KillAgent`, `SoftwareUpdates`, `GatherLogs` |
+| `HiddenCards` | Array | None | False | Configures which widgets to hide, available widgets are: `DeviceInformation`, `Evergreen`, `Battery`, `Actions`, `ApplicationInstallProgress`, `Storage`, `DeviceManagement`, `PendingAppUpdates` |
+| `HiddenActions` | Array | None | False | Configures which actions to hide, available actions are: `ChangePassword`, `Reboot`, `OpenManagementApp`, `GetSupport`, `GatherLogs`, `SoftwareUpdates`, `RestartIntuneAgent` |
 | `NotificationInterval` | Integer | 4 | False | Configures the interval for notifications in hours for Application Updates and Software Updates notifications. Setting to 0 disables notifications |
 | `NotificationTitle` | String | Support Companion | False | Configures the title for notifications |
 | `NotificationImage` | String | None | False | Configures an image to add to notifications. Path should be specified |
@@ -118,103 +120,129 @@ Many aspects of the app can be configured using MDM profiles, the folloing keys 
 | `SoftwareUpdateNotificationButtonText` | String | Details \ud83d\udc40 | False | Configures the button text for notifications for Software Updates notifications |
 | `AppUpdateNotificationMessage` | String | You have app updates available. Take action now! \ud83c\udf89 | False | Configures the message for notifications for App Updates notifications |
 | `AppUpdateNotificationButtonText` | String | Details \ud83d\udc40 | False | Configures the button text for notifications for App Updates notifications |
-| `Mode` | Bool | False | False | Configures the app to use Intune for application information. Only supports PKG and DMG type apps, not LOB. |
+| `Mode` | Bool | Dynamic | False | Configures the app to show application info for either Munki, Intune or to use System profiler for app info. The app tries to dynamically detect which mode to use. See table below. |
 | `LogFolders` | Array | /Library/Logs/Microsoft | False | Configures the log folders to gather logs from. Only used when gathering logs. |
-| `Actions` | Array | None | False | Configures custom actions to add to the tray menu. See example below. |
-| `ShowMenuToggle` | Bool | True | False | Configures whether to show the menu toggle button in the apps side menu. |
+| `Actions` | Array | None | False | Configures custom actions to add to the tray menu and in Self Service view. If `Description` is configured it will show in the Self Service view and if `IsPrivileged` is set to `true` the action will be run by the privileged helper. See example below. |
 | `ShowDesktopInfo` | Bool | False | False | Configures whether to show information on the desktop. |
-| `DesktopPosition` | String | TopRight | False | Configures the position of the desktop info, available positions are: `TopLeft`, `TopRight`, `BottomLeft`, `BottomRight` |
-| `DesktopInfoLevel` | String | Full | False | Configures the level of information to show on the desktop, available levels are: `Minimal`, `Hardware`, `Full`, `Custom` |
-| `DesktopInfoCustomItems` | Array | None | False | If `DesktopInfoLevel` is set to `Custom`, use this array to determine which information to show. Available info are: `HostName`, `Model`, `SerialNumber`, `Processor`, `IpAddress`, `MemSize`, `OsBuild`, `OsVersion`, `LastBootTime`, `StorageInfo`, `SupportPhone`, `SupportEmail`, `Separator` |
-| `DesktopInfoBackgroundColor` | String | Transparent | False | Configures the background color for the desktop info. Configure using Hex format |
+| `DesktopPosition` | String | LowerRight | False | Configures the position of the desktop info, available positions are: `UpperLeft`, `UpperRight`, `BottomLeft`, `BottomRight` |
+| `DesktopInfoLevel` | Integer | 4 | False | Configures the level of information to show on the desktop, available levels are: `1`, `2`, `3`, `4`, `5` |
+| `DesktopInfoHideItems` | Array | None | False | Use this array to determine which information to hide. Available items are: `HostName`, `Model`, `SerialNumber`, `Processor`, `IPAddress`, `Memory`, `OSBuild`, `OSVersion`, `LastRestart`, `FileVault`, `StorageName`, `SupportPhone`, `SupportEmail` |
 | `DesktopInfoBackgroundOpacity` | Real | 0.001 | False | Configures the background opacity for the desktop info. Configure a value between 1.0 - 0.1 |
 | `DesktopInfoFontSize` | Integer | 14 | False | Configures the font size for the desktop info. |
 | `CustomCardsPath` | String | None | False | Configures a path to a JSON file containing custom widgets to show on the Home view. |
+| `KnowledgeBaseUrl` | String | None | False | If configured, a menu item "Knowledge base" will show up where the user can browse the page from the UI. |
 
 ### Example Configuration
 
-To switch from Munki to Intune for application information, add the following key to the profile:
-```xml
-<key>IntuneMode</key>
-<true/>
-```
+The app will try to auto detect the `Mode` it should use. The mode will be set based on the following conditions:
+
+- Managed Software Center is installed -> Mode = Munki
+- Managed Software Center is installed and Company Portal is installed -> Mode = Munki
+- Only Company Portal is installed -> Mode = Intune
+- None of Managed Software Center or Company Portal is installed -> Mode = SystemProfiler
+
+It can also be configured manually in the profile with the `Mode` key.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-  <dict>
+<dict>
     <key>PayloadContent</key>
     <array>
-      <dict>
-        <key>BrandName</key>
-        <string>AwesomeCorp</string>
-        <key>ChangePasswordMode</key>
-        <string>SSOExtension</string>
-        <key>CustomColors</key>
-        <array>
-          <dict>
-            <key>PrimaryColor</key>
-            <string>#00A0D0</string>
-            <key>AccentColor</key>
-            <string>#45637A</string>
-          </dict>
-        </array>
-        <key>Actions</key>
-        <array>
-           <dict>
-               <key>Name</key>
-               <string>Restart clipboard 🥹</string>
-               <key>Command</key>
-               <string>killall pboard</string>
-           </dict>
-           <dict>
-               <key>Name</key>
-               <string>Restart Intune Agent ⚡️</string>
-               <key>Command</key>
-               <string>/usr/bin/osascript -e 'do shell script \"sudo killall IntuneMdmAgent\" with administrator privileges'</string>
-           </dict>
-            <dict>
-                <key>Name</key>
-                <string>️Some awesome action</string>
-                <key>Command</key>
-                <string>echo "I am awesome"</string>
-                <!-- Optional key to specify an icon for the action which will display in the self service view -->
-                <key>Icon</key>
-                <string>AppleFinder</string>
-            </dict>
-        </array>
-        <key>NotificationTitle</key>
-        <string>AwesomeCorp IT</string>
-        <key>PayloadDisplayName</key>
-        <string>SupportCompanion</string>
-        <key>PayloadIdentifier</key>
-        <string>SupportCompanion</string>
-        <key>PayloadType</key>
-        <string>SupportCompanion</string>
-        <key>PayloadUUID</key>
-        <string>a7a0d79f-1cf0-42f2-bc7e-e67d7413a3c5</string>
-        <key>PayloadVersion</key>
-        <integer>1</integer>
-        <key>SupportEmail</key>
-        <string>demo@example.com</string>
-        <key>SupportPhone</key>
-        <string>123-456-789</string>
-        <key>SupportUrl</key>
-        <string>https://awesomecorp.support</string>
-      </dict>
+        <dict>
+            <key>PayloadDisplayName</key>
+            <string>SupportCompanion</string>
+            <key>PayloadIdentifier</key>
+            <string>SupportCompanion.9C1EF466-BFEC-462F-930E-38BB9965B21F</string>
+            <key>PayloadType</key>
+            <string>com.github.macadmins.SupportCompanion</string>
+            <key>PayloadUUID</key>
+            <string>9C1EF466-BFEC-462F-930E-38BB9965B21F</string>
+            <key>PayloadVersion</key>
+            <integer>1</integer>
+            <key>BrandName</key>
+            <string>AwesomeCorp</string>
+            <key>HiddenCards</key>
+            <array>
+                <string>Evergreen</string>
+            </array>
+            <key>Actions</key>
+            <array>
+                <dict>
+                    <key>Command</key>
+                    <string>killall pboard</string>
+                    <key>Icon</key>
+                    <string>document.on.document.fill</string>
+                    <key>Name</key>
+                    <string>Restart clipboard</string>
+                    <key>Description</key>
+                    <string>Restarts pasteborad, useful if copy&amp;Paste is not working.</string>
+                </dict>
+                <dict>
+                    <key>Command</key>
+                    <string>defaults write com.apple.finder AppleShowAllFiles YES &amp;&amp; pkill Finder</string>
+                    <key>Icon</key>
+                    <string>eye.fill</string>
+                    <key>Name</key>
+                    <string>Show hidden files</string>
+                    <key>Description</key>
+                    <string>Shows hidden files in Finder. Will restart Finder once initiated.</string>
+                </dict>
+                <dict>
+                    <key>Command</key>
+                    <string>networksetup -setairportpower en0 off &amp;&amp; sleep 3 &amp;&amp; networksetup -setairportpower en0 on</string>
+                    <key>Icon</key>
+                    <string>wifi</string>
+                    <key>Name</key>
+                    <string>Restart WiFi</string>
+                    <key>Description</key>
+                    <string>Restarts the WiFi interface to resolve connectivity issues, such as slow speeds, dropped connections, or inability to connect to networks. This action can help refresh the network adapter and clear temporary issues without needing to restart the entire system.</string>
+                </dict>
+                <dict>
+                    <key>Command</key>
+                    <string>killall IntuneMdmAgent</string>
+                    <key>Name</key>
+                    <string>Restart Intune Agent</string>
+                    <key>Icon</key>
+                    <string>app</string>
+                    <key>IsPrivileged</key>
+                    <true/>
+                    <key>Description</key>
+                    <string>Restarts Intune MDM Agent. Useful if troubleshooting scripts or app installs from Intune.</string>
+                </dict>
+            </array>
+            <key>LogFolders</key>
+            <array>
+                <string>/Library/Logs</string>
+            </array>
+            <key>DesktopInfoBackgroundOpacity</key>
+            <real>0.3</real>
+            <key>SupportPhone</key>
+            <string>111-222-333</string>
+            <key>SupportEmail</key>
+            <string>support@awesomecorp.io</string>
+            <key>DesktopInfoLevel</key>
+            <integer>5</integer>
+            <key>KnowledgeBaseUrl</key>
+            <string>https://github.com/macadmins/supportcompanion</string>
+            <key>DesktopInfoHideItems</key>
+            <array>
+                <string>SupportPhone</string>
+            </array>
+        </dict>
     </array>
     <key>PayloadDisplayName</key>
-    <string>SupportCompanion</string>
+    <string>FirstApp</string>
     <key>PayloadIdentifier</key>
-    <string>9c4a8e5e-4c70-4b82-83f7-44a053c146f4</string>
+    <string>SC.A2283B66-D43C-48FF-BD1D-CE0EBB4CCA22</string>
     <key>PayloadType</key>
     <string>Configuration</string>
     <key>PayloadUUID</key>
-    <string>3D47F3E6-62ED-4668-A30F-6DA1DAE87B18</string>
+    <string>A2283B66-D43C-48FF-BD1D-CE0EBB4CCA22</string>
     <key>PayloadVersion</key>
     <integer>1</integer>
-  </dict>
+</dict>
 </plist>
 
 ```

@@ -32,7 +32,7 @@ struct StorageInfo: Identifiable {
                 value: .string(name)
             ),
             (
-                key: "FileVault",
+                key: Constants.Storage.Keys.fileVault,
                 display: "FileVault:",
                 value: .bool(fileVault)
             )
