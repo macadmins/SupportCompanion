@@ -13,7 +13,7 @@ struct TransparentView: View {
     @EnvironmentObject var appState: AppStateManager
     @State private var contentHeight: CGFloat = 0
     var combinedPreferences: String {
-        "\(appState.preferences.desktopInfoLevel)-\(appState.preferences.desktopInfoCustomItems.joined(separator: ","))"
+        "\(appState.preferences.desktopInfoLevel)-\(appState.preferences.desktopInfoHideItems.joined(separator: ","))"
     }
     
     var body: some View {
@@ -36,10 +36,10 @@ struct TransparentView: View {
                 ForEach(Array(groupedDeviceInfoArray().enumerated()), id: \.1.0) { index, group in
                     SectionHeaderTransparent(title: group.0) // Section title (e.g., "Hardware Specifications")
                     VStack(alignment: .leading) {
-                        ForEach(group.1.filter { !appState.preferences.desktopInfoCustomItems.contains($0.key) }, id: \.key) { item in
+                        ForEach(group.1.filter { !appState.preferences.desktopInfoHideItems.contains($0.key) }, id: \.key) { item in
                             deviceInfoRow(for: item)
                         }
-                        .id(appState.preferences.desktopInfoCustomItems)
+                        .id(appState.preferences.desktopInfoHideItems)
                     }
 
                     // Add a divider only if it's not the last group
@@ -146,8 +146,8 @@ struct TransparentView: View {
     private func storageInfoSection() -> some View {
         VStack(alignment: .leading) {
             ForEach(appState.storageInfoManager.storageInfo.toKeyValuePairs(), id: \.key) { item in
-                if appState.preferences.desktopInfoCustomItems.count > 0 {
-                    if appState.preferences.desktopInfoCustomItems.contains(item.key) {
+                if appState.preferences.desktopInfoHideItems.count > 0 {
+                    if appState.preferences.desktopInfoHideItems.contains(item.key) {
                         EmptyView()
                     }
                 }
@@ -169,23 +169,36 @@ struct TransparentView: View {
                     )
                 }
             }
-            .id(appState.preferences.desktopInfoCustomItems)
+            .id(appState.preferences.desktopInfoHideItems)
         }
     }
     
     private func supportInfoSection() -> some View {
         VStack(alignment: .leading) {
-            HStack {
-                Text(Constants.Support.Labels.phone)
-                    .font(.system(size: CGFloat(appState.preferences.desktopInfoFontSize)))
-                    .bold()
-                Spacer()
-                Text(appState.preferences.supportPhone)
-                    .font(.system(size: CGFloat(appState.preferences.desktopInfoFontSize)))
-                    .shadow(radius: 2)
+            if !appState.preferences.desktopInfoHideItems.contains(Constants.Support.Keys.phone) {
+                HStack {
+                    Text(Constants.Support.Labels.phone)
+                        .font(.system(size: CGFloat(appState.preferences.desktopInfoFontSize)))
+                        .bold()
+                    Spacer()
+                    Text(appState.preferences.supportPhone)
+                        .font(.system(size: CGFloat(appState.preferences.desktopInfoFontSize)))
+                        .shadow(radius: 2)
+                }
+            }
+            if !appState.preferences.desktopInfoHideItems.contains(Constants.Support.Keys.email) {
+                HStack {
+                    Text(Constants.Support.Labels.email)
+                        .font(.system(size: CGFloat(appState.preferences.desktopInfoFontSize)))
+                        .bold()
+                    Spacer()
+                    Text(appState.preferences.supportEmail)
+                        .font(.system(size: CGFloat(appState.preferences.desktopInfoFontSize)))
+                        .shadow(radius: 2)
+                }
             }
         }
-        .id(appState.preferences.desktopInfoCustomItems)
+        .id(appState.preferences.desktopInfoHideItems)
     }
 }
 

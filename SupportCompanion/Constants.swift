@@ -17,6 +17,10 @@ enum Constants {
             static let phone = String(localized: "Support.Phone", defaultValue: "Phone:", comment: "Phone number")
             static let email = String(localized: "Support.Email", defaultValue: "Email:", comment: "Email address")
         }
+        enum Keys {
+            static let phone = "SupportPhone"
+            static let email = "SupportEmail"
+        }
     }
     
     enum modes {

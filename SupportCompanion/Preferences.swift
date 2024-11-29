@@ -90,7 +90,7 @@ class Preferences: ObservableObject {
     
     @AppStorage("DesktopInfoLevel") var desktopInfoLevel: Int = 4
     
-    @Published var desktopInfoCustomItems: [String] = UserDefaults.standard.array(forKey: "DesktopInfoCustomItems") as? [String] ?? []
+    @Published var desktopInfoHideItems: [String] = UserDefaults.standard.array(forKey: "DesktopInfoHideItems") as? [String] ?? []
     
     // MARK: - Home
     
@@ -125,7 +125,7 @@ class Preferences: ObservableObject {
                 self?.loadLogFolders()
                 self?.loadActions()
                 self?.loadHiddenActions()
-                self?.loadDesktopInfoCustomItems()
+                self?.loadDesktopInfoHideItems()
             }
         
         detectModeAndSetLogFolders()
@@ -193,9 +193,9 @@ class Preferences: ObservableObject {
         }
     }
     
-    private func loadDesktopInfoCustomItems() {
+    private func loadDesktopInfoHideItems() {
         DispatchQueue.main.async { [weak self] in
-            self?.desktopInfoCustomItems = UserDefaults.standard.array(forKey: "DesktopInfoCustomItems") as? [String] ?? []
+            self?.desktopInfoHideItems = UserDefaults.standard.array(forKey: "DesktopInfoHideItems") as? [String] ?? []
         }
     }
     
