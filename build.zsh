@@ -163,7 +163,7 @@ $XCODE_BUILD_PATH clean archive -scheme SupportCompanion -project "$TOOLSDIR/Sup
 -configuration $CONFIGURATION \
 CODE_SIGN_IDENTITY="$SIGNING_IDENTITY_APP" \
 OTHER_CODE_SIGN_FLAGS="--timestamp --options runtime --deep" \
--archivePath "$BUILDSDIR/SupportCompanion" >/dev/null 2>&1
+-archivePath "$BUILDSDIR/SupportCompanion"
 
 check_exit_code "$?" "Error running xcodebuild"
 
