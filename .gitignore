@@ -36,3 +36,7 @@ __pycache__/
 *.userosscache
 *.sln.docstates
 *.sln.DotSettings.user
+
+# ignore build and release files
+build/
+release/
