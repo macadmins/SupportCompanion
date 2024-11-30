@@ -250,18 +250,18 @@ It can also be configured manually in the profile with the `Mode` key.
 ## Overview
 
 ### Home
-![SCHome](https://github.com/almenscorner/SupportCompanion/assets/78877636/d908bb6a-d7ed-42a6-a5d1-5f500ea24a9c)
-### Apps
-![SCApps](https://github.com/almenscorner/SupportCompanion/assets/78877636/b63afaf6-e76a-4412-9a54-1af252e4f9b1)
+<img width="1526" alt="Home" src="https://github.com/user-attachments/assets/7f51e85f-6796-4123-a6f8-df74e2b7c65d">
 ### Identity
-![SCIdentity](https://github.com/almenscorner/SupportCompanion/assets/78877636/c88849fb-3092-47f4-99a2-69c6cd8f9923)
-### Support Info
-![SCSupportInfo](https://github.com/almenscorner/SupportCompanion/assets/78877636/58ea4438-3de7-46d7-9f67-9de8c6e01a46)
-### Gather logs
-![SCLogs102](https://github.com/almenscorner/SupportCompanion/assets/78877636/8cdc3405-8268-4ac8-9210-fd0d5b8c1b85)
+<img width="1526" alt="Identity" src="https://github.com/user-attachments/assets/988deca5-d5c3-4f9f-9ccd-2d430bef29cb">
+### Apps
+<img width="1526" alt="Apps" src="https://github.com/user-attachments/assets/b658d0c5-79e7-40f6-8b19-f784c004a5b5">
+### Self Service
+<img width="1526" alt="SelfService" src="https://github.com/user-attachments/assets/f722a599-6029-455c-ab96-d0ddf197fcf6">
+### Company Portal
+<img width="1526" alt="CompPortal" src="https://github.com/user-attachments/assets/5de67385-fd69-4b0a-af60-2c142885926b">
+### KB
+<img width="1526" alt="KB" src="https://github.com/user-attachments/assets/66632ab2-ca8c-4836-9837-dcc9cdc396d4">
 ### Desktop Info
-![SCNotification](https://github.com/macadmins/SupportCompanion/assets/78877636/9352c18b-c0a9-496e-8c0c-2c45805edbbb)
-### Notifications
-![SCNotification](https://github.com/almenscorner/SupportCompanion/assets/78877636/414a7d55-2925-4312-bd9c-9f11ac450e23)
+<img width="1800" alt="Desktop" src="https://github.com/user-attachments/assets/432e1a85-62e3-494f-8c8d-4a4233e6471c">
 
 ## Credits
