@@ -71,7 +71,7 @@ class CardGridViewModel: ObservableObject {
         onShowModal: @escaping (Int, String, String) -> Void
     ) -> CustomButton {
         CustomButton(Constants.Actions.reboot) {
-            ActionHelpers.reboot { result in
+            await ActionHelpers.reboot { result in
                 DispatchQueue.main.async {
                     switch result {
                     case .info(let message):
