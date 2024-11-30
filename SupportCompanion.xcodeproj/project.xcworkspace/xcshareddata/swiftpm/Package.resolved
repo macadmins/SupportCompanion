@@ -1,5 +1,5 @@
 {
-  "originHash" : "1f883fb6ac0b972206fb6f50b0f5ae4d443f031d195c837c5db225ff9b9ea78c",
+  "originHash" : "ddb94e3b3afdf5ee67c21a827f1dbd26b7c3a642a940a824d180d0926d47cf7b",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -8,33 +8,6 @@
       "state" : {
         "branch" : "master",
         "revision" : "76a1c1793cd3443001c20c6033beb84453b25d9f"
-      }
-    },
-    {
-      "identity" : "popupview",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/exyte/PopupView",
-      "state" : {
-        "revision" : "d619317dbb98fe071d11be36c2525d3c213ad8e4",
-        "version" : "3.1.4"
-      }
-    },
-    {
-      "identity" : "swiftentrykit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/huri000/SwiftEntryKit",
-      "state" : {
-        "revision" : "5ad36cccf0c4b9fea32f4e9b17a8e38f07563ef0",
-        "version" : "2.0.0"
-      }
-    },
-    {
-      "identity" : "swiftui-introspect",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/siteline/swiftui-introspect",
-      "state" : {
-        "revision" : "807f73ce09a9b9723f12385e592b4e0aaebd3336",
-        "version" : "1.3.0"
       }
     }
   ],

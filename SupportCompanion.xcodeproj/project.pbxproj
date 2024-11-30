@@ -8,10 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		F60FAB742CE8D40A00ECAC53 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = F60FAB732CE8D40A00ECAC53 /* AlertToast */; };
-		F60FAB782CE8DE3B00ECAC53 /* PopupView in Frameworks */ = {isa = PBXBuildFile; productRef = F60FAB772CE8DE3B00ECAC53 /* PopupView */; };
 		F60FAB872CEA108A00ECAC53 /* SidebarConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60FAB862CEA108A00ECAC53 /* SidebarConfig.swift */; };
 		F64927372CF9EA8D00C34D90 /* com.github.macadmins.SupportCompanion.helper in CopyFiles */ = {isa = PBXBuildFile; fileRef = F6F8AE7D2CE345A8009B0A1F /* com.github.macadmins.SupportCompanion.helper */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		F649281A2CFA02AD00C34D90 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F64928192CFA02AD00C34D90 /* README.md */; };
 		F6A4E0F72CEC9DFC002B4D74 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A4E0F62CEC9DFC002B4D74 /* Constants.swift */; };
 		F6A4E0F82CEC9DFC002B4D74 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A4E0F62CEC9DFC002B4D74 /* Constants.swift */; };
 		F6A4E0FA2CEC9FFB002B4D74 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = F6A4E0F92CEC9FFB002B4D74 /* Localizable.xcstrings */; };
@@ -170,7 +168,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F60FAB782CE8DE3B00ECAC53 /* PopupView in Frameworks */,
 				F60FAB742CE8D40A00ECAC53 /* AlertToast in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -351,8 +348,6 @@
 			mainGroup = F6F3BEB02CE1E7BA0036ADB9;
 			packageReferences = (
 				F60FAB722CE8D40A00ECAC53 /* XCRemoteSwiftPackageReference "AlertToast" */,
-				F60FAB752CE8D91700ECAC53 /* XCRemoteSwiftPackageReference "SwiftEntryKit" */,
-				F60FAB762CE8DE3B00ECAC53 /* XCRemoteSwiftPackageReference "PopupView" */,
 			);
 			productRefGroup = F6F3BEBA2CE1E7BA0036ADB9 /* Products */;
 			projectDirPath = "";
@@ -378,7 +373,6 @@
 			files = (
 				F6F3BEC12CE1E7BB0036ADB9 /* Assets.xcassets in Resources */,
 				F6A4E0FA2CEC9FFB002B4D74 /* Localizable.xcstrings in Resources */,
-				F649281A2CFA02AD00C34D90 /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -530,6 +524,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -711,22 +706,6 @@
 				kind = branch;
 			};
 		};
-		F60FAB752CE8D91700ECAC53 /* XCRemoteSwiftPackageReference "SwiftEntryKit" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/huri000/SwiftEntryKit";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.0;
-			};
-		};
-		F60FAB762CE8DE3B00ECAC53 /* XCRemoteSwiftPackageReference "PopupView" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/exyte/PopupView";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 3.1.4;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -734,11 +713,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F60FAB722CE8D40A00ECAC53 /* XCRemoteSwiftPackageReference "AlertToast" */;
 			productName = AlertToast;
-		};
-		F60FAB772CE8DE3B00ECAC53 /* PopupView */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F60FAB762CE8DE3B00ECAC53 /* XCRemoteSwiftPackageReference "PopupView" */;
-			productName = PopupView;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
