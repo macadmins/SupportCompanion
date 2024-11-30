@@ -128,14 +128,23 @@ struct ActionHelpers {
         }
     }
     
-    static func reboot(completion: @escaping (OperationResult) -> Void) {
-        Task {
-            do {
-                Logger.shared.logDebug("Rebooting")
-                try await _ = ExecutionService.executeCommandPrivileged("ls", arguments: ["-l"])
-                completion(.info(Constants.RebootModal.message))
-            }
-            catch {
+    static func reboot(completion: @escaping (OperationResult) -> Void) async {
+        // Show modal or trigger UI update
+        DispatchQueue.main.async {
+            Logger.shared.logDebug("Preparing to reboot")
+            completion(.info(Constants.RebootModal.message)) // Show modal or toast here
+        }
+        
+        // Execute the reboot command directly
+        do {
+            _ = try await ExecutionService.executeCommandPrivileged("shutdown", arguments: ["-r", "+1"])
+            Logger.shared.logDebug("Reboot command executed")
+        } catch {
+            if (error as NSError).domain == NSCocoaErrorDomain && (error as NSError).code == NSUserCancelledError {
+                Logger.shared.logDebug("Reboot task was canceled")
+                completion(.info("Reboot operation canceled by user"))
+            } else {
+                Logger.shared.logError("Failed to reboot: \(error)")
                 completion(.failure(error))
             }
         }

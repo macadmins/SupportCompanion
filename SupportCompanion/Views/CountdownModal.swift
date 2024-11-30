@@ -49,11 +49,11 @@ struct CountdownModal: View {
                         .padding(.horizontal, 32)
 
                     // Countdown
-                    Text("Closing in \(countdown) seconds...")
+                    Text("Rebooting in \(countdown) seconds...")
                         .font(.headline)
                         .foregroundColor(.white.opacity(0.8))
 
-                    // Dismiss button
+                    /*// Dismiss button
                     Button(action: {
                         isPresented = false
                         onDismiss()
@@ -67,6 +67,7 @@ struct CountdownModal: View {
                             .cornerRadius(12)
                     }
                     .buttonStyle(PlainButtonStyle())
+                    */
                     
                     Spacer()
                 }
