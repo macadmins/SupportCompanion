@@ -170,7 +170,7 @@ OTHER_CODE_SIGN_FLAGS="--timestamp --options runtime --deep" \
 DEVELOPMENT_TEAM="$TEAM_ID" \
 ARCHS="arm64 x86_64" \
 ONLY_ACTIVE_ARCH=NO \
--archivePath "$BUILDSDIR/SupportCompanion" >/dev/null 2>&1
+-archivePath "$BUILDSDIR/SupportCompanion"
 
 check_exit_code "$?" "Error running xcodebuild"
 
