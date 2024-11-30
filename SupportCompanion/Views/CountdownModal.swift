@@ -11,9 +11,11 @@ import SwiftUI
 struct CountdownModal: View {
     @Binding var isPresented: Bool
     @State private var countdown: Int
+    @State private var timer: Timer?
     let title: String
     let message: String
     let onDismiss: () -> Void
+    private let defaultCountdown: Int // Store the default countdown locally
 
     init(isPresented: Binding<Bool>, countdown: Int, title: String, message: String, onDismiss: @escaping () -> Void) {
         self._isPresented = isPresented
@@ -21,6 +23,7 @@ struct CountdownModal: View {
         self.title = title
         self.message = message
         self.onDismiss = onDismiss
+        self.defaultCountdown = countdown // Save the initial value
     }
 
     var body: some View {
@@ -53,12 +56,9 @@ struct CountdownModal: View {
                         .font(.headline)
                         .foregroundColor(.white.opacity(0.8))
 
-                    /*// Dismiss button
-                    Button(action: {
-                        isPresented = false
-                        onDismiss()
-                    }) {
-                        Text("Dismiss Now")
+                    // Dismiss button
+                    Button(action: cancelCountdown) { // Call the new cancel function
+                        Text("Cancel")
                             .font(.headline)
                             .padding()
                             .frame(maxWidth: 250)
@@ -67,7 +67,6 @@ struct CountdownModal: View {
                             .cornerRadius(12)
                     }
                     .buttonStyle(PlainButtonStyle())
-                    */
                     
                     Spacer()
                 }
@@ -75,13 +74,30 @@ struct CountdownModal: View {
                 .padding()
             }
         }
-        .onAppear {
-            startCountdown()
+        .onChange(of: isPresented) { oldValue, newValue in
+            if newValue {
+                resetAndStartCountdown()
+            } else {
+                cancelCountdown() // Clean up when modal closes
+            }
         }
     }
+    
+    private func resetAndStartCountdown() {
+        timer?.invalidate()
+        timer = nil
+        countdown = defaultCountdown // Reset the countdown
+        startCountdown()
+    }
+
 
     private func startCountdown() {
-        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
+        // Stop and reset any previous timer to avoid duplication
+        timer?.invalidate()
+        timer = nil
+
+        // Create a new timer
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
             if countdown > 0 {
                 countdown -= 1
             } else {
@@ -90,5 +106,14 @@ struct CountdownModal: View {
                 onDismiss()
             }
         }
+    }
+
+    private func cancelCountdown() {
+        timer?.invalidate() // Stop the timer
+        timer = nil         // Clear the timer reference
+        countdown = defaultCountdown // Reset the internal countdown value
+        isPresented = false // Hide the modal
+        ActionHelpers.cancelShutdown()
+        onDismiss()         // Notify the parent view (CardGrid) to reset the countdown
     }
 }

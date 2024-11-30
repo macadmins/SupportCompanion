@@ -71,6 +71,8 @@ struct CardGrid: View {
                 title: modalTitle,
                 message: modalMessage
             ) {
+                modalCountdown = Constants.RebootModal.countdown // Reset countdown in CardGrid
+                showRebootModal = false                         // Close the modal
             }
         }
         .toast(isPresenting: Binding(

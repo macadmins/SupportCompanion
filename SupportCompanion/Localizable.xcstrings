@@ -596,6 +596,16 @@
         }
       }
     },
+    "Cancel" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avbryt"
+          }
+        }
+      }
+    },
     "Card.ActionsTitle" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1005,34 +1015,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kan inte nå %@. Säkerställ VPN eller koppling till företagsnätverk."
-          }
-        }
-      }
-    },
-    "Closing in %lld seconds..." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Schließt in %lld Sekunden…"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fermeture dans %lld secondes…"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lukkes om %lld sekunder…"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Stängs inom %lld sekunder…"
           }
         }
       }
@@ -1453,34 +1435,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Systeminformation"
-          }
-        }
-      }
-    },
-    "Dismiss Now" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Jetzt schließen"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ignorer maintenant"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lukk nå"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Stäng"
           }
         }
       }
@@ -2677,6 +2631,16 @@
     },
     "Realm:" : {
 
+    },
+    "Rebooting in %lld seconds..." : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Startar om inom %lld seconds..."
+          }
+        }
+      }
     },
     "Rings" : {
 

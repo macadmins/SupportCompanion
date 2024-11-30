@@ -129,10 +129,14 @@ struct ActionHelpers {
     }
     
     static func reboot(completion: @escaping (OperationResult) -> Void) async {
+        cancelShutdown()
+        
+        try? await Task.sleep(nanoseconds: 200_000_000) // 200ms delay
+
         // Show modal or trigger UI update
         DispatchQueue.main.async {
             Logger.shared.logDebug("Preparing to reboot")
-            completion(.info(Constants.RebootModal.message)) // Show modal or toast here
+            completion(.info("")) // Show modal or toast here
         }
         
         // Execute the reboot command directly
@@ -146,6 +150,15 @@ struct ActionHelpers {
             } else {
                 Logger.shared.logError("Failed to reboot: \(error)")
                 completion(.failure(error))
+            }
+        }
+    }
+    
+    static func cancelShutdown() {
+        do {
+            Task {
+                _ = try await ExecutionService.executeCommandPrivileged("killall", arguments: ["shutdown"])
+                Logger.shared.logDebug("Cancel reboot command executed")
             }
         }
     }
