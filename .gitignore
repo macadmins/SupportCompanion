@@ -5,6 +5,10 @@
 # ignore vscode stuff
 .vscode
 
+# ignore xcode stuff
+**/xcuserdata/
+**/*.xcuserdatad/
+
 # ignore build output
 Build/build
 LaunchAgent/build
@@ -40,3 +44,5 @@ __pycache__/
 # ignore build and release files
 build/
 release/
+.build/
+buildServer.json
