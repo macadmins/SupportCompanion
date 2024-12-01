@@ -265,3 +265,4 @@ It can also be configured manually in the profile with the `Mode` key.
 <img width="1800" alt="Desktop" src="https://github.com/user-attachments/assets/432e1a85-62e3-494f-8c8d-4a4233e6471c">
 
 ## Credits
+[woodys-findings](https://www.woodys-findings.com/posts/cocoa-implement-privileged-helper) for privileged helper code
