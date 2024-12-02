@@ -4,11 +4,43 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.0] - 2024-11-29
-AKA the Swift update
+## [2.0.0] - 2024-12-02
+### AKA the Swift Update
 
 ### Changed
-- The entire project has been migrated from C# and AvaloniaUI/SukiUI to Swift and SwiftUI
+- The entire project has been migrated from **C# and AvaloniaUI/SukiUI** to **Swift and SwiftUI**, bringing significant improvements:
+  - A more responsive and fluid user interface.
+  - A native macOS look and feel for a seamless experience.
+  - Superior memory management and overall performance enhancements.
+
+- The following configurations and identifiers have changed:
+  - **Bundle ID**: Updated, requiring the uninstallation of version 1.x before installing 2.0.
+  - **Icons**: Redesigned for better alignment with macOS standards.
+  - **Configuration Keys**: Some keys have been deprecated or updated.
+
+### Deprecated
+The following configuration keys have been removed:
+- `BrandColor`
+- `HiddenWidgets`
+- `CustomColors`
+- `IntuneMode`
+- `ShowMenuToggle`
+- `DesktopInfoCustomItems`
+- `DesktopInfoBackgroundColor`
+- `DesktopInfoColorHighlight`
+- `CustomWidgetsPath`
+- `SystemProfilerApps`
+
+### Updated
+- **`DesktopInfoLevel`**:
+  - Previously a `string`, now an `integer`.
+  - Removed string values: `Minimal`, `Hardware`, `Full`, `Custom`.
+  - Added numeric levels: `1-5`.
+
+### Notes
+- A clean uninstall of version 1.x is required before installing 2.0. Use the script located at:
+  ```bash
+  /Applications/Utilities/SupportCompanion.app/Contents/Resources/Uninstall.sh
 
 ## [1.4.0] - 2024-11-06
 ### Changed
