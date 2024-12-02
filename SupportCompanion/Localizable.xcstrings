@@ -598,6 +598,24 @@
     },
     "Cancel" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abbrechen"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Annuler"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avbryt"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
@@ -758,7 +776,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gestion des appareils"
+            "value" : "Gestion de l'appareil"
           }
         },
         "nb" : {
@@ -1923,7 +1941,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Inscrit:"
+            "value" : "Enrôlement:"
           }
         },
         "nb" : {
@@ -1959,7 +1977,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Date d’inscription:"
+            "value" : "Date d'enrôlement:"
           }
         },
         "nb" : {
@@ -2634,6 +2652,24 @@
     },
     "Rebooting in %lld seconds..." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neustart in %lld Sekunden…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Redémarrage dans %lld  secondes…"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Omstart om %lld sekunder…"
+          }
+        },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
