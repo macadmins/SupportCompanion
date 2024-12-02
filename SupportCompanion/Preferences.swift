@@ -55,6 +55,12 @@ class Preferences: ObservableObject {
     
     // MARK: - Menu
     
+    @AppStorage("MenuShowIdentity") var menuShowIdentity: Bool = true
+
+    @AppStorage("MenuShowApps") var menuShowApps: Bool = true
+
+    @AppStorage("MenuShowSelfService") var menuShowSelfService: Bool = true
+
     @AppStorage("MenuShowCompanyPortal") var menuShowCompanyPortal: Bool = true
     
     @AppStorage("MenuShowKnowledgeBase") var menuShowKnowledgeBase: Bool = true

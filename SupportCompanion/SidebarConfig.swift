@@ -20,26 +20,34 @@ func generateSidebarItems(preferences: Preferences, stateManager: WebViewStateMa
                     )
                 )
             )
-        ),
-        
-        SidebarItem(
-            label: Constants.Navigation.identity,
-            systemImage: "person.fill",
-            destination: AnyView(
-                Identity()
-            )
-        ),
-        
-        SidebarItem(
-            label: Constants.Navigation.apps,
-            systemImage: "app.fill",
-            destination: AnyView(
-                Applications()
-            )
         )
     ]
+
+    if preferences.menuShowIdentity {
+        items.append(
+            SidebarItem(
+                label: Constants.Navigation.identity,
+                systemImage: "person.fill",
+                destination: AnyView(
+                    Identity()
+                )
+            )
+        )
+    }
+
+    if preferences.menuShowApps {
+        items.append(
+            SidebarItem(
+                label: Constants.Navigation.apps,
+                systemImage: "app.fill",
+                destination: AnyView(
+                    Applications()
+                )
+            )
+        )
+    }
     
-    if !preferences.actions.isEmpty {
+    if !preferences.actions.isEmpty && preferences.menuShowIdentity {
         items.append(
             SidebarItem(
                 label: Constants.Navigation.selfService,

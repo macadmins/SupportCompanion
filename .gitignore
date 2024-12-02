@@ -8,6 +8,7 @@
 # ignore xcode stuff
 **/xcuserdata/
 **/*.xcuserdatad/
+default.profraw
 
 # ignore build output
 Build/build
