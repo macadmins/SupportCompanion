@@ -71,6 +71,9 @@ extension ToastConfig {
 
 extension AppDelegate: NSWindowDelegate {
     func windowWillClose(_ notification: Notification) {
+        if AppDelegate.urlLaunch {
+            NSApplication.shared.terminate(nil)
+        }
         Logger.shared.logDebug("Main window is closing.")
         AppStateManager.shared.windowIsVisible = false
         windowController = nil
@@ -80,4 +83,8 @@ extension AppDelegate: NSWindowDelegate {
     func windowDidBecomeKey(_ notification: Notification) {
         AppStateManager.shared.windowIsVisible = true
     }
+}
+
+extension Notification.Name {
+    static let handleIncomingURL = Notification.Name("handleIncomingURL")
 }

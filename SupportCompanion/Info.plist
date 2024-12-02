@@ -22,9 +22,20 @@
 	<string>2.0.0</string>
 	<key>CFBundleVersion</key>
 	<string>2.0.0</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.github.macadmins.SupportCompanion</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>supportcompanion</string>
+			</array>
+		</dict>
+	</array>
 	<key>SMPrivilegedExecutables</key>
 	<dict>
-		<key>com.almenscorner.SupportCompanionSwift.helper</key>
+		<key>com.github.macadmins.SupportCompanion.helper</key>
 		<string>anchor apple generic and identifier &quot;com.github.macadmins.SupportCompanion.helper&quot; and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = $(TEAM_ID))</string>
 	</dict>
 </dict>

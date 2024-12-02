@@ -55,6 +55,11 @@ struct ContentView: View {
                         selectedItem = sidebarItems.first
                     }
                 }
+                .onReceive(NotificationCenter.default.publisher(for: .handleIncomingURL)) { notification in
+                    if let url = notification.object as? URL {
+                        handleIncomingURL(url, items: sidebarItems)
+                    }
+                }
                 .background(Color.clear)
 
                 HStack {
@@ -84,6 +89,27 @@ struct ContentView: View {
         .background(.ultraThinMaterial)
     }
     
+
+    private func handleIncomingURL(_ url: URL, items: [SidebarItem]) {
+        guard url.scheme == "supportcompanion" else { return }
+
+        switch url.host?.lowercased() {
+        case "home":
+            selectedItem = items.first(where: { $0.id == Constants.Navigation.home })
+        case "identity":
+            selectedItem = items.first(where: { $0.id == Constants.Navigation.identity })
+        case "apps":
+            selectedItem = items.first(where: { $0.id == Constants.Navigation.apps })
+        case "selfservice":
+            selectedItem = items.first(where: { $0.id == Constants.Navigation.selfService })
+        case "companyportal":
+            selectedItem = items.first(where: { $0.id == "Company Portal" })
+        case "knowledgebase":
+            selectedItem = items.first(where: { $0.id == Constants.Navigation.knowledgeBase })
+        default:
+            Logger.shared.logDebug("Unhandled URL: \(url)")
+        }
+    }
     
     private func loadLogo(base64Logo: String) {
         if base64Logo.isEmpty {

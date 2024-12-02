@@ -17,10 +17,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var transparentWindowController: TransparentWindowController?
     let appStateManager = AppStateManager.shared
     var mainWindow: NSWindow?
+    static var urlLaunch = false
     private var notificationDelegate: NotificationDelegate?
     private var cancellables: Set<AnyCancellable> = []
     @AppStorage("isDarkMode") private var isDarkMode: Bool = false
 
+
+    func application(_ application: NSApplication, open urls: [URL]) {
+        guard let url = urls.first else { return }
+        AppDelegate.urlLaunch = true
+        showWindow()
+        NotificationCenter.default.post(name: .handleIncomingURL, object: url)
+    }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         setupTrayMenu()

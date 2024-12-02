@@ -84,7 +84,7 @@ class Preferences: ObservableObject {
     @AppStorage("DesktopInfoWindowPosition") var desktopInfoWindowPosition: String = "LowerRight"
     @Published var currentWindowPosition: String = "LowerRight"
     
-    @AppStorage("ShowDesktopInfo") var showDesktopInfo: Bool = true
+    @AppStorage("ShowDesktopInfo") var showDesktopInfo: Bool = false
     
     @AppStorage("DesktopInfoFontSize") var desktopInfoFontSize: Int = 14
     
