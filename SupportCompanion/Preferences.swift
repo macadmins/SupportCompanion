@@ -29,7 +29,7 @@ class Preferences: ObservableObject {
     
     @AppStorage("NotificationTitle") var notificationTitle: String = "Support Companion"
     
-    @AppStorage("NotificationInterval") var notificationInterval: Int = 1
+    @AppStorage("NotificationInterval") var notificationInterval: Int = 4
     
     @AppStorage("NotifcationImage") var notificationImage: String = ""
     
