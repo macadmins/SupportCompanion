@@ -112,14 +112,16 @@ class ApplicationsInfoManager: ObservableObject {
     
     func getInstalledIntuneApps() async {
         do {
-            let apps = await intuneApps.getInstalledAppsList()
-            let installedApps = apps!.compactMap { app -> InstalledApp? in
+            let apps = await intuneApps.getInstalledAppsListFromLog()
+            let installedApps = apps.compactMap { app -> InstalledApp? in
                 guard
-                    let name = app["ApplicationName"] as? String,
-                    let policy = app["Policy"] as? [String: Any],
-                    let appInfos = policy["AppInfos"] as? [[String: Any]],
-                    let version = appInfos.first?["AppVersion"] as? String
-                else { return nil }
+                    let info = app["Info"] as? [String: Any],
+                    let name = info["AppName"] as? String
+                else {
+                    return nil
+                }
+
+                let version = info["Version"] as? String ?? ""
                 
                 return InstalledApp(
                     id: UUID(),

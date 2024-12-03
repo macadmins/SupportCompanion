@@ -26,8 +26,8 @@ class PendingIntuneUpdatesManager {
 
         do {
             // Fetch counts concurrently
-            async let installedCount = intuneApps.getInstalledAppsCount()
-            async let pendingCount = intuneApps.getPendingUpdatesCount()
+            async let installedCount = intuneApps.getInstalledAppsCountFromLog()
+            async let pendingCount = intuneApps.getPendingUpdatesCountFromLog()
             let (installed, pending) = await (installedCount, pendingCount)
 
             let totalApps = installed + pending
@@ -75,7 +75,7 @@ class PendingIntuneUpdatesManager {
         Logger.shared.logDebug("Getting Intune pending updates")
         
         do {
-            let pendingUpdates = await intuneApps.getPendingUpdatesList()
+            let pendingUpdates = await intuneApps.getPendingUpdatesListFromLog()
             DispatchQueue.main.async {
                 self.appState.pendingIntuneUpdates = pendingUpdates
             }
@@ -84,7 +84,7 @@ class PendingIntuneUpdatesManager {
     
     func fetchPendingUpdates() async {
         do {
-            let updates = await intuneApps.getPendingUpdatesCount()
+            let updates = await intuneApps.getPendingUpdatesCountFromLog()
             DispatchQueue.main.async {
                 if self.appState.pendingUpdatesCount != updates {
                     self.appState.pendingUpdatesCount = updates
@@ -130,7 +130,7 @@ class PendingIntuneUpdatesManager {
     
     func fetchPendingUpdatesList() async {
         do {
-            let updates = await intuneApps.getPendingUpdatesList()
+            let updates = await intuneApps.getPendingUpdatesListFromLog()
             DispatchQueue.main.async {
                 guard updates != self.appState.pendingIntuneUpdates else {
                     Logger.shared.logDebug("Pending updates list unchanged")
