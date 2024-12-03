@@ -16,6 +16,8 @@ struct ContentView: View {
     @StateObject private var webViewStateManager = WebViewStateManager()
     @State private var brandLogo: Image? = nil
     @State private var showLogo: Bool = false
+    @State private var isShowingPopup = false
+    @State private var modalButtonHovered: Bool = false
 
     var body: some View {
         let sidebarItems = generateSidebarItems(preferences: appState.preferences, stateManager: webViewStateManager)
@@ -61,6 +63,29 @@ struct ContentView: View {
                     }
                 }
                 .background(Color.clear)
+                
+                if !appState.preferences.supportEmail.isEmpty && !appState.preferences.supportPhone.isEmpty {
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            isShowingPopup = true // Show popup
+                        }) {
+                            Text("Support information")
+                                .padding()
+                                .foregroundColor(
+                                    modalButtonHovered
+                                    ? Color(NSColor(hex: appState.preferences.accentColor ?? "") ?? NSColor.controlAccentColor)
+                                    : .primary
+                                )
+                                .cornerRadius(8)
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        .onHover { hovering in
+                            modalButtonHovered = hovering
+                        }
+                        Spacer()
+                    }
+                }
 
                 HStack {
                     Spacer()
@@ -84,6 +109,10 @@ struct ContentView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(Color.gray.opacity(0.2))
             }
+        }
+        .sheet(isPresented: $isShowingPopup) {
+            // The popup content
+            PopupModal(isShowing: $isShowingPopup)
         }
         .background(.clear)
         .background(.ultraThinMaterial)

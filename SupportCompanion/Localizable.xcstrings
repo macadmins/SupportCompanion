@@ -2714,6 +2714,9 @@
         }
       }
     },
+    "Support information" : {
+
+    },
     "Support.Email" : {
       "comment" : "Email address",
       "extractionState" : "extracted_with_value",
