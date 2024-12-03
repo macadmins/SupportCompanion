@@ -60,18 +60,20 @@ func generateSidebarItems(preferences: Preferences, stateManager: WebViewStateMa
     }
     
     // Add "Company Portal" with persistent WebViewState
-    if preferences.menuShowCompanyPortal && preferences.mode == Constants.modes.intune || FileManager.default.fileExists(atPath: Constants.AppPaths.companyPortal) {
-        let companyPortalState = stateManager.getWebViewState(
-            for: "CompanyPortal",
-            url: URL(string: "https://portal.manage.microsoft.com/")!
-        )
-        items.append(
-            SidebarItem(
-                label: "Company Portal",
-                systemImage: "briefcase.fill",
-                destination: AnyView(WebViewContainer(state: companyPortalState))
+    if preferences.menuShowCompanyPortal {
+        if preferences.mode == Constants.modes.intune || FileManager.default.fileExists(atPath: Constants.AppPaths.companyPortal) {
+            let companyPortalState = stateManager.getWebViewState(
+                for: "CompanyPortal",
+                url: URL(string: "https://portal.manage.microsoft.com/")!
             )
-        )
+            items.append(
+                SidebarItem(
+                    label: "Company Portal",
+                    systemImage: "briefcase.fill",
+                    destination: AnyView(WebViewContainer(state: companyPortalState))
+                )
+            )
+        }
     }
 
     // Add "Knowledge Base" with persistent WebViewState
