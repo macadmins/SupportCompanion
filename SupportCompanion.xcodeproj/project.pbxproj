@@ -10,6 +10,9 @@
 		F60FAB742CE8D40A00ECAC53 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = F60FAB732CE8D40A00ECAC53 /* AlertToast */; };
 		F60FAB872CEA108A00ECAC53 /* SidebarConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60FAB862CEA108A00ECAC53 /* SidebarConfig.swift */; };
 		F64927372CF9EA8D00C34D90 /* com.github.macadmins.SupportCompanion.helper in CopyFiles */ = {isa = PBXBuildFile; fileRef = F6F8AE7D2CE345A8009B0A1F /* com.github.macadmins.SupportCompanion.helper */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		F6890EEB2CFF326D00244985 /* SupportCompanionCLI in CopyFiles */ = {isa = PBXBuildFile; fileRef = F6890EE22CFF308F00244985 /* SupportCompanionCLI */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		F6890EEC2CFF330D00244985 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6E4D1D42CE4CE1E003EB8C0 /* Preferences.swift */; };
+		F6890EED2CFF331400244985 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A4E0F62CEC9DFC002B4D74 /* Constants.swift */; };
 		F6A4E0F72CEC9DFC002B4D74 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A4E0F62CEC9DFC002B4D74 /* Constants.swift */; };
 		F6A4E0F82CEC9DFC002B4D74 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A4E0F62CEC9DFC002B4D74 /* Constants.swift */; };
 		F6A4E0FA2CEC9FFB002B4D74 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = F6A4E0F92CEC9FFB002B4D74 /* Localizable.xcstrings */; };
@@ -35,6 +38,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F6890EE02CFF308F00244985 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		F6890EEA2CFF326600244985 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+				F6890EEB2CFF326D00244985 /* SupportCompanionCLI in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F6F8AE7B2CE345A8009B0A1F /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -50,6 +72,7 @@
 		F60FAB862CEA108A00ECAC53 /* SidebarConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarConfig.swift; sourceTree = "<group>"; };
 		F649273D2CF9FFD600C34D90 /* CHANGELOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = "<group>"; };
 		F64928192CFA02AD00C34D90 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		F6890EE22CFF308F00244985 /* SupportCompanionCLI */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SupportCompanionCLI; sourceTree = BUILT_PRODUCTS_DIR; };
 		F69455982CF6076100B887F8 /* build.zsh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = build.zsh; sourceTree = "<group>"; };
 		F6A4E0F62CEC9DFC002B4D74 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		F6A4E0F92CEC9FFB002B4D74 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
@@ -94,6 +117,20 @@
 				Launchd.plist,
 			);
 			target = F6F8AE7C2CE345A8009B0A1F /* com.github.macadmins.SupportCompanion.helper */;
+		};
+		F6890EEF2CFF332200244985 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Action.swift,
+			);
+			target = F6890EE12CFF308F00244985 /* SupportCompanionCLI */;
+		};
+		F6890EF12CFF333C00244985 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Logger.swift,
+			);
+			target = F6890EE12CFF308F00244985 /* SupportCompanionCLI */;
 		};
 		F69455C82CF7521A00B887F8 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
@@ -149,21 +186,29 @@
 		F635873C2CE2094400AC5F98 /* Views */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Views; sourceTree = "<group>"; };
 		F64927222CF9AA0400C34D90 /* LaunchAgent */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (F64927362CF9D3FE00C34D90 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = LaunchAgent; sourceTree = "<group>"; };
 		F64927382CF9FF4300C34D90 /* .github */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (F649281B2CFA02BC00C34D90 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = .github; sourceTree = "<group>"; };
+		F6890EE32CFF308F00244985 /* SupportCompanionCLI */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = SupportCompanionCLI; sourceTree = "<group>"; };
 		F69455822CF5A6D300B887F8 /* Protocols */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Protocols; sourceTree = "<group>"; };
 		F69455882CF603A600B887F8 /* Scripts */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Scripts; sourceTree = "<group>"; };
 		F694558E2CF6050C00B887F8 /* pkgbuild */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (F69455C82CF7521A00B887F8 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = pkgbuild; sourceTree = "<group>"; };
 		F6A4E0F32CEC752C002B4D74 /* Services */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Services; sourceTree = "<group>"; };
 		F6E4D2032CE5DF67003EB8C0 /* Extensions */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Extensions; sourceTree = "<group>"; };
 		F6E4D2662CE64E62003EB8C0 /* Controllers */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Controllers; sourceTree = "<group>"; };
-		F6E4D26B2CE6576B003EB8C0 /* Helpers */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (F6A4E0E32CEBD770002B4D74 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Helpers; sourceTree = "<group>"; };
+		F6E4D26B2CE6576B003EB8C0 /* Helpers */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (F6A4E0E32CEBD770002B4D74 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, F6890EF12CFF333C00244985 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Helpers; sourceTree = "<group>"; };
 		F6E4D2812CE78164003EB8C0 /* Utilities */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Utilities; sourceTree = "<group>"; };
 		F6E4D2842CE781B9003EB8C0 /* Components */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Components; sourceTree = "<group>"; };
-		F6E72E642CE3DEC300D78336 /* Models */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Models; sourceTree = "<group>"; };
+		F6E72E642CE3DEC300D78336 /* Models */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (F6890EEF2CFF332200244985 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Models; sourceTree = "<group>"; };
 		F6EB39E72CE1EE2800517FCD /* ViewModels */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (F6A4E0E52CEBD7D8002B4D74 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = ViewModels; sourceTree = "<group>"; };
 		F6F8AE7E2CE345A8009B0A1F /* Helper */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (F6A4E0E82CEBD7F8002B4D74 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, F649281C2CFA02C000C34D90 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Helper; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		F6890EDF2CFF308F00244985 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F6F3BEB62CE1E7BA0036ADB9 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -197,6 +242,7 @@
 				F64927382CF9FF4300C34D90 /* .github */,
 				F6F3BEBB2CE1E7BA0036ADB9 /* SupportCompanion */,
 				F6F8AE7E2CE345A8009B0A1F /* Helper */,
+				F6890EE32CFF308F00244985 /* SupportCompanionCLI */,
 				F60ED7952CEB278400960264 /* Frameworks */,
 				F6F3BEBA2CE1E7BA0036ADB9 /* Products */,
 				F69455982CF6076100B887F8 /* build.zsh */,
@@ -208,6 +254,7 @@
 			children = (
 				F6F3BEB92CE1E7BA0036ADB9 /* SupportCompanion.app */,
 				F6F8AE7D2CE345A8009B0A1F /* com.github.macadmins.SupportCompanion.helper */,
+				F6890EE22CFF308F00244985 /* SupportCompanionCLI */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -258,6 +305,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		F6890EE12CFF308F00244985 /* SupportCompanionCLI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F6890EE62CFF308F00244985 /* Build configuration list for PBXNativeTarget "SupportCompanionCLI" */;
+			buildPhases = (
+				F6890EDE2CFF308F00244985 /* Sources */,
+				F6890EDF2CFF308F00244985 /* Frameworks */,
+				F6890EE02CFF308F00244985 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				F6890EE32CFF308F00244985 /* SupportCompanionCLI */,
+			);
+			name = SupportCompanionCLI;
+			packageProductDependencies = (
+			);
+			productName = SupportCompanionCLI;
+			productReference = F6890EE22CFF308F00244985 /* SupportCompanionCLI */;
+			productType = "com.apple.product-type.tool";
+		};
 		F6F3BEB82CE1E7BA0036ADB9 /* SupportCompanion */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F6F3BEDE2CE1E7BB0036ADB9 /* Build configuration list for PBXNativeTarget "SupportCompanion" */;
@@ -266,6 +335,7 @@
 				F6F3BEB62CE1E7BA0036ADB9 /* Frameworks */,
 				F6F3BEB72CE1E7BA0036ADB9 /* Resources */,
 				F63587542CE22B6000AC5F98 /* CopyFiles */,
+				F6890EEA2CFF326600244985 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -325,6 +395,9 @@
 				LastSwiftUpdateCheck = 1610;
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
+					F6890EE12CFF308F00244985 = {
+						CreatedOnToolsVersion = 16.1;
+					};
 					F6F3BEB82CE1E7BA0036ADB9 = {
 						CreatedOnToolsVersion = 16.0;
 					};
@@ -355,6 +428,7 @@
 			targets = (
 				F6F3BEB82CE1E7BA0036ADB9 /* SupportCompanion */,
 				F6F8AE7C2CE345A8009B0A1F /* com.github.macadmins.SupportCompanion.helper */,
+				F6890EE12CFF308F00244985 /* SupportCompanionCLI */,
 			);
 		};
 /* End PBXProject section */
@@ -379,6 +453,15 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		F6890EDE2CFF308F00244985 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F6890EEC2CFF330D00244985 /* Preferences.swift in Sources */,
+				F6890EED2CFF331400244985 /* Constants.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F6F3BEB52CE1E7BA0036ADB9 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -407,6 +490,36 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		F6890EE72CFF308F00244985 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = H92SB6Z7S4;
+				MACOSX_DEPLOYMENT_TARGET = 15.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.github.macadmins.SupportCompanion.CLI;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		F6890EE82CFF308F00244985 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = H92SB6Z7S4;
+				MACOSX_DEPLOYMENT_TARGET = 15.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.github.macadmins.SupportCompanion.CLI;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 		F6F3BEDC2CE1E7BB0036ADB9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -668,6 +781,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		F6890EE62CFF308F00244985 /* Build configuration list for PBXNativeTarget "SupportCompanionCLI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F6890EE72CFF308F00244985 /* Debug */,
+				F6890EE82CFF308F00244985 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		F6F3BEB42CE1E7BA0036ADB9 /* Build configuration list for PBXProject "SupportCompanion" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

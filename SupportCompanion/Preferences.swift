@@ -223,52 +223,94 @@ class Preferences: ObservableObject {
             self?.actions = newActions
         }
     }
+    
+    struct DefaultValues {
+        static let values: [String: Any] = [
+            "LastSoftwareUpdateNotificationTime": "",
+            "lastRebootReminderNotificationTime": "",
+            "LastGenericNotificationTime": "",
+            "LastAppUpdateNotificationTime": "",
+            "NotificationTitle": "Support Companion",
+            "NotificationInterval": 4,
+            "NotificationImage": "",
+            "SoftwareUpdateNotificationButtonText": Constants.Notifications.SoftwareUpdate.UpdateNotificationButtonText,
+            "SoftwareUpdateNotificationCommand": "open \(Constants.Panels.softwareUpdates)",
+            "SoftwareUpdateNotificationMessage": Constants.Notifications.SoftwareUpdate.UpdateNotificationMessage,
+            "AppUpdateNotificationMessage": Constants.Notifications.AppUpdate.UpdateNotificationMessage,
+            "AppUpdateNotificationButtonText": Constants.Notifications.AppUpdate.UpdateNotificationButtonText,
+            "AppUpdateNotificationCommand": "",
+            "BrandName": "Support Companion",
+            "BrandLogo": "",
+            "AccentColor": "",
+            "MenuShowIdentity": true,
+            "MenuShowApps": true,
+            "MenuShowSelfService": true,
+            "MenuShowCompanyPortal": true,
+            "MenuShowKnowledgeBase": true,
+            "KnowledgeBaseUrl": "",
+            "SupportPageURL": "",
+            "ChangePasswordMode": "",
+            "ChangePasswordUrl": "",
+            "Mode": "",
+            "DesktopInfoBackgroundOpacity": 0.001,
+            "DesktopInfoWindowPosition": "LowerRight",
+            "ShowDesktopInfo": false,
+            "DesktopInfoFontSize": 14,
+            "DesktopInfoLevel": 4,
+            "SupportEmail": "",
+            "SupportPhone": ""
+        ]
+    }
 
-    private func ensureDefaultsInitialized() {
-    let defaults = UserDefaults.standard
+    func ensureDefaultsInitialized() {
+        let defaults = UserDefaults.standard
 
-    let defaultValues: [String: Any] = [
-        NotificationType.softwareUpdate.rawValue: "",
-        NotificationType.rebootReminder.rawValue: "",
-        NotificationType.generic.rawValue: "",
-        NotificationType.appUpdate.rawValue: "",
-        "NotificationTitle": "Support Companion",
-        "NotificationInterval": 4,
-        "NotifcationImage": "",
-        "SoftwareUpdateNotificationButtonText": Constants.Notifications.SoftwareUpdate.UpdateNotificationButtonText,
-        "SoftwareUpdateNotificationCommand": "open \(Constants.Panels.softwareUpdates)",
-        "SoftwareUpdateNotificationMessage": Constants.Notifications.SoftwareUpdate.UpdateNotificationMessage,
-        "AppUpdateNotificationMessage": Constants.Notifications.AppUpdate.UpdateNotificationMessage,
-        "AppUpdateNotificationButtonText": Constants.Notifications.AppUpdate.UpdateNotificationButtonText,
-        "AppUpdateNotificationCommand": "",
-        "BrandName": "Support Companion",
-        "BrandLogo": "",
-        "AccentColor": "",
-        "MenuShowIdentity": true,
-        "MenuShowApps": true,
-        "MenuShowSelfService": true,
-        "MenuShowCompanyPortal": true,
-        "MenuShowKnowledgeBase": true,
-        "KnowledgeBaseUrl": "",
-        "SupportPageURL": "",
-        "ChangePasswordMode": "",
-        "ChangePasswordUrl": "",
-        "Mode": "",
-        "DesktopInfoBackgroundOpacity": 0.001,
-        "DesktopInfoWindowPosition": "LowerRight",
-        "ShowDesktopInfo": false,
-        "DesktopInfoFontSize": 14,
-        "DesktopInfoLevel": 4,
-        "SupportEmail": "",
-        "SupportPhone": ""
-    ]
-
-    for (key, value) in defaultValues {
-        if defaults.object(forKey: key) == nil {
-            defaults.set(value, forKey: key)
+       for (key, value) in DefaultValues.values {
+            if defaults.object(forKey: key) == nil {
+                defaults.set(value, forKey: key)
+            }
         }
     }
-}
+    
+
+    func resetUserDefaults() {
+        let bundleIdentifier = "com.github.macadmins.SupportCompanion"
+        let defaults = UserDefaults.standard
+
+        // Clear the current UserDefaults domain
+        defaults.removePersistentDomain(forName: bundleIdentifier)
+        defaults.synchronize()
+
+        // Write all default values directly using a shell command
+        for (key, value) in DefaultValues.values {
+            let writeCommand: String
+            if let value = value as? String {
+                writeCommand = "defaults write \(bundleIdentifier) \(key) '\(value)'"
+            } else if let value = value as? Bool {
+                writeCommand = "defaults write \(bundleIdentifier) \(key) -bool \(value)"
+            } else if let value = value as? Int {
+                writeCommand = "defaults write \(bundleIdentifier) \(key) -int \(value)"
+            } else if let value = value as? Double {
+                writeCommand = "defaults write \(bundleIdentifier) \(key) -float \(value)"
+            } else {
+                print("Unsupported value type for key: \(key)")
+                continue
+            }
+
+            // Execute the write command
+            executeShellCommand(command: writeCommand)
+        }
+
+        print("Defaults have been reset using defaults write.")
+    }
+
+    func executeShellCommand(command: String) {
+        let process = Process()
+        process.launchPath = "/bin/zsh"
+        process.arguments = ["-c", command]
+        process.launch()
+        process.waitUntilExit()
+    }
 }
 
 extension NSNotification.Name {
