@@ -11,6 +11,9 @@ console_user_uid=$(echo "show State:/Users/ConsoleUser" | scutil | awk '/kCGSSes
 # Kill the process
 echo "Killing the process..."
 pkill -f SupportCompanion
+# Remove user defaults
+echo "Removing user defaults..."
+sudo -u "${current_user}" defaults delete com.github.macadmins.SupportCompanion
 # Unload launchctl job
 echo "Unloading helepr launchctl job..."
 launchctl unload -w /Library/LaunchDaemons/com.github.macadmins.SupportCompanion.helper.plist
