@@ -115,6 +115,8 @@ class Preferences: ObservableObject {
     @AppStorage("SupportPhone") var supportPhone: String = ""
     
     init() {
+        ensureDefaultsInitialized()
+
         NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)
             .sink { [weak self] _ in
                 guard let self = self else { return }
@@ -221,6 +223,52 @@ class Preferences: ObservableObject {
             self?.actions = newActions
         }
     }
+
+    private func ensureDefaultsInitialized() {
+    let defaults = UserDefaults.standard
+
+    let defaultValues: [String: Any] = [
+        NotificationType.softwareUpdate.rawValue: "",
+        NotificationType.rebootReminder.rawValue: "",
+        NotificationType.generic.rawValue: "",
+        NotificationType.appUpdate.rawValue: "",
+        "NotificationTitle": "Support Companion",
+        "NotificationInterval": 4,
+        "NotifcationImage": "",
+        "SoftwareUpdateNotificationButtonText": Constants.Notifications.SoftwareUpdate.UpdateNotificationButtonText,
+        "SoftwareUpdateNotificationCommand": "open \(Constants.Panels.softwareUpdates)",
+        "SoftwareUpdateNotificationMessage": Constants.Notifications.SoftwareUpdate.UpdateNotificationMessage,
+        "AppUpdateNotificationMessage": Constants.Notifications.AppUpdate.UpdateNotificationMessage,
+        "AppUpdateNotificationButtonText": Constants.Notifications.AppUpdate.UpdateNotificationButtonText,
+        "AppUpdateNotificationCommand": "",
+        "BrandName": "Support Companion",
+        "BrandLogo": "",
+        "AccentColor": "",
+        "MenuShowIdentity": true,
+        "MenuShowApps": true,
+        "MenuShowSelfService": true,
+        "MenuShowCompanyPortal": true,
+        "MenuShowKnowledgeBase": true,
+        "KnowledgeBaseUrl": "",
+        "SupportPageURL": "",
+        "ChangePasswordMode": "",
+        "ChangePasswordUrl": "",
+        "Mode": "",
+        "DesktopInfoBackgroundOpacity": 0.001,
+        "DesktopInfoWindowPosition": "LowerRight",
+        "ShowDesktopInfo": false,
+        "DesktopInfoFontSize": 14,
+        "DesktopInfoLevel": 4,
+        "SupportEmail": "",
+        "SupportPhone": ""
+    ]
+
+    for (key, value) in defaultValues {
+        if defaults.object(forKey: key) == nil {
+            defaults.set(value, forKey: key)
+        }
+    }
+}
 }
 
 extension NSNotification.Name {
