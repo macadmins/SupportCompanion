@@ -140,11 +140,10 @@ class Preferences: ObservableObject {
     }
     
     private func detectModeAndSetLogFolders() {
-        // Avoid overwriting if UserDefaults has pre-set log folders
-        if !logFolders.isEmpty {
-            Logger.shared.logDebug("Log folders already initialized: \(logFolders)")
-            return
-        }
+        //if !logFolders.isEmpty {
+        //    Logger.shared.logDebug("Log folders already initialized: \(logFolders)")
+        //    return
+        //}
 
         guard mode.isEmpty else {
             Logger.shared.logDebug("Mode is already set to \(mode), skipping detection.")
@@ -156,24 +155,26 @@ class Preferences: ObservableObject {
         let mscExists = fileManager.fileExists(atPath: Constants.AppPaths.MSC)
 
         if companyPortalExists && mscExists {
-            Logger.shared.logDebug("Both Munki and Company Portal paths exist, defaulting to Munki mode")
+            Logger.shared.logDebug("Both Munki and Company Portal paths exist, defaulting to Munki mode.")
             mode = Constants.modes.munki
             logFolders = ["/Library/Managed Installs/Logs", "/Library/Logs/Microsoft"]
         } else if companyPortalExists {
-            Logger.shared.logDebug("Company Portal path exists, setting mode to Intune")
+            Logger.shared.logDebug("Company Portal path exists, setting mode to Intune.")
             mode = Constants.modes.intune
             logFolders = ["/Library/Logs/Microsoft"]
         } else if mscExists {
-            Logger.shared.logDebug("MSC path exists, setting mode to Munki")
+            Logger.shared.logDebug("MSC path exists, setting mode to Munki.")
             mode = Constants.modes.munki
             logFolders = ["/Library/Managed Installs/Logs"]
         } else {
-            Logger.shared.logDebug("No paths exist, defaulting mode to System Profiler")
+            Logger.shared.logDebug("No paths exist, defaulting mode to System Profiler.")
             mode = Constants.modes.systemProfiler
             logFolders = []
         }
 
+        UserDefaults.standard.set(mode, forKey: "Mode")
         saveLogFoldersToDefaults()
+        Logger.shared.logDebug("Final mode: \(mode), log folders: \(logFolders)")
     }
 
     // MARK: - Save Log Folders to UserDefaults
@@ -300,8 +301,9 @@ class Preferences: ObservableObject {
             // Execute the write command
             executeShellCommand(command: writeCommand)
         }
-
-        print("Defaults have been reset using defaults write.")
+        
+        detectModeAndSetLogFolders()
+        Logger.shared.logDebug("Defaults have been reset using defaults write.")
     }
 
     func executeShellCommand(command: String) {
