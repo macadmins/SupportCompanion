@@ -197,7 +197,7 @@ class Preferences: ObservableObject {
     
     private func loadHiddenActions() {
         DispatchQueue.main.async { [weak self] in
-            self?.hiddenCards = UserDefaults.standard.array(forKey: "HiddenActions") as? [String] ?? []
+            self?.hiddenActions = UserDefaults.standard.array(forKey: "HiddenActions") as? [String] ?? []
         }
     }
     

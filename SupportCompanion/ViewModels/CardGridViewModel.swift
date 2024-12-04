@@ -185,6 +185,6 @@ class CardGridViewModel: ObservableObject {
 
     // MARK: - Buttons
     func isButtonVisible(_ button: String) -> Bool {
-        !appState.preferences.hiddenCards.contains(button)
+        !appState.preferences.hiddenActions.contains(button)
     }
 }
