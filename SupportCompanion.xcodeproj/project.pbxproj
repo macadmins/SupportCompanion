@@ -132,6 +132,13 @@
 			);
 			target = F6890EE12CFF308F00244985 /* SupportCompanionCLI */;
 		};
+		F68910C62D009DB500244985 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				MenuIcon.png,
+			);
+			target = F6F3BEB82CE1E7BA0036ADB9 /* SupportCompanion */;
+		};
 		F69455C82CF7521A00B887F8 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -182,7 +189,7 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		F60FAB792CE94CC000ECAC53 /* Assets */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Assets; sourceTree = "<group>"; };
+		F60FAB792CE94CC000ECAC53 /* Assets */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (F68910C62D009DB500244985 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Assets; sourceTree = "<group>"; };
 		F635873C2CE2094400AC5F98 /* Views */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Views; sourceTree = "<group>"; };
 		F64927222CF9AA0400C34D90 /* LaunchAgent */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (F64927362CF9D3FE00C34D90 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = LaunchAgent; sourceTree = "<group>"; };
 		F64927382CF9FF4300C34D90 /* .github */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (F649281B2CFA02BC00C34D90 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = .github; sourceTree = "<group>"; };
