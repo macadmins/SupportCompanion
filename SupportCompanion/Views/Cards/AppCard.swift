@@ -10,6 +10,20 @@ import SwiftUI
 
 struct AppCard: View {
     let card: InstalledApp
+    let version: String
+
+    init(card: InstalledApp) {
+        self.card = card
+
+        // Determine version
+        if AppStateManager.shared.preferences.mode == Constants.modes.intune,
+           let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: card.bundleId) {
+            let appInfoPlistPath = "\(appURL.path)/Contents/Info.plist"
+            self.version = getAppVersion(plistPath: appInfoPlistPath) ?? "Unknown"
+        } else {
+            self.version = card.version
+        }
+    }
 
     var titleImage: String {
         if AppStateManager.shared.preferences.mode == Constants.modes.munki {
@@ -17,22 +31,18 @@ struct AppCard: View {
             if FileManager.default.fileExists(atPath: iconPath) {
                 return iconPath
             } else {
-                return "app.gift.fill" // Fallback to SF Symbol
+                return "app.gift.fill"
             }
         } else if AppStateManager.shared.preferences.mode == Constants.modes.systemProfiler {
             let appInfoPlistPath = "\(card.path)/Contents/Info.plist"
-            if FileManager.default.fileExists(atPath: appInfoPlistPath) {
-                // Get icon name from Info.plist
-                if let iconName = PlistService.getPlistValue(forKey: "CFBundleIconFile", fromPlistAtPath: appInfoPlistPath) as? String {
-                    let resolvedIconName = iconName.hasSuffix(".icns") ? iconName : "\(iconName).icns"
-                    let appIconPath = "\(card.path)/Contents/Resources/\(resolvedIconName)"
-                    if FileManager.default.fileExists(atPath: appIconPath) {
-                        return appIconPath
-                    }
-                }
+            return getIconPath(plistPath: appInfoPlistPath, appPath: card.path) ?? "app.gift.fill"
+        } else if AppStateManager.shared.preferences.mode == Constants.modes.intune {
+            if let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: card.bundleId) {
+                let appInfoPlistPath = "\(appURL.path)/Contents/Info.plist"
+                return getIconPath(plistPath: appInfoPlistPath, appPath: appURL.path) ?? "app.gift.fill"
             }
         }
-        return "app.gift.fill" // Default
+        return "app.gift.fill"
     }
 
     var body: some View {
@@ -45,7 +55,7 @@ struct AppCard: View {
                     HStack(alignment: .top) {
                         Text("\(Constants.TabelHeaders.version):")
                             .bold()
-                        Text(card.version)
+                        Text(version)
                     }
                     .font(.system(size: 14))
                     
@@ -84,6 +94,29 @@ struct AppCard: View {
             }
         )
     }
+}
+
+// Utility Functions
+func getIconPath(plistPath: String, appPath: String) -> String? {
+    if FileManager.default.fileExists(atPath: plistPath) {
+        if let iconName = PlistService.getPlistValue(forKey: "CFBundleIconFile", fromPlistAtPath: plistPath) as? String {
+            let resolvedIconName = iconName.hasSuffix(".icns") ? iconName : "\(iconName).icns"
+            let appIconPath = "\(appPath)/Contents/Resources/\(resolvedIconName)"
+            if FileManager.default.fileExists(atPath: appIconPath) {
+                return appIconPath
+            }
+        }
+    }
+    return nil
+}
+
+func getAppVersion(plistPath: String) -> String? {
+    if FileManager.default.fileExists(atPath: plistPath) {
+        if let appVersion = PlistService.getPlistValue(forKey: "CFBundleShortVersionString", fromPlistAtPath: plistPath) as? String {
+            return appVersion
+        }
+    }
+    return nil
 }
     
 struct PlistService {

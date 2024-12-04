@@ -16,4 +16,5 @@ struct InstalledApp: Identifiable {
     let isSelfServe: Bool
     let path: String
     let type: String
+    let bundleId: String
 }

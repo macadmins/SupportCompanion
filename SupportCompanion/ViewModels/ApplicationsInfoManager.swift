@@ -23,7 +23,8 @@ class ApplicationsInfoManager: ObservableObject {
         arch: "",
         isSelfServe: false,
         path: "",
-        type: ""
+        type: "",
+        bundleId: ""
     )
 
     init(appState: AppStateManager) {
@@ -104,7 +105,8 @@ class ApplicationsInfoManager: ObservableObject {
                     arch: "",
                     isSelfServe: isSelfServe,
                     path: "",
-                    type: ""
+                    type: "",
+                    bundleId: ""
                 )
             }
 
@@ -127,6 +129,7 @@ class ApplicationsInfoManager: ObservableObject {
 
                 let version = info["Version"] as? String ?? ""
                 let type = info["AppType"] as? String ?? ""
+                let bundleId = info["BundleID"] as? String ?? ""
                 
                 return InstalledApp(
                     id: UUID(),
@@ -136,7 +139,8 @@ class ApplicationsInfoManager: ObservableObject {
                     arch: "",
                     isSelfServe: false,
                     path: "",
-                    type: type
+                    type: type,
+                    bundleId: bundleId
                 )
             }
             
@@ -151,15 +155,26 @@ class ApplicationsInfoManager: ObservableObject {
             let apps = await profilerApps.getInstalledApps()
             
             let installedApps = apps.compactMap { app -> InstalledApp? in
+                let archMap: [String: String] = [
+                    "arch_arm_i64": "Universal",
+                    "arch_arm": "Apple Silicon",
+                    "arch_i64": "Intel",
+                    "arch_ios": "iOS",
+                    "arch_other": "Other (Not Optimized)"
+                ]
+
+                let arch = archMap[app["arch_kind"] as? String ?? ""] ?? "Unknown"
+                
                 return InstalledApp(
                     id: UUID(),
                     name: app["_name"] as? String ?? "",
                     version: app["version"] as? String ?? "",
                     action: "",
-                    arch: app["arch_kind"] as? String ?? "",
+                    arch: arch,
                     isSelfServe: false,
                     path: app["path"] as? String ?? "",
-                    type: ""
+                    type: "",
+                    bundleId: ""
                 )
             }
             
