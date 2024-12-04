@@ -305,7 +305,7 @@
         }
       }
     },
-    "Arch" : {
+    "Arch:" : {
 
     },
     "Battery.Charging" : {
@@ -3155,6 +3155,9 @@
           }
         }
       }
+    },
+    "Type:" : {
+
     },
     "UserInfo.HomeDir" : {
       "comment" : "Label for the home directory",

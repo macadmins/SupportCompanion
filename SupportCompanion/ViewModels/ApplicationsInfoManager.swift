@@ -21,7 +21,9 @@ class ApplicationsInfoManager: ObservableObject {
         version: "",
         action: "",
         arch: "",
-        isSelfServe: false
+        isSelfServe: false,
+        path: "",
+        type: ""
     )
 
     init(appState: AppStateManager) {
@@ -100,7 +102,9 @@ class ApplicationsInfoManager: ObservableObject {
                     version: version,
                     action: command,
                     arch: "",
-                    isSelfServe: isSelfServe
+                    isSelfServe: isSelfServe,
+                    path: "",
+                    type: ""
                 )
             }
 
@@ -122,6 +126,7 @@ class ApplicationsInfoManager: ObservableObject {
                 }
 
                 let version = info["Version"] as? String ?? ""
+                let type = info["AppType"] as? String ?? ""
                 
                 return InstalledApp(
                     id: UUID(),
@@ -129,7 +134,9 @@ class ApplicationsInfoManager: ObservableObject {
                     version: version,
                     action: "",
                     arch: "",
-                    isSelfServe: false
+                    isSelfServe: false,
+                    path: "",
+                    type: type
                 )
             }
             
@@ -150,7 +157,9 @@ class ApplicationsInfoManager: ObservableObject {
                     version: app["version"] as? String ?? "",
                     action: "",
                     arch: app["arch_kind"] as? String ?? "",
-                    isSelfServe: false
+                    isSelfServe: false,
+                    path: app["path"] as? String ?? "",
+                    type: ""
                 )
             }
             

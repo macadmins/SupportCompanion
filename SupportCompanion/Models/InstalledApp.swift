@@ -14,4 +14,6 @@ struct InstalledApp: Identifiable {
     let action: String
     let arch: String
     let isSelfServe: Bool
+    let path: String
+    let type: String
 }

@@ -45,22 +45,41 @@ struct CustomCard<Content: View>: View {
         self.imageSize = imageSize
         self.useMultiColor = useMultiColor
     }
+    
+    private func loadImage(from path: String) -> NSImage? {
+        let url = URL(fileURLWithPath: path)
+        if FileManager.default.fileExists(atPath: url.path) {
+            return NSImage(contentsOf: url)
+        }
+        return nil
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             // Title with optional button aligned to the right
             HStack {
-                if titleImageName != nil {
-                    Image(systemName: titleImageName!)
-                        .resizable()
-                        .imageScale(.large)
-                        .symbolRenderingMode((useMultiColor ?? true) ? .multicolor : .monochrome)
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: imageSize?.0, height: imageSize?.1)
+                if let titleImageName = titleImageName {
+                    if let image = loadImage(from: titleImageName) {
+                        Image(nsImage: image) // Use `nsImage` for macOS
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: imageSize?.0, height: imageSize?.1)
+                    } else {
+                        Image(systemName: titleImageName)
+                            .resizable()
+                            .imageScale(.large)
+                            .symbolRenderingMode((useMultiColor ?? true) ? .multicolor : .monochrome)
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: imageSize?.0, height: imageSize?.1)
+                    }
                 }
+                
                 Text(title)
                     .font(.system(size: 16))
                     .foregroundColor(.primary)
+                    .lineLimit(nil) // Allow unlimited lines
+                    .multilineTextAlignment(.leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 
                 Spacer()
                 
@@ -86,6 +105,8 @@ struct CustomCard<Content: View>: View {
                 Text(subtitle)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
+                    .lineLimit(nil) // Allow unlimited lines
+                    .multilineTextAlignment(.leading)
                     .padding([.leading, .trailing])
             }
 
@@ -97,7 +118,8 @@ struct CustomCard<Content: View>: View {
                 Text(description)
                     .font(.body)
                     .foregroundColor(.primary)
-                    .lineLimit(3)
+                    .lineLimit(nil) // Allow unlimited lines
+                    .multilineTextAlignment(.leading)
                     .padding([.leading, .trailing])
             }
 
