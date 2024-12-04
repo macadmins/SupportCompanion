@@ -109,9 +109,11 @@ class ApplicationsInfoManager: ObservableObject {
                     bundleId: ""
                 )
             }
+            
+            let sortedApps = installedApps.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
 
             DispatchQueue.main.async {
-                self.appState.installedApplications = installedApps
+                self.appState.installedApplications = sortedApps
             }
         }
     }
@@ -144,8 +146,10 @@ class ApplicationsInfoManager: ObservableObject {
                 )
             }
             
+            let sortedApps = installedApps.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+            
             DispatchQueue.main.async {
-                self.appState.installedApplications = installedApps
+                self.appState.installedApplications = sortedApps
             }
         }
     }
@@ -178,8 +182,10 @@ class ApplicationsInfoManager: ObservableObject {
                 )
             }
             
+            let sortedApps = installedApps.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+
             DispatchQueue.main.async {
-                self.appState.installedApplications = installedApps
+                self.appState.installedApplications = sortedApps
             }
         }
     }
