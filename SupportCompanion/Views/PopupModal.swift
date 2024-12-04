@@ -25,7 +25,7 @@ struct PopupModal: View {
             }
             .padding(.bottom)
             
-            CustomButton("Close"){
+            CustomButton(Constants.General.close){
                 isShowing = false
             }
         }

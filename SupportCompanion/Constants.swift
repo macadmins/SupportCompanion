@@ -39,6 +39,7 @@ enum Constants {
         static let daysAgo = String(localized: "General.DaysAgo", defaultValue: "Days ago", comment: "Number of days ago")
         static let minutes = String(localized: "General.Minutes", defaultValue: "Minutes", comment: "Number of minutes")
         static let manage = String(localized: "General.Manage", defaultValue: "Manage", comment: "Manage")
+        static let close = String(localized: "General.Close", defaultValue: "Close", comment: "Close")
     }
     
     enum AppPaths {
