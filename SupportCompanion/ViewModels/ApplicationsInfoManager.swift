@@ -163,7 +163,7 @@ class ApplicationsInfoManager: ObservableObject {
                     "arch_arm_i64": "Universal",
                     "arch_arm": "Apple Silicon",
                     "arch_i64": "Intel",
-                    "arch_ios": "iOS",
+                    "arch_ios": "Apple Silicon",
                     "arch_other": "Other (Not Optimized)"
                 ]
 
