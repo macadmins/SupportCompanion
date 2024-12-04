@@ -41,6 +41,8 @@ The following configuration keys have been removed:
 - A clean uninstall of version 1.x is required before installing 2.0. Use the script located at:
   ```bash
   /Applications/Utilities/SupportCompanion.app/Contents/Resources/Uninstall.sh
+  ```
+  For additional migration information, refer to the [migration guide](https://github.com/macadmins/SupportCompanion/wiki/Migrating-from-version-1.X-to-2.0).
 
 ## [1.4.0] - 2024-11-06
 ### Changed
