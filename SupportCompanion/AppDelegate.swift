@@ -109,12 +109,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             let contentView = ContentView()
                 .environmentObject(AppStateManager.shared)
                 .environmentObject(Preferences())
+                .frame(minWidth: 1500, minHeight: 900)
 
             let hostingController = NSHostingController(rootView: contentView)
 
             let window = NSWindow(contentViewController: hostingController)
             window.setContentSize(NSSize(width: 1500, height: 900))
             window.styleMask = [.titled, .closable, .resizable]
+            window.minSize = NSSize(width: 1500, height: 900)
             window.title = ""
             window.isReleasedWhenClosed = false
             window.backgroundColor = .clear
