@@ -47,7 +47,7 @@ func generateSidebarItems(preferences: Preferences, stateManager: WebViewStateMa
         )
     }
     
-    if !preferences.actions.isEmpty && preferences.menuShowIdentity {
+    if !preferences.actions.isEmpty && preferences.menuShowSelfService {
         items.append(
             SidebarItem(
                 label: Constants.Navigation.selfService,
