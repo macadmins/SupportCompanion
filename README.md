@@ -14,25 +14,28 @@ For getting started with Support Companion, please refer to the [Wiki](https://g
 ## Overview
 
 ### Home
-<img width="1526" alt="Home" src="https://github.com/user-attachments/assets/7f51e85f-6796-4123-a6f8-df74e2b7c65d">
+<img width="1513" alt="1_home" src="https://github.com/user-attachments/assets/ddf7b35d-5921-47b7-ac72-b17d2ead8211">
 
 ### Identity
-<img width="1526" alt="Identity" src="https://github.com/user-attachments/assets/988deca5-d5c3-4f9f-9ccd-2d430bef29cb">
+<img width="1513" alt="2_Identity" src="https://github.com/user-attachments/assets/557e14cf-ba13-4754-ac27-3eec2e37dc53">
 
 ### Apps
-<img width="1526" alt="Apps" src="https://github.com/user-attachments/assets/b658d0c5-79e7-40f6-8b19-f784c004a5b5">
+<img width="1513" alt="3_Apps" src="https://github.com/user-attachments/assets/355c0624-43f0-4516-9177-def489203a35">
 
 ### Self Service
-<img width="1526" alt="SelfService" src="https://github.com/user-attachments/assets/f722a599-6029-455c-ab96-d0ddf197fcf6">
+<img width="1513" alt="4_SelfService" src="https://github.com/user-attachments/assets/ca0e520a-d941-41c1-bbd5-93db3e93f236">
 
 ### Company Portal
-<img width="1526" alt="CompPortal" src="https://github.com/user-attachments/assets/5de67385-fd69-4b0a-af60-2c142885926b">
+<img width="1513" alt="5_CompPortal" src="https://github.com/user-attachments/assets/2cdcb2af-7cf7-47f4-a044-8d722dd85232">
 
 ### KB
-<img width="1526" alt="KB" src="https://github.com/user-attachments/assets/66632ab2-ca8c-4836-9837-dcc9cdc396d4">
+<img width="1513" alt="6_KB" src="https://github.com/user-attachments/assets/bdaaf50d-84ff-4505-983f-334b29498fc8">
 
 ### Desktop Info
-<img width="1800" alt="Desktop" src="https://github.com/user-attachments/assets/432e1a85-62e3-494f-8c8d-4a4233e6471c">
+<img width="1800" alt="7_Desktop" src="https://github.com/user-attachments/assets/9f104a8e-2298-4582-acb7-3ef68455ab00">
+
+### Notifications
+<img width="365" alt="8_Notifications" src="https://github.com/user-attachments/assets/d4faef1c-624c-444e-8020-deae6d4f074d">
 
 ## Credits
 [woodys-findings](https://www.woodys-findings.com/posts/cocoa-implement-privileged-helper) for privileged helper code
