@@ -71,7 +71,7 @@ class Preferences: ObservableObject {
     
     // MARK: - Actions
     
-    @AppStorage("SupportPageURL") var supportPageURL: String = ""
+    @AppStorage("SupportPageUrl") var supportPageURL: String = ""
     
     @AppStorage("ChangePasswordMode") var changePasswordMode: String = ""
     
@@ -251,7 +251,7 @@ class Preferences: ObservableObject {
             "MenuShowCompanyPortal": true,
             "MenuShowKnowledgeBase": true,
             "KnowledgeBaseUrl": "",
-            "SupportPageURL": "",
+            "SupportPageUrl": "",
             "ChangePasswordMode": "",
             "ChangePasswordUrl": "",
             "Mode": "",
