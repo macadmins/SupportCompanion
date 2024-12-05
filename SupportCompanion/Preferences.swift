@@ -51,6 +51,8 @@ class Preferences: ObservableObject {
     
     @AppStorage("BrandLogo") var brandLogo: String = ""
     
+    @AppStorage("BrandLogoLight") var brandLogoLight: String = ""
+    
     @AppStorage("AccentColor") var accentColor: String?
     
     // MARK: - Menu

@@ -18,10 +18,10 @@ struct ContentView: View {
     @State private var showLogo: Bool = false
     @State private var isShowingPopup = false
     @State private var modalButtonHovered: Bool = false
+    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         let sidebarItems = generateSidebarItems(preferences: appState.preferences, stateManager: webViewStateManager)
-        let base64Logo: String = appState.preferences.brandLogo
 
         NavigationSplitView {
             VStack(spacing: 10) {
@@ -33,7 +33,7 @@ struct ContentView: View {
                         .resizable()
                         .scaledToFit()
                         .padding(.top, 20) // Minimal padding
-                        .padding(.horizontal)
+                        .padding(.horizontal, 20)
                 }
 
                 // Title Section
@@ -41,7 +41,7 @@ struct ContentView: View {
                     Text(appState.preferences.brandName)
                         .font(.title)
                         .multilineTextAlignment(.center)
-                        .padding(.top, 5) // Bring the title closer to the logo
+                        .padding(.top, 20) // Bring the title closer to the logo
                 }
 
                 Spacer() // Push content to the center dynamically
@@ -52,10 +52,19 @@ struct ContentView: View {
                 }
                 .listStyle(SidebarListStyle())
                 .onAppear {
-                    loadLogo(base64Logo: base64Logo)
+                    loadLogoForCurrentColorScheme()
                     if selectedItem == nil {
                         selectedItem = sidebarItems.first
                     }
+                }
+                .onChange(of: colorScheme) { _, _ in
+                    loadLogoForCurrentColorScheme()
+                }
+                .onChange(of: appState.preferences.brandLogo) { _, _ in
+                    loadLogoForCurrentColorScheme()
+                }
+                .onChange(of: appState.preferences.brandLogoLight) { _, _ in
+                    loadLogoForCurrentColorScheme()
                 }
                 .onReceive(NotificationCenter.default.publisher(for: .handleIncomingURL)) { notification in
                     if let url = notification.object as? URL {
@@ -138,6 +147,11 @@ struct ContentView: View {
         default:
             Logger.shared.logDebug("Unhandled URL: \(url)")
         }
+    }
+    
+    private func loadLogoForCurrentColorScheme() {
+        let base64Logo = colorScheme == .dark ? appState.preferences.brandLogo : appState.preferences.brandLogoLight.isEmpty ? appState.preferences.brandLogo : appState.preferences.brandLogoLight
+        loadLogo(base64Logo: base64Logo)
     }
     
     private func loadLogo(base64Logo: String) {
