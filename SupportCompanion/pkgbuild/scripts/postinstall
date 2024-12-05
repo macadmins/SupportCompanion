@@ -1,0 +1,40 @@
+#!/bin/zsh
+
+app_path="/Applications/SupportCompanion.app"
+process_name="SupportCompanion"
+launcha_name="com.github.macadmins.SupportCompanion.agent.plist"
+launch_daemon_path="/Library/LaunchDaemons/${launchd_name}"
+launch_agent_path="/Library/LaunchAgents/${launcha_name}"
+console_user=$(/usr/bin/stat -f "%Su" /dev/console)
+console_user_uid=$(/usr/bin/id -u "$console_user")
+
+# install helper
+"$app_path/Contents/Resources/helper_install.zsh"
+
+# kill the process if it's running
+if [[ -n $( ps -ef | grep "${process_name}" | grep -v grep ) ]]; then
+    killall "${process_name}"
+fi
+
+if [[ -f "${launch_agent_path}" ]]; then
+    if [[ -z "$console_user" ]]; then
+      echo "Did not detect user"
+    elif [[ "$console_user" == "loginwindow" ]]; then
+      echo "Detected Loginwindow Environment"
+    elif [[ "$console_user" == "_mbsetupuser" ]]; then
+      echo "Detect SetupAssistant Environment"
+    elif [[ "$console_user" == "root" ]]; then
+      echo "Detect root as currently logged-in user"
+    else
+      echo "Detected current logged-in user and will reload the launch agent."
+      # Unload the agent so it can be triggered on re-install
+      /bin/launchctl asuser "${console_user_uid}" /bin/launchctl unload -w "${launch_agent_path}"
+      # Load the launch agent
+      /bin/launchctl asuser "${console_user_uid}" /bin/launchctl load -w "${launch_agent_path}"
+    fi
+else
+  echo "Did not detect launch agent, opening app."
+    open -g -a "${app_path}"
+fi
+
+exit 0

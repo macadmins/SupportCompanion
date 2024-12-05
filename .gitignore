@@ -5,6 +5,11 @@
 # ignore vscode stuff
 .vscode
 
+# ignore xcode stuff
+**/xcuserdata/
+**/*.xcuserdatad/
+default.profraw
+
 # ignore build output
 Build/build
 LaunchAgent/build
@@ -36,3 +41,9 @@ __pycache__/
 *.userosscache
 *.sln.docstates
 *.sln.DotSettings.user
+
+# ignore build and release files
+build/
+release/
+.build/
+buildServer.json

@@ -42,13 +42,13 @@ jobs:
           p12-password: ${{ secrets.PKG_CERTIFICATES_P12_PASSWORD_MAOS }}
 
       - name: Run build package script
-        run: ./build.sh "$NOTARY_APP_PASSWORD"
-
+        run: ./build.zsh "Release" "$NOTARY_APP_PASSWORD"
+    
       - name: get environment variables
         id: get_env_var
         run: |
-          echo "SC_VERSION=$(/bin/cat ./build_info.txt)" >> $GITHUB_ENV
-          echo "SC_MAIN_VERSION=$(/bin/cat ./build_info_main.txt)" >> $GITHUB_ENV
+          echo "SC_VERSION=$(/bin/cat ./build/build_info.txt)" >> $GITHUB_ENV
+          echo "SC_MAIN_VERSION=$(/bin/cat ./build/build_info_main.txt)" >> $GITHUB_ENV
 
       - name: Get Changelog Entry
         id: changelog_reader
@@ -84,10 +84,10 @@ jobs:
 
             # Changes
             ${{ steps.changelog.outputs.changelog }}
-          files: ${{github.workspace}}/Build/build/*.pkg
+          files: ${{github.workspace}}/release/*.pkg
 
       - name: Upload packages
         uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
         with:
           name: packages
-          path: Build/build/
+          path: release/
