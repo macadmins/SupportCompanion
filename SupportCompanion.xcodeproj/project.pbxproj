@@ -145,6 +145,7 @@
 				export.plist,
 				payload/Library/LaunchDaemons/com.github.macadmins.SupportCompanion.helper.plist,
 				scripts/postinstall,
+				scripts/preinstall,
 			);
 			target = F6F3BEB82CE1E7BA0036ADB9 /* SupportCompanion */;
 		};
