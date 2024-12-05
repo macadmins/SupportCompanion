@@ -1,0 +1,18 @@
+#!/bin/zsh
+
+v1AppPath="/Applications/Utilities/SupportCompanion.app"
+
+# Check if the app exists
+if [[ -d "$v1AppPath" ]]; then
+    # Check if the uninstall script exists
+    uninstallScript="$v1AppPath/Contents/Resources/Uninstall.sh"
+    if [[ -f "$uninstallScript" ]]; then
+        "$uninstallScript"
+    else
+        echo "Uninstall script not found at $uninstallScript."
+    fi
+else
+    echo "Support Companion not found at $v1AppPath."
+fi
+
+exit 0
