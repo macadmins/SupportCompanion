@@ -79,7 +79,7 @@ struct ContentView: View {
                         Button(action: {
                             isShowingPopup = true // Show popup
                         }) {
-                            Text("Support information")
+                            Text("Support Information")
                                 .padding()
                                 .foregroundColor(
                                     modalButtonHovered
