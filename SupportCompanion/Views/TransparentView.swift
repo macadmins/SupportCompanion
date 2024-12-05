@@ -51,7 +51,7 @@ struct TransparentView: View {
                     }
                 }
 
-                if appState.preferences.desktopInfoLevel > 3 {
+                if appState.preferences.desktopInfoLevel > 3 && !appState.preferences.desktopInfoHideItems.contains("Storage"){
                     // Storage Section
                     Divider()
                         .background(Color.white.opacity(0.2))
@@ -62,7 +62,7 @@ struct TransparentView: View {
                     storageInfoSection()
                 }
                 
-                if appState.preferences.desktopInfoLevel > 4 {
+                if appState.preferences.desktopInfoLevel > 4 && !appState.preferences.desktopInfoHideItems.contains("Support"){
                     Divider()
                         .background(Color.white.opacity(0.2))
                         .shadow(radius: 2)
@@ -86,26 +86,53 @@ struct TransparentView: View {
         }
         .frame(height: contentHeight)
     }
+    
+    private func localizedHideCheck(_ standardKey: String) -> Bool {
+        let hideItems = appState.preferences.desktopInfoHideItems
 
+        // Map the user-provided keys to localized values
+        let localizedKeys = hideItems.compactMap { key in
+            switch key {
+            case "Network Information":
+                return Constants.DeviceInfo.Categories.networkInfo
+            case "Hardware Specifications":
+                return Constants.DeviceInfo.Categories.hardwareSpecs
+            case "System Information":
+                return Constants.DeviceInfo.Categories.systemInfo
+            default:
+                return key // Fallback for unknown keys
+            }
+        }
+
+        // Check if the localized key matches the standard key
+        return localizedKeys.contains(standardKey)
+    }
+    
     private func groupedDeviceInfoArray() -> [(String, [(key: String, display: String, value: InfoValue)])] {
         groupedDeviceInfo()
-            .filter { section in
+            .compactMap { section in
+                let isIncludedByLevel: Bool
                 switch appState.preferences.desktopInfoLevel {
                 case 1:
-                    return section.key == Constants.DeviceInfo.Categories.hardwareSpecs
+                    isIncludedByLevel = section.key == Constants.DeviceInfo.Categories.hardwareSpecs
                 case 2:
-                    return section.key == Constants.DeviceInfo.Categories.hardwareSpecs ||
-                           section.key == Constants.DeviceInfo.Categories.systemInfo
+                    isIncludedByLevel = section.key == Constants.DeviceInfo.Categories.hardwareSpecs ||
+                                        section.key == Constants.DeviceInfo.Categories.systemInfo
                 case 3:
-                    return section.key == Constants.DeviceInfo.Categories.hardwareSpecs ||
-                           section.key == Constants.DeviceInfo.Categories.systemInfo ||
-                           section.key == Constants.DeviceInfo.Categories.networkInfo
+                    isIncludedByLevel = section.key == Constants.DeviceInfo.Categories.hardwareSpecs ||
+                                        section.key == Constants.DeviceInfo.Categories.systemInfo ||
+                                        section.key == Constants.DeviceInfo.Categories.networkInfo
                 default:
-                    return true // Show all categories for level 4 or higher
+                    isIncludedByLevel = true
                 }
+
+                // Always allow hiding based on desktopInfoHideItems
+                if isIncludedByLevel && !localizedHideCheck(section.key) {
+                    return (section.key, section.value)
+                }
+                return nil
             }
-            .sorted(by: { $0.key < $1.key }) // Sort categories alphabetically
-            .map { ($0.key, $0.value) }
+            .sorted(by: { $0.0 < $1.0 })
     }
 
     private func groupedDeviceInfo() -> [String: [(key: String, display: String, value: InfoValue)]] {
