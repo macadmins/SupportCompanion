@@ -14,7 +14,7 @@ For getting started with Support Companion, please refer to the [Wiki](https://g
 ## Overview
 
 ### Home
-<img width="1513" alt="1_home" src="https://github.com/user-attachments/assets/a6cc4ec2-1b02-432d-a445-7ba2d193171c">
+<img width="1513" alt="1_home" src="https://github.com/user-attachments/assets/ddf7b35d-5921-47b7-ac72-b17d2ead8211">
 
 ### Identity
 <img width="1513" alt="2_Identity" src="https://github.com/user-attachments/assets/557e14cf-ba13-4754-ac27-3eec2e37dc53">
