@@ -250,15 +250,15 @@ cp "$LA_PATH/payload/$LA_NAME" "$PKGBUILDDIR/payload/Library/LaunchAgents/$LA_NA
 
 check_exit_code "$?" "Error copying launch agent"
 
-create_pkg $BUNDLE_IDENTIFIER $AUTOMATED_SC_BUILD $PKGBUILDDIR "${BUILDSDIR}/SupportCompanion_suite-${AUTOMATED_SC_BUILD}.pkg" "/"
+create_pkg $BUNDLE_IDENTIFIER $AUTOMATED_SC_BUILD $PKGBUILDDIR "${BUILDSDIR}/SupportCompanion_Suite-${AUTOMATED_SC_BUILD}.pkg" "/"
     
-generate_dist_file $BUNDLE_IDENTIFIER $AUTOMATED_SC_BUILD $DIST_FILE "_suite"
+generate_dist_file $BUNDLE_IDENTIFIER $AUTOMATED_SC_BUILD $DIST_FILE "_Suite"
 
 run_product_build_sign $BUILDSDIR "${BUILDSDIR}/${APP_NAME}_Suite-${AUTOMATED_SC_BUILD}"
 
 notarize_and_staple "${BUILDSDIR}/${APP_NAME}_Suite-${AUTOMATED_SC_BUILD}.pkg"
 
-cp "${BUILDSDIR}/${APP_NAME}_suite-${AUTOMATED_SC_BUILD}.pkg" "${RELEASEDIR}/${APP_NAME}_suite-${AUTOMATED_SC_BUILD}.pkg"
+cp "${BUILDSDIR}/${APP_NAME}_Suite-${AUTOMATED_SC_BUILD}.pkg" "${RELEASEDIR}/${APP_NAME}_Suite-${AUTOMATED_SC_BUILD}.pkg"
 
 echo "Build complete: ${RELEASEDIR}/${APP_NAME}_Suite-${AUTOMATED_SC_BUILD}.pkg"
 
