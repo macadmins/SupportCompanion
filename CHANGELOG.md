@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.0.2] - 2024-12-06
 ### Changed
 - Added a softer shade of orange and red when light mode is enabled to improve visibility and readability.
+- If launching the app using a URL scheme, the app will now exit **only** when `supportcompanion://` is used. This allows for the app to be started using a URL scheme and remain open when using `supportcompanion://home` or similar. Example:
+
+Will exit when the window is closed:
+```bash
+open supportcompanion://
+```
+
+Will remain open when the window is closed:
+```bash
+open supportcompanion://home
+```
 
 ### Added
 - Option to hide Categories and Dividers on the Desktop Info view. This allows for a cleaner and more focused view of the information displayed. Example configuration:
