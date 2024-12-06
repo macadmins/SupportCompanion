@@ -18,6 +18,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let appStateManager = AppStateManager.shared
     var mainWindow: NSWindow?
     static var urlLaunch = false
+    static var shouldExit = false
     private var notificationDelegate: NotificationDelegate?
     private var cancellables: Set<AnyCancellable> = []
     @AppStorage("isDarkMode") private var isDarkMode: Bool = false
@@ -25,6 +26,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func application(_ application: NSApplication, open urls: [URL]) {
         guard let url = urls.first else { return }
+        switch url.host?.lowercased() {
+            case nil:
+                AppDelegate.shouldExit = true
+            default:
+                AppDelegate.shouldExit = false
+        }
         AppDelegate.urlLaunch = true
         showWindow()
         NotificationCenter.default.post(name: .handleIncomingURL, object: url)

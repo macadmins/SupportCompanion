@@ -71,7 +71,7 @@ extension ToastConfig {
 
 extension AppDelegate: NSWindowDelegate {
     func windowWillClose(_ notification: Notification) {
-        if AppDelegate.urlLaunch {
+        if AppDelegate.shouldExit {
             NSApplication.shared.terminate(nil)
         }
         Logger.shared.logDebug("Main window is closing.")
