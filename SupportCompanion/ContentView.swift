@@ -145,7 +145,7 @@ struct ContentView: View {
         case "knowledgebase":
             selectedItem = items.first(where: { $0.id == Constants.Navigation.knowledgeBase })
         default:
-            Logger.shared.logDebug("Unhandled URL: \(url)")
+            selectedItem = items.first(where: { $0.id == Constants.Navigation.home })
         }
     }
     

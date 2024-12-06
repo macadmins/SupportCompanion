@@ -71,7 +71,7 @@ extension ToastConfig {
 
 extension AppDelegate: NSWindowDelegate {
     func windowWillClose(_ notification: Notification) {
-        if AppDelegate.urlLaunch {
+        if AppDelegate.shouldExit {
             NSApplication.shared.terminate(nil)
         }
         Logger.shared.logDebug("Main window is closing.")
@@ -87,4 +87,12 @@ extension AppDelegate: NSWindowDelegate {
 
 extension Notification.Name {
     static let handleIncomingURL = Notification.Name("handleIncomingURL")
+}
+
+extension Color {
+    // Orange shades
+    static let orangeLight = Color(hue: 0.1, saturation: 0.9, brightness: 0.75) // Softer orange for light mode
+    
+    // Red shades
+    static let redLight = Color(hue: 0.02, saturation: 0.8, brightness: 0.7) // Softer red for light mode
 }

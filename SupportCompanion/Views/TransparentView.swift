@@ -25,16 +25,22 @@ struct TransparentView: View {
 
             VStack(alignment: .leading) {
                 // Title for the Info View
-                Text(Constants.CardTitle.deviceInfo)
-                    .font(.title2)
-                    .bold()
-                    .foregroundColor(.white)
-                    .padding(.bottom, 10)
-                    .shadow(radius: 2)
+                if !appState.preferences.desktopInfoHideItems.contains("Category") {
+                    Text(Constants.CardTitle.deviceInfo)
+                        .font(.title2)
+                        .bold()
+                        .foregroundColor(.white)
+                        .padding(.bottom, 10)
+                        .shadow(radius: 2)
+                }
 
                 // Grouped Device Information
                 ForEach(Array(groupedDeviceInfoArray().enumerated()), id: \.1.0) { index, group in
-                    SectionHeaderTransparent(title: group.0) // Section title (e.g., "Hardware Specifications")
+                    SectionHeaderTransparent(
+                        title: group.0, 
+                        addHeader: shouldShowGategory(), 
+                        fontSize: CGFloat(appState.preferences.desktopInfoFontSize)
+                    ) // Section title (e.g., "Hardware Specifications")
                     VStack(alignment: .leading) {
                         ForEach(group.1.filter { !appState.preferences.desktopInfoHideItems.contains($0.key) }, id: \.key) { item in
                             deviceInfoRow(for: item)
@@ -44,7 +50,7 @@ struct TransparentView: View {
 
                     // Add a divider only if it's not the last group
                     if index < groupedDeviceInfoArray().count - 1 {
-                        Divider()
+                        shouldShowDivider()
                             .background(Color.white.opacity(0.2))
                             .shadow(radius: 2)
                             .padding(.vertical, 5)
@@ -53,22 +59,30 @@ struct TransparentView: View {
 
                 if appState.preferences.desktopInfoLevel > 3 && !appState.preferences.desktopInfoHideItems.contains("Storage"){
                     // Storage Section
-                    Divider()
+                    shouldShowDivider()
                         .background(Color.white.opacity(0.2))
                         .shadow(radius: 2)
                         .padding(.vertical, 5)
                     
-                    SectionHeaderTransparent(title: Constants.CardTitle.storage)
+                    SectionHeaderTransparent(
+                        title: Constants.CardTitle.storage, 
+                        addHeader: shouldShowGategory(), 
+                        fontSize: CGFloat(appState.preferences.desktopInfoFontSize)
+                    )
                     storageInfoSection()
                 }
                 
                 if appState.preferences.desktopInfoLevel > 4 && !appState.preferences.desktopInfoHideItems.contains("Support"){
-                    Divider()
+                    shouldShowDivider()
                         .background(Color.white.opacity(0.2))
                         .shadow(radius: 2)
                         .padding(.vertical, 5)
                     
-                    SectionHeaderTransparent(title: Constants.Support.Titles.support)
+                    SectionHeaderTransparent(
+                        title: Constants.Support.Titles.support, 
+                        addHeader: shouldShowGategory(), 
+                        fontSize: CGFloat(appState.preferences.desktopInfoFontSize)
+                    )
                     supportInfoSection()
                 }
             }
@@ -85,6 +99,16 @@ struct TransparentView: View {
             })
         }
         .frame(height: contentHeight)
+    }
+
+    private func shouldShowDivider() -> some View {
+        !appState.preferences.desktopInfoHideItems.contains("Divider")
+            ? AnyView(Divider())
+            : AnyView(EmptyView())
+    }
+    
+    private func shouldShowGategory() -> Bool {
+        !appState.preferences.desktopInfoHideItems.contains("Category")
     }
     
     private func localizedHideCheck(_ standardKey: String) -> Bool {
@@ -231,6 +255,8 @@ struct TransparentView: View {
 
 struct SectionHeaderTransparent: View {
     let title: String
+    let addHeader: Bool
+    let fontSize: CGFloat
 
     // Computed property for the image name
     private var image: String {
@@ -251,13 +277,17 @@ struct SectionHeaderTransparent: View {
     }
 
     var body: some View {
-        HStack(spacing: 8) {
-            Image(systemName: image)
-            Text(title)
-                .font(.headline)
+        if addHeader {
+            HStack(spacing: 8) {
+                Image(systemName: image)
+                Text(title)
+                    .font(.system(size: fontSize))
+            }
+            .shadow(radius: 2)
+            .padding(.vertical, 5)
+        } else {
+            EmptyView()
         }
-        .shadow(radius: 2)
-        .padding(.vertical, 5)
     }
 }
 
