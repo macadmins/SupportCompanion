@@ -14,16 +14,6 @@ struct StorageInfo: Identifiable {
     let fileVault: Bool
     let usage: Double
     
-    var percentageColor: Color {
-        if usage > 80 {
-            return Color(NSColor.red)
-        } else if usage > 60 {
-            return Color(NSColor.orange)
-        } else {
-            return Color(NSColor.green)
-        }
-    }
-    
     func toKeyValuePairs() -> [(key: String, display: String, value: InfoValue)] {
         return [
             (

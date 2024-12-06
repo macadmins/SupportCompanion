@@ -11,7 +11,7 @@ import SwiftUI
 struct StorageDeviceManagementStack: View {
     @ObservedObject var viewModel: CardGridViewModel
     @EnvironmentObject var appState: AppStateManager
-
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         if !viewModel.isCardVisible(Constants.Cards.storageCardName) && !viewModel.isCardVisible(Constants.Cards.deviceManagementCardName) {
@@ -38,7 +38,9 @@ struct StorageDeviceManagementStack: View {
                                                     Text("\(String(format: "%.1f", appState.storageInfoManager.storageInfo.usage))% Used")
                                                     .font(.system(size: 14))}
                                             )
-                                            .tint(appState.storageInfoManager.storageInfo.percentageColor)
+                                            .tint(appState.storageInfoManager.storageInfo.usage < 50 ? Color.green
+                                                  : appState.storageInfoManager.storageInfo.usage < 80 ? (colorScheme == .light ? .orangeLight : .orange)
+                                                  : (colorScheme == .light ? .redLight : .red))
                                             .padding(.top)
                                         )
                                     }
