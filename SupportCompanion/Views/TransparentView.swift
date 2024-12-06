@@ -102,7 +102,7 @@ struct TransparentView: View {
     }
 
     private func shouldShowDivider() -> some View {
-        !appState.preferences.desktopInfoHideItems.contains("Dividers")
+        !appState.preferences.desktopInfoHideItems.contains("Divider")
             ? AnyView(Divider())
             : AnyView(EmptyView())
     }
