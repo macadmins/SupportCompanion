@@ -32,8 +32,8 @@ class CardGridViewModel: ObservableObject {
             ]
         }
     
-    func createRestartIntuneAgentButton() -> CustomButton {
-        CustomButton(Constants.Actions.restartIntuneAgent) {
+    func createRestartIntuneAgentButton(fontSize: CGFloat? = nil) -> CustomButton {
+        CustomButton(Constants.Actions.restartIntuneAgent, fontSize: fontSize) {
             ActionHelpers.restartIntuneAgent { result in
                 ActionHelpers.handleResult(
                     operationName: "Restart Intune Agent",
@@ -50,8 +50,8 @@ class CardGridViewModel: ObservableObject {
         }
     }
     
-    func createGatherLogsButton() -> CustomButton {
-        CustomButton(Constants.Actions.gatherLogs) {
+    func createGatherLogsButton(fontSize: CGFloat? = nil) -> CustomButton {
+        CustomButton(Constants.Actions.gatherLogs, fontSize: fontSize) {
             ActionHelpers.gatherLogs(preferences: self.appState.preferences) { result in
                 ActionHelpers.handleResult(
                     operationName: Constants.Actions.gatherLogs,
@@ -86,8 +86,8 @@ class CardGridViewModel: ObservableObject {
         }
     }
     
-    func createChangePasswordButton() -> CustomButton {
-        CustomButton(Constants.Actions.changePassword) {
+    func createChangePasswordButton(fontSize: CGFloat? = nil) -> CustomButton {
+        CustomButton(Constants.Actions.changePassword, fontSize: fontSize) {
             await ActionHelpers.openChangePassword(preferences: self.appState.preferences) { result in
                 ActionHelpers.handleResult(
                     operationName: Constants.Actions.changePassword,
@@ -108,7 +108,7 @@ class CardGridViewModel: ObservableObject {
         case `default`
     }
     
-    func createOpenManagementAppButton(type: ManagementAppURLType) -> CustomButton {
+    func createOpenManagementAppButton(type: ManagementAppURLType, fontSize: CGFloat? = nil) -> CustomButton {
         let appName: String
         let appURL: String
 
@@ -129,7 +129,7 @@ class CardGridViewModel: ObservableObject {
             appURL = ""
         }
 
-        return CustomButton("\(Constants.Actions.openManagementApp) \(appName)") {
+        return CustomButton("\(Constants.Actions.openManagementApp) \(appName)", fontSize: fontSize) {
             ActionHelpers.openManagementApp(appURL: appURL)
         }
     }

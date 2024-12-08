@@ -12,6 +12,7 @@ import SwiftUI
 import Combine
 
 class AppDelegate: NSObject, NSApplicationDelegate {
+    var popover: NSPopover!
     var statusItem: NSStatusItem?
     var windowController: NSWindowController?
     var transparentWindowController: TransparentWindowController?
@@ -43,8 +44,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         icon?.size = NSSize(width: 16, height: 16)
         statusItem?.button?.image = icon
         statusItem?.button?.image?.isTemplate = true
-        
-        appStateManager.refreshAll()
+
+        popover = NSPopover()
+        popover.behavior = .transient // Closes when clicking outside
+        popover.contentSize = NSSize(width: 500, height: 520)
+        popover.contentViewController = NSHostingController(
+            rootView: CustomMenuView(
+                viewModel: CardGridViewModel(appState: AppStateManager.shared)
+            )
+            .environmentObject(AppStateManager.shared)
+        )
         configureAppUpdateNotificationCommand(mode: appStateManager.preferences.mode)
         
         if appStateManager.preferences.showDesktopInfo {            
@@ -73,7 +82,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
     }
 
-    private func setupTrayMenu() {
+    /*private func setupTrayMenu() {
         // Initialize status item only if it doesn't already exist
         if statusItem == nil {
             statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
@@ -108,6 +117,40 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         // Assign the updated menu to the status item
         statusItem?.menu = menu
+    }*/
+
+    private func setupTrayMenu() {
+        if statusItem == nil {
+            statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+            
+            if let button = statusItem?.button {
+                let icon = NSImage(named: "MenuIcon")
+                icon?.size = NSSize(width: 16, height: 16)
+                button.image = icon
+                button.image?.isTemplate = true
+                
+                // Connect the button action
+                button.action = #selector(togglePopover)
+                button.target = self
+            }
+        }
+    }
+
+    @objc private func togglePopover() {
+        guard let button = statusItem?.button else { return }
+
+        if popover.isShown {
+            popover.performClose(nil)
+        } else {
+            // Show the popover relative to the status bar button
+            popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+
+            // Bring the application and popover window to the front
+            if let popoverWindow = popover.contentViewController?.view.window {
+                popoverWindow.makeKeyAndOrderFront(nil)
+                NSApp.activate(ignoringOtherApps: true) // Ensure app gets focus
+            }
+        }
     }
 
     @objc private func showWindow() {

@@ -27,13 +27,16 @@ struct BatteryInfo: Identifiable {
         }
     }
     
-    func toKeyValuePairs() -> [(key: String, display: String, value: InfoValue)] {
-        let health: Int
+    private var healthPercentage: Int {
         if designCapacity > 0 {
-            health = Int(round((Double(maxCapacity) / Double(designCapacity)) * 100))
+            return Int(round((Double(maxCapacity) / Double(designCapacity)) * 100))
         } else {
-            health = 0 // Handle invalid `designCapacity` gracefully
+            return 0
         }
+    }
+    
+    func toKeyValuePairs() -> [(key: String, display: String, value: InfoValue)] {
+        let health = healthPercentage
         
         return [
             (
@@ -55,6 +58,28 @@ struct BatteryInfo: Identifiable {
                 key: Constants.Battery.Keys.isCharging,
                 display: Constants.Battery.Labels.isCharging,
                 value: .string(isCharging)
+            ),
+            (
+                key: Constants.Battery.Keys.timeToFull,
+                display: Constants.Battery.Labels.timeToFull,
+                value: .string(timeToFull)
+            )
+        ]
+    }
+    
+    func toKeyValuePairsCompact() -> [(key: String, display: String, value: InfoValue)] {
+        let health = healthPercentage
+        
+        return [
+            (
+                key: Constants.Battery.Keys.health,
+                display: Constants.Battery.Labels.health,
+                value: .int(health)
+            ),
+            (
+                key: Constants.Battery.Keys.temperature,
+                display: Constants.Battery.Labels.temperature,
+                value: .double(temperature)
             ),
             (
                 key: Constants.Battery.Keys.timeToFull,

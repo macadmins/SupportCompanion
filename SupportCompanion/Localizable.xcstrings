@@ -1457,6 +1457,9 @@
         }
       }
     },
+    "Done" : {
+
+    },
     "Error.CommandFailed" : {
       "comment" : "Error message when a command failed",
       "extractionState" : "extracted_with_value",
@@ -2431,6 +2434,9 @@
         }
       }
     },
+    "Pending: " : {
+
+    },
     "PlatformSSO.LoginFrequency" : {
       "comment" : "Label for the login frequency",
       "extractionState" : "extracted_with_value",
@@ -2683,6 +2689,12 @@
         }
       }
     },
+    "Progress: " : {
+
+    },
+    "Quick Actions" : {
+
+    },
     "Realm:" : {
 
     },
@@ -2715,6 +2727,12 @@
       }
     },
     "Rings" : {
+
+    },
+    "Run" : {
+
+    },
+    "Select an action" : {
 
     },
     "Select an option" : {

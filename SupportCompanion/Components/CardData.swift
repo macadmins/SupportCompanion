@@ -12,13 +12,16 @@ struct CardData: View {
     @Environment(\.colorScheme) var colorScheme
     let info: [(key: String, display: String, value: InfoValue)]
     let customContent: (String, InfoValue) -> AnyView
+    let fontSize: CGFloat?
 
     init(
         info: [(key: String, display: String, value: InfoValue)],
-        customContent: @escaping (String, InfoValue) -> AnyView = { _, _ in AnyView(EmptyView()) }
+        customContent: @escaping (String, InfoValue) -> AnyView = { _, _ in AnyView(EmptyView()) },
+        fontSize: CGFloat? = 14
     ) {
         self.info = info
         self.customContent = customContent
+        self.fontSize = fontSize
     }
 
     var body: some View {
@@ -40,7 +43,7 @@ struct CardData: View {
         HStack(alignment: .top) {
             Text(display)
                 .fontWeight(.bold)
-                .font(.system(size: 14))
+                .font(.system(size: fontSize ?? 14))
 
             switch key {
             case Constants.Battery.Keys.health:
@@ -69,13 +72,13 @@ struct CardData: View {
         let color = colorForValue(key: Constants.Battery.Keys.health, value: value)
         let isGreen = color == .green
         
-        return Group {
+        return HStack(spacing: 0) {
             Text(value.displayValue)
                 .foregroundColor(color)
-                .font(.system(size: 14))
+                .font(.system(size: fontSize ?? 14))
                 .shadow(color: isGreen ? .black.opacity(0.4) : .clear, radius: 1, x: 0, y: 1)
             Text("%")
-                .font(.system(size: 14))
+                .font(.system(size: fontSize ?? 14))
         }
     }
     
@@ -83,13 +86,13 @@ struct CardData: View {
         let color = colorForValue(key: Constants.Battery.Keys.temperature, value: value)
         let isGreen = color == .green
         
-        return Group {
+        return HStack(spacing: 0) {
             Text(value.displayValue)
                 .foregroundColor(color)
-                .font(.system(size: 14))
+                .font(.system(size: fontSize ?? 14))
                 .shadow(color: isGreen ? .black.opacity(0.4) : .clear, radius: 1, x: 0, y: 1)
             Text("°C")
-                .font(.system(size: 14))
+                .font(.system(size: fontSize ?? 14))
         }
     }
 
@@ -97,9 +100,9 @@ struct CardData: View {
     private func daysContent(value: InfoValue, suffix: String, color: Color = .primary) -> some View {
         Text(value.displayValue)
             .foregroundColor(color)
-            .font(.system(size: 14))
+            .font(.system(size: fontSize ?? 14))
         + Text(suffix)
-            .font(.system(size: 14))
+            .font(.system(size: fontSize ?? 14))
     }
     
     private func pssoRegistrationContent(value: InfoValue) -> some View {
@@ -108,7 +111,7 @@ struct CardData: View {
         
         return Text(value.displayValue)
             .foregroundColor(colorForValue(key: Constants.PlatformSSO.Keys.registrationCompleted, value: value))
-            .font(.system(size: 14))
+            .font(.system(size: fontSize ?? 14))
             .shadow(color: isGreen ? .black.opacity(0.4) : .clear, radius: 1, x: 0, y: 1)
     }
 
@@ -124,14 +127,14 @@ struct CardData: View {
                     .foregroundColor((colorScheme == .light ? .redLight : .red))
             }
             Text(value.displayValue)
-                .font(.system(size: 14))
+                .font(.system(size: fontSize ?? 14))
         }
     }
 
     /// Displays default text with optional coloring
     private func defaultText(value: InfoValue, key: String) -> some View {
         Text(value.displayValue)
-            .font(.system(size: 14))
+            .font(.system(size: fontSize ?? 14))
             .foregroundColor(colorForValue(key: key, value: value))
     }
 

@@ -86,4 +86,24 @@ struct DeviceInfo: Identifiable, Equatable {
             )
         ]
     }
+    
+    func toKeyValuePairsCompact() -> [(key: String, display: String, value: InfoValue)] {
+        return [
+            (
+                key: Constants.DeviceInfo.Keys.osVersion,
+                display: Constants.DeviceInfo.Labels.osVersion,
+                value: .string(osVersion)
+            ),
+            (
+                key: Constants.DeviceInfo.Keys.osBuild,
+                display: Constants.DeviceInfo.Labels.osBuild,
+                value: .string(osBuild)
+            ),
+            (
+                key: Constants.DeviceInfo.Keys.lastRestart,
+                display: Constants.DeviceInfo.Labels.lastRestart,
+                value: .int(lastRestart)
+            )
+        ]
+    }
 }
