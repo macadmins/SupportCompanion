@@ -81,6 +81,12 @@
             "value" : "Changer le mot de passe"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "パスワードの変更"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -114,6 +120,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Collecter les journaux"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログの収集"
           }
         },
         "nb" : {
@@ -151,6 +163,12 @@
             "value" : "Obtenir de l’aide"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "問い合わせる"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -184,6 +202,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ouvrir"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開く"
           }
         },
         "nb" : {
@@ -221,6 +245,12 @@
             "value" : "Redémarrer"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "再起動"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -254,6 +284,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Redémarrer l’agent Intune"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Intuneエージェントの再起動"
           }
         },
         "nb" : {
@@ -291,6 +327,12 @@
             "value" : "Mises à jour logicielles"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ソフトウェアアップデート"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -306,7 +348,14 @@
       }
     },
     "Arch:" : {
-
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アーキテクチャ:"
+          }
+        }
+      }
     },
     "Battery.Charging" : {
       "comment" : "Label for the battery charging status",
@@ -328,6 +377,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "En charge"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "充電中"
           }
         },
         "nb" : {
@@ -366,6 +421,12 @@
             "value" : "Nombre de cycles:"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "充電回数:"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -400,6 +461,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Santé:"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "残量:"
           }
         },
         "nb" : {
@@ -438,6 +505,12 @@
             "value" : "En charge:"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "充電状態:"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -472,6 +545,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pas en charge"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "充電されていない"
           }
         },
         "nb" : {
@@ -510,6 +589,12 @@
             "value" : "Température:"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "温度:"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -544,6 +629,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Temps jusqu’à pleine charge:"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "フル充電までの時間:"
           }
         },
         "nb" : {
@@ -582,6 +673,12 @@
             "value" : "Utilisation:"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用量:"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -608,6 +705,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Annuler"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "キャンセル"
           }
         },
         "nb" : {
@@ -637,6 +740,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Actions"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アクション"
           }
         },
         "nb" : {
@@ -674,6 +783,12 @@
             "value" : "Avancement du correctif d’application"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アプリケーションパッチの進捗"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -707,6 +822,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Batterie"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バッテリー"
           }
         },
         "nb" : {
@@ -744,6 +865,12 @@
             "value" : "Informations sur l’appareil"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイス情報"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -777,6 +904,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gestion de l'appareil"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デバイス管理"
           }
         },
         "nb" : {
@@ -826,6 +959,12 @@
             "value" : "Applications installées"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "インストール済みアプリケーション"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -848,6 +987,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Kerberos Single Sign On"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ケロベロスシングルサインオン"
           }
         }
       }
@@ -872,6 +1017,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mises à jour en attente"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アップデート保留中"
           }
         },
         "nb" : {
@@ -904,6 +1055,12 @@
             "value" : "Platform Single Sign On"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プラットフォームシングルサインオン"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -931,6 +1088,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Stockage"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ストレージ"
           }
         },
         "nb" : {
@@ -969,6 +1132,12 @@
             "value" : "Informations utilisateur"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ユーザー情報"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -991,6 +1160,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "SSO Realm could not be fetched."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SSOレルムを取得できませんでした。"
           }
         },
         "sv" : {
@@ -1021,6 +1196,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Impossible d’atteindre %@. Assurez-vous que le VPN ou le réseau d’entreprise est connecté."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@に到達できません。VPN または企業ネットワークが接続されていることを確認してください。"
           }
         },
         "nb" : {
@@ -1058,6 +1239,12 @@
             "state" : "translated",
             "value" : "Processeur:"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プロセッサ:"
+          }
         }
       }
     },
@@ -1081,6 +1268,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Spécifications matérielles"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ハードウェア仕様"
           }
         },
         "nb" : {
@@ -1119,6 +1312,12 @@
             "value" : "Nom de l’hôte:"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ホスト名:"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1153,6 +1352,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Adresse IP:"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IPアドレス:"
           }
         },
         "nb" : {
@@ -1191,6 +1396,12 @@
             "value" : "Dernier redémarrage:"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最後の再起動:"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1225,6 +1436,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Modèle:"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "モデル:"
           }
         },
         "nb" : {
@@ -1263,6 +1480,12 @@
             "value" : "Informations réseau"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ネットワーク情報"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1297,6 +1520,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Build Système:"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OSビルド:"
           }
         },
         "nb" : {
@@ -1335,6 +1564,12 @@
             "value" : "Version Système:"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OSバーション:"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1369,6 +1604,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mémoire:"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "メモリ:"
           }
         },
         "nb" : {
@@ -1407,6 +1648,12 @@
             "value" : "Numéro de série:"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "シリアル番号:"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1441,6 +1688,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Informations système"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "システム情報"
           }
         },
         "nb" : {
@@ -1479,6 +1732,12 @@
             "value" : "Impossible d’exécuter la commande SSO."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SSOコマンドの実行に失敗しました。"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1501,6 +1760,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Invalid SSO REALM detected."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不正なSSOレルムが検出されました。"
           }
         }
       }
@@ -1525,6 +1790,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pas de connexion Internet disponible."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "インターネット接続がありません。"
           }
         },
         "nb" : {
@@ -1563,6 +1834,12 @@
             "value" : "La collecte des journaux a été annulée"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログ収集がキャンセルされました"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1596,6 +1873,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Journaux collectés avec succès"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログ収集が成功しました"
           }
         },
         "nb" : {
@@ -1634,6 +1917,12 @@
             "value" : "Fermer"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "閉じる"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1668,6 +1957,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Jours"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日"
           }
         },
         "nb" : {
@@ -1706,6 +2001,12 @@
             "value" : "Jours avant"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日前"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1742,6 +2043,12 @@
             "value" : "Gérer"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "管理"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1770,6 +2077,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Minutes"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分"
           }
         },
         "nb" : {
@@ -1808,6 +2121,12 @@
             "value" : "Expiration du mot de passe AD:"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ADパスワードの有効期限:"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1842,6 +2161,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dernier changement de mot de passe local:"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最後のローカルパスワード変更:"
           }
         },
         "nb" : {
@@ -1880,6 +2205,12 @@
             "value" : "Dernier changement de mot de passe AD:"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最後のADパスワード変更:"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1916,6 +2247,12 @@
             "value" : "Nom d’utilisateur:"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ユーザー名:"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1942,6 +2279,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Chargement des applications…"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アプリケーションを読み込んでいます…"
           }
         },
         "nb" : {
@@ -1980,6 +2323,12 @@
             "value" : "Enrôlement:"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "エンロール:"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2014,6 +2363,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Date d'enrôlement:"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "エンロール日:"
           }
         },
         "nb" : {
@@ -2051,6 +2406,12 @@
             "value" : "Ignorer maintenant"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1分後に再起動"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2086,6 +2447,12 @@
             "value" : "Redémarrage programmé"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "再起動予定"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2108,6 +2475,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Apps"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アプリ"
           }
         },
         "nb" : {
@@ -2146,6 +2519,12 @@
             "value" : "Accueil"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ホーム"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2182,6 +2561,12 @@
             "value" : "Identité"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ID"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2215,6 +2600,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Base de connaissances"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ナレッジベース"
           }
         },
         "nb" : {
@@ -2253,6 +2644,12 @@
             "value" : "Libre-service"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "セルフサービス"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2281,6 +2678,12 @@
             "value" : "Aucune application installée trouvée"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "インストールされいてるアプリケーションが見つかりません"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2307,6 +2710,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aucune mise à jour en attente"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保留中のアップデートはありません"
           }
         },
         "nb" : {
@@ -2345,6 +2754,12 @@
             "value" : "Mises à jour des applications disponibles. Veuillez mettre à jour vos applications vers la dernière version."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アプリのアップデートが可能です。アプリを最新バージョンにアップデートしてください。"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2379,6 +2794,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mises à jour logicielles disponibles. Veuillez mettre à jour votre appareil vers la dernière version."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ソフトウェアアップデートが可能です。デバイスを最新バーションにアップデートしてください。"
           }
         },
         "nb" : {
@@ -2417,6 +2838,12 @@
             "value" : "Mettre à jour maintenant 🚀"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今すぐアップデート🚀"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2451,6 +2878,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fréquence de connexion:"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログイン頻度:"
           }
         },
         "nb" : {
@@ -2489,6 +2922,12 @@
             "value" : "Type de connexion:"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログインタイプ:"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2523,6 +2962,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nouveau mode d’autorisation utilisateur"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新規ユーザー認証モード:"
           }
         },
         "nb" : {
@@ -2561,6 +3006,12 @@
             "value" : "Enregistrement terminé"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "登録状態:"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2595,6 +3046,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Version SDK:"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SDKバージョン:"
           }
         },
         "nb" : {
@@ -2633,6 +3090,12 @@
             "value" : "Clés d’appareils partagées:"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共有デバイスキー:"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2669,6 +3132,12 @@
             "value" : "Mode d’autorisation utilisateur:"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ユーザー認証モード:"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2684,7 +3153,14 @@
       }
     },
     "Realm:" : {
-
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "レルム:"
+          }
+        }
+      }
     },
     "Rebooting in %lld seconds..." : {
       "localizations" : {
@@ -2698,6 +3174,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Redémarrage dans %lld  secondes…"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld秒後に再起動…"
           }
         },
         "nb" : {
@@ -2715,10 +3197,24 @@
       }
     },
     "Rings" : {
-
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "リング"
+          }
+        }
+      }
     },
     "Select an option" : {
-
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "オプションの選択"
+          }
+        }
+      }
     },
     "Storage.Name" : {
       "comment" : "Label for the storage name",
@@ -2734,6 +3230,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nom:"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "名前:"
           }
         },
         "nb" : {
@@ -2764,6 +3266,12 @@
             "value" : "Informations de support"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サポート情報"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2792,6 +3300,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Email:"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eメール:"
           }
         },
         "nb" : {
@@ -2830,6 +3344,12 @@
             "value" : "Téléphone:"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "電話:"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2853,6 +3373,12 @@
             "state" : "new",
             "value" : "Support"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サポート"
+          }
         }
       }
     },
@@ -2870,6 +3396,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Action"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アクション"
           }
         },
         "nb" : {
@@ -2902,6 +3434,12 @@
             "value" : "Nom"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "名前"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2924,6 +3462,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Version"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バージョン"
           }
         },
         "nb" : {
@@ -2962,6 +3506,12 @@
             "value" : "Sauvegarder les journaux"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ログの保存"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2996,6 +3546,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Copier les informations de l’appareil dans le presse-papiers"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "クリップボードにデバイス情報をコピー"
           }
         },
         "nb" : {
@@ -3034,6 +3590,12 @@
             "value" : "Un redémarrage régulier de votre appareil peut améliorer ses performances et sa durée de vie en nettoyant les fichiers temporaires et en libérant les ressources système."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "定期的にデバイスを再起動することで、一時ファイルをクリアし、システムリソースが解放され、デバイスのパフォーマンスと寿命を向上させることができます。"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3068,6 +3630,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ouvrir le panneau de stockage"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ストレージパネルを開く"
           }
         },
         "nb" : {
@@ -3106,6 +3674,12 @@
             "value" : "Ouvrir Support Companion"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Support Companionを開く"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3142,6 +3716,12 @@
             "value" : "Quitter"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "終了"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3157,7 +3737,14 @@
       }
     },
     "Type:" : {
-
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "タイプ:"
+          }
+        }
+      }
     },
     "UserInfo.HomeDir" : {
       "comment" : "Label for the home directory",
@@ -3179,6 +3766,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Répertoire personnel:"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ホームディレクトリ:"
           }
         },
         "nb" : {
@@ -3217,6 +3810,12 @@
             "value" : "Est administrateur:"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "管理者:"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3247,6 +3846,12 @@
             "value" : "Nom:"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "名前:"
+          }
+        },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3269,6 +3874,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Shell:"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "シェル:"
           }
         }
       }
@@ -3293,6 +3904,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nom d’utilisateur:"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ユーザー名:"
           }
         },
         "nb" : {
