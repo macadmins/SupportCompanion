@@ -16,7 +16,7 @@ struct DeviceInfo: Identifiable, Equatable {
     let ram: String
     var ipAddress: String
     let serialNumber: String
-    let lastRestart: Int
+    var lastRestart: Int
     let model: String
     
     static func == (lhs: DeviceInfo, rhs: DeviceInfo) -> Bool {
