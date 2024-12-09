@@ -83,7 +83,7 @@ func getLastRebootDays() -> Int? {
     // Calculate the difference in days
     let calendar = Calendar.current
     let daysSinceReboot = calendar.dateComponents([.day], from: bootDate, to: currentDate).day
-
+    
     return daysSinceReboot
 }
 
@@ -178,5 +178,35 @@ class IPAddressMonitor {
 
     static func stopMonitoring() {
         monitor.cancel()
+    }
+}
+
+class LastRebootMonitor {
+    static let shared = LastRebootMonitor()
+    private var updateHandler: ((Int) -> Void)?
+
+    private init() {}
+
+    func startMonitoring(onUpdate: @escaping (Int) -> Void) {
+        self.updateHandler = onUpdate
+
+        // Check if 24 hours have passed since the last update
+        let lastRunKey = "LastRebootMonitorLastRun"
+        let defaults = UserDefaults.standard
+        let now = Date()
+
+        if let lastRun = defaults.object(forKey: lastRunKey) as? Date, now.timeIntervalSince(lastRun) < 86400 {
+            // 24 hours haven't passed, skip this run
+            return
+        }
+
+        // Update the last run time
+        defaults.set(now, forKey: lastRunKey)
+
+        // Perform the reboot check
+        let lastRebootDays = getLastRebootDays()
+        DispatchQueue.main.async {
+            self.updateHandler?(lastRebootDays ?? 0)
+        }
     }
 }
