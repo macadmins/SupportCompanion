@@ -50,22 +50,24 @@ struct TrayMenuView: View {
                     //.frame(maxWidth: .infinity)
                 
                 Divider()
-
-                let actionCols = [
-                    GridItem(.flexible()),
-                    GridItem(.flexible()),
-                    GridItem(.flexible())
-                ]
-
-                LazyVGrid(columns: actionCols, alignment: .leading, spacing: 20) {
-                    ForEach(appState.preferences.actions.prefix(6), id: \.self) { action in
-                        ScCardCompactButton(
-                            title: action.name, 
-                            titleImageName: action.icon,
-                            buttonAction: action,
-                            imageSize: (13, 13),
-                            useMultiColor: false
-                        )
+                
+                if appState.preferences.actions.count > 0 {
+                    let actionCols = [
+                        GridItem(.flexible()),
+                        GridItem(.flexible()),
+                        GridItem(.flexible())
+                    ]
+                    
+                    LazyVGrid(columns: actionCols, alignment: .leading, spacing: 20) {
+                        ForEach(appState.preferences.actions.prefix(6), id: \.self) { action in
+                            ScCardCompactButton(
+                                title: action.name,
+                                titleImageName: action.icon,
+                                buttonAction: action,
+                                imageSize: (13, 13),
+                                useMultiColor: false
+                            )
+                        }
                     }
                 }
             }
