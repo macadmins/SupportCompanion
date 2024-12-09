@@ -221,7 +221,7 @@ struct ContentView_Previews: PreviewProvider {
             .environmentObject(StorageInfoManager.shared)
             .environmentObject(MdmInfoManager.shared)
             .environmentObject(BatteryInfoManager.shared)
-            .frame(width: 1400, height: 800)
+            .frame(width: 1500, height: 900)
     }
 }
 

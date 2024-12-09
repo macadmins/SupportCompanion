@@ -91,8 +91,10 @@ struct DeviceInfoSection: View {
             if index < totalGroups - 1 {
                 Divider()
                     .background(Color.white.opacity(0.2))
+                    .padding(.vertical)
             }
         }
+        .frame(maxWidth: .infinity) // Ensure parent always fills width
     }
 }
 
@@ -125,17 +127,19 @@ struct SectionHeader: View {
 struct DeviceInfoRow: View {
     let label: String
     let value: String?
-    
+
     var body: some View {
-        HStack {
+        HStack(alignment: .top) {
             Text(label)
                 .font(.system(size: 14))
                 .bold()
-                .frame(width: 150, alignment: .leading) // Set fixed width for labels
 
             Spacer()
+
             Text(value ?? "N/A")
                 .font(.system(size: 14))
+                .multilineTextAlignment(.leading)
+                .lineLimit(nil)
         }
     }
 }
@@ -153,7 +157,7 @@ struct LastRestartRow: View {
             Text(label)
                 .font(.system(size: 14))
                 .bold()
-                .frame(width: 150, alignment: .leading) // Fixed width for labels
+                .frame(alignment: .leading)
 
             Spacer()
             HStack(spacing: 5) {
