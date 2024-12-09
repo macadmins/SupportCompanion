@@ -137,8 +137,8 @@ struct ButtonSection: View {
     var body: some View {
         let visibleButtons = [
             ScButton(Constants.TrayMenu.openApp, fontSize: 12, action: {
-                Task {
-                    _ = try await ExecutionService.executeShellCommand("open \(url)home")
+                DispatchQueue.main.async {
+                        appState.showWindowCallback?()
                 }
             }),
             viewModel.isButtonVisible("ChangePassword") ? viewModel.createChangePasswordButton(fontSize: 12) : nil,

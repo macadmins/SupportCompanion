@@ -24,7 +24,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var cancellables: Set<AnyCancellable> = []
     @AppStorage("isDarkMode") private var isDarkMode: Bool = false
 
-
     func application(_ application: NSApplication, open urls: [URL]) {
         guard let url = urls.first else { return }
         switch url.host?.lowercased() {
@@ -62,6 +61,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             .environmentObject(AppStateManager.shared)
         )
         configureAppUpdateNotificationCommand(mode: appStateManager.preferences.mode)
+
+        appStateManager.showWindowCallback = { [weak self] in
+            self?.showWindow()
+        }
         
         if appStateManager.preferences.showDesktopInfo {            
             // Initialize transparent window
@@ -161,20 +164,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    @objc private func showWindow() {
+    @objc func showWindow() {
         if windowController == nil {
             NSApp.setActivationPolicy(.regular)
             let contentView = ContentView()
                 .environmentObject(AppStateManager.shared)
                 .environmentObject(Preferences())
-                .frame(minWidth: 1500, minHeight: 900)
+                .frame(minWidth: 1500, minHeight: 950)
 
             let hostingController = NSHostingController(rootView: contentView)
 
             let window = NSWindow(contentViewController: hostingController)
-            window.setContentSize(NSSize(width: 1500, height: 900))
+            window.setContentSize(NSSize(width: 1500, height: 950))
             window.styleMask = [.titled, .closable, .resizable]
-            window.minSize = NSSize(width: 1500, height: 900)
+            window.minSize = NSSize(width: 1500, height: 950)
             window.title = ""
             window.isReleasedWhenClosed = false
             window.backgroundColor = .clear

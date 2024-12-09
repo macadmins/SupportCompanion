@@ -38,7 +38,8 @@ class AppStateManager: ObservableObject {
     @Published var catalogs: [String] = []
 
     private var cancellables = Set<AnyCancellable>()
-    
+    var showWindowCallback: (() -> Void)?
+
     func startBackgroundTasks() {
         if preferences.mode == Constants.modes.munki {
             pendingMunkiUpdatesManager.startUpdateCheckTimer()
