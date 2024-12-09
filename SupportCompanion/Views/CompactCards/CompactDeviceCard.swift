@@ -13,8 +13,5 @@ struct CompactDeviceCard: View {
                 CardData(info: appState.deviceInfoManager.deviceInfo?.toKeyValuePairsCompact() ?? [], fontSize: 12)
             }
         )
-        .onAppear() {
-            appState.deviceInfoManager.refreshDeviceInfo()
-        }
     }
 }

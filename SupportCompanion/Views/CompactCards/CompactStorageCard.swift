@@ -10,11 +10,10 @@ struct CompactStorageCard: View {
             ScCardCompact(
                 title: AppStateManager.shared.storageInfoManager.storageInfo.name,
                 titleImageName: "internaldrive.fill",
-                buttonImageName: "info.circle",
-                buttonAction: {},
                 imageSize: (13, 13),
                 content: {
                     VStack(alignment: .leading) {
+                        Spacer()
                         AnyView(
                             ProgressView(
                                 value: appState.storageInfoManager.storageInfo.usage,

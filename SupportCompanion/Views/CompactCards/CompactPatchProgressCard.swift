@@ -7,10 +7,8 @@ struct CompactPatchProgressCard: View {
 
     var body: some View {
         ScCardCompact(
-            title: "Patch progress",
+            title: Constants.CardTitle.appPatchProgress,
             titleImageName: "app",
-            buttonImageName: "info.circle",
-            buttonAction: {},
             imageSize: (13, 13),
             content: {
                 AnyView(

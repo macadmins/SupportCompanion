@@ -8,8 +8,6 @@ struct CompactBatteryCard: View {
         ScCardCompact(
             title: "Battery",
             titleImageName: "battery.100percent",
-            buttonImageName: "info.circle",
-            buttonAction: {},
             imageSize: (20, 20),
             content: {
                 CardData(info: appState.batteryInfoManager.batteryInfo.toKeyValuePairsCompact(), fontSize: 12)
