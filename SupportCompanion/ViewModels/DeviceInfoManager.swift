@@ -47,6 +47,34 @@ class DeviceInfoManager: ObservableObject {
             )
         }
         
+        LastRebootMonitor.shared.startMonitoring { [weak self] lastRebootDays in
+            guard let self = self else { return }
+            
+            DispatchQueue.global(qos: .background).async {
+                
+                DispatchQueue.main.async {
+                    guard let currentDeviceInfo = self.deviceInfo else {
+                        return
+                    }
+                    
+                    if currentDeviceInfo.lastRestart != lastRebootDays {
+                        self.deviceInfo = DeviceInfo(
+                            id: currentDeviceInfo.id,
+                            hostName: currentDeviceInfo.hostName,
+                            osVersion: currentDeviceInfo.osVersion,
+                            osBuild: currentDeviceInfo.osBuild,
+                            cpuType: currentDeviceInfo.cpuType,
+                            ram: currentDeviceInfo.ram,
+                            ipAddress: currentDeviceInfo.ipAddress,
+                            serialNumber: currentDeviceInfo.serialNumber,
+                            lastRestart: lastRebootDays,
+                            model: currentDeviceInfo.model
+                        )
+                    }
+                }
+            }
+        }
+        
         IPAddressMonitor.startMonitoring { newIPAddresses in
             DispatchQueue.main.async {
                 guard let currentDeviceInfo = self.deviceInfo else {
