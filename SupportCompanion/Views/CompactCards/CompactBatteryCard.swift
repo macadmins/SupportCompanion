@@ -5,7 +5,7 @@ struct CompactBatteryCard: View {
     @EnvironmentObject var appState: AppStateManager
 
     var body: some View {
-        CustomCardCompact(
+        ScCardCompact(
             title: "Battery",
             titleImageName: "battery.100percent",
             buttonImageName: "info.circle",

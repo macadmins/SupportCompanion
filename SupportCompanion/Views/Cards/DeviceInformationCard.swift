@@ -17,7 +17,7 @@ struct DeviceInformationCard: View {
         if viewModel.isCardVisible("DeviceInformation") {
             let groupedData = groupedDeviceInfoArray() // Precomputed grouped data
 
-            CustomCard(
+            ScCard(
                 title: "\(Constants.CardTitle.deviceInfo)",
                 titleImageName: "laptopcomputer",
                 buttonImageName: "doc.on.doc.fill",

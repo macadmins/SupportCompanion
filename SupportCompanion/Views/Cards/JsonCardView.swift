@@ -12,7 +12,7 @@ struct JsonCardView: View {
     let card: JsonCard
 
     var body: some View {
-        CustomCard(
+        ScCard(
             title: card.header,
             titleImageName: card.icon,
             content: {

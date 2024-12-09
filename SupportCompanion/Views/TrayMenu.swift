@@ -1,14 +1,14 @@
 //
-//  TransparentView.swift
+//  TrayMenu.swift
 //  SupportCompanion
 //
-//  Created by Tobias Almén on 2024-11-11.
+//  Created by Tobias Almén on 2024-12-07.
 //
 
 import Foundation
 import SwiftUI
 
-struct CustomMenuView: View {
+struct TrayMenuView: View {
     @EnvironmentObject var appState: AppStateManager
     @ObservedObject var viewModel: CardGridViewModel
 
@@ -50,10 +50,6 @@ struct CustomMenuView: View {
                     //.frame(maxWidth: .infinity)
                 
                 Divider()
-                
-                /*if appState.preferences.actions.count > 0 {
-                    QuickActions(appStateManager: appState)
-                }*/
 
                 let actionCols = [
                     GridItem(.flexible()),
@@ -62,8 +58,8 @@ struct CustomMenuView: View {
                 ]
 
                 LazyVGrid(columns: actionCols, alignment: .leading, spacing: 20) {
-                    ForEach(appState.preferences.actions, id: \.self) { action in
-                        CustomCardCompactButton(
+                    ForEach(appState.preferences.actions.prefix(6), id: \.self) { action in
+                        ScCardCompactButton(
                             title: action.name, 
                             titleImageName: action.icon,
                             buttonAction: action,
@@ -138,7 +134,7 @@ struct ButtonSection: View {
     
     var body: some View {
         let visibleButtons = [
-            CustomButton(Constants.TrayMenu.openApp, fontSize: 12, action: {
+            ScButton(Constants.TrayMenu.openApp, fontSize: 12, action: {
                 Task {
                     _ = try await ExecutionService.executeShellCommand("open \(url)home")
                 }
@@ -147,9 +143,9 @@ struct ButtonSection: View {
             (appState.preferences.mode == Constants.modes.munki || appState.preferences.mode == Constants.modes.intune)
                 ? (viewModel.isButtonVisible("OpenManagementApp") ? viewModel.createOpenManagementAppButton(type: .default, fontSize: 12) : nil)
                 : nil,
-            viewModel.isButtonVisible("GetSupport") ? CustomButton(Constants.Actions.getSupport, fontSize: 12) { ActionHelpers.openSupportPage(url: appState.preferences.supportPageURL) } : nil,
+            viewModel.isButtonVisible("GetSupport") ? ScButton(Constants.Actions.getSupport, fontSize: 12) { ActionHelpers.openSupportPage(url: appState.preferences.supportPageURL) } : nil,
             viewModel.isButtonVisible("GatherLogs") ? viewModel.createGatherLogsButton(fontSize: 12) : nil,
-            viewModel.isButtonVisible("SoftwareUpdates") ? CustomButton(
+            viewModel.isButtonVisible("SoftwareUpdates") ? ScButton(
                 Constants.Actions.softwareUpdate,
                 badgeNumber: appState.systemUpdateCache.updates.count,
                 helpText: appState.systemUpdateCache.updates.joined(separator: "\n"),

@@ -1,6 +1,14 @@
+//
+//  ScCardCompactButton.swift
+//  SupportCompanion
+//
+//  Created by Tobias Almén on 2024-12-07.
+//
+
+
 import SwiftUI
 
-struct CustomCardCompactButton<Content: View>: View {
+struct ScCardCompactButton<Content: View>: View {
     let title: String
     let titleImageName: String?
     let content: Content

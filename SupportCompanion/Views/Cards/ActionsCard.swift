@@ -15,7 +15,7 @@ struct ActionsCard: View {
     
     var body: some View {
         if viewModel.isCardVisible("Actions") {
-            CustomCard(title: "\(Constants.CardTitle.actions)", titleImageName: "cursorarrow.click.2", content: {
+            ScCard(title: "\(Constants.CardTitle.actions)", titleImageName: "cursorarrow.click.2", content: {
                 // Precompute the filtered and chunked buttons
                 let visibleButtons = [
                     viewModel.isButtonVisible("ChangePassword") ? viewModel.createChangePasswordButton() : nil,
@@ -27,9 +27,9 @@ struct ActionsCard: View {
                     (appState.preferences.mode == Constants.modes.munki || appState.preferences.mode == Constants.modes.intune)
                         ? (viewModel.isButtonVisible("OpenManagementApp") ? viewModel.createOpenManagementAppButton(type: .default) : nil)
                         : nil,
-                    viewModel.isButtonVisible("GetSupport") ? CustomButton(Constants.Actions.getSupport) { ActionHelpers.openSupportPage(url: appState.preferences.supportPageURL) } : nil,
+                    viewModel.isButtonVisible("GetSupport") ? ScButton(Constants.Actions.getSupport) { ActionHelpers.openSupportPage(url: appState.preferences.supportPageURL) } : nil,
                     viewModel.isButtonVisible("GatherLogs") ? viewModel.createGatherLogsButton() : nil,
-                    viewModel.isButtonVisible("SoftwareUpdates") ? CustomButton(
+                    viewModel.isButtonVisible("SoftwareUpdates") ? ScButton(
                         Constants.Actions.softwareUpdate,
                         badgeNumber: appState.systemUpdateCache.updates.count,
                         helpText: appState.systemUpdateCache.updates.joined(separator: "\n"))

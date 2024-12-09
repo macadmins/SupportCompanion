@@ -46,7 +46,7 @@ struct AppCard: View {
     }
 
     var body: some View {
-        CustomCard(
+        ScCard(
             title: card.name,
             titleImageName: titleImage,
             imageSize: (40, 40),
@@ -78,7 +78,7 @@ struct AppCard: View {
                     }
 
                     if card.isSelfServe {
-                        CustomButton(Constants.General.manage, action: {
+                        ScButton(Constants.General.manage, action: {
                             Task {
                                 if !card.action.isEmpty {
                                     _ = try await ExecutionService.executeShellCommand(card.action)

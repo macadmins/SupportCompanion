@@ -49,7 +49,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         popover.behavior = .transient // Closes when clicking outside
         popover.contentSize = NSSize(width: 500, height: 520)
         popover.contentViewController = NSHostingController(
-            rootView: CustomMenuView(
+            rootView: TrayMenuView(
                 viewModel: CardGridViewModel(appState: AppStateManager.shared)
             )
             .environmentObject(AppStateManager.shared)

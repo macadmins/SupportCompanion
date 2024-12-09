@@ -5,7 +5,7 @@ struct CompactDeviceCard: View {
     @EnvironmentObject var appState: AppStateManager
     
     var body: some View {
-        CustomCardCompact(
+        ScCardCompact(
             title: AppStateManager.shared.deviceInfoManager.deviceInfo?.hostName ?? "",
             titleImageName: "desktopcomputer",
             imageSize: (13, 13),

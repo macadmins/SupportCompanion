@@ -15,7 +15,7 @@ struct PatchingProgressCard: View {
     var body: some View {
         if viewModel.isCardVisible("ApplicationInstallProgress") {
             VStack {
-                CustomCard(title: "\(Constants.CardTitle.appPatchProgress)", titleImageName: "app.badge.checkmark", content: {
+                ScCard(title: "\(Constants.CardTitle.appPatchProgress)", titleImageName: "app.badge.checkmark", content: {
                     ZStack {
                         CircularProgressWithWave(
                             progress: appState.installPercentage / 100,

@@ -7,7 +7,7 @@ struct CompactStorageCard: View {
             
     var body: some View {
         VStack(alignment: .leading){
-            CustomCardCompact(
+            ScCardCompact(
                 title: AppStateManager.shared.storageInfoManager.storageInfo.name,
                 titleImageName: "internaldrive.fill",
                 buttonImageName: "info.circle",

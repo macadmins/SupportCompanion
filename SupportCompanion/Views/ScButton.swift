@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-struct CustomButton: View, Hashable {
+struct ScButton: View, Hashable {
     let title: String
     let action: () async -> Void
     let badgeNumber: Int?
@@ -117,7 +117,7 @@ struct CustomButton: View, Hashable {
         }
     }
 
-    static func == (lhs: CustomButton, rhs: CustomButton) -> Bool {
+    static func == (lhs: ScButton, rhs: ScButton) -> Bool {
         return lhs.title == rhs.title && lhs.badgeNumber == rhs.badgeNumber
     }
 

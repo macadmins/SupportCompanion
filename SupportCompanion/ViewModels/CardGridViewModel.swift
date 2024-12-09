@@ -32,8 +32,8 @@ class CardGridViewModel: ObservableObject {
             ]
         }
     
-    func createRestartIntuneAgentButton(fontSize: CGFloat? = nil) -> CustomButton {
-        CustomButton(Constants.Actions.restartIntuneAgent, fontSize: fontSize) {
+    func createRestartIntuneAgentButton(fontSize: CGFloat? = nil) -> ScButton {
+        ScButton(Constants.Actions.restartIntuneAgent, fontSize: fontSize) {
             ActionHelpers.restartIntuneAgent { result in
                 ActionHelpers.handleResult(
                     operationName: "Restart Intune Agent",
@@ -50,8 +50,8 @@ class CardGridViewModel: ObservableObject {
         }
     }
     
-    func createGatherLogsButton(fontSize: CGFloat? = nil) -> CustomButton {
-        CustomButton(Constants.Actions.gatherLogs, fontSize: fontSize) {
+    func createGatherLogsButton(fontSize: CGFloat? = nil) -> ScButton {
+        ScButton(Constants.Actions.gatherLogs, fontSize: fontSize) {
             ActionHelpers.gatherLogs(preferences: self.appState.preferences) { result in
                 ActionHelpers.handleResult(
                     operationName: Constants.Actions.gatherLogs,
@@ -69,8 +69,8 @@ class CardGridViewModel: ObservableObject {
     
     func createRebootButton(
         onShowModal: @escaping (Int, String, String) -> Void
-    ) -> CustomButton {
-        CustomButton(Constants.Actions.reboot) {
+    ) -> ScButton {
+        ScButton(Constants.Actions.reboot) {
             await ActionHelpers.reboot { result in
                 DispatchQueue.main.async {
                     switch result {
@@ -86,8 +86,8 @@ class CardGridViewModel: ObservableObject {
         }
     }
     
-    func createChangePasswordButton(fontSize: CGFloat? = nil) -> CustomButton {
-        CustomButton(Constants.Actions.changePassword, fontSize: fontSize) {
+    func createChangePasswordButton(fontSize: CGFloat? = nil) -> ScButton {
+        ScButton(Constants.Actions.changePassword, fontSize: fontSize) {
             await ActionHelpers.openChangePassword(preferences: self.appState.preferences) { result in
                 ActionHelpers.handleResult(
                     operationName: Constants.Actions.changePassword,
@@ -108,7 +108,7 @@ class CardGridViewModel: ObservableObject {
         case `default`
     }
     
-    func createOpenManagementAppButton(type: ManagementAppURLType, fontSize: CGFloat? = nil) -> CustomButton {
+    func createOpenManagementAppButton(type: ManagementAppURLType, fontSize: CGFloat? = nil) -> ScButton {
         let appName: String
         let appURL: String
 
@@ -129,7 +129,7 @@ class CardGridViewModel: ObservableObject {
             appURL = ""
         }
 
-        return CustomButton("\(Constants.Actions.openManagementApp) \(appName)", fontSize: fontSize) {
+        return ScButton("\(Constants.Actions.openManagementApp) \(appName)", fontSize: fontSize) {
             ActionHelpers.openManagementApp(appURL: appURL)
         }
     }

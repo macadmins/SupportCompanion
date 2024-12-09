@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-struct CustomCard<Content: View>: View {
+struct ScCard<Content: View>: View {
     let title: String
     let titleImageName: String?
     let subtitle: String?

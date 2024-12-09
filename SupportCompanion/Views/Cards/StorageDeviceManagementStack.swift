@@ -19,7 +19,7 @@ struct StorageDeviceManagementStack: View {
             VStack(alignment: .leading){
                 // Storage Card
                 if viewModel.isCardVisible(Constants.Cards.storageCardName) {
-                    CustomCard(title: "\(Constants.CardTitle.storage)",
+                    ScCard(title: "\(Constants.CardTitle.storage)",
                                titleImageName: "internaldrive.fill",
                                buttonImageName: "macwindow.on.rectangle",
                                buttonAction: { viewModel.openStoragePanel() },
@@ -55,7 +55,7 @@ struct StorageDeviceManagementStack: View {
                 
                 // Device Management Card
                 if viewModel.isCardVisible("DeviceManagement") {
-                    CustomCard(title: "\(Constants.CardTitle.deviceManagement)", titleImageName: "lock.shield", content:  {
+                    ScCard(title: "\(Constants.CardTitle.deviceManagement)", titleImageName: "lock.shield", content:  {
                         VStack(alignment: .leading, spacing: 5) {
                             CardData(info: appState.mdmInfoManager.mdmInfo.toKeyValuePairs())
                         }

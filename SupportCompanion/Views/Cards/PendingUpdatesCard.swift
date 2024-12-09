@@ -15,7 +15,7 @@ struct PendingUpdatesCard: View {
     var body: some View {
         if viewModel.isCardVisible("PendingAppUpdates") {
             VStack {
-                CustomCard(
+                ScCard(
                     title: "\(Constants.CardTitle.pendingUpdates)",
                     titleImageName: "clock.fill",
                     content: {
