@@ -30,6 +30,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         switch url.host?.lowercased() {
             case nil:
                 AppDelegate.shouldExit = true
+                if let statusItem = statusItem {
+                    Logger.shared.logDebug("Removing status item")
+                    NSStatusBar.system.removeStatusItem(statusItem)
+                    self.statusItem = nil
+                }
             default:
                 AppDelegate.shouldExit = false
         }
@@ -39,7 +44,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        setupTrayMenu()
+        if !AppDelegate.shouldExit { 
+            setupTrayMenu()
+        }
         let icon = NSImage(named: "MenuIcon")
         icon?.size = NSSize(width: 16, height: 16)
         statusItem?.button?.image = icon
@@ -72,14 +79,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         notificationDelegate = NotificationDelegate()
         UNUserNotificationCenter.current().delegate = notificationDelegate
         appStateManager.startBackgroundTasks()
+        appStateManager.refreshAll()
         
-        appStateManager.preferences.$actions
+        /*appStateManager.preferences.$actions
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
             .sink { [weak self] _ in
                 self?.setupTrayMenu()
             }
-            .store(in: &cancellables)
-        
+            .store(in: &cancellables)*/
+            
     }
 
     /*private func setupTrayMenu() {
