@@ -425,6 +425,7 @@
 				de,
 				fr,
 				nb,
+				ja,
 			);
 			mainGroup = F6F3BEB02CE1E7BA0036ADB9;
 			packageReferences = (

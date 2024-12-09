@@ -12,6 +12,7 @@ on:
       - '**/CHANGELOG.md'
       - '**/README.md'
       - 'LaunchAgentExample/**'
+      - 'build.zsh'
         
 permissions:
   contents: write
