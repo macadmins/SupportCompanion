@@ -276,6 +276,19 @@ struct ActionHelpers {
             await openURL(preferences.changePasswordUrl, completion: completion)
         } else if preferences.changePasswordMode == "SSOExtension" {
             await handleSSOExtension(completion: completion)
+        } else {
+            await openUserPanel()
+        }
+    }
+
+    static func openUserPanel() {
+        Task {
+            do {
+                Logger.shared.logDebug("Opening Users & Groups")
+                try await _ = ExecutionService.executeCommand("open", with: [Constants.Panels.users])
+            } catch {
+                Logger.shared.logError("Failed to open Users & Groups: \(error)")
+            }
         }
     }
 

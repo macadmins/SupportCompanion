@@ -55,6 +55,7 @@ enum Constants {
     enum Panels {
         static let storage = "x-apple.systempreferences:com.apple.settings.Storage"
         static let softwareUpdates = "x-apple.systempreferences:com.apple.preferences.softwareupdate"
+        static let users = "x-apple.systempreferences:com.apple.preferences.users"
     }
     
     enum ToolTips {
