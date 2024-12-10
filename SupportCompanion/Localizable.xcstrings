@@ -13,16 +13,12 @@
     "%@%%" : {
 
     },
-    "%@%% patched" : {
-
-    },
     "%@%% Patched" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@%% aktualisiert"
+            "value" : "%@%% Aktualisiert"
           }
         },
         "fr" : {
@@ -40,13 +36,13 @@
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@%% oppdatert"
+            "value" : "%@%% Oppdatert"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@%% uppdaterat"
+            "value" : "%@%% Uppdaterat"
           }
         }
       }
