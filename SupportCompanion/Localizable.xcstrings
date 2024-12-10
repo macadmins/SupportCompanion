@@ -13,8 +13,43 @@
     "%@%%" : {
 
     },
-    "%@%% Patched" : {
+    "%@%% patched" : {
 
+    },
+    "%@%% Patched" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@%% aktualisiert"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@%% Mis à jour"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@%% 更新済み"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@%% oppdatert"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@%% uppdaterat"
+          }
+        }
+      }
     },
     "%@%% Used" : {
       "localizations" : {
