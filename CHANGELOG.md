@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Support for Japansese localization, thanks @kenchan0130 for the Japanese localization
+- A badge to the tray menu icon that visually indicates that the user has pending upates to install.
 
 ## [2.0.2] - 2024-12-06
 ### Changed
