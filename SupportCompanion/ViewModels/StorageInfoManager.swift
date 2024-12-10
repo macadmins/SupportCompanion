@@ -35,6 +35,10 @@ class StorageInfoManager: ObservableObject {
             self.updateStorageInfo(usagePercentage: usagePercentage)
         }
     }
+
+    func stopMonitoring() {
+        StorageMonitor.shared.stopMonitoring()
+    }
     
     func refresh() {
         self.updateStorageInfo()

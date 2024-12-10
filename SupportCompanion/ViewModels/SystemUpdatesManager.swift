@@ -33,6 +33,7 @@ class SystemUpdatesManager: ObservableObject {
 
     /// Starts monitoring for system update changes.
     func startMonitoring() {
+        Logger.shared.logDebug("Starting system updates monitoring")
         stopMonitoring() // Ensure no duplicate monitoring tasks
         monitorTask = Task {
             while !Task.isCancelled {

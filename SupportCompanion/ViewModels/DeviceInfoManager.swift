@@ -9,6 +9,8 @@ import Foundation
 import Combine
 
 class DeviceInfoManager: ObservableObject {
+    private var timer: AnyCancellable?
+
     static let shared = DeviceInfoManager(
         deviceInfo: DeviceInfo(
             id: UUID(),
@@ -29,8 +31,23 @@ class DeviceInfoManager: ObservableObject {
     init(deviceInfo: DeviceInfo) {
         self.deviceInfo = deviceInfo
     }
+
+    func startMonitoring() {
+        Logger.shared.logDebug("Starting device info monitoring")
+        refresh()
+        timer = Timer.publish(every: 86400, on: .main, in: .common)
+            .autoconnect()
+            .sink { _ in
+                self.refresh()
+            }
+    }
+
+    func stopMonitoring() {
+        Logger.shared.logDebug("Stopping device info monitoring")
+        timer?.cancel()
+    }
     
-    func refreshDeviceInfo() {
+    func refresh() {
         DispatchQueue.main.async {
             let currentIPAddress = getAllIPAddresses().joined(separator: ", ")
             self.deviceInfo = DeviceInfo(
