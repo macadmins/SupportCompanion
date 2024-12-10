@@ -21,7 +21,7 @@ struct PlatformSSO {
     
     var registrationColor: Color {
         if registrationCompleted == true {
-            return Color(NSColor.green)
+            return .ScGreen
         } else {
             return Color(NSColor.red)
         }

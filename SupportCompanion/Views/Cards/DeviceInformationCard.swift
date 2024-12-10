@@ -151,7 +151,6 @@ struct LastRestartRow: View {
 
     var body: some View {
         let color = colorForLastRestart(value: value)
-        let isGreen = color == .green
 
         HStack {
             Text(label)
@@ -163,10 +162,8 @@ struct LastRestartRow: View {
             HStack(spacing: 5) {
                 Text("\(value) \(Constants.General.days)")
                     .foregroundColor(color)
-                    .shadow(color: isGreen ? .black.opacity(0.4) : .clear, radius: 1, x: 0, y: 1)
                 Image(systemName: "clock.fill")
                     .foregroundColor(color)
-                    .shadow(color: isGreen ? .black.opacity(0.4) : .clear, radius: 1, x: 0, y: 1)
             }
             .font(.system(size: 14))
             .help(Constants.ToolTips.deviceLastRebooted)
@@ -176,7 +173,7 @@ struct LastRestartRow: View {
     private func colorForLastRestart(value: Int) -> Color {
         switch value {
         case 0...2:
-            return .green
+            return .ScGreen
         case 3...7:
             return colorScheme == .light ? .orangeLight : .orange
         default:

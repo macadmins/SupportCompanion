@@ -21,7 +21,7 @@ struct CompactPatchProgressCard: View {
                     )
                     .tint(appState.installPercentage < 90 ? (colorScheme == .light ? .orangeLight : .orange)
                         : appState.installPercentage < 60 ? (colorScheme == .light ? .redLight : .red)
-                        : .green)
+                        : .ScGreen)
                 )
             }
         )

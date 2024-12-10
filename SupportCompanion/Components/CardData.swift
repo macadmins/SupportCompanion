@@ -70,13 +70,11 @@ struct CardData: View {
     /// Displays health-specific content with color coding
     private func healthContent(value: InfoValue) -> some View {
         let color = colorForValue(key: Constants.Battery.Keys.health, value: value)
-        let isGreen = color == .green
         
         return HStack(spacing: 0) {
             Text(value.displayValue)
                 .foregroundColor(color)
                 .font(.system(size: fontSize ?? 14))
-                .shadow(color: isGreen ? .black.opacity(0.4) : .clear, radius: 1, x: 0, y: 1)
             Text("%")
                 .font(.system(size: fontSize ?? 14))
         }
@@ -84,13 +82,11 @@ struct CardData: View {
     
     private func temperatureContent(value: InfoValue) -> some View {
         let color = colorForValue(key: Constants.Battery.Keys.temperature, value: value)
-        let isGreen = color == .green
         
         return HStack(spacing: 0) {
             Text(value.displayValue)
                 .foregroundColor(color)
                 .font(.system(size: fontSize ?? 14))
-                .shadow(color: isGreen ? .black.opacity(0.4) : .clear, radius: 1, x: 0, y: 1)
             Text("°C")
                 .font(.system(size: fontSize ?? 14))
         }
@@ -106,13 +102,9 @@ struct CardData: View {
     }
     
     private func pssoRegistrationContent(value: InfoValue) -> some View {
-        let color = colorForValue(key: Constants.PlatformSSO.Keys.registrationCompleted, value: value)
-        let isGreen = color == .green
-        
         return Text(value.displayValue)
             .foregroundColor(colorForValue(key: Constants.PlatformSSO.Keys.registrationCompleted, value: value))
             .font(.system(size: fontSize ?? 14))
-            .shadow(color: isGreen ? .black.opacity(0.4) : .clear, radius: 1, x: 0, y: 1)
     }
 
     /// Displays FileVault-specific content with icons
@@ -120,8 +112,7 @@ struct CardData: View {
         HStack {
             if value.displayValue == "Enabled" {
                 Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(.green)
-                    .shadow(color: .black.opacity(0.4), radius: 1, x: 0, y: 1)
+                    .foregroundColor(.ScGreen)
             } else {
                 Image(systemName: "xmark.circle.fill")
                     .foregroundColor((colorScheme == .light ? .redLight : .red))
@@ -147,30 +138,30 @@ struct CardData: View {
                     ? (colorScheme == .light ? .redLight : .red)
                     : (intValue < 80
                         ? (colorScheme == .light ? .orangeLight : .orange)
-                       : .green)
+                       : .ScGreen)
             }
         case "LastRestart":
             if let intValue = value.rawValue as? Int {
-                return intValue > 7 ? (colorScheme == .light ? .redLight : .red) : .green
+                return intValue > 7 ? (colorScheme == .light ? .redLight : .red) : .ScGreen
             }
         case "FileVault":
             if let boolValue = value.rawValue as? Bool {
-                return !boolValue ? (colorScheme == .light ? .redLight : .red) : .green
+                return !boolValue ? (colorScheme == .light ? .redLight : .red) : .ScGreen
             }
         case Constants.PlatformSSO.Keys.registrationCompleted:
             if let boolValue = value.rawValue as? Bool {
-                return !boolValue ? (colorScheme == .light ? .redLight : .red) : .green
+                return !boolValue ? (colorScheme == .light ? .redLight : .red) : .ScGreen
             }
         case Constants.KerberosSSO.Keys.expiryDays:
             if let intValue = value.rawValue as? Int {
-                return intValue <= 30 ? (colorScheme == .light ? .orangeLight : .orange) : (intValue < 2 ? (colorScheme == .light ? .redLight : .red) : .green)
+                return intValue <= 30 ? (colorScheme == .light ? .orangeLight : .orange) : (intValue < 2 ? (colorScheme == .light ? .redLight : .red) : .ScGreen)
             }
         case Constants.Battery.Keys.temperature:
             if let doubleValue = value.rawValue as? Double {
-                return doubleValue > 80 ? (colorScheme == .light ? .redLight : .red) : (doubleValue >= 60 ? (colorScheme == .light ? .orange : .orange) : .green)
+                return doubleValue > 80 ? (colorScheme == .light ? .redLight : .red) : (doubleValue >= 60 ? (colorScheme == .light ? .orange : .orange) : .ScGreen)
             } else if let intValue = value.rawValue as? Int {
                 let temperature = Double(intValue)
-                return temperature > 80 ? (colorScheme == .light ? .redLight : .red) : (temperature >= 60 ? (colorScheme == .light ? .orangeLight : .orange) : .green)
+                return temperature > 80 ? (colorScheme == .light ? .redLight : .red) : (temperature >= 60 ? (colorScheme == .light ? .orangeLight : .orange) : .ScGreen)
             } else {
                 return .primary
             }
@@ -178,14 +169,5 @@ struct CardData: View {
             return .primary
         }
         return .primary
-    }
-    
-    struct ConditionalShadowModifier: ViewModifier {
-        let isGreen: Bool
-
-        func body(content: Content) -> some View {
-            content
-                .shadow(color: isGreen ? .black.opacity(0.4) : .clear, radius: 2, x: 0, y: 1)
-        }
     }
 }

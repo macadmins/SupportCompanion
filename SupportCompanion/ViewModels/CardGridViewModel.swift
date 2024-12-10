@@ -174,7 +174,7 @@ class CardGridViewModel: ObservableObject {
     }
 
     func fileVaultTextColor() -> Color {
-        appState.storageInfoManager.storageInfo.fileVault ? Color.green : Color.orange
+        appState.storageInfoManager.storageInfo.fileVault ? .ScGreen : Color.orange
     }
     
     // MARK: - Preferences Management

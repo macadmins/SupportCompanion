@@ -23,7 +23,7 @@ struct BatteryInfo: Identifiable {
         } else if temperature > 40 {
             return Color(NSColor.orange)
         } else {
-            return Color(NSColor.green)
+            return .ScGreen
         }
     }
     

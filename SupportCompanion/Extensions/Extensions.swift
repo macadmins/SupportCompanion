@@ -95,6 +95,8 @@ extension Color {
     
     // Red shades
     static let redLight = Color(hue: 0.02, saturation: 0.8, brightness: 0.7) // Softer red for light mode
+
+    static let ScGreen = Color(red: 0.2, green: 0.8, blue: 0.4)
 }
 
 extension NSImage {

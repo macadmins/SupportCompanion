@@ -38,7 +38,7 @@ struct StorageDeviceManagementStack: View {
                                                     Text("\(String(format: "%.1f", appState.storageInfoManager.storageInfo.usage))% Used")
                                                     .font(.system(size: 14))}
                                             )
-                                            .tint(appState.storageInfoManager.storageInfo.usage < 50 ? Color.green
+                                            .tint(appState.storageInfoManager.storageInfo.usage < 50 ? .ScGreen
                                                   : appState.storageInfoManager.storageInfo.usage < 80 ? (colorScheme == .light ? .orangeLight : .orange)
                                                   : (colorScheme == .light ? .redLight : .red))
                                             .padding(.top)
