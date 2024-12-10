@@ -169,5 +169,6 @@ struct ButtonSection: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 5)
     }
 }
