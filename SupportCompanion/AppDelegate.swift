@@ -137,6 +137,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
                 Logger.shared.logDebug("Updates available, adding badge to tray icon")
                 let iconWithBadge = baseIcon.compositeWithBadge(color: .red, badgeSize: 8)
                 statusItem.button?.image = iconWithBadge
+                baseIcon.isTemplate = true
                 baseIcon.size = NSSize(width: 16, height: 16)
             } else {
                 // Use the base icon as is
