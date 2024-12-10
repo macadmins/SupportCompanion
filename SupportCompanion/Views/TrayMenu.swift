@@ -47,7 +47,6 @@ struct TrayMenuView: View {
                 Divider()
                 
                 ButtonSection(viewModel: viewModel, appState: appState)
-                    //.frame(maxWidth: .infinity)
                 
                 Divider()
                 
@@ -160,15 +159,15 @@ struct ButtonSection: View {
 
         let buttonRows = Array(visibleButtons.chunked(into: 3))
         // Layout
-        VStack(alignment: .leading, spacing: 5) {
+        VStack(alignment: .leading, spacing: 10) {
             ForEach(buttonRows.indices, id: \.self) { rowIndex in
-                HStack(spacing: 5) {
+                HStack(spacing: 10) {
                     ForEach(buttonRows[rowIndex], id: \.self) { button in
                         button
                     }
                 }
             }
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
