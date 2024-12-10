@@ -132,19 +132,39 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
                 return
             }
 
-            if hasUpdates {
-                // Add a red dot badge
-                Logger.shared.logDebug("Updates available, adding badge to tray icon")
-                let iconWithBadge = baseIcon.compositeWithBadge(color: .red, badgeSize: 8)
-                statusItem.button?.image = iconWithBadge
-                baseIcon.isTemplate = true
-                baseIcon.size = NSSize(width: 16, height: 16)
-            } else {
-                // Use the base icon as is
-                Logger.shared.logDebug("No updates available, showing base tray icon")
-                baseIcon.isTemplate = true
-                baseIcon.size = NSSize(width: 16, height: 16)
-                statusItem.button?.image = baseIcon
+            baseIcon.size = NSSize(width: 16, height: 16)
+            baseIcon.isTemplate = true // Ensure base icon respects system appearance
+
+            if let button = statusItem.button {
+                // Clear any existing layers
+                button.layer?.sublayers?.forEach { $0.removeFromSuperlayer() }
+                
+                // Set the base icon as the button's image
+                button.image = baseIcon
+                button.image?.isTemplate = true
+
+                if hasUpdates {
+                    Logger.shared.logDebug("Updates available, adding badge to tray icon")
+                    
+                    // Add badge dynamically as a layer
+                    let badgeLayer = CALayer()
+                    badgeLayer.backgroundColor = NSColor.red.cgColor
+                    badgeLayer.frame = CGRect(
+                        x: button.bounds.width - 15, // Align to the lower-right corner
+                        y: 12, // Small offset from the bottom
+                        width: 8,
+                        height: 8
+                    )
+                    badgeLayer.cornerRadius = 4 // Make it circular
+                    
+                    // Ensure button has a layer to add sublayers
+                    if button.layer == nil {
+                        button.wantsLayer = true
+                        button.layer = CALayer()
+                    }
+                    
+                    button.layer?.addSublayer(badgeLayer)
+                }
             }
         }
 

@@ -98,28 +98,3 @@ extension Color {
 
     static let ScGreen = Color(red: 0.2, green: 0.8, blue: 0.4)
 }
-
-extension NSImage {
-    func compositeWithBadge(color: NSColor, badgeSize: CGFloat) -> NSImage? {
-        let size = self.size
-        let newImage = NSImage(size: size)
-        
-        newImage.lockFocus()
-        // Draw the base icon (template behavior applies)
-        self.draw(at: .zero, from: NSRect(origin: .zero, size: size), operation: .sourceOver, fraction: 1.0)
-        
-        // Draw the red dot badge
-        color.setFill()
-        let badgeRect = NSRect(
-            x: size.width - badgeSize, 
-            y: 0,
-            width: badgeSize, 
-            height: badgeSize
-        )
-        let badgePath = NSBezierPath(ovalIn: badgeRect)
-        badgePath.fill()
-        
-        newImage.unlockFocus()
-        return newImage
-    }
-}
