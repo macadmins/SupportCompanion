@@ -160,9 +160,9 @@ struct ButtonSection: View {
 
         let buttonRows = Array(visibleButtons.chunked(into: 3))
         // Layout
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 5) {
             ForEach(buttonRows.indices, id: \.self) { rowIndex in
-                HStack(spacing: 10) {
+                HStack(spacing: 5) {
                     ForEach(buttonRows[rowIndex], id: \.self) { button in
                         button
                     }
