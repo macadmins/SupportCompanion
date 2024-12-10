@@ -49,7 +49,7 @@ struct CardData: View {
             case Constants.Battery.Keys.health:
                 healthContent(value: value)
             case Constants.DeviceInfo.Keys.lastRestart:
-                daysContent(value: value, suffix: " \(Constants.General.days)")
+                daysContent(value: value, suffix: " \(Constants.General.days)", color: colorForValue(key: key, value: value))
             case "FileVault":
                 fileVaultContent(value: value)
             case Constants.KerberosSSO.Keys.expiryDays:
@@ -142,7 +142,14 @@ struct CardData: View {
             }
         case "LastRestart":
             if let intValue = value.rawValue as? Int {
-                return intValue > 7 ? (colorScheme == .light ? .redLight : .red) : .ScGreen
+                switch intValue {
+                case 0...2:
+                    return .ScGreen
+                case 3...7:
+                    return colorScheme == .light ? .orangeLight : .orange
+                default:
+                    return colorScheme == .light ? .redLight : .red
+                }
             }
         case "FileVault":
             if let boolValue = value.rawValue as? Bool {
