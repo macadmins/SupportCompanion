@@ -198,7 +198,7 @@ struct ActionHelpers {
     
     static func gatherLogs(preferences: Preferences, completion: @escaping (OperationResult) -> Void) {
         let command = buildZipCommand(for: preferences.logFolders)
-        
+        Logger.shared.logDebug("Gathering logs with command: \(command)")
         Task {
             do {
                 _ = try await ExecutionService.executeCommand("/bin/sh", with: ["-c", command])
@@ -240,6 +240,7 @@ struct ActionHelpers {
     
     @MainActor
     static private func promptSaveLocation() async -> URL? {
+        Logger.shared.logDebug("Prompting user to save logs")
         let savePanel = NSSavePanel()
         savePanel.title = Constants.Titles.saveLogs
         savePanel.nameFieldStringValue = "supportcompanion_logs.zip"
