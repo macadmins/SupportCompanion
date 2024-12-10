@@ -17,9 +17,17 @@ class CardGridViewModel: ObservableObject {
     }
     
     // MARK: - Device Information Helpers
-    
+    private var healthPercentage: Int {
+        if appState.batteryInfoManager.batteryInfo.designCapacity > 0 {
+            return Int(round((Double(appState.batteryInfoManager.batteryInfo.maxCapacity) / Double(appState.batteryInfoManager.batteryInfo.designCapacity)) * 100))
+        } else {
+            return 0
+        }
+    }
+
     var deviceInfo: [(String, Any)] {
             [
+                ("--------------------- Device ---------------------", ""),
                 ("Host Name:", appState.deviceInfoManager.deviceInfo?.hostName ?? ""),
                 ("Serial Number:", appState.deviceInfoManager.deviceInfo?.serialNumber ?? ""),
                 ("Model:", appState.deviceInfoManager.deviceInfo?.model ?? ""),
@@ -28,7 +36,15 @@ class CardGridViewModel: ObservableObject {
                 ("OS Version:", appState.deviceInfoManager.deviceInfo?.osVersion ?? ""),
                 ("OS Build:", appState.deviceInfoManager.deviceInfo?.osBuild ?? ""),
                 ("IP Address:", appState.deviceInfoManager.deviceInfo?.ipAddress ?? ""),
-                ("Last Reboot:", "\(appState.deviceInfoManager.deviceInfo?.lastRestart ?? 0) days")
+                ("Last Reboot:", "\(appState.deviceInfoManager.deviceInfo?.lastRestart ?? 0) days"),
+                ("--------------------- Battery ---------------------", ""),
+                ("Health:", "\(healthPercentage)%"),
+                ("Cycle Count:", appState.batteryInfoManager.batteryInfo.cycleCount),
+                ("Temperature:", "\((String(format: "%.1f", appState.batteryInfoManager.batteryInfo.temperature)))°C"),
+                ("--------------------- Storage ---------------------", ""),
+                ("Used:", "\(appState.storageInfoManager.storageInfo.usage)%"),
+                ("FileVault:", appState.storageInfoManager.storageInfo.fileVault ? "Enabled" : "Disabled"),
+
             ]
         }
     
