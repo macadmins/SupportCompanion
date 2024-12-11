@@ -11,7 +11,8 @@ import UserNotifications
 import SwiftUI
 import Combine
 
-class AppDelegate: NSObject, NSApplicationDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
+    var popover: NSPopover!
     var statusItem: NSStatusItem?
     var windowController: NSWindowController?
     var transparentWindowController: TransparentWindowController?
@@ -21,14 +22,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     static var shouldExit = false
     private var notificationDelegate: NotificationDelegate?
     private var cancellables: Set<AnyCancellable> = []
+    private var trayManager: TrayMenuManager { TrayMenuManager.shared }
+
     @AppStorage("isDarkMode") private var isDarkMode: Bool = false
 
+    var hasUpdatesAvailable: Bool {
+        appStateManager.pendingUpdatesCount > 0 || appStateManager.systemUpdateCache.count > 0
+    }
 
     func application(_ application: NSApplication, open urls: [URL]) {
         guard let url = urls.first else { return }
         switch url.host?.lowercased() {
             case nil:
                 AppDelegate.shouldExit = true
+                if let statusItem = statusItem {
+                    Logger.shared.logDebug("Removing status item")
+                    NSStatusBar.system.removeStatusItem(statusItem)
+                    self.statusItem = nil
+                }
             default:
                 AppDelegate.shouldExit = false
         }
@@ -38,14 +49,26 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        setupTrayMenu()
-        let icon = NSImage(named: "MenuIcon")
-        icon?.size = NSSize(width: 16, height: 16)
-        statusItem?.button?.image = icon
-        statusItem?.button?.image?.isTemplate = true
-        
-        appStateManager.refreshAll()
+        if !AppDelegate.shouldExit { 
+            setupTrayMenu()
+        }
+
+        popover = NSPopover()
+        popover.behavior = .transient // Closes when clicking outside
+        popover.contentSize = NSSize(width: 500, height: 520)
+        popover.contentViewController = NSHostingController(
+            rootView: TrayMenuView(
+                viewModel: CardGridViewModel(appState: AppStateManager.shared)
+            )
+            .environmentObject(AppStateManager.shared)
+        )
+        popover.delegate = self
+
         configureAppUpdateNotificationCommand(mode: appStateManager.preferences.mode)
+
+        appStateManager.showWindowCallback = { [weak self] in
+            self?.showWindow()
+        }
         
         if appStateManager.preferences.showDesktopInfo {            
             // Initialize transparent window
@@ -63,67 +86,142 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         notificationDelegate = NotificationDelegate()
         UNUserNotificationCenter.current().delegate = notificationDelegate
         appStateManager.startBackgroundTasks()
-        
-        appStateManager.preferences.$actions
-            .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
-            .sink { [weak self] _ in
-                self?.setupTrayMenu()
-            }
-            .store(in: &cancellables)
-        
+        appStateManager.refreshAll()
     }
 
     private func setupTrayMenu() {
-        // Initialize status item only if it doesn't already exist
+        let trayManager = TrayMenuManager.shared
         if statusItem == nil {
             statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-            if let button = statusItem?.button {
-                let icon = NSImage(named: "MenuIcon")
-                icon?.size = NSSize(width: 16, height: 16)
-                button.image = icon
+
+            setupTrayMenuIconBinding()
+
+            if let button = trayManager.getStatusItem().button {
+                button.action = #selector(togglePopover)
+                button.target = self
+            }
+        }
+    }
+
+    func setupTrayMenuIconBinding() {
+        appStateManager.$pendingUpdatesCount
+            .combineLatest(appStateManager.$systemUpdateCache)
+            .map { pendingUpdatesCount, systemUpdateCache in
+                pendingUpdatesCount > 0 || systemUpdateCache.count > 0
+            }
+            .sink { hasUpdates in
+                TrayMenuManager.shared.updateTrayIcon(hasUpdates: hasUpdates)
+            }
+            .store(in: &cancellables)
+    }
+
+    class TrayMenuManager {
+        static let shared = TrayMenuManager()
+        
+        private var statusItem: NSStatusItem
+
+        private init() {
+            statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+            updateTrayIcon(hasUpdates: false) // Default state
+        }
+
+        func updateTrayIcon(hasUpdates: Bool) {
+            let iconName = "MenuIcon"
+            guard let baseIcon = NSImage(named: iconName) else {
+                print("Error: \(iconName) not found")
+                return
+            }
+
+            baseIcon.size = NSSize(width: 16, height: 16)
+            baseIcon.isTemplate = true // Ensure base icon respects system appearance
+
+            if let button = statusItem.button {
+                // Clear any existing layers
+                button.layer?.sublayers?.forEach { $0.removeFromSuperlayer() }
+                
+                // Set the base icon as the button's image
+                button.image = baseIcon
                 button.image?.isTemplate = true
+
+                if hasUpdates {
+                    Logger.shared.logDebug("Updates available, adding badge to tray icon")
+                    
+                    // Add badge dynamically as a layer
+                    let badgeLayer = CALayer()
+                    badgeLayer.backgroundColor = NSColor.red.cgColor
+                    badgeLayer.frame = CGRect(
+                        x: button.bounds.width - 15, // Align to the lower-right corner
+                        y: 10, // Small offset from the bottom
+                        width: 8,
+                        height: 8
+                    )
+                    badgeLayer.cornerRadius = 4 // Make it circular
+                    
+                    // Ensure button has a layer to add sublayers
+                    if button.layer == nil {
+                        button.wantsLayer = true
+                        button.layer = CALayer()
+                    }
+                    
+                    button.layer?.addSublayer(badgeLayer)
+                }
             }
         }
 
-        // Update the menu
-        let menu = NSMenu()
-
-        menu.addItem(NSMenuItem(title: Constants.TrayMenu.openApp, action: #selector(showWindow), keyEquivalent: "o"))
-        menu.addItem(NSMenuItem.separator())
-
-        // Create Actions submenu
-        let actionsSubmenu = NSMenu()
-        for action in appStateManager.preferences.actions {
-            let actionItem = NSMenuItem(title: action.name, action: #selector(runAction), keyEquivalent: "")
-            actionItem.representedObject = action
-            actionsSubmenu.addItem(actionItem)
+        func getStatusItem() -> NSStatusItem {
+            return statusItem
         }
-
-        let actionsMenuItem = NSMenuItem(title: Constants.CardTitle.actions, action: nil, keyEquivalent: "")
-        menu.setSubmenu(actionsSubmenu, for: actionsMenuItem)
-        menu.addItem(actionsMenuItem)
-
-        menu.addItem(NSMenuItem.separator())
-        menu.addItem(NSMenuItem(title: Constants.TrayMenu.quitApp, action: #selector(quitApp), keyEquivalent: "q"))
-
-        // Assign the updated menu to the status item
-        statusItem?.menu = menu
     }
 
-    @objc private func showWindow() {
+    @objc private func togglePopover() {
+        guard let button = trayManager.getStatusItem().button else {
+            print("Error: TrayMenuManager's statusItem.button is nil")
+            return
+        }
+
+        if popover.isShown {
+            popover.performClose(nil)
+        } else {
+            // Dynamically set the popover content
+            popover.contentViewController = NSHostingController(
+                rootView: TrayMenuView(
+                    viewModel: CardGridViewModel(appState: AppStateManager.shared)
+                )
+                .environmentObject(AppStateManager.shared)
+            )
+            
+            // Anchor the popover to the status item's button
+            popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+
+            // Ensure the popover window is brought to the front
+            if let popoverWindow = popover.contentViewController?.view.window {
+                popoverWindow.makeKeyAndOrderFront(nil)
+                NSApp.activate(ignoringOtherApps: true)
+            }
+        }
+    }
+
+    func popoverDidClose(_ notification: Notification) {
+        Logger.shared.logDebug("Popover closed, cleaning up...")
+        
+        // Cleanup logic: release the popover or its content
+        popover.contentViewController = nil
+    }
+
+    @objc func showWindow() {
         if windowController == nil {
             NSApp.setActivationPolicy(.regular)
             let contentView = ContentView()
                 .environmentObject(AppStateManager.shared)
                 .environmentObject(Preferences())
-                .frame(minWidth: 1500, minHeight: 900)
+                .frame(minWidth: 1500, minHeight: 950)
 
             let hostingController = NSHostingController(rootView: contentView)
 
             let window = NSWindow(contentViewController: hostingController)
-            window.setContentSize(NSSize(width: 1500, height: 900))
+            window.setContentSize(NSSize(width: 1500, height: 950))
             window.styleMask = [.titled, .closable, .resizable]
-            window.minSize = NSSize(width: 1500, height: 900)
+            window.minSize = NSSize(width: 1500, height: 950)
             window.title = ""
             window.isReleasedWhenClosed = false
             window.backgroundColor = .clear

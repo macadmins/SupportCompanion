@@ -13,7 +13,7 @@ struct UserInfoCard: View {
     
     var body: some View {
         VStack(alignment: .leading){
-            CustomCard(title: "\(Constants.CardTitle.userInfo)", titleImageName: "person.fill", content: {
+            ScCard(title: "\(Constants.CardTitle.userInfo)", titleImageName: "person.fill", content: {
                     VStack(alignment: .leading) {
                         CardData(info: appState.userInfoManager.userInfo.toKeyValuePairs())
                     }

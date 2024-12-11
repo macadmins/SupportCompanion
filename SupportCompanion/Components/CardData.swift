@@ -12,13 +12,16 @@ struct CardData: View {
     @Environment(\.colorScheme) var colorScheme
     let info: [(key: String, display: String, value: InfoValue)]
     let customContent: (String, InfoValue) -> AnyView
+    let fontSize: CGFloat?
 
     init(
         info: [(key: String, display: String, value: InfoValue)],
-        customContent: @escaping (String, InfoValue) -> AnyView = { _, _ in AnyView(EmptyView()) }
+        customContent: @escaping (String, InfoValue) -> AnyView = { _, _ in AnyView(EmptyView()) },
+        fontSize: CGFloat? = 14
     ) {
         self.info = info
         self.customContent = customContent
+        self.fontSize = fontSize
     }
 
     var body: some View {
@@ -40,13 +43,13 @@ struct CardData: View {
         HStack(alignment: .top) {
             Text(display)
                 .fontWeight(.bold)
-                .font(.system(size: 14))
+                .font(.system(size: fontSize ?? 14))
 
             switch key {
             case Constants.Battery.Keys.health:
                 healthContent(value: value)
             case Constants.DeviceInfo.Keys.lastRestart:
-                daysContent(value: value, suffix: " \(Constants.General.days)")
+                daysContent(value: value, suffix: " \(Constants.General.days)", color: colorForValue(key: key, value: value))
             case "FileVault":
                 fileVaultContent(value: value)
             case Constants.KerberosSSO.Keys.expiryDays:
@@ -67,29 +70,25 @@ struct CardData: View {
     /// Displays health-specific content with color coding
     private func healthContent(value: InfoValue) -> some View {
         let color = colorForValue(key: Constants.Battery.Keys.health, value: value)
-        let isGreen = color == .green
         
-        return Group {
+        return HStack(spacing: 0) {
             Text(value.displayValue)
                 .foregroundColor(color)
-                .font(.system(size: 14))
-                .shadow(color: isGreen ? .black.opacity(0.4) : .clear, radius: 1, x: 0, y: 1)
+                .font(.system(size: fontSize ?? 14))
             Text("%")
-                .font(.system(size: 14))
+                .font(.system(size: fontSize ?? 14))
         }
     }
     
     private func temperatureContent(value: InfoValue) -> some View {
         let color = colorForValue(key: Constants.Battery.Keys.temperature, value: value)
-        let isGreen = color == .green
         
-        return Group {
+        return HStack(spacing: 0) {
             Text(value.displayValue)
                 .foregroundColor(color)
-                .font(.system(size: 14))
-                .shadow(color: isGreen ? .black.opacity(0.4) : .clear, radius: 1, x: 0, y: 1)
+                .font(.system(size: fontSize ?? 14))
             Text("°C")
-                .font(.system(size: 14))
+                .font(.system(size: fontSize ?? 14))
         }
     }
 
@@ -97,19 +96,15 @@ struct CardData: View {
     private func daysContent(value: InfoValue, suffix: String, color: Color = .primary) -> some View {
         Text(value.displayValue)
             .foregroundColor(color)
-            .font(.system(size: 14))
+            .font(.system(size: fontSize ?? 14))
         + Text(suffix)
-            .font(.system(size: 14))
+            .font(.system(size: fontSize ?? 14))
     }
     
     private func pssoRegistrationContent(value: InfoValue) -> some View {
-        let color = colorForValue(key: Constants.PlatformSSO.Keys.registrationCompleted, value: value)
-        let isGreen = color == .green
-        
         return Text(value.displayValue)
             .foregroundColor(colorForValue(key: Constants.PlatformSSO.Keys.registrationCompleted, value: value))
-            .font(.system(size: 14))
-            .shadow(color: isGreen ? .black.opacity(0.4) : .clear, radius: 1, x: 0, y: 1)
+            .font(.system(size: fontSize ?? 14))
     }
 
     /// Displays FileVault-specific content with icons
@@ -117,21 +112,20 @@ struct CardData: View {
         HStack {
             if value.displayValue == "Enabled" {
                 Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(.green)
-                    .shadow(color: .black.opacity(0.4), radius: 1, x: 0, y: 1)
+                    .foregroundColor(.ScGreen)
             } else {
                 Image(systemName: "xmark.circle.fill")
                     .foregroundColor((colorScheme == .light ? .redLight : .red))
             }
             Text(value.displayValue)
-                .font(.system(size: 14))
+                .font(.system(size: fontSize ?? 14))
         }
     }
 
     /// Displays default text with optional coloring
     private func defaultText(value: InfoValue, key: String) -> some View {
         Text(value.displayValue)
-            .font(.system(size: 14))
+            .font(.system(size: fontSize ?? 14))
             .foregroundColor(colorForValue(key: key, value: value))
     }
 
@@ -144,30 +138,37 @@ struct CardData: View {
                     ? (colorScheme == .light ? .redLight : .red)
                     : (intValue < 80
                         ? (colorScheme == .light ? .orangeLight : .orange)
-                       : .green)
+                       : .ScGreen)
             }
         case "LastRestart":
             if let intValue = value.rawValue as? Int {
-                return intValue > 7 ? (colorScheme == .light ? .redLight : .red) : .green
+                switch intValue {
+                case 0...2:
+                    return .ScGreen
+                case 3...7:
+                    return colorScheme == .light ? .orangeLight : .orange
+                default:
+                    return colorScheme == .light ? .redLight : .red
+                }
             }
         case "FileVault":
             if let boolValue = value.rawValue as? Bool {
-                return !boolValue ? (colorScheme == .light ? .redLight : .red) : .green
+                return !boolValue ? (colorScheme == .light ? .redLight : .red) : .ScGreen
             }
         case Constants.PlatformSSO.Keys.registrationCompleted:
             if let boolValue = value.rawValue as? Bool {
-                return !boolValue ? (colorScheme == .light ? .redLight : .red) : .green
+                return !boolValue ? (colorScheme == .light ? .redLight : .red) : .ScGreen
             }
         case Constants.KerberosSSO.Keys.expiryDays:
             if let intValue = value.rawValue as? Int {
-                return intValue <= 30 ? (colorScheme == .light ? .orangeLight : .orange) : (intValue < 2 ? (colorScheme == .light ? .redLight : .red) : .green)
+                return intValue <= 30 ? (colorScheme == .light ? .orangeLight : .orange) : (intValue < 2 ? (colorScheme == .light ? .redLight : .red) : .ScGreen)
             }
         case Constants.Battery.Keys.temperature:
             if let doubleValue = value.rawValue as? Double {
-                return doubleValue > 80 ? (colorScheme == .light ? .redLight : .red) : (doubleValue >= 60 ? (colorScheme == .light ? .orange : .orange) : .green)
+                return doubleValue > 80 ? (colorScheme == .light ? .redLight : .red) : (doubleValue >= 60 ? (colorScheme == .light ? .orange : .orange) : .ScGreen)
             } else if let intValue = value.rawValue as? Int {
                 let temperature = Double(intValue)
-                return temperature > 80 ? (colorScheme == .light ? .redLight : .red) : (temperature >= 60 ? (colorScheme == .light ? .orangeLight : .orange) : .green)
+                return temperature > 80 ? (colorScheme == .light ? .redLight : .red) : (temperature >= 60 ? (colorScheme == .light ? .orangeLight : .orange) : .ScGreen)
             } else {
                 return .primary
             }
@@ -175,14 +176,5 @@ struct CardData: View {
             return .primary
         }
         return .primary
-    }
-    
-    struct ConditionalShadowModifier: ViewModifier {
-        let isGreen: Bool
-
-        func body(content: Content) -> some View {
-            content
-                .shadow(color: isGreen ? .black.opacity(0.4) : .clear, radius: 2, x: 0, y: 1)
-        }
     }
 }

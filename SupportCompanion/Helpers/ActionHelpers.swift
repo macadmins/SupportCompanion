@@ -198,7 +198,7 @@ struct ActionHelpers {
     
     static func gatherLogs(preferences: Preferences, completion: @escaping (OperationResult) -> Void) {
         let command = buildZipCommand(for: preferences.logFolders)
-        
+        Logger.shared.logDebug("Gathering logs with command: \(command)")
         Task {
             do {
                 _ = try await ExecutionService.executeCommand("/bin/sh", with: ["-c", command])
@@ -240,6 +240,7 @@ struct ActionHelpers {
     
     @MainActor
     static private func promptSaveLocation() async -> URL? {
+        Logger.shared.logDebug("Prompting user to save logs")
         let savePanel = NSSavePanel()
         savePanel.title = Constants.Titles.saveLogs
         savePanel.nameFieldStringValue = "supportcompanion_logs.zip"
@@ -276,6 +277,19 @@ struct ActionHelpers {
             await openURL(preferences.changePasswordUrl, completion: completion)
         } else if preferences.changePasswordMode == "SSOExtension" {
             await handleSSOExtension(completion: completion)
+        } else {
+            await openUserPanel()
+        }
+    }
+
+    static func openUserPanel() {
+        Task {
+            do {
+                Logger.shared.logDebug("Opening Users & Groups")
+                try await _ = ExecutionService.executeCommand("open", with: [Constants.Panels.users])
+            } catch {
+                Logger.shared.logError("Failed to open Users & Groups: \(error)")
+            }
         }
     }
 

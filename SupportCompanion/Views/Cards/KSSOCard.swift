@@ -14,7 +14,7 @@ struct KSSOCard: View {
     var body: some View {
         VStack(alignment: .leading){
             if "" != appState.ssoInfoManager.kerberosSSO.username {
-                CustomCard(title: "\(Constants.CardTitle.kerberosSSO)", titleImageName: "lock.fill", useMultiColor: false, content: {
+                ScCard(title: "\(Constants.CardTitle.kerberosSSO)", titleImageName: "lock.fill", useMultiColor: false, content: {
                         VStack(alignment: .leading) {
                             CardData(info: appState.ssoInfoManager.kerberosSSO.toKeyValuePairs())
                         }

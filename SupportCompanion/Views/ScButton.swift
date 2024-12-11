@@ -8,13 +8,14 @@
 import Foundation
 import SwiftUI
 
-struct CustomButton: View, Hashable {
+struct ScButton: View, Hashable {
     let title: String
     let action: () async -> Void
     let badgeNumber: Int?
     let helpText: String?
     let disabled: Bool?
     var maxWidth: CGFloat? // New parameter for button width
+    let fontSize: CGFloat?
     @EnvironmentObject var preferences: Preferences
     @EnvironmentObject var appState: AppStateManager
     @State private var isHovered = false
@@ -26,7 +27,8 @@ struct CustomButton: View, Hashable {
         badgeNumber: Int? = nil,
         helpText: String? = nil,
         disabled: Bool? = false,
-        maxWidth: CGFloat? = nil, // Accept maxWidth as a parameter
+        maxWidth: CGFloat? = nil,
+        fontSize: CGFloat? = nil,
         action: @escaping @Sendable () async -> Void
     ) {
         self.title = title
@@ -35,6 +37,7 @@ struct CustomButton: View, Hashable {
         self.helpText = helpText
         self.disabled = disabled
         self.maxWidth = maxWidth
+        self.fontSize = fontSize
     }
 
     var body: some View {
@@ -58,8 +61,7 @@ struct CustomButton: View, Hashable {
             }) {
                 HStack {
                     // Button text
-                    Text(title)
-                        .opacity(isLoading ? 0.5 : 1) // Dim the text slightly when loading
+                    ButtonTitle(title: title, fontSize: fontSize, isLoading: isLoading)
 
                     // Loader to the right of the title
                     if isLoading {
@@ -115,12 +117,24 @@ struct CustomButton: View, Hashable {
         }
     }
 
-    static func == (lhs: CustomButton, rhs: CustomButton) -> Bool {
+    static func == (lhs: ScButton, rhs: ScButton) -> Bool {
         return lhs.title == rhs.title && lhs.badgeNumber == rhs.badgeNumber
     }
 
     func hash(into hasher: inout Hasher) {
         hasher.combine(title)
         hasher.combine(badgeNumber)
+    }
+}
+
+struct ButtonTitle: View {
+    let title: String
+    let fontSize: CGFloat?
+    let isLoading: Bool
+    
+    var body: some View {
+        Text(title)
+            .font(fontSize != nil ? .system(size: fontSize!) : nil) // Use nil to skip applying a font
+            .opacity(isLoading ? 0.5 : 1) // Dim the text slightly when loading
     }
 }

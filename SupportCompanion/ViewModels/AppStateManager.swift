@@ -38,7 +38,8 @@ class AppStateManager: ObservableObject {
     @Published var catalogs: [String] = []
 
     private var cancellables = Set<AnyCancellable>()
-    
+    var showWindowCallback: (() -> Void)?
+
     func startBackgroundTasks() {
         if preferences.mode == Constants.modes.munki {
             pendingMunkiUpdatesManager.startUpdateCheckTimer()
@@ -48,11 +49,15 @@ class AppStateManager: ObservableObject {
         }
         systemUpdatesManager.startMonitoring()
         storageInfoManager.startMonitoring()
+        deviceInfoManager.startMonitoring()
     }
 
     func stopBackgroundTasks() {
         pendingMunkiUpdatesManager.stopUpdateCheckTimer()
+        pendingIntuneUpdatesManager.stopUpdateCheckTimer()
         systemUpdatesManager.stopMonitoring()
+        storageInfoManager.stopMonitoring()
+        deviceInfoManager.stopMonitoring()
     }
     
     init() {
@@ -93,7 +98,7 @@ class AppStateManager: ObservableObject {
         isRefreshing = true
         Task {
             await withTaskGroup(of: Void.self) { group in
-                group.addTask { self.deviceInfoManager.refreshDeviceInfo() }
+                group.addTask { self.deviceInfoManager.refresh() }
                 group.addTask { self.storageInfoManager.refresh() }
                 group.addTask { self.mdmInfoManager.refresh() }
                 group.addTask { self.systemUpdatesManager.refresh() }

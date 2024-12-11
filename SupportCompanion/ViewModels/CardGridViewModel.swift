@@ -17,9 +17,17 @@ class CardGridViewModel: ObservableObject {
     }
     
     // MARK: - Device Information Helpers
-    
+    private var healthPercentage: Int {
+        if appState.batteryInfoManager.batteryInfo.designCapacity > 0 {
+            return Int(round((Double(appState.batteryInfoManager.batteryInfo.maxCapacity) / Double(appState.batteryInfoManager.batteryInfo.designCapacity)) * 100))
+        } else {
+            return 0
+        }
+    }
+
     var deviceInfo: [(String, Any)] {
             [
+                ("--------------------- Device ---------------------", ""),
                 ("Host Name:", appState.deviceInfoManager.deviceInfo?.hostName ?? ""),
                 ("Serial Number:", appState.deviceInfoManager.deviceInfo?.serialNumber ?? ""),
                 ("Model:", appState.deviceInfoManager.deviceInfo?.model ?? ""),
@@ -28,12 +36,20 @@ class CardGridViewModel: ObservableObject {
                 ("OS Version:", appState.deviceInfoManager.deviceInfo?.osVersion ?? ""),
                 ("OS Build:", appState.deviceInfoManager.deviceInfo?.osBuild ?? ""),
                 ("IP Address:", appState.deviceInfoManager.deviceInfo?.ipAddress ?? ""),
-                ("Last Reboot:", "\(appState.deviceInfoManager.deviceInfo?.lastRestart ?? 0) days")
+                ("Last Reboot:", "\(appState.deviceInfoManager.deviceInfo?.lastRestart ?? 0) days"),
+                ("--------------------- Battery ---------------------", ""),
+                ("Health:", "\(healthPercentage)%"),
+                ("Cycle Count:", appState.batteryInfoManager.batteryInfo.cycleCount),
+                ("Temperature:", "\((String(format: "%.1f", appState.batteryInfoManager.batteryInfo.temperature)))°C"),
+                ("--------------------- Storage ---------------------", ""),
+                ("Used:", "\(appState.storageInfoManager.storageInfo.usage)%"),
+                ("FileVault:", appState.storageInfoManager.storageInfo.fileVault ? "Enabled" : "Disabled"),
+
             ]
         }
     
-    func createRestartIntuneAgentButton() -> CustomButton {
-        CustomButton(Constants.Actions.restartIntuneAgent) {
+    func createRestartIntuneAgentButton(fontSize: CGFloat? = nil) -> ScButton {
+        ScButton(Constants.Actions.restartIntuneAgent, fontSize: fontSize) {
             ActionHelpers.restartIntuneAgent { result in
                 ActionHelpers.handleResult(
                     operationName: "Restart Intune Agent",
@@ -50,8 +66,8 @@ class CardGridViewModel: ObservableObject {
         }
     }
     
-    func createGatherLogsButton() -> CustomButton {
-        CustomButton(Constants.Actions.gatherLogs) {
+    func createGatherLogsButton(fontSize: CGFloat? = nil) -> ScButton {
+        ScButton(Constants.Actions.gatherLogs, fontSize: fontSize) {
             ActionHelpers.gatherLogs(preferences: self.appState.preferences) { result in
                 ActionHelpers.handleResult(
                     operationName: Constants.Actions.gatherLogs,
@@ -69,8 +85,8 @@ class CardGridViewModel: ObservableObject {
     
     func createRebootButton(
         onShowModal: @escaping (Int, String, String) -> Void
-    ) -> CustomButton {
-        CustomButton(Constants.Actions.reboot) {
+    ) -> ScButton {
+        ScButton(Constants.Actions.reboot) {
             await ActionHelpers.reboot { result in
                 DispatchQueue.main.async {
                     switch result {
@@ -86,8 +102,8 @@ class CardGridViewModel: ObservableObject {
         }
     }
     
-    func createChangePasswordButton() -> CustomButton {
-        CustomButton(Constants.Actions.changePassword) {
+    func createChangePasswordButton(fontSize: CGFloat? = nil) -> ScButton {
+        ScButton(Constants.Actions.changePassword, fontSize: fontSize) {
             await ActionHelpers.openChangePassword(preferences: self.appState.preferences) { result in
                 ActionHelpers.handleResult(
                     operationName: Constants.Actions.changePassword,
@@ -108,7 +124,7 @@ class CardGridViewModel: ObservableObject {
         case `default`
     }
     
-    func createOpenManagementAppButton(type: ManagementAppURLType) -> CustomButton {
+    func createOpenManagementAppButton(type: ManagementAppURLType, fontSize: CGFloat? = nil) -> ScButton {
         let appName: String
         let appURL: String
 
@@ -129,7 +145,7 @@ class CardGridViewModel: ObservableObject {
             appURL = ""
         }
 
-        return CustomButton("\(Constants.Actions.openManagementApp) \(appName)") {
+        return ScButton("\(Constants.Actions.openManagementApp) \(appName)", fontSize: fontSize) {
             ActionHelpers.openManagementApp(appURL: appURL)
         }
     }
@@ -174,7 +190,7 @@ class CardGridViewModel: ObservableObject {
     }
 
     func fileVaultTextColor() -> Color {
-        appState.storageInfoManager.storageInfo.fileVault ? Color.green : Color.orange
+        appState.storageInfoManager.storageInfo.fileVault ? .ScGreen : Color.orange
     }
     
     // MARK: - Preferences Management

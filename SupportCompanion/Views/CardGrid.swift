@@ -18,7 +18,7 @@ struct CardGrid: View {
     @State private var modalMessage = ""
 
     var body: some View {
-        let columns = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
+        let columns = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), ]
         ZStack{
             ScrollView {
                 LazyVGrid(

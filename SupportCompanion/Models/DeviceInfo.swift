@@ -16,7 +16,7 @@ struct DeviceInfo: Identifiable, Equatable {
     let ram: String
     var ipAddress: String
     let serialNumber: String
-    let lastRestart: Int
+    var lastRestart: Int
     let model: String
     
     static func == (lhs: DeviceInfo, rhs: DeviceInfo) -> Bool {
@@ -83,6 +83,26 @@ struct DeviceInfo: Identifiable, Equatable {
                 display: Constants.DeviceInfo.Labels.ipAddress,
                 value: .string(ipAddress),
                 category: Constants.DeviceInfo.Categories.networkInfo
+            )
+        ]
+    }
+    
+    func toKeyValuePairsCompact() -> [(key: String, display: String, value: InfoValue)] {
+        return [
+            (
+                key: Constants.DeviceInfo.Keys.osVersion,
+                display: Constants.DeviceInfo.Labels.osVersion,
+                value: .string(osVersion)
+            ),
+            (
+                key: Constants.DeviceInfo.Keys.osBuild,
+                display: Constants.DeviceInfo.Labels.osBuild,
+                value: .string(osBuild)
+            ),
+            (
+                key: Constants.DeviceInfo.Keys.lastRestart,
+                display: Constants.DeviceInfo.Labels.lastRestart,
+                value: .int(lastRestart)
             )
         ]
     }

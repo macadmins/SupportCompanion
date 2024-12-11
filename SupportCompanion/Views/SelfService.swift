@@ -39,7 +39,7 @@ struct SelfService: View {
         //@State private var isRunning: Bool = false
 
         var body: some View {
-            CustomCard(
+            ScCard(
                 title: action.name,
                 titleImageName: action.icon,
                 useMultiColor: false,
@@ -59,7 +59,7 @@ struct SelfService: View {
                                 .padding()
                                 .frame(maxWidth: .infinity, alignment: .center)
                         } else {*/
-                            CustomButton("Run", maxWidth: 150) {
+                            ScButton("Run", maxWidth: 150) {
                                 //isRunning = true
                                 //defer { isRunning = false }
                                 _ = try? await ExecutionService.executeShellCommand(action.command, isPrivileged: action.isPrivileged)

@@ -14,12 +14,12 @@ struct StorageDeviceManagementStack: View {
     @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
-        if !viewModel.isCardVisible(Constants.Cards.storageCardName) && !viewModel.isCardVisible(Constants.Cards.deviceManagementCardName) {
+        if !viewModel.isCardVisible(Constants.Cards.storage) && !viewModel.isCardVisible(Constants.Cards.deviceManagement) {
         } else{
             VStack(alignment: .leading){
                 // Storage Card
-                if viewModel.isCardVisible(Constants.Cards.storageCardName) {
-                    CustomCard(title: "\(Constants.CardTitle.storage)",
+                if viewModel.isCardVisible(Constants.Cards.storage) {
+                    ScCard(title: "\(Constants.CardTitle.storage)",
                                titleImageName: "internaldrive.fill",
                                buttonImageName: "macwindow.on.rectangle",
                                buttonAction: { viewModel.openStoragePanel() },
@@ -38,7 +38,7 @@ struct StorageDeviceManagementStack: View {
                                                     Text("\(String(format: "%.1f", appState.storageInfoManager.storageInfo.usage))% Used")
                                                     .font(.system(size: 14))}
                                             )
-                                            .tint(appState.storageInfoManager.storageInfo.usage < 50 ? Color.green
+                                            .tint(appState.storageInfoManager.storageInfo.usage < 50 ? .ScGreen
                                                   : appState.storageInfoManager.storageInfo.usage < 80 ? (colorScheme == .light ? .orangeLight : .orange)
                                                   : (colorScheme == .light ? .redLight : .red))
                                             .padding(.top)
@@ -54,8 +54,8 @@ struct StorageDeviceManagementStack: View {
                 }
                 
                 // Device Management Card
-                if viewModel.isCardVisible("DeviceManagement") {
-                    CustomCard(title: "\(Constants.CardTitle.deviceManagement)", titleImageName: "lock.shield", content:  {
+                if viewModel.isCardVisible(Constants.Cards.deviceManagement) {
+                    ScCard(title: "\(Constants.CardTitle.deviceManagement)", titleImageName: "lock.shield", content:  {
                         VStack(alignment: .leading, spacing: 5) {
                             CardData(info: appState.mdmInfoManager.mdmInfo.toKeyValuePairs())
                         }

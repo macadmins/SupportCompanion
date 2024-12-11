@@ -1,14 +1,13 @@
 //
-//  CardView.swift
+//  ScCardCompact.swift
 //  SupportCompanion
 //
-//  Created by Tobias Almén on 2024-11-12.
+//  Created by Tobias Almén on 2024-12-07.
 //
 
-import Foundation
 import SwiftUI
 
-struct CustomCard<Content: View>: View {
+struct ScCardCompact<Content: View>: View {
     let title: String
     let titleImageName: String?
     let subtitle: String?
@@ -16,11 +15,8 @@ struct CustomCard<Content: View>: View {
     let content: Content
     let buttonImageName: String?
     let buttonAction: (() async -> Void)?
-    let buttonHelpText: String?
     let imageSize: (CGFloat, CGFloat)?
     let useMultiColor: Bool?
-    @EnvironmentObject var preferences: Preferences
-    @EnvironmentObject var appState: AppStateManager
 
     init(
         title: String,
@@ -29,8 +25,7 @@ struct CustomCard<Content: View>: View {
         description: String? = nil,
         buttonImageName: String? = nil,
         buttonAction: (() async -> Void)? = nil,
-        buttonHelpText: String? = nil,
-        imageSize: (CGFloat, CGFloat) = (18, 18),
+        imageSize: (CGFloat, CGFloat) = (16, 16),
         useMultiColor: Bool = true,
         @ViewBuilder content: () -> Content = { EmptyView() }
     ) {
@@ -40,50 +35,29 @@ struct CustomCard<Content: View>: View {
         self.description = description
         self.buttonImageName = buttonImageName
         self.buttonAction = buttonAction
-        self.buttonHelpText = buttonHelpText
         self.content = content()
         self.imageSize = imageSize
         self.useMultiColor = useMultiColor
     }
-    
-    private func loadImage(from path: String) -> NSImage? {
-        let url = URL(fileURLWithPath: path)
-        if FileManager.default.fileExists(atPath: url.path) {
-            return NSImage(contentsOf: url)
-        }
-        return nil
-    }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            // Title with optional button aligned to the right
+        VStack(alignment: .leading, spacing: 10) { // Increased spacing for breathing room
+            // Header Section
             HStack {
                 if let titleImageName = titleImageName {
-                    if let image = loadImage(from: titleImageName) {
-                        Image(nsImage: image) // Use `nsImage` for macOS
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: imageSize?.0, height: imageSize?.1)
-                    } else {
-                        Image(systemName: titleImageName)
-                            .resizable()
-                            .imageScale(.large)
-                            .symbolRenderingMode((useMultiColor ?? true) ? .multicolor : .monochrome)
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: imageSize?.0, height: imageSize?.1)
-                    }
+                    Image(systemName: titleImageName)
+                        .resizable()
+                        .symbolRenderingMode((useMultiColor ?? true) ? .multicolor : .monochrome)
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: imageSize?.0, height: imageSize?.1)
                 }
-                
+
                 Text(title)
-                    .font(.system(size: 16))
-                    .foregroundColor(.primary)
-                    .lineLimit(nil) // Allow unlimited lines
+                    .font(.system(size: 13))
+                    .lineLimit(nil) // Allow text to expand vertically
                     .multilineTextAlignment(.leading)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                
-                Spacer()
-                
-                // Optional button
+
                 if let buttonImageName = buttonImageName, let buttonAction = buttonAction {
                     Button(action: {
                         Task {
@@ -91,47 +65,45 @@ struct CustomCard<Content: View>: View {
                         }
                     }) {
                         Image(systemName: buttonImageName)
-                            .font(.system(size: 16))
-                            .foregroundColor(Color(NSColor(hex: appState.preferences.accentColor ?? "") ?? NSColor.controlAccentColor))
+                            .font(.system(size: 12))
                     }
                     .buttonStyle(PlainButtonStyle())
-                    .help(buttonHelpText ?? "")
                 }
             }
-            .padding()
-            
-            // Subtitle (optional)
+            .padding(.horizontal)
+
+            // Subtitle (if provided)
             if let subtitle = subtitle {
                 Text(subtitle)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-                    .lineLimit(nil) // Allow unlimited lines
+                    .lineLimit(nil) // Allow text to expand vertically
                     .multilineTextAlignment(.leading)
                     .padding([.leading, .trailing])
             }
 
-            // Custom content view (optional)
+            // Custom Content (Optional)
             content
+                .padding([.leading, .trailing])
 
-            // Description (optional)
+            // Description (if provided)
             if let description = description {
                 Text(description)
                     .font(.body)
                     .foregroundColor(.primary)
-                    .lineLimit(nil) // Allow unlimited lines
+                    .lineLimit(nil) // Allow text to expand vertically
                     .multilineTextAlignment(.leading)
                     .padding([.leading, .trailing])
             }
 
-            Spacer()
+            Spacer() // Allow the card to expand vertically
         }
-        .padding()
+        .padding(.top) // Padding around the entire card
         .background(
             RoundedRectangle(cornerRadius: 10)
                 .fill(.ultraThinMaterial)
         )
-        .cornerRadius(10)
-        .shadow(radius: 4)
+        .shadow(radius: 4) // Adjust shadow for better appearance
         .padding(5)
     }
 }

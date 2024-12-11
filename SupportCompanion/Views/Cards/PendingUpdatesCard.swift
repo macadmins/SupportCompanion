@@ -13,9 +13,9 @@ struct PendingUpdatesCard: View {
     @EnvironmentObject var appState: AppStateManager
 
     var body: some View {
-        if viewModel.isCardVisible("PendingAppUpdates") {
+        if viewModel.isCardVisible(Constants.Cards.pendingAppUpdates) {
             VStack {
-                CustomCard(
+                ScCard(
                     title: "\(Constants.CardTitle.pendingUpdates)",
                     titleImageName: "clock.fill",
                     content: {

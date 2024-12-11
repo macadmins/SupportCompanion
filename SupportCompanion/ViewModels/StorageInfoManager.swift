@@ -35,6 +35,10 @@ class StorageInfoManager: ObservableObject {
             self.updateStorageInfo(usagePercentage: usagePercentage)
         }
     }
+
+    func stopMonitoring() {
+        StorageMonitor.shared.stopMonitoring()
+    }
     
     func refresh() {
         self.updateStorageInfo()
@@ -42,7 +46,7 @@ class StorageInfoManager: ObservableObject {
     
     func getPercentageColor(percentage: Double) -> Color {
         if percentage < 50 {
-            return .green
+            return .ScGreen
         } else if percentage < 80 {
             return colorScheme == .light ? .orangeLight : .orange
         } else {

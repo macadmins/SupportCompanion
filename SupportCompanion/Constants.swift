@@ -55,6 +55,7 @@ enum Constants {
     enum Panels {
         static let storage = "x-apple.systempreferences:com.apple.settings.Storage"
         static let softwareUpdates = "x-apple.systempreferences:com.apple.preferences.softwareupdate"
+        static let users = "x-apple.systempreferences:com.apple.preferences.users"
     }
     
     enum ToolTips {
@@ -86,13 +87,14 @@ enum Constants {
     }
     
     enum Cards {
-        static let storageCardName = "Storage"
-        static let actionsCardName = "Actions"
-        static let evergreenCardName = "Evergreen"
-        static let deviceInfoCardName = "Device Information"
-        static let deviceManagementCardName = "Device Management"
-        static let appPatchProgressCardName = "Application Patching Progress"
-        static let batteryCardName = "Battery"
+        static let storage = "Storage"
+        static let actions = "Actions"
+        static let evergreen = "Evergreen"
+        static let deviceInfo = "DeviceInformation"
+        static let deviceManagement = "DeviceManagement"
+        static let appPatchProgress = "ApplicationInstallProgress"
+        static let battery = "Battery"
+        static let pendingAppUpdates = "PendingAppUpdates"
     }
     
     enum CardTitle {
@@ -124,6 +126,16 @@ enum Constants {
         static let openManagementApp = String(localized: "Action.OpenManagementApp", defaultValue: "Open Management App", comment: "Label for open management app action")
         static let softwareUpdate = String(localized: "Action.SoftwareUpdate", defaultValue: "Software Update", comment: "Label for software update action")
         static let getSupport = String(localized: "Action.GetSupport", defaultValue: "Get Support", comment: "Label for get support action")
+
+        enum HideStrings {
+            static let changePassword = "ChangePassword"
+            static let gatherLogs = "GatherLogs"
+            static let restartIntuneAgent = "RestartIntuneAgent"
+            static let openManagementApp = "OpenManagementApp"
+            static let softwareUpdate = "SoftwareUpdates"
+            static let getSupport = "GetSupport"
+            static let reboot = "Reboot"
+        }
     }
     
     enum ToastMessages {
@@ -258,6 +270,7 @@ enum Constants {
         enum Keys {
             static let name = "StorageName"
             static let fileVault = "FileVault"
+            static let usage = "Usage"
         }
     }
     

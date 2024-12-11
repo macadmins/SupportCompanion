@@ -15,7 +15,7 @@ struct PSSOCard: View {
     var body: some View {
         VStack(alignment: .leading){
             if "" != appState.ssoInfoManager.platformSSO.loginType {
-                CustomCard(title: "\(Constants.CardTitle.platformSSO)", titleImageName: "lock.fill", useMultiColor: false, content: {
+                ScCard(title: "\(Constants.CardTitle.platformSSO)", titleImageName: "lock.fill", useMultiColor: false, content: {
                         VStack(alignment: .leading) {
                             CardData(info: appState.ssoInfoManager.platformSSO.toKeyValuePairs())
                         }
