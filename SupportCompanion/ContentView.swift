@@ -32,6 +32,8 @@ struct ContentView: View {
                     logo
                         .resizable()
                         .scaledToFit()
+                        .frame(maxWidth: 230)
+                        .fixedSize(horizontal: false, vertical: true)
                         .padding(.top, 20) // Minimal padding
                         .padding(.horizontal, 20)
                 }
@@ -151,21 +153,11 @@ struct ContentView: View {
     
     private func loadLogoForCurrentColorScheme() {
         let base64Logo = colorScheme == .dark ? appState.preferences.brandLogo : appState.preferences.brandLogoLight.isEmpty ? appState.preferences.brandLogo : appState.preferences.brandLogoLight
-        loadLogo(base64Logo: base64Logo)
-    }
-    
-    private func loadLogo(base64Logo: String) {
-        if base64Logo.isEmpty {
-            showLogo = false
-        } else if let decodedImage = base64ToImage(base64Logo) {
-            brandLogo = decodedImage
-            showLogo = true
-        } else {
-            Logger.shared.logDebug("Invalid Base64 string for brand logo.")
-            showLogo = false
+        showLogo = loadLogo(base64Logo: base64Logo)
+        if showLogo {
+            brandLogo = base64ToImage(base64Logo)
         }
     }
-
 
     @ViewBuilder
     private func sidebarItem(for item: SidebarItem) -> some View {
@@ -246,17 +238,3 @@ struct HoverEffectModifier: ViewModifier {
             }
     }
 }
-
-func base64ToImage(_ base64String: String) -> Image? {
-    // Decode Base64 string to Data
-    guard let imageData = Data(base64Encoded: base64String, options: .ignoreUnknownCharacters),
-          let cgImageSource = CGImageSourceCreateWithData(imageData as CFData, nil),
-          let cgImage = CGImageSourceCreateImageAtIndex(cgImageSource, 0, nil) else {
-        Logger.shared.logDebug("Failed to decode Base64 string to Image")
-        return nil
-    }
-
-    // Return a SwiftUI Image
-    return Image(decorative: cgImage, scale: 1.0, orientation: .up)
-}
-
