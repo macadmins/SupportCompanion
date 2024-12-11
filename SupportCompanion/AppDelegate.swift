@@ -151,7 +151,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
                     badgeLayer.backgroundColor = NSColor.red.cgColor
                     badgeLayer.frame = CGRect(
                         x: button.bounds.width - 15, // Align to the lower-right corner
-                        y: 12, // Small offset from the bottom
+                        y: 10, // Small offset from the bottom
                         width: 8,
                         height: 8
                     )
