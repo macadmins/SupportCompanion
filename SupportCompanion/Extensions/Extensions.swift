@@ -96,5 +96,9 @@ extension Color {
     // Red shades
     static let redLight = Color(hue: 0.02, saturation: 0.8, brightness: 0.7) // Softer red for light mode
 
+    // Green shades
     static let ScGreen = Color(red: 0.1, green: 0.6, blue: 0.3)
+
+    // Gray shades - darker gray for light mode
+    static let grayLight = Color(hue: 0, saturation: 0, brightness: 0.3)
 }
