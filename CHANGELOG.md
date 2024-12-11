@@ -8,10 +8,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - The tray menu has been changed to a custom menu that is an extension of the apps main UI. This allows for a more consistent look and feel between the tray menu and the main app. The tray menu now displays the same information as the main app, including device information, storage information and patching progress as well as actions. If you have custom actions configured using `Actions`, the first 6 actions will be displayed in the tray menu. If you have more than 6 actions, the rest can be run from the Self Service section in the main app.
 - If the app is launched using the URL scheme `supportcompanion://`, the tray menu will not be displayed.
+- Shadow for green text has been removed as it could make the text look blurry. Instead the green has been changed to a darker shade to make it more readable.
+- Copy device info button will now include additional information about the device, including battery and storage. Example output:
+```plaintext
+--------------------- Device --------------------- 
+Host Name: AwesomeMac
+Serial Number: C0123456789
+Model: MacBook Pro (14-inch, Nov 2023)
+Processor: Apple M3 Pro
+Memory: 36 GB
+OS Version: 15.2.0
+OS Build: 24C98
+IP Address: 192.168.68.108
+Last Reboot: 4 days
+--------------------- Battery --------------------- 
+Health: 94%
+Cycle Count: 35
+Temperature: 34.5°C
+--------------------- Storage --------------------- 
+Used: 74.9%
+FileVault: Enabled
+```
 
 ### Added
 - Support for Japansese localization, thanks @kenchan0130 for the Japanese localization
-- A badge to the tray menu icon that visually indicates that the user has pending upates to install.
+- A badge to the tray menu icon that visually indicates that the user has pending updates to install.
 
 ## [2.0.2] - 2024-12-06
 ### Changed
