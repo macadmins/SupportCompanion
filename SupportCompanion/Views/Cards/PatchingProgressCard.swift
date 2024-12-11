@@ -13,7 +13,7 @@ struct PatchingProgressCard: View {
     @EnvironmentObject var appState: AppStateManager
 
     var body: some View {
-        if viewModel.isCardVisible("ApplicationInstallProgress") {
+        if viewModel.isCardVisible(Constants.Cards.appPatchProgress) {
             VStack {
                 ScCard(title: "\(Constants.CardTitle.appPatchProgress)", titleImageName: "app.badge.checkmark", content: {
                     ZStack {

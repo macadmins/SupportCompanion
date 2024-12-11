@@ -28,17 +28,17 @@ struct TrayMenuView: View {
             // Main content (Grid and Buttons)
             VStack(spacing: 20) { // Increased spacing between grid and buttons
                 LazyVGrid(columns: columns, alignment: .leading) { // Add spacing between cards
-                    if !appState.preferences.hiddenCards.contains("Battery") {
+                    if !appState.preferences.hiddenCards.contains(Constants.Cards.battery) {
                         CompactBatteryCard()
                     }
-                    if !appState.preferences.hiddenCards.contains("DeviceInformation") {
+                    if !appState.preferences.hiddenCards.contains(Constants.Cards.deviceInfo) {
                         CompactDeviceCard()
                     }
-                    if !appState.preferences.hiddenCards.contains("Storage") {
+                    if !appState.preferences.hiddenCards.contains(Constants.Cards.storage) {
                         CompactStorageCard()
                     }
                     if appState.preferences.mode == Constants.modes.munki || appState.preferences.mode == Constants.modes.intune {
-                        if !appState.preferences.hiddenCards.contains("ApplicationInstallProgress") {
+                        if !appState.preferences.hiddenCards.contains(Constants.Cards.appPatchProgress) {
                             CompactPatchProgressCard()
                         }
                     }
@@ -99,11 +99,11 @@ struct TrayMenuView: View {
     /// Counts visible cards in the grid
     private func visibleCardsCount() -> Int {
         var count = 0
-        if !appState.preferences.hiddenCards.contains("Battery") { count += 1 }
-        if !appState.preferences.hiddenCards.contains("DeviceInformation") { count += 1 }
-        if !appState.preferences.hiddenCards.contains("Storage") { count += 1 }
+        if !appState.preferences.hiddenCards.contains(Constants.Cards.battery) { count += 1 }
+        if !appState.preferences.hiddenCards.contains(Constants.Cards.deviceInfo) { count += 1 }
+        if !appState.preferences.hiddenCards.contains(Constants.Cards.storage) { count += 1 }
         if appState.preferences.mode == Constants.modes.munki || appState.preferences.mode == Constants.modes.intune {
-            if !appState.preferences.hiddenCards.contains("ApplicationInstallProgress") {
+            if !appState.preferences.hiddenCards.contains(Constants.Cards.appPatchProgress) {
                 count += 1
             }
         }
@@ -117,12 +117,12 @@ struct TrayMenuView: View {
             AppStateManager.shared.preferences.menuShowIdentity,
             AppStateManager.shared.preferences.menuShowApps,
             AppStateManager.shared.preferences.menuShowSelfService,
-            viewModel.isButtonVisible("ChangePassword"),
+            viewModel.isButtonVisible(Constants.Actions.HideStrings.changePassword),
             appState.preferences.mode == Constants.modes.munki || appState.preferences.mode == Constants.modes.intune,
-            viewModel.isButtonVisible("GetSupport"),
-            viewModel.isButtonVisible("GatherLogs"),
-            viewModel.isButtonVisible("SoftwareUpdates"),
-            viewModel.isButtonVisible("RestartIntuneAgent")
+            viewModel.isButtonVisible(Constants.Actions.HideStrings.getSupport),
+            viewModel.isButtonVisible(Constants.Actions.HideStrings.gatherLogs),
+            viewModel.isButtonVisible(Constants.Actions.HideStrings.softwareUpdate),
+            viewModel.isButtonVisible(Constants.Actions.HideStrings.restartIntuneAgent)
         ]
         return buttons.filter { $0 }.count
     }
@@ -140,20 +140,20 @@ struct ButtonSection: View {
                         appState.showWindowCallback?()
                 }
             }),
-            viewModel.isButtonVisible("ChangePassword") ? viewModel.createChangePasswordButton(fontSize: 12) : nil,
+            viewModel.isButtonVisible(Constants.Actions.HideStrings.changePassword) ? viewModel.createChangePasswordButton(fontSize: 12) : nil,
+            viewModel.isButtonVisible(Constants.Actions.HideStrings.getSupport) ? ScButton(Constants.Actions.getSupport, fontSize: 12) { ActionHelpers.openSupportPage(url: appState.preferences.supportPageURL) } : nil,
             (appState.preferences.mode == Constants.modes.munki || appState.preferences.mode == Constants.modes.intune)
-                ? (viewModel.isButtonVisible("OpenManagementApp") ? viewModel.createOpenManagementAppButton(type: .default, fontSize: 12) : nil)
+                ? (viewModel.isButtonVisible(Constants.Actions.HideStrings.openManagementApp) ? viewModel.createOpenManagementAppButton(type: .default, fontSize: 12) : nil)
                 : nil,
-            viewModel.isButtonVisible("GetSupport") ? ScButton(Constants.Actions.getSupport, fontSize: 12) { ActionHelpers.openSupportPage(url: appState.preferences.supportPageURL) } : nil,
-            viewModel.isButtonVisible("GatherLogs") ? viewModel.createGatherLogsButton(fontSize: 12) : nil,
-            viewModel.isButtonVisible("SoftwareUpdates") ? ScButton(
+            viewModel.isButtonVisible(Constants.Actions.HideStrings.gatherLogs) ? viewModel.createGatherLogsButton(fontSize: 12) : nil,
+            viewModel.isButtonVisible(Constants.Actions.HideStrings.softwareUpdate) ? ScButton(
                 Constants.Actions.softwareUpdate,
                 badgeNumber: appState.systemUpdateCache.updates.count,
                 helpText: appState.systemUpdateCache.updates.joined(separator: "\n"),
                 fontSize: 12)
             { ActionHelpers.openSystemUpdates() } : nil,
             (appState.preferences.mode == Constants.modes.munki || appState.preferences.mode == Constants.modes.intune)
-                ? (viewModel.isButtonVisible("RestartIntuneAgent") ? viewModel.createRestartIntuneAgentButton(fontSize: 12) : nil)
+                ? (viewModel.isButtonVisible(Constants.Actions.HideStrings.restartIntuneAgent) ? viewModel.createRestartIntuneAgentButton(fontSize: 12) : nil)
                 : nil
         ].compactMap { $0 } // Remove nil values
 

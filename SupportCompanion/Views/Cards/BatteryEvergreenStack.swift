@@ -13,10 +13,10 @@ struct BatteryEvergreenStack: View {
     @EnvironmentObject var appState: AppStateManager
     
     var body: some View {
-        if !viewModel.isCardVisible("Evergreen") && !viewModel.isCardVisible("Battery") {
+        if !viewModel.isCardVisible(Constants.Cards.evergreen) && !viewModel.isCardVisible(Constants.Cards.battery) {
         } else{
             VStack(alignment: .leading){
-                if viewModel.isCardVisible("Evergreen") && appState.preferences.mode == Constants.modes.munki {
+                if viewModel.isCardVisible(Constants.Cards.evergreen) && appState.preferences.mode == Constants.modes.munki {
                     ScCard(title: "\(Constants.CardTitle.evergreen)", titleImageName: "leaf.fill", content: {
                         VStack(alignment: .leading) {
                             Text("Rings")
@@ -39,7 +39,7 @@ struct BatteryEvergreenStack: View {
                     })
                 }
                 
-                if viewModel.isCardVisible("Battery") {
+                if viewModel.isCardVisible(Constants.Cards.battery) {
                     ScCard(title: "\(Constants.CardTitle.battery)", titleImageName: "battery.100percent.bolt", imageSize: (25,25), content: {
                         VStack(alignment: .leading) {
                             CardData(info: appState.batteryInfoManager.batteryInfo.toKeyValuePairs())

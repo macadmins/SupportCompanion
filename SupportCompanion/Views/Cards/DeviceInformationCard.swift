@@ -14,7 +14,7 @@ struct DeviceInformationCard: View {
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
-        if viewModel.isCardVisible("DeviceInformation") {
+        if viewModel.isCardVisible(Constants.Cards.deviceInfo) {
             let groupedData = groupedDeviceInfoArray() // Precomputed grouped data
 
             ScCard(

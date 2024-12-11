@@ -14,28 +14,28 @@ struct ActionsCard: View {
     var onShowRebootModal: (Int, String, String) -> Void
     
     var body: some View {
-        if viewModel.isCardVisible("Actions") {
+        if viewModel.isCardVisible(Constants.Cards.actions) {
             ScCard(title: "\(Constants.CardTitle.actions)", titleImageName: "cursorarrow.click.2", content: {
                 // Precompute the filtered and chunked buttons
                 let visibleButtons = [
-                    viewModel.isButtonVisible("ChangePassword") ? viewModel.createChangePasswordButton() : nil,
-                    viewModel.isButtonVisible("Reboot") ? viewModel.createRebootButton(
+                    viewModel.isButtonVisible(Constants.Actions.HideStrings.changePassword) ? viewModel.createChangePasswordButton() : nil,
+                    viewModel.isButtonVisible(Constants.Actions.HideStrings.reboot) ? viewModel.createRebootButton(
                         onShowModal: { countdown, title, message in
                             onShowRebootModal(countdown, title, message)
                         }
                     ) : nil,
                     (appState.preferences.mode == Constants.modes.munki || appState.preferences.mode == Constants.modes.intune)
-                        ? (viewModel.isButtonVisible("OpenManagementApp") ? viewModel.createOpenManagementAppButton(type: .default) : nil)
+                        ? (viewModel.isButtonVisible(Constants.Actions.HideStrings.openManagementApp) ? viewModel.createOpenManagementAppButton(type: .default) : nil)
                         : nil,
-                    viewModel.isButtonVisible("GetSupport") ? ScButton(Constants.Actions.getSupport) { ActionHelpers.openSupportPage(url: appState.preferences.supportPageURL) } : nil,
-                    viewModel.isButtonVisible("GatherLogs") ? viewModel.createGatherLogsButton() : nil,
-                    viewModel.isButtonVisible("SoftwareUpdates") ? ScButton(
+                    viewModel.isButtonVisible(Constants.Actions.HideStrings.getSupport) ? ScButton(Constants.Actions.getSupport) { ActionHelpers.openSupportPage(url: appState.preferences.supportPageURL) } : nil,
+                    viewModel.isButtonVisible(Constants.Actions.HideStrings.gatherLogs) ? viewModel.createGatherLogsButton() : nil,
+                    viewModel.isButtonVisible(Constants.Actions.HideStrings.softwareUpdate) ? ScButton(
                         Constants.Actions.softwareUpdate,
                         badgeNumber: appState.systemUpdateCache.updates.count,
                         helpText: appState.systemUpdateCache.updates.joined(separator: "\n"))
                     { ActionHelpers.openSystemUpdates() } : nil,
                     (appState.preferences.mode == Constants.modes.munki || appState.preferences.mode == Constants.modes.intune)
-                        ? (viewModel.isButtonVisible("RestartIntuneAgent") ? viewModel.createRestartIntuneAgentButton() : nil)
+                        ? (viewModel.isButtonVisible(Constants.Actions.HideStrings.restartIntuneAgent) ? viewModel.createRestartIntuneAgentButton() : nil)
                         : nil
                 ].compactMap { $0 } // Remove nil values
                 

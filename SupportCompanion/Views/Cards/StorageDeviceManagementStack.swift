@@ -14,11 +14,11 @@ struct StorageDeviceManagementStack: View {
     @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
-        if !viewModel.isCardVisible(Constants.Cards.storageCardName) && !viewModel.isCardVisible(Constants.Cards.deviceManagementCardName) {
+        if !viewModel.isCardVisible(Constants.Cards.storage) && !viewModel.isCardVisible(Constants.Cards.deviceManagement) {
         } else{
             VStack(alignment: .leading){
                 // Storage Card
-                if viewModel.isCardVisible(Constants.Cards.storageCardName) {
+                if viewModel.isCardVisible(Constants.Cards.storage) {
                     ScCard(title: "\(Constants.CardTitle.storage)",
                                titleImageName: "internaldrive.fill",
                                buttonImageName: "macwindow.on.rectangle",
@@ -54,7 +54,7 @@ struct StorageDeviceManagementStack: View {
                 }
                 
                 // Device Management Card
-                if viewModel.isCardVisible("DeviceManagement") {
+                if viewModel.isCardVisible(Constants.Cards.deviceManagement) {
                     ScCard(title: "\(Constants.CardTitle.deviceManagement)", titleImageName: "lock.shield", content:  {
                         VStack(alignment: .leading, spacing: 5) {
                             CardData(info: appState.mdmInfoManager.mdmInfo.toKeyValuePairs())
