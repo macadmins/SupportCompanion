@@ -68,6 +68,8 @@ class Preferences: ObservableObject {
     @AppStorage("MenuShowKnowledgeBase") var menuShowKnowledgeBase: Bool = true
     
     @AppStorage("KnowledgeBaseUrl") var knowledgeBaseUrl: String = ""
+
+    @AppStorage("ShowLogoInTrayMenu") var showLogoInTrayMenu: Bool = true
     
     // MARK: - Actions
     

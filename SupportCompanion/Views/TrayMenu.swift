@@ -11,6 +11,9 @@ import SwiftUI
 struct TrayMenuView: View {
     @EnvironmentObject var appState: AppStateManager
     @ObservedObject var viewModel: CardGridViewModel
+    @Environment(\.colorScheme) var colorScheme
+    @State private var brandLogo: Image? = nil
+    @State private var showLogo: Bool = false
 
     var body: some View {
         let columns = [
@@ -21,8 +24,19 @@ struct TrayMenuView: View {
         VStack(spacing: 20) { // Increase spacing for more breathing room
             // Title at the top
             Spacer()
-            Text(appState.preferences.brandName)
-                .font(.headline)
+            if showLogo, let logo = brandLogo {
+                    logo
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxWidth: 150)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+            // Title Section
+            if !appState.preferences.brandName.isEmpty {
+                Text(appState.preferences.brandName)
+                    .font(.headline)
+            }
             //Spacer()
             
             // Main content (Grid and Buttons)
@@ -57,7 +71,7 @@ struct TrayMenuView: View {
                         GridItem(.flexible())
                     ]
                     
-                    LazyVGrid(columns: actionCols, alignment: .leading, spacing: 20) {
+                    LazyVGrid(columns: actionCols, alignment: .leading, spacing: 10) {
                         ForEach(appState.preferences.actions.prefix(6), id: \.self) { action in
                             ScCardCompactButton(
                                 title: action.name,
@@ -73,14 +87,21 @@ struct TrayMenuView: View {
             .padding(.horizontal)
             
             // Footer at the bottom
-            Spacer()
+            //Spacer()
             Button(Constants.TrayMenu.quitApp) {
                 NSApplication.shared.terminate(nil)
             }
+            .padding(.top, 10)
             Spacer()
             .frame(maxWidth: .infinity, alignment: .center)
         }
         .frame(minWidth: 480, maxWidth: .infinity, idealHeight: 800, maxHeight: .infinity)
+        .onAppear() {
+            loadLogoForCurrentColorScheme()
+        }
+        .onChange(of: colorScheme) { _, _ in
+            loadLogoForCurrentColorScheme()
+        }
     }
 
     /// Calculates the ideal height for the VStack based on the number of elements.
@@ -125,6 +146,18 @@ struct TrayMenuView: View {
             viewModel.isButtonVisible(Constants.Actions.HideStrings.restartIntuneAgent)
         ]
         return buttons.filter { $0 }.count
+    }
+
+    private func loadLogoForCurrentColorScheme() {
+        if appState.preferences.showLogoInTrayMenu == false {
+            showLogo = false
+            return
+        }
+        let base64Logo = colorScheme == .dark ? appState.preferences.brandLogo : appState.preferences.brandLogoLight.isEmpty ? appState.preferences.brandLogo : appState.preferences.brandLogoLight
+        showLogo = loadLogo(base64Logo: base64Logo)
+        if showLogo {
+            brandLogo = base64ToImage(base64Logo)
+        }
     }
 }
 
