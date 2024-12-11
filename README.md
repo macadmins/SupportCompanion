@@ -13,6 +13,9 @@ For getting started with Support Companion, please refer to the [Wiki](https://g
 
 ## Overview
 
+### Tray Menu
+<img width="1920" alt="sctray2 1" src="https://github.com/user-attachments/assets/b8a0ab92-ba5d-4270-9b88-3e58b64f94a8">
+
 ### Home
 <img width="1513" alt="1_home" src="https://github.com/user-attachments/assets/ddf7b35d-5921-47b7-ac72-b17d2ead8211">
 
