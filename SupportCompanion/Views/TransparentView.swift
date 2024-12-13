@@ -90,7 +90,7 @@ struct TransparentView: View {
             .padding()
             .background(GeometryReader { geometry in
                 Color.clear
-                    .onChange(of: combinedPreferences) { _ in
+                    .onChange(of: combinedPreferences) { _, _ in
                         contentHeight = geometry.size.height // Recalculate height
                     }
                     .onAppear {
