@@ -82,6 +82,7 @@ extension AppDelegate: NSWindowDelegate {
 
     func windowDidBecomeKey(_ notification: Notification) {
         AppStateManager.shared.windowIsVisible = true
+        BadgeManager.shared.incrementBadgeCount(count: AppStateManager.shared.pendingUpdatesCount + AppStateManager.shared.systemUpdateCache.count)
     }
 }
 

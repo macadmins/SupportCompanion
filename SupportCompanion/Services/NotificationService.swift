@@ -7,6 +7,7 @@
 
 import Foundation
 import UserNotifications
+import SwiftUI
 
 class NotificationService {
     private let appState: AppStateManager
@@ -111,6 +112,40 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
             }
         }
         completionHandler()
+    }
+}
+
+class BadgeManager {
+    static let shared = BadgeManager()
+    private(set) var badgeCount = 0
+    private let lock = NSLock()
+
+    func incrementBadgeCount(count: Int) {
+        lock.lock()
+        badgeCount = count
+        lock.unlock()
+        updateBadge()
+    }
+
+    func currentBadgeCount() -> Int {
+        lock.lock()
+        let count = badgeCount
+        lock.unlock()
+        return count
+    }
+
+    private func updateBadge() {
+        DispatchQueue.main.async {
+            if self.badgeCount > 0 {
+                print("Setting badge count to \(self.badgeCount)")
+                NSApplication.shared.dockTile.showsApplicationBadge = true
+                NSApplication.shared.dockTile.badgeLabel = nil
+                NSApplication.shared.dockTile.badgeLabel = String(self.badgeCount)
+            } else {
+                NSApplication.shared.dockTile.badgeLabel = nil
+                NSApplication.shared.dockTile.showsApplicationBadge = false
+            }
+        }
     }
 }
 
