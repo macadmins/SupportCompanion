@@ -55,7 +55,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
         popover = NSPopover()
         popover.behavior = .transient // Closes when clicking outside
-        popover.contentSize = NSSize(width: 500, height: 520)
+        popover.contentSize = NSSize(width: 500, height: 500)
         popover.contentViewController = NSHostingController(
             rootView: TrayMenuView(
                 viewModel: CardGridViewModel(appState: AppStateManager.shared)
@@ -214,14 +214,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             let contentView = ContentView()
                 .environmentObject(AppStateManager.shared)
                 .environmentObject(Preferences())
-                .frame(minWidth: 1500, minHeight: 950)
+                .frame(minWidth: 1100, minHeight: 650)
 
             let hostingController = NSHostingController(rootView: contentView)
 
             let window = NSWindow(contentViewController: hostingController)
-            window.setContentSize(NSSize(width: 1500, height: 950))
+            window.setContentSize(NSSize(width: 1520, height: 960))
             window.styleMask = [.titled, .closable, .resizable]
-            window.minSize = NSSize(width: 1500, height: 950)
+            window.minSize = NSSize(width: 1100, height: 650)
             window.title = ""
             window.isReleasedWhenClosed = false
             window.backgroundColor = .clear
