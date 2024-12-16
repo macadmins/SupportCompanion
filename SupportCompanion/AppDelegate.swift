@@ -17,6 +17,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     var windowController: NSWindowController?
     var transparentWindowController: TransparentWindowController?
     let appStateManager = AppStateManager.shared
+    let elevationManager = ElevationManager.shared
     var mainWindow: NSWindow?
     static var urlLaunch = false
     static var shouldExit = false
@@ -87,6 +88,29 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         UNUserNotificationCenter.current().delegate = notificationDelegate
         appStateManager.startBackgroundTasks()
         appStateManager.refreshAll()
+        checkAndHandleDemotionOnLaunch()
+    }
+
+    private func checkAndHandleDemotionOnLaunch() {
+    if let endTime = elevationManager.loadPersistedDemotionState(), Date() >= endTime {
+        elevationManager.demotePrivileges { success in
+                if success {
+                    Logger.shared.logDebug("Privileges automatically demoted on app launch.")
+                    // Clear persisted state
+                    UserDefaults.standard.removeObject(forKey: "PrivilegeDemotionEndTime")
+                } else {
+                    Logger.shared.logError("Failed to demote privileges on app launch.")
+                }
+            }
+    } else if let endTime = elevationManager.loadPersistedDemotionState() {
+            let remainingTime = endTime.timeIntervalSinceNow
+            elevationManager.startDemotionTimer(duration: remainingTime) { remainingTime in
+                DispatchQueue.main.async {
+                    AppStateManager.shared.timeToDemote = remainingTime
+                    AppStateManager.shared.isDemotionActive = remainingTime > 0
+                }
+            }
+        }
     }
 
     private func setupTrayMenu() {
@@ -128,7 +152,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         func updateTrayIcon(hasUpdates: Bool) {
             let iconName = "MenuIcon"
             guard let baseIcon = NSImage(named: iconName) else {
-                print("Error: \(iconName) not found")
+                Logger.shared.logDebug("Failed to load tray icon: \(iconName)")
                 return
             }
 
@@ -175,7 +199,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
     @objc private func togglePopover() {
         guard let button = trayManager.getStatusItem().button else {
-            print("Error: TrayMenuManager's statusItem.button is nil")
+            Logger.shared.logError("Error: TrayMenuManager's statusItem.button is nil")
             return
         }
 
