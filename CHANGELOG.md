@@ -4,6 +4,47 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2024-12-16
+### Changed
+- Device info is now gathered every 8h instead of every 24h.
+- A slight background has been added increasing visaibility of the text.
+- Main window is now slightly resizeable to allow for window to be resized to a smaller size.
+
+### Fixed
+- Artifacts were being left behind on the desktop window when IP address was updated.
+
+### Added
+- The configured logo will now be displayed in the tray menu as well. Can be hidden by setting `ShowLogoInTrayMenu` to `false` in the configuration.
+- A new feature that allows for user elevation of standard users to admin users. This feature is useful for instances where a user needs to perform an action that requires admin rights. The user can request elevation by clicking the `Elevate` button in the tray menu or Identity menu. The admin can configure wether a reason is required, how long the reason must be and if the reason should be sent via a webhook to a specified URL or saved to disk. Example configuration:
+```xml
+<key>EnableElevation</key>
+<true/>
+<key>RequireResonForElevation</key>
+<true/>
+<key>ReasonMinLength</key>
+<integer>20</integer>
+<key>MaxElevationTime</key>
+<integer>60</integer>
+<key>ElevationWebhookUrl</key>
+<string>https://webhook.url</string>
+<key>ShowElevateTrayCard</key>
+<true/>
+<key>ElevationSeverity</key>
+<integer>6</integer>
+```
+
+Example of JSON payload sent to webhook:
+```json
+{
+  "severity" : 6,
+  "date" : "2024-12-16T11:21:01Z",
+  "host" : "Tobias's MacBook",
+  "user" : "tobias",
+  "serial" : "H123456789",
+  "reason" : "Awesome dev stuff"
+}
+```
+
 ## [2.1.0] - 2024-12-11
 ### Changed
 - The tray menu has been changed to a custom menu that is an extension of the apps main UI. This allows for a more consistent look and feel between the tray menu and the main app. The tray menu now displays the same information as the main app, including device information, storage information and patching progress as well as actions. If you have custom actions configured using `Actions`, the first 6 actions will be displayed in the tray menu. If you have more than 6 actions, the rest can be run from the Self Service section in the main app.

@@ -120,7 +120,7 @@ class Preferences: ObservableObject {
 
     // MARK: - Elevate privileges
 
-    @AppStorage("EnableElevation") var enableElevation: Bool = true
+    @AppStorage("EnableElevation") var enableElevation: Bool = false
 
     @AppStorage("ShowElevateTrayCard") var showElevateTrayCard: Bool = true
 
