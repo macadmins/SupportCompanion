@@ -16,7 +16,7 @@ class AppStateManager: ObservableObject {
     lazy var applicationsInfoManager = ApplicationsInfoManager(appState: self)
     lazy var pendingIntuneUpdatesManager = PendingIntuneUpdatesManager(appState: self)
     lazy var evergreenInfoManager = EvergreenInfoManager(appState: self)
-    
+    lazy var elevationManager = ElevationManager(appState: self)
     @Published var isRefreshing: Bool = false
     @Published var deviceInfoManager = DeviceInfoManager.shared
     @Published var storageInfoManager = StorageInfoManager.shared
@@ -36,8 +36,10 @@ class AppStateManager: ObservableObject {
     @Published var storageUsageColor: Color = Color(NSColor.controlAccentColor)
     @Published var JsonCards: [JsonCard] = []
     @Published var catalogs: [String] = []
+    @Published var isDemotionActive: Bool = false
+    @Published var timeToDemote: TimeInterval = 0
 
-    private var cancellables = Set<AnyCancellable>()
+    private var cancellables: Set<AnyCancellable> = Set<AnyCancellable>()
     var showWindowCallback: (() -> Void)?
 
     func startBackgroundTasks() {
@@ -92,6 +94,16 @@ class AppStateManager: ObservableObject {
             }
             .store(in: &cancellables)
     }
+
+    func startDemotionTimer(duration: TimeInterval) {
+        elevationManager.startDemotionTimer(duration: duration) { [weak self] remainingTime in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                self.timeToDemote = remainingTime
+                self.isDemotionActive = remainingTime > 0
+            }
+        }
+    }
     
     @MainActor
     func refreshAll() {
@@ -103,6 +115,7 @@ class AppStateManager: ObservableObject {
                 group.addTask { self.mdmInfoManager.refresh() }
                 group.addTask { self.systemUpdatesManager.refresh() }
                 group.addTask { self.batteryInfoManager.refresh() }
+                group.addTask { self.userInfoManager.refresh() }
             }
             self.isRefreshing = false
         }
