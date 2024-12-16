@@ -90,6 +90,39 @@ extension Notification.Name {
     static let handleIncomingURL = Notification.Name("handleIncomingURL")
 }
 
+extension TimeInterval {
+    /// Formats a TimeInterval into `hh:mm:ss` or `mm:ss`
+    func formattedTime() -> String {
+        let hours = Int(self) / 3600
+        let minutes = (Int(self) % 3600) / 60
+        let seconds = Int(self) % 60
+
+        if hours > 0 {
+            return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+        } else {
+            return String(format: "%02d:%02d", minutes, seconds)
+        }
+    }
+
+    // func to format time to a string with "minutes" or "seconds" or "hourds" depending on the time
+    func formattedTimeUnit() -> String {
+        let hours = Int(self) / 3600
+        let minutes = (Int(self) % 3600) / 60
+        let seconds = Int(self) % 60
+
+        if hours > 0 {
+            let hourUnit = hours == 1 ? "hour" : "hours"
+            return String(format: "%d \(hourUnit)", hours)
+        } else if minutes > 0 {
+            let minuteUnit = minutes == 1 ? "minute" : "minutes"
+            return String(format: "%d \(minuteUnit)", minutes)
+        } else {
+            let secondUnit = seconds == 1 ? "second" : "seconds"
+            return String(format: "%d \(secondUnit)", seconds)
+        }
+    }
+}
+
 extension Color {
     // Orange shades
     static let orangeLight = Color(hue: 0.1, saturation: 0.9, brightness: 0.75) // Softer orange for light mode
