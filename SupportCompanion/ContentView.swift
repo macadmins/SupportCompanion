@@ -125,7 +125,8 @@ struct ContentView: View {
             // The popup content
             PopupModal(isShowing: $isShowingPopup)
         }
-        .background(.clear)
+        // Set the background color based on the color scheme with opacity
+        .background(colorScheme == .dark ? Color.black.opacity(0.4) : Color.white.opacity(0.4))
         .background(.ultraThinMaterial)
     }
     
