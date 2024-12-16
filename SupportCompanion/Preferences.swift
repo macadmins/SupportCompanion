@@ -117,6 +117,22 @@ class Preferences: ObservableObject {
     @AppStorage("SupportEmail") var supportEmail: String = ""
     
     @AppStorage("SupportPhone") var supportPhone: String = ""
+
+    // MARK: - Elevate privileges
+
+    @AppStorage("EnableElevation") var enableElevation: Bool = false
+
+    @AppStorage("ShowElevateTrayCard") var showElevateTrayCard: Bool = true
+
+    @AppStorage("MaxElevationTime") var maxElevationTime: Double = 300
+
+    @AppStorage("RequireResonForElevation") var requireReasonForElevation: Bool = true
+
+    @AppStorage("ReasonMinLength") var reasonMinLength: Int = 10
+
+    @AppStorage("ElevationWebhookUrl") var elevationWebhookURL: String = ""
+
+    @AppStorage("ElevationSeverity") var elevationSeverity: Int = 6 // Default to "Informational"
     
     init() {
         ensureDefaultsInitialized()
@@ -298,7 +314,7 @@ class Preferences: ObservableObject {
             } else if let value = value as? Double {
                 writeCommand = "defaults write \(bundleIdentifier) \(key) -float \(value)"
             } else {
-                print("Unsupported value type for key: \(key)")
+                Logger.shared.logError("Unsupported value type for key: \(key)")
                 continue
             }
 
