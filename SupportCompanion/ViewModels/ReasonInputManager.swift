@@ -21,19 +21,22 @@ class ReasonInputManager {
 
         let hostingController = NSHostingController(rootView: reasonInputView)
 
-        let newWindow = NSWindow(
+        let newWindow = CustomWindow(
             contentRect: NSRect(x: 0, y: 0, width: 550, height: 350),
-            styleMask: [.titled, .closable],
+            styleMask: [.borderless],
             backing: .buffered,
             defer: false
         )
-
+        newWindow.backgroundColor = .clear
+        newWindow.isOpaque = false
         newWindow.contentView = hostingController.view
-        newWindow.title = ""
-        newWindow.styleMask = [.titled, .fullSizeContentView]
+        newWindow.hasShadow = false
         newWindow.center()
+        newWindow.ignoresMouseEvents = false
+        newWindow.isMovableByWindowBackground = true
         newWindow.isReleasedWhenClosed = false
         newWindow.makeKeyAndOrderFront(nil)
+        newWindow.makeFirstResponder(hostingController.view)
 
         self.window = newWindow
 
@@ -64,4 +67,9 @@ private class WindowDelegate: NSObject, NSWindowDelegate {
     func windowWillClose(_ notification: Notification) {
         onClose()
     }
+}
+
+private class CustomWindow: NSWindow {
+    override var canBecomeKey: Bool { true }
+    override var canBecomeMain: Bool { true }
 }

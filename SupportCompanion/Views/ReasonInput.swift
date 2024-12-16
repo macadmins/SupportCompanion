@@ -55,6 +55,5 @@ struct ReasonInputView: View {
         .frame(width: 550, height: 350)
         .background(Color(NSColor.windowBackgroundColor))
         .cornerRadius(12)
-        .shadow(radius: 10)
     }
 }
