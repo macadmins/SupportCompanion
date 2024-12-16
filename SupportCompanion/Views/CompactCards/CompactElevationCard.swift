@@ -7,7 +7,7 @@ struct CompactElevationCard: View {
 
     var body: some View {
         ScCardCompact(
-            title: "Privileges",
+            title: Constants.CardTitle.privileges,
             titleImageName: "lock.fill",
             imageSize: (13, 13),
             content: {
@@ -38,7 +38,7 @@ struct CompactElevationCard: View {
                         }
                     }) {
                         VStack {
-                            ButtonTitle(title: "Elevate", fontSize: 12, isLoading: false)
+                            ButtonTitle(title: Constants.General.elevate, fontSize: 12, isLoading: false)
                         }
                         .padding(8)
                         .background(Color(NSColor(hex: appState.preferences.accentColor ?? "") ?? NSColor.controlAccentColor))

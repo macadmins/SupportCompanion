@@ -35,14 +35,14 @@ struct ReasonInputView: View {
 
             // Buttons
             HStack {
-                Button("Cancel") {
+                Button(Constants.General.close) {
                     // Dismiss the window                    
                     isPresented = false
                     ReasonInputManager.shared.closeWindow() // Explicitly close the window
                 }
                 .keyboardShortcut(.cancelAction)
 
-                Button("Elevate") {
+                Button(Constants.General.elevate) {
                     // Perform the elevation
                     onElevate(reason)
                     isPresented = false

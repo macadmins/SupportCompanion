@@ -17,7 +17,7 @@ struct ElevationCard: View {
         let elevationManager = ElevationManager(appState: appState)
 
         VStack(alignment: .leading) {
-            ScCard(title: "Privileges", titleImageName: "lock.fill", useMultiColor: false, content: {
+            ScCard(title: Constants.CardTitle.privileges, titleImageName: "lock.fill", useMultiColor: false, content: {
                 VStack(alignment: .leading) {
                     HStack {
                         Text("Revocation in: ")
@@ -32,7 +32,7 @@ struct ElevationCard: View {
 
                     Spacer()
 
-                    ScButton("Elevate", disabled: appState.userInfoManager.userInfo.isAdmin || appState.isDemotionActive) {
+                    ScButton(Constants.General.elevate, disabled: appState.userInfoManager.userInfo.isAdmin || appState.isDemotionActive) {
                         if appState.preferences.requireReasonForElevation {
                             showReasonInput = true // Show reason input modal
                         } else {

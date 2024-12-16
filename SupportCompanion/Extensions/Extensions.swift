@@ -111,13 +111,13 @@ extension TimeInterval {
         let seconds = Int(self) % 60
 
         if hours > 0 {
-            let hourUnit = hours == 1 ? "hour" : "hours"
+            let hourUnit = hours == 1 ? Constants.General.hour : Constants.General.hours
             return String(format: "%d \(hourUnit)", hours)
         } else if minutes > 0 {
-            let minuteUnit = minutes == 1 ? "minute" : "minutes"
+            let minuteUnit = minutes == 1 ? Constants.General.minute : Constants.General.minutes
             return String(format: "%d \(minuteUnit)", minutes)
         } else {
-            let secondUnit = seconds == 1 ? "second" : "seconds"
+            let secondUnit = seconds == 1 ? Constants.General.second : Constants.General.seconds
             return String(format: "%d \(secondUnit)", seconds)
         }
     }

@@ -63,7 +63,7 @@ class ElevationManager {
         persistDemotionState(endTime: Date().addingTimeInterval(duration))
 
         NotificationService(appState: self.appState).sendNotification(
-            message: "Privliged session started. You will be demoted in \(duration.formattedTimeUnit()).", 
+            message: "\(Constants.Notifications.Elevation.ElevationStartedMessage) \(duration.formattedTimeUnit()).", 
             notificationType: .generic
         )
 
@@ -86,7 +86,7 @@ class ElevationManager {
                 // If half the time has passed, notify the user
                 if remainingTime == duration / 2 {
                     NotificationService(appState: self.appState).sendNotification(
-                        message: "Your elevated privileges will be demoted in \(timeToDemote.formattedTimeUnit()).",
+                        message: "\(Constants.Notifications.Elevation.ElevationHalfwayMessage) \(timeToDemote.formattedTimeUnit()).",
                         notificationType: .generic
                     )
                 }
@@ -99,7 +99,7 @@ class ElevationManager {
                         return
                     }
                     NotificationService(appState: self.appState).sendNotification(
-                        message: "Your elevated privileges have been demoted.",
+                        message: Constants.Notifications.Elevation.ElevationDemotedMessage,
                         notificationType: .generic
                     )
                 }
