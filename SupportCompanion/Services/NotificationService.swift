@@ -36,8 +36,8 @@ class NotificationService {
 
     func sendNotification(
         message: String,
-        buttonText: String,
-        command: String,
+        buttonText: String? = nil,
+        command: String? = nil,
         notificationType: NotificationType
     ) {
         guard appState.preferences.notificationInterval > 0 else {
@@ -47,10 +47,12 @@ class NotificationService {
         
         let imagePath = appState.preferences.notificationImage.isEmpty ? nil : appState.preferences.notificationImage
 
-        if let lastDate = AppStorageHelper.shared.getLastNotificationDate(for: notificationType),
-           Date().timeIntervalSince(lastDate) < TimeInterval(appState.preferences.notificationInterval * 3600) {
-            Logger.shared.logDebug("Notification interval for \(notificationType) not reached, skipping notification")
-            return
+        if notificationType != .generic {
+            if let lastDate = AppStorageHelper.shared.getLastNotificationDate(for: notificationType),
+            Date().timeIntervalSince(lastDate) < TimeInterval(appState.preferences.notificationInterval * 3600) {
+                Logger.shared.logDebug("Notification interval for \(notificationType) not reached, skipping notification")
+                return
+            }
         }
 
         let content = UNMutableNotificationContent()
@@ -68,15 +70,20 @@ class NotificationService {
                 Logger.shared.logError("Failed to attach image: \(error.localizedDescription)")
             }
         }
-        // Define the notification category and actions
-        let action = UNNotificationAction(
-            identifier: "RUN_COMMAND",
-            title: buttonText,
-            options: [.foreground]
-        )
+
+        var actions: [UNNotificationAction] = []
+        if let buttonText = buttonText, let command = command {
+            let action = UNNotificationAction(
+                identifier: "RUN_COMMAND",
+                title: buttonText,
+                options: [.foreground]
+            )
+            actions.append(action)
+        }
+
         let category = UNNotificationCategory(
             identifier: "ACTIONABLE",
-            actions: [action],
+            actions: actions,
             intentIdentifiers: []
         )
         UNUserNotificationCenter.current().setNotificationCategories([category])
@@ -137,7 +144,6 @@ class BadgeManager {
     private func updateBadge() {
         DispatchQueue.main.async {
             if self.badgeCount > 0 {
-                print("Setting badge count to \(self.badgeCount)")
                 NSApplication.shared.dockTile.showsApplicationBadge = true
                 NSApplication.shared.dockTile.badgeLabel = nil
                 NSApplication.shared.dockTile.badgeLabel = String(self.badgeCount)
