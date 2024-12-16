@@ -37,7 +37,7 @@ class DeviceInfoManager: ObservableObject {
         Logger.shared.logDebug("Starting device info monitoring")
         timer?.invalidate()
         refresh()
-        timer = Timer.scheduledTimer(withTimeInterval: 86400, repeats: true) { _ in
+        timer = Timer.scheduledTimer(withTimeInterval: 28800, repeats: true) { _ in
             self.refresh()
         }
     }
@@ -62,34 +62,6 @@ class DeviceInfoManager: ObservableObject {
                 lastRestart: getLastRebootDays() ?? 0,
                 model: getModelName()
             )
-        }
-        
-        LastRebootMonitor.shared.startMonitoring { [weak self] lastRebootDays in
-            guard let self = self else { return }
-            
-            DispatchQueue.global(qos: .background).async {
-                
-                DispatchQueue.main.async {
-                    guard let currentDeviceInfo = self.deviceInfo else {
-                        return
-                    }
-                    
-                    if currentDeviceInfo.lastRestart != lastRebootDays {
-                        self.deviceInfo = DeviceInfo(
-                            id: currentDeviceInfo.id,
-                            hostName: currentDeviceInfo.hostName,
-                            osVersion: currentDeviceInfo.osVersion,
-                            osBuild: currentDeviceInfo.osBuild,
-                            cpuType: currentDeviceInfo.cpuType,
-                            ram: currentDeviceInfo.ram,
-                            ipAddress: currentDeviceInfo.ipAddress,
-                            serialNumber: currentDeviceInfo.serialNumber,
-                            lastRestart: lastRebootDays,
-                            model: currentDeviceInfo.model
-                        )
-                    }
-                }
-            }
         }
         
         IPAddressMonitor.startMonitoring { newIPAddresses in
