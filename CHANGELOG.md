@@ -4,12 +4,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.2.0] - 2024-12-16
+## [2.2.0] - 2024-12-17
 ### Changed
 - Device info is now gathered every 8h instead of every 24h.
 - A slight background has been added increasing visaibility of the text.
 - Main window is now slightly resizeable to allow for window to be resized to a smaller size.
 - In addition to only checking if Company Portal exists when dynamically setting the `Mode` to use, the server url will now also be checked. If the server url contains "i.manage.microsoft.com", the MDM will be set to Intune. This is because Company Portal can validly exist on a device without the device being managed by Intune.
+- Button labels on actions can now be set to a custom value. This allows for admins to set custom labels for actions that are displayed in the `Self Service` page. Example configuration:
+```xml
+<dict>
+    <key>Command</key>
+    <string>open https://github.com/macadmins/supportcompanion</string>
+    <key>Description</key>
+    <string/>
+    <key>Icon</key>
+    <string>heart.fill</string>
+    <key>Name</key>
+    <string>Open Intranet</string>
+    <key>ButtonLabel</key>
+    <string>Open</string>
+</dict>
+```
 
 ### Fixed
 - Artifacts were being left behind on the desktop window when IP address was updated.
