@@ -9,12 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Device info is now gathered every 8h instead of every 24h.
 - A slight background has been added increasing visaibility of the text.
 - Main window is now slightly resizeable to allow for window to be resized to a smaller size.
+- In addition to only checking if Company Portal exists when dynamically setting the `Mode` to use, the server url will now also be checked. If the server url contains "i.manage.microsoft.com", the MDM will be set to Intune. This is because Company Portal can validly exist on a device without the device being managed by Intune.
 
 ### Fixed
 - Artifacts were being left behind on the desktop window when IP address was updated.
 
 ### Added
 - The configured logo will now be displayed in the tray menu as well. Can be hidden by setting `ShowLogoInTrayMenu` to `false` in the configuration.
+- A new option to show a custom view in the navigation bat based on a Markdown file. This allows for creating a custom view with custom information relevant to your organization. The view will be displayed in the navigation bar. Example configuration:
+```xml
+<key>MarkdownFilePath</key>
+<string>/path/to/custom/view.md</string>
+<key>MardownMenuLabel</key>
+<string>Custom View</string>
+<key>MardownMenuIcon</key>
+<string>doc.text</string>
+```
 - A new feature that allows for user elevation of standard users to admin users. This feature is useful for instances where a user needs to perform an action that requires admin rights. The user can request elevation by clicking the `Elevate` button in the tray menu or Identity menu. The admin can configure wether a reason is required, how long the reason must be and if the reason should be sent via a webhook to a specified URL or saved to disk. Example configuration:
 ```xml
 <key>EnableElevation</key>
