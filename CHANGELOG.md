@@ -20,9 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ```xml
 <key>MarkdownFilePath</key>
 <string>/path/to/custom/view.md</string>
-<key>MardownMenuLabel</key>
+<key>MarkdownMenuLabel</key>
 <string>Custom View</string>
-<key>MardownMenuIcon</key>
+<key>MarkdownMenuIcon</key>
 <string>doc.text</string>
 ```
 - A new feature that allows for user elevation of standard users to admin users. This feature is useful for instances where a user needs to perform an action that requires admin rights. The user can request elevation by clicking the `Elevate` button in the tray menu or Identity menu. The admin can configure wether a reason is required, how long the reason must be and if the reason should be sent via a webhook to a specified URL or saved to disk. Example configuration:
