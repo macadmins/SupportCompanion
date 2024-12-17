@@ -8,6 +8,7 @@
 import Foundation
 import AppKit
 import SwiftUI
+import MarkdownUI
 
 extension NSColor {
     /// Initializes an `NSColor` from a hex string (e.g., "#FF5733").
@@ -135,4 +136,60 @@ extension Color {
 
     // Gray shades - darker gray for light mode
     static let grayLight = Color(hue: 0, saturation: 0, brightness: 0.3)
+}
+
+extension Theme {
+    static let sc = Theme.basic
+        .codeBlock { configuration in
+            ScrollView(.horizontal) {
+                configuration.label
+                    .markdownTextStyle {
+                        FontFamilyVariant(.monospaced)
+                        FontSize(14)
+                    }
+                    .padding(12)
+            }
+            .background(Color.primary.opacity(0.15))
+            .clipShape(RoundedRectangle(cornerRadius: 6))
+            .markdownMargin(top: 0, bottom: 12)
+        }
+
+        .blockquote { configuration in
+            HStack(spacing: 0) {
+                RoundedRectangle(cornerRadius: 6)
+                    .fill(Color.primary.opacity(0.15))
+                .relativeFrame(width: .em(0.2))
+                configuration.label
+                    .markdownTextStyle { ForegroundColor(.secondary) }
+                .relativePadding(.horizontal, length: .em(1))
+            }
+            .fixedSize(horizontal: false, vertical: true)
+        }
+
+        .table { configuration in
+            configuration.label
+                .fixedSize(horizontal: false, vertical: true)
+                .markdownTableBorderStyle(.init(color: .primary, width: 1))
+                .markdownMargin(top: 16, bottom: 16)
+                .markdownTableBackgroundStyle(
+                    .alternatingRows(
+                        Color.primary.opacity(0.1),
+                        Color.clear, 
+                        header: (Color(NSColor(hex: AppStateManager.shared.preferences.accentColor ?? "") ?? NSColor.controlAccentColor))
+                    )
+                )
+            }
+
+        .tableCell { configuration in
+            configuration.label
+                .markdownTextStyle {
+                    if configuration.row == 0 {
+                        FontWeight(.semibold) // Make header bold
+                    }
+                }
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.vertical, 6)
+                .padding(.horizontal, 13)
+                .relativeLineSpacing(.em(0.25))
+            }
 }

@@ -17,7 +17,7 @@ struct CustomMarkdown: View {
             ScrollView {
                 Markdown(markdown)
                     .lineSpacing(2)
-                    .markdownTheme(.basic)
+                    .markdownTheme(.sc)
                     .markdownTextStyle {
                         FontSize(14)
                     }
