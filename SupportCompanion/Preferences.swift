@@ -70,6 +70,12 @@ class Preferences: ObservableObject {
     @AppStorage("KnowledgeBaseUrl") var knowledgeBaseUrl: String = ""
 
     @AppStorage("ShowLogoInTrayMenu") var showLogoInTrayMenu: Bool = true
+
+    @AppStorage("MarkdownFilePath") var markdownFilePath: String = "/Volumes/Extern/Developer/sc.md"
+
+    @AppStorage("MardownMenuLabel") var markdownMenuLabel: String = "Markdown"
+
+    @AppStorage("MardownMenuIcon") var markdownMenuIcon: String = "doc.text"
     
     // MARK: - Actions
     
