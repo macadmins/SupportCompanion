@@ -258,7 +258,8 @@ class Preferences: ObservableObject {
                     command: dict["Command"] as? String ?? "",
                     icon: dict["Icon"] as? String,
                     isPrivileged: dict["IsPrivileged"] as? Bool ?? false,
-                    description: dict["Description"] as? String ?? ""
+                    description: dict["Description"] as? String ?? "",
+                    buttonLabel: dict["ButtonLabel"] as? String ?? "Run"
                 )
             }
             self?.actions = newActions
