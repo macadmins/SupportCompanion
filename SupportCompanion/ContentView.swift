@@ -147,6 +147,8 @@ struct ContentView: View {
             selectedItem = items.first(where: { $0.id == "Company Portal" })
         case "knowledgebase":
             selectedItem = items.first(where: { $0.id == Constants.Navigation.knowledgeBase })
+        case "markdown":
+            selectedItem = items.first(where: { $0.id == appState.preferences.markdownMenuLabel })
         default:
             selectedItem = items.first(where: { $0.id == Constants.Navigation.home })
         }
