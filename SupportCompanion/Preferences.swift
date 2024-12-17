@@ -57,7 +57,7 @@ class Preferences: ObservableObject {
     
     // MARK: - Menu
     
-    @AppStorage("MenuShowIdentity") var menuShowIdentity: Bool = true
+    @AppStorage("MenuShowIdentity") var menuShowIdentity: Bool = false
 
     @AppStorage("MenuShowApps") var menuShowApps: Bool = true
 
@@ -71,11 +71,11 @@ class Preferences: ObservableObject {
 
     @AppStorage("ShowLogoInTrayMenu") var showLogoInTrayMenu: Bool = true
 
-    @AppStorage("MarkdownFilePath") var markdownFilePath: String = "/Volumes/Extern/Developer/sc.md"
+    @AppStorage("MarkdownFilePath") var markdownFilePath: String = ""
 
-    @AppStorage("MardownMenuLabel") var markdownMenuLabel: String = "Markdown"
+    @AppStorage("MardownMenuLabel") var markdownMenuLabel: String = ""
 
-    @AppStorage("MardownMenuIcon") var markdownMenuIcon: String = "doc.text"
+    @AppStorage("MardownMenuIcon") var markdownMenuIcon: String = ""
     
     // MARK: - Actions
     
