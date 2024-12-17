@@ -31,6 +31,28 @@ func getMDMEnrollmentTime() async -> String {
     return "Unknown"
 }
 
+func getMDMUrl() async -> String {
+    do {
+        let commandOutput = try await ExecutionService.executeCommand(
+            "/usr/bin/profiles",
+            with: ["status", "-type", "enrollment"]
+        )
+
+        // Process the command output
+        let lines = commandOutput.split(separator: "\n")
+        for line in lines {
+            if line.contains("MDM server") {
+                let url = line.split(separator: "https://").last?.trimmingCharacters(in: .whitespacesAndNewlines)
+                return url ?? "Unknown"
+            }
+        }
+    } catch {
+        Logger.shared.logError("Error getting MDM URL: \(error)")
+    }
+
+    return "Unknown"
+}
+
 func getMDMStatus() async -> [String: String] {
     var mdmDetails: [String: String] = ["ABM": "", "Enrolled": "", "EnrollmentDate": ""]
     

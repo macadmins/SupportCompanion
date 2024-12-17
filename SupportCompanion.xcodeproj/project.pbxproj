@@ -10,6 +10,9 @@
 		F60FAB742CE8D40A00ECAC53 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = F60FAB732CE8D40A00ECAC53 /* AlertToast */; };
 		F60FAB872CEA108A00ECAC53 /* SidebarConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60FAB862CEA108A00ECAC53 /* SidebarConfig.swift */; };
 		F64927372CF9EA8D00C34D90 /* com.github.macadmins.SupportCompanion.helper in CopyFiles */ = {isa = PBXBuildFile; fileRef = F6F8AE7D2CE345A8009B0A1F /* com.github.macadmins.SupportCompanion.helper */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		F6575A992D117108007DBC83 /* ExecutionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6F8AE9C2CE34E54009B0A1F /* ExecutionService.swift */; };
+		F6575A9A2D117114007DBC83 /* HelperRemoteProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6F8AE9E2CE34E72009B0A1F /* HelperRemoteProvider.swift */; };
+		F6575A9D2D117141007DBC83 /* SupportCompanionErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6F8AE952CE34B81009B0A1F /* SupportCompanionErrors.swift */; };
 		F6890EEB2CFF326D00244985 /* SupportCompanionCLI in CopyFiles */ = {isa = PBXBuildFile; fileRef = F6890EE22CFF308F00244985 /* SupportCompanionCLI */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		F6890EEC2CFF330D00244985 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6E4D1D42CE4CE1E003EB8C0 /* Preferences.swift */; };
 		F6890EED2CFF331400244985 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A4E0F62CEC9DFC002B4D74 /* Constants.swift */; };
@@ -118,6 +121,16 @@
 			);
 			target = F6F8AE7C2CE345A8009B0A1F /* com.github.macadmins.SupportCompanion.helper */;
 		};
+		F6575A9C2D117133007DBC83 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				HelperConstans.swift,
+				HelperProtocol.swift,
+				"OSStatus+Extensions.swift",
+				RemoteApplicationProtocol.swift,
+			);
+			target = F6890EE12CFF308F00244985 /* SupportCompanionCLI */;
+		};
 		F6890EEF2CFF332200244985 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -129,6 +142,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Logger.swift,
+				MDMHelpers.swift,
 			);
 			target = F6890EE12CFF308F00244985 /* SupportCompanionCLI */;
 		};
@@ -208,7 +222,7 @@
 		F6E4D2842CE781B9003EB8C0 /* Components */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Components; sourceTree = "<group>"; };
 		F6E72E642CE3DEC300D78336 /* Models */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (F6890EEF2CFF332200244985 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Models; sourceTree = "<group>"; };
 		F6EB39E72CE1EE2800517FCD /* ViewModels */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (F6A4E0E52CEBD7D8002B4D74 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = ViewModels; sourceTree = "<group>"; };
-		F6F8AE7E2CE345A8009B0A1F /* Helper */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (F6A4E0E82CEBD7F8002B4D74 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, F649281C2CFA02C000C34D90 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Helper; sourceTree = "<group>"; };
+		F6F8AE7E2CE345A8009B0A1F /* Helper */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (F6A4E0E82CEBD7F8002B4D74 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, F649281C2CFA02C000C34D90 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, F6575A9C2D117133007DBC83 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Helper; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -469,6 +483,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				F6890EEC2CFF330D00244985 /* Preferences.swift in Sources */,
+				F6575A9D2D117141007DBC83 /* SupportCompanionErrors.swift in Sources */,
+				F6575A992D117108007DBC83 /* ExecutionService.swift in Sources */,
+				F6575A9A2D117114007DBC83 /* HelperRemoteProvider.swift in Sources */,
 				F6890EED2CFF331400244985 /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

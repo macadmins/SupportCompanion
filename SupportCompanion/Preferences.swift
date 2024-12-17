@@ -134,9 +134,11 @@ class Preferences: ObservableObject {
 
     @AppStorage("ElevationSeverity") var elevationSeverity: Int = 6 // Default to "Informational"
     
+    var mdm: String = "Unknown"
+        
     init() {
         ensureDefaultsInitialized()
-
+        
         NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)
             .sink { [weak self] _ in
                 guard let self = self else { return }
@@ -155,11 +157,12 @@ class Preferences: ObservableObject {
                 self?.loadHiddenActions()
                 self?.loadDesktopInfoHideItems()
             }
-        
-        detectModeAndSetLogFolders()
+        Task {
+            await detectModeAndSetLogFolders()
+        }
     }
     
-    private func detectModeAndSetLogFolders() {
+    private func detectModeAndSetLogFolders() async {
         //if !logFolders.isEmpty {
         //    Logger.shared.logDebug("Log folders already initialized: \(logFolders)")
         //    return
@@ -173,12 +176,23 @@ class Preferences: ObservableObject {
         let fileManager = FileManager.default
         let companyPortalExists = fileManager.fileExists(atPath: Constants.AppPaths.companyPortal)
         let mscExists = fileManager.fileExists(atPath: Constants.AppPaths.MSC)
+        let mdmUrl = await getMDMUrl()
+        
+        print(mdmUrl)
 
+        if mdmUrl != "Unknown" {
+            Logger.shared.logDebug("MDM URL detected: \(mdmUrl)")
+            if mdmUrl.contains("i.manage.microsoft.com") {
+                Logger.shared.logDebug("MDM URL contains i.manage.microsoft.com, setting mdm to Intune.")
+                mdm = "Intune"
+            }
+        }
+        
         if companyPortalExists && mscExists {
             Logger.shared.logDebug("Both Munki and Company Portal paths exist, defaulting to Munki mode.")
             mode = Constants.modes.munki
             logFolders = ["/Library/Managed Installs/Logs", "/Library/Logs/Microsoft"]
-        } else if companyPortalExists {
+        } else if companyPortalExists && mdm == "Intune" {
             Logger.shared.logDebug("Company Portal path exists, setting mode to Intune.")
             mode = Constants.modes.intune
             logFolders = ["/Library/Logs/Microsoft"]
@@ -322,7 +336,10 @@ class Preferences: ObservableObject {
             executeShellCommand(command: writeCommand)
         }
         
-        detectModeAndSetLogFolders()
+        Task {
+            await detectModeAndSetLogFolders()
+        }
+        
         Logger.shared.logDebug("Defaults have been reset using defaults write.")
     }
 
