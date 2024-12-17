@@ -73,9 +73,9 @@ class Preferences: ObservableObject {
 
     @AppStorage("MarkdownFilePath") var markdownFilePath: String = ""
 
-    @AppStorage("MardownMenuLabel") var markdownMenuLabel: String = ""
+    @AppStorage("MarkdownMenuLabel") var markdownMenuLabel: String = ""
 
-    @AppStorage("MardownMenuIcon") var markdownMenuIcon: String = ""
+    @AppStorage("MarkdownMenuIcon") var markdownMenuIcon: String = ""
     
     // MARK: - Actions
     
