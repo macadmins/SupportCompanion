@@ -132,7 +132,8 @@ class ElevationManager {
                 }
             }
             // Start the timer
-            self.appState.startDemotionTimer(duration: self.appState.preferences.maxElevationTime)
+            let duration = Double(self.appState.preferences.maxElevationTime * 60)
+            self.appState.startDemotionTimer(duration: duration)
         }
     }
 

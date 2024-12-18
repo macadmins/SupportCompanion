@@ -132,7 +132,7 @@ class Preferences: ObservableObject {
 
     @AppStorage("ShowElevateTrayCard") var showElevateTrayCard: Bool = true
 
-    @AppStorage("MaxElevationTime") var maxElevationTime: Double = 300
+    @AppStorage("MaxElevationTime") var maxElevationTime: Int = 5
 
     @AppStorage("RequireResonForElevation") var requireReasonForElevation: Bool = true
 
