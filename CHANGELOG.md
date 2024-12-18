@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Device info is now gathered every 8h instead of every 24h.
 - A slight background has been added increasing visaibility of the text.
 - Main window is now slightly resizeable to allow for window to be resized to a smaller size.
+- Last reboot time is now monitored and updated every 5 minutes. Displaying in minutes, hours or days depending on the time since last reboot.
+- Battery temperature will adapt to the configured measurement system in macOS and show temp in either Celsius or Fahrenheit.
 - In addition to only checking if Company Portal exists when dynamically setting the `Mode` to use, the server url will now also be checked. If the server url contains "i.manage.microsoft.com", the MDM will be set to Intune. This is because Company Portal can validly exist on a device without the device being managed by Intune.
 - Button labels on actions can now be set to a custom value. This allows for admins to set custom labels for actions that are displayed in the `Self Service` page. Example configuration:
 ```xml
