@@ -139,18 +139,8 @@ struct SupportCompanionCLI {
         let lastReboot = getLastRestartMinutes() ?? 0
         let osVersion = getOSVersion()
         let osBuild = getOSBuild()
+        let formattedLastRestart = formattedRebootContent(value: lastReboot)
 
-        var formattedLastRestart: String {
-            if lastReboot >= 1440 { // 1440 minutes in a day
-                let days = lastReboot / 1440
-                return "\(days) \(Constants.General.daysAgo)"
-            } else if lastReboot >= 60 { // More than an hour
-                let hours = lastReboot / 60
-                return "\(hours) \(Constants.General.hours)"
-            } else { // Less than an hour
-                return "\(lastReboot) \(Constants.General.minutes)"
-            }
-        }
 
         print("""
         💻 Device Information

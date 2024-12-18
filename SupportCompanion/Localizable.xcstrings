@@ -2040,6 +2040,48 @@
         }
       }
     },
+    "General.DayAgo" : {
+      "comment" : "Number of day ago",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "tag zuvor"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Day Ago"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "jour avant"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日前"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "dag siden"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "dag sedan"
+          }
+        }
+      }
+    },
     "General.Days" : {
       "comment" : "Number of days",
       "extractionState" : "manual",
@@ -2047,7 +2089,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tage"
+            "value" : "tage"
           }
         },
         "en" : {
@@ -2059,7 +2101,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Jours"
+            "value" : "jours"
           }
         },
         "ja" : {
@@ -2071,7 +2113,7 @@
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dager"
+            "value" : "dager"
           }
         },
         "sv" : {
@@ -2089,7 +2131,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vor Tagen"
+            "value" : "vor tagen"
           }
         },
         "en" : {
@@ -2101,7 +2143,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Jours avant"
+            "value" : "jours avant"
           }
         },
         "ja" : {
@@ -2173,7 +2215,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stunde"
+            "value" : "stunde"
           }
         },
         "en" : {
@@ -2185,7 +2227,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Heure"
+            "value" : "heure"
           }
         },
         "ja" : {
@@ -2197,13 +2239,13 @@
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Time"
+            "value" : "time"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Timme"
+            "value" : "timme"
           }
         }
       }
@@ -2215,7 +2257,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stunden"
+            "value" : "stunden"
           }
         },
         "en" : {
@@ -2227,7 +2269,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Heures"
+            "value" : "heures"
           }
         },
         "ja" : {
@@ -2239,13 +2281,13 @@
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Timer"
+            "value" : "timer"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Timmar"
+            "value" : "timmar"
           }
         }
       }
@@ -2299,7 +2341,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minuten"
+            "value" : "minuten"
           }
         },
         "en" : {
@@ -2317,13 +2359,13 @@
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minutt"
+            "value" : "minutt"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minut"
+            "value" : "minut"
           }
         }
       }
@@ -2335,7 +2377,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minuten"
+            "value" : "minuten"
           }
         },
         "en" : {
@@ -2353,7 +2395,7 @@
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minutter"
+            "value" : "minutter"
           }
         },
         "sv" : {
@@ -2371,7 +2413,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sekunde"
+            "value" : "sekunde"
           }
         },
         "en" : {
@@ -2383,7 +2425,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Seconde"
+            "value" : "seconde"
           }
         },
         "ja" : {
@@ -2395,13 +2437,13 @@
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sekund"
+            "value" : "sekund"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sekund"
+            "value" : "sekund"
           }
         }
       }
@@ -2413,7 +2455,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sekunden"
+            "value" : "sekunden"
           }
         },
         "en" : {
@@ -2425,7 +2467,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Secondes"
+            "value" : "secondes"
           }
         },
         "ja" : {
@@ -2437,13 +2479,13 @@
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sekunder"
+            "value" : "sekunder"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sekunder"
+            "value" : "sekunder"
           }
         }
       }

@@ -198,6 +198,30 @@ class IPAddressMonitor {
     }
 }
 
+func formattedRebootContent(value: Int) -> String {
+    var formattedLastRestart: String {
+        if value >= 1440 { // 1440 minutes in a day
+            let days = value / 1440
+            if days == 1 {
+                return "\(days) \(Constants.General.dayAgo)"
+            }
+            return "\(days) \(Constants.General.daysAgo)"
+        } else if value >= 60 { // More than an hour
+            let hours = value / 60
+            if hours == 1 {
+                return "\(hours) \(Constants.General.hour)"
+            }
+            return "\(hours) \(Constants.General.hours)"
+        } else { // Less than an hour
+            if value == 1 {
+                return "\(value) \(Constants.General.minute)"
+            }
+            return "\(value) \(Constants.General.minutes)"
+        }
+    }
+    return formattedLastRestart
+}
+
 class LastRebootMonitor {
     static let shared = LastRebootMonitor()
     private var updateHandler: ((Int) -> Void)?

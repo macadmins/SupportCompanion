@@ -149,19 +149,8 @@ struct LastRestartRow: View {
     let value: Int // Days since last restart
     let colorScheme: ColorScheme
 
-    private var formattedLastRestart: String {
-        if value >= 1440 { // 1440 minutes in a day
-            let days = value / 1440
-            return "\(days) \(Constants.General.daysAgo)"
-        } else if value >= 60 { // More than an hour
-            let hours = value / 60
-            return "\(hours) \(Constants.General.hours)"
-        } else { // Less than an hour
-            return "\(value) \(Constants.General.minutes)"
-        }
-    }
-
     var body: some View {
+        let formattedLastRestart = formattedRebootContent(value: value)
         let color = colorForLastRestart(value: value)
 
         HStack {
