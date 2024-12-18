@@ -350,6 +350,18 @@ struct LastRestartRowTransparent: View {
     let label: String
     let value: Int // Days since last restart
     let fontSize: CGFloat
+
+    private var formattedLastRestart: String {
+        if value >= 1440 { // 1440 minutes in a day
+            let days = value / 1440
+            return "\(days) \(Constants.General.daysAgo)"
+        } else if value >= 60 { // More than an hour
+            let hours = value / 60
+            return "\(hours) \(Constants.General.hours)"
+        } else { // Less than an hour
+            return "\(value) \(Constants.General.minutes)"
+        }
+    }
     
     var body: some View {
         HStack {
@@ -358,7 +370,7 @@ struct LastRestartRowTransparent: View {
                 .bold()
             Spacer()
             HStack(spacing: 5) {
-                Text("\(value) \(Constants.General.days)")
+                Text(formattedLastRestart)
                 .shadow(radius: 2)
                 Image(systemName: "clock.fill")
             }

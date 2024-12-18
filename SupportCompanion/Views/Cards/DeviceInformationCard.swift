@@ -149,6 +149,18 @@ struct LastRestartRow: View {
     let value: Int // Days since last restart
     let colorScheme: ColorScheme
 
+    private var formattedLastRestart: String {
+        if value >= 1440 { // 1440 minutes in a day
+            let days = value / 1440
+            return "\(days) \(Constants.General.daysAgo)"
+        } else if value >= 60 { // More than an hour
+            let hours = value / 60
+            return "\(hours) \(Constants.General.hours)"
+        } else { // Less than an hour
+            return "\(value) \(Constants.General.minutes)"
+        }
+    }
+
     var body: some View {
         let color = colorForLastRestart(value: value)
 
@@ -160,7 +172,7 @@ struct LastRestartRow: View {
 
             Spacer()
             HStack(spacing: 5) {
-                Text("\(value) \(Constants.General.days)")
+                Text(formattedLastRestart)
                     .foregroundColor(color)
                 Image(systemName: "clock.fill")
                     .foregroundColor(color)
@@ -171,7 +183,8 @@ struct LastRestartRow: View {
     }
 
     private func colorForLastRestart(value: Int) -> Color {
-        switch value {
+        let days = value / 1440
+        switch days {
         case 0...2:
             return .ScGreen
         case 3...7:

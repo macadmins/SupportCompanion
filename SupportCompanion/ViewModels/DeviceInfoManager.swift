@@ -37,7 +37,7 @@ class DeviceInfoManager: ObservableObject {
         Logger.shared.logDebug("Starting device info monitoring")
         timer?.invalidate()
         refresh()
-        timer = Timer.scheduledTimer(withTimeInterval: 28800, repeats: true) { _ in
+        timer = Timer.scheduledTimer(withTimeInterval: 300, repeats: true) { _ in
             self.refresh()
         }
     }
@@ -59,7 +59,7 @@ class DeviceInfoManager: ObservableObject {
                 ram: getRAMSize(),
                 ipAddress: currentIPAddress,
                 serialNumber: getSerialNumber(),
-                lastRestart: getLastRebootDays() ?? 0,
+                lastRestart: getLastRestartMinutes() ?? 0,
                 model: getModelName()
             )
         }

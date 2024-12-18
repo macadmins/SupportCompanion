@@ -87,6 +87,23 @@ func getLastRebootDays() -> Int? {
     return daysSinceReboot
 }
 
+func getLastRestartMinutes() -> Int? {
+    var mib = [CTL_KERN, KERN_BOOTTIME]
+    var bootTime = timeval()
+    var size = MemoryLayout<timeval>.stride
+
+    let result = sysctl(&mib, 2, &bootTime, &size, nil, 0)
+    guard result == 0 else {
+        return nil
+    }
+
+    let bootDate = Date(timeIntervalSince1970: TimeInterval(bootTime.tv_sec))
+    let currentDate = Date()
+
+    let elapsedMinutes = Int(currentDate.timeIntervalSince(bootDate) / 60)
+    return elapsedMinutes
+}
+
 func getModelName() -> String {
     return getPropertyValue(forKey: "product-name", service: "product") ?? "Unknown"
 }
@@ -191,7 +208,7 @@ class LastRebootMonitor {
         self.updateHandler = onUpdate
 
         // Perform the reboot check
-        let lastRebootDays = getLastRebootDays()
+        let lastRebootDays = getLastRestartMinutes()
         DispatchQueue.main.async {
             self.updateHandler?(lastRebootDays ?? 0)
         }

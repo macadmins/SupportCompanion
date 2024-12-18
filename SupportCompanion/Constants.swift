@@ -36,7 +36,7 @@ enum Constants {
     
     enum General {
         static let days = String(localized: "General.Days", defaultValue: "Days", comment: "Number of days")
-        static let daysAgo = String(localized: "General.DaysAgo", defaultValue: "Days ago", comment: "Number of days ago")
+        static let daysAgo = String(localized: "General.DaysAgo", defaultValue: "Days Ago", comment: "Number of days ago")
         static let hours = String(localized: "General.Hours", defaultValue: "Hours", comment: "Number of hours")
         static let hour = String(localized: "General.Hour", defaultValue: "Hour", comment: "Number of hour")
         static let minute = String(localized: "General.Minute", defaultValue: "Minute", comment: "Number of minute")

@@ -49,7 +49,7 @@ struct CardData: View {
             case Constants.Battery.Keys.health:
                 healthContent(value: value)
             case Constants.DeviceInfo.Keys.lastRestart:
-                daysContent(value: value, suffix: " \(Constants.General.days)", color: colorForValue(key: key, value: value))
+                rebootContent(value: value.rawValue as? Int ?? 0)
             case "FileVault":
                 fileVaultContent(value: value)
             case Constants.KerberosSSO.Keys.expiryDays:
@@ -100,6 +100,35 @@ struct CardData: View {
         + Text(suffix)
             .font(.system(size: fontSize ?? 14))
     }
+
+    private func rebootContent(value: Int) -> some View {
+        var formattedLastRestart: String {
+            if value >= 1440 { // 1440 minutes in a day
+                let days = value / 1440
+                return "\(days) \(Constants.General.daysAgo)"
+            } else if value >= 60 { // More than an hour
+                let hours = value / 60
+                return "\(hours) \(Constants.General.hours)"
+            } else { // Less than an hour
+                return "\(value) \(Constants.General.minutes)"
+            }
+        }
+        return Text(formattedLastRestart)
+            .foregroundColor(colorForLastRestart(value: value))
+            .font(.system(size: fontSize ?? 14))
+    }
+
+    private func colorForLastRestart(value: Int) -> Color {
+        let days = value / 1440
+        switch days {
+        case 0...2:
+            return .ScGreen
+        case 3...7:
+            return colorScheme == .light ? .orangeLight : .orange
+        default:
+            return colorScheme == .light ? .redLight : .red
+        }
+    }
     
     private func pssoRegistrationContent(value: InfoValue) -> some View {
         return Text(value.displayValue)
@@ -139,17 +168,6 @@ struct CardData: View {
                     : (intValue < 80
                         ? (colorScheme == .light ? .orangeLight : .orange)
                        : .ScGreen)
-            }
-        case "LastRestart":
-            if let intValue = value.rawValue as? Int {
-                switch intValue {
-                case 0...2:
-                    return .ScGreen
-                case 3...7:
-                    return colorScheme == .light ? .orangeLight : .orange
-                default:
-                    return colorScheme == .light ? .redLight : .red
-                }
             }
         case "FileVault":
             if let boolValue = value.rawValue as? Bool {
