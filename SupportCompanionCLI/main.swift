@@ -198,6 +198,8 @@ struct SupportCompanionCLI {
     }
 
     static func getBatteryInfo() {
+        let locale = Locale.current
+        let usesMetric = locale.measurementSystem == .metric
         let batteryTemp = getBatteryTemperature()
         let designCapacity = getBatteryDesignCapacity() ?? 0
         let maxCapacity = getBatteryMaxCapacity() ?? 0
@@ -215,7 +217,7 @@ struct SupportCompanionCLI {
         -----------------------
         Health:          \(health)% 🔋
         Cycle Count:     \(String(getBatteryCycleCount() ?? 0))
-        Temperature:     \(String(format: "%.1f", batteryTemp ?? 0))°C 🌡️
+        Temperature:     \(String(format: "%.1f", batteryTemp ?? 0))\(usesMetric ? "°C" : "°F") 🌡️
         Charging Status: \(chargingStatus)
         Time Remaining:  \(timeRemaining)
         """)

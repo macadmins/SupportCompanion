@@ -82,12 +82,14 @@ struct CardData: View {
     
     private func temperatureContent(value: InfoValue) -> some View {
         let color = colorForValue(key: Constants.Battery.Keys.temperature, value: value)
+        let locale = Locale.current
+        let usesMetric = locale.measurementSystem == .metric
         
         return HStack(spacing: 0) {
             Text(value.displayValue)
                 .foregroundColor(color)
                 .font(.system(size: fontSize ?? 14))
-            Text("°C")
+            Text(usesMetric ? "°C" : "°F")
                 .font(.system(size: fontSize ?? 14))
         }
     }
@@ -160,6 +162,9 @@ struct CardData: View {
 
     /// Determines the color for specific values.
     private func colorForValue(key: String, value: InfoValue) -> Color {
+        let locale = Locale.current
+        let usesMetric = locale.measurementSystem == .metric
+
         switch key {
         case "Health":
             if let intValue = value.rawValue as? Int {
@@ -182,13 +187,24 @@ struct CardData: View {
                 return intValue <= 30 ? (colorScheme == .light ? .orangeLight : .orange) : (intValue < 2 ? (colorScheme == .light ? .redLight : .red) : .ScGreen)
             }
         case Constants.Battery.Keys.temperature:
-            if let doubleValue = value.rawValue as? Double {
-                return doubleValue > 80 ? (colorScheme == .light ? .redLight : .red) : (doubleValue >= 60 ? (colorScheme == .light ? .orange : .orange) : .ScGreen)
-            } else if let intValue = value.rawValue as? Int {
-                let temperature = Double(intValue)
-                return temperature > 80 ? (colorScheme == .light ? .redLight : .red) : (temperature >= 60 ? (colorScheme == .light ? .orangeLight : .orange) : .ScGreen)
+            if usesMetric {
+                if let doubleValue = value.rawValue as? Double {
+                    return doubleValue > 80 ? (colorScheme == .light ? .redLight : .red) : (doubleValue >= 60 ? (colorScheme == .light ? .orange : .orange) : .ScGreen)
+                } else if let intValue = value.rawValue as? Int {
+                    let temperature = Double(intValue)
+                    return temperature > 80 ? (colorScheme == .light ? .redLight : .red) : (temperature >= 60 ? (colorScheme == .light ? .orangeLight : .orange) : .ScGreen)
+                } else {
+                    return .primary
+                }
             } else {
-                return .primary
+                if let doubleValue = value.rawValue as? Double {
+                    return doubleValue > 176 ? (colorScheme == .light ? .redLight : .red) : (doubleValue >= 140 ? (colorScheme == .light ? .orange : .orange) : .ScGreen)
+                } else if let intValue = value.rawValue as? Int {
+                    let temperature = Double(intValue)
+                    return temperature > 176 ? (colorScheme == .light ? .redLight : .red) : (temperature >= 140 ? (colorScheme == .light ? .orangeLight : .orange) : .ScGreen)
+                } else {
+                    return .primary
+                }
             }
         default:
             return .primary

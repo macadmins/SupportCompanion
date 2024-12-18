@@ -84,6 +84,9 @@
     "°C" : {
 
     },
+    "°F" : {
+
+    },
     "Action.ChangePassword" : {
       "extractionState" : "manual",
       "localizations" : {
