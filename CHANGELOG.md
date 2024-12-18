@@ -40,6 +40,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <key>MarkdownMenuIcon</key>
 <string>doc.text</string>
 ```
+- A new option to trigger actions using the CLI. This allows for triggering actions using the CLI instead of the UI. This can be useful for automating actions or triggering actions from a script. By default, actions configured as privileged will require authentication. This can be disabled by setting `RequirePrivilegedActionAuthentication` to `false`. Example usage:
+```bash
+/Applications/SupportCompanion.app/Contents/Resources/SupportCompanionCLI action "Restart clipboard"
+```
+- Additional arguments to the CLI to allow for getting additional information that is displayed in the app. Example usage:
+```bash
+/Applications/SupportCompanion.app/Contents/Resources/SupportCompanionCLI battery
+```
+Example output:
+```plaintext
+🔋 Battery Information
+-----------------------
+Health:          93% 🔋
+Cycle Count:     37
+Temperature:     36.7°C 🌡️
+Charging Status: Not Charging
+Time Remaining:  N/A
+```
 - A new feature that allows for user elevation of standard users to admin users. This feature is useful for instances where a user needs to perform an action that requires admin rights. The user can request elevation by clicking the `Elevate` button in the tray menu or Identity menu. The admin can configure wether a reason is required, how long the reason must be and if the reason should be sent via a webhook to a specified URL or saved to disk. Example configuration:
 ```xml
 <key>EnableElevation</key>
