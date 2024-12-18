@@ -84,3 +84,32 @@ func getMDMStatus() async -> [String: String] {
     
     return mdmDetails
 }
+
+func getMDMStatusNoEnrollmentTime() async -> [String: String] {
+    var mdmDetails: [String: String] = ["ABM": "", "Enrolled": ""]
+    
+    do {
+        let commandOutput = try await ExecutionService.executeCommand(
+            "/usr/bin/profiles",
+            with: ["status", "-type", "enrollment"]
+        )
+        
+        // Process the command output
+        let lines = commandOutput.split(separator: "\n")
+        for line in lines {
+            if line.contains("Enrolled via DEP") {
+                let abm = line.split(separator: ":").last?.trimmingCharacters(in: .whitespacesAndNewlines)
+                mdmDetails["ABM"] = (abm == "Yes") ? "Yes" : "No"
+            }
+            if line.contains("MDM enrollment") {
+                let enrolled = line.split(separator: ":").last?.trimmingCharacters(in: .whitespacesAndNewlines)
+                mdmDetails["Enrolled"] = ((enrolled?.contains("Yes")) != nil) ? enrolled : "No"
+            }
+        }
+        
+    } catch {
+        Logger.shared.logError("Error getting MDM status: \(error)")
+    }
+    
+    return mdmDetails
+}

@@ -31,8 +31,47 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         appStateManager.pendingUpdatesCount > 0 || appStateManager.systemUpdateCache.count > 0
     }
 
+    private func executeAction(_ action: Action) {
+        Task {
+            do {
+                _ = try await ExecutionService.executeShellCommand(action.command, isPrivileged: action.isPrivileged)
+            } catch {
+                Logger.shared.logError("Failed to execute action: \(error)")
+            }
+        }
+    }
+
     func application(_ application: NSApplication, open urls: [URL]) {
         guard let url = urls.first else { return }
+
+        if url.host == "run" {
+            Logger.shared.logDebug("Received run command request")
+            if let queryItems = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems {
+                if let actionName = queryItems.first(where: { $0.name == "action" })?.value {
+                    // Get the action details
+                    if let action = appStateManager.preferences.actions.first(where: { $0.name == actionName }) {
+                        Logger.shared.logDebug("Found action: \(action.name)")
+                        if action.isPrivileged ?? false && appStateManager.preferences.requirePrivilegedActionAuthentication {
+                            Logger.shared.logDebug("Action requires authentication") 
+                            authenticateWithTouchIDOrPassword(completion: { success in
+                                if success {
+                                    self.executeAction(action)
+                                } else {
+                                    Logger.shared.logError("Authentication failed. Action: \(action.name) was not executed.")
+                                }
+                            }, reason: "authenticate to execute this privileged action.")
+                        } else {
+                            Logger.shared.logDebug("Executing action: \(action.name)")
+                            self.executeAction(action)
+                        }
+                    } else {
+                        Logger.shared.logError("Action not found: \(actionName)")
+                    }
+                }
+            }
+            return
+        }
+
         switch url.host?.lowercased() {
             case nil:
                 AppDelegate.shouldExit = true

@@ -16,7 +16,7 @@ class ElevationManager {
     }
 
         func elevatePrivileges(completion: @escaping (Bool) -> Void) {
-        authenticateWithTouchIDOrPassword { success in
+            authenticateWithTouchIDOrPassword(completion: { success in
             guard success else {
                 completion(false)
                 return
@@ -35,7 +35,7 @@ class ElevationManager {
                     completion(false)
                 }
             }
-        }
+        }, reason: "authenticate to elevate privileges")
     }
 
     func demotePrivileges(completion: @escaping (Bool) -> Void) {

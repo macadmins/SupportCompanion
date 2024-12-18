@@ -8,7 +8,7 @@
 import Foundation
 
 struct SupportCompanionCLI {
-    static func main() {
+    static func main() async {
         let arguments = CommandLine.arguments
 
         guard arguments.count > 1 else {
@@ -26,6 +26,23 @@ struct SupportCompanionCLI {
             print("UserDefaults have been reset.")
         case "prefs":
             printPreferencesStatus()
+        case "action":
+            if arguments.count > 2 {
+                let actionName = arguments[2]
+                let cli = SupportCompanionCLI()
+                cli.triggerAction(named: actionName)
+            } else {
+                print("Missing action name.")
+                printUsage()
+            }
+        case "battery":
+            getBatteryInfo()
+        case "device":
+            getDeviceInfo()
+        case "storage":
+            getStorageInfo()
+        case "mdm":
+            await getMDMInfo()
         case "help":
             printUsage()
         default:
@@ -92,6 +109,106 @@ struct SupportCompanionCLI {
         }
     }
 
+    func triggerAction(named actionName: String) {
+        let url = "supportcompanion://run?action=\(actionName)"
+        if actionName.isEmpty {
+            print("Action name is empty. Please provide an action name.")
+            return
+        }
+        print("""
+        🚀 Action Triggered
+        -----------------------
+        Action: \(actionName)
+
+        Authentication might be required to run this action.
+        """)
+        let process = Process()
+        process.launchPath = "/usr/bin/open"
+        process.arguments = [url]
+        process.launch()
+        process.waitUntilExit()
+    }
+
+    static func getDeviceInfo() {
+        let hostName = getHostName() ?? "Unknown"
+        let ram = getRAMSize()
+        let model = getModelName()
+        let serial = getSerialNumber() ?? "Unknown"
+        let processor = getCPUName() ?? "Unknown"
+        let ip = getAllIPAddresses().joined(separator: ", ")
+        let lastReboot = getLastRebootDays() ?? 0
+        let osVersion = getOSVersion()
+        let osBuild = getOSBuild()
+
+        print("""
+        💻 Device Information
+        -----------------------
+        Hostname:       \(hostName.uppercased())
+        Model:          \(model)
+        Serial Number:  \(serial)
+        Processor:      \(processor)
+        Memory:         \(ram)
+        IP Address(es): \(ip)
+        Last Reboot:    \(lastReboot) days ago
+        OS Version:     \(osVersion)
+        OS Build:       \(osBuild)
+        """)
+    }
+    
+    static func getMDMInfo() async {
+        let MDMUrl = await getMDMUrl()
+        let MDMStatus = await getMDMStatusNoEnrollmentTime()
+
+        print("""
+        🔒 MDM Information
+        -----------------------
+        Enrolled:      \(MDMStatus["Enrolled"] ?? "Unknown")
+        ABM:           \(MDMStatus["ABM"] ?? "Unknown")
+        MDM URL:       \(MDMUrl)
+        """)
+    }
+
+    static func getStorageInfo() {
+        let storageName = getStorageName()
+        let storageUsage = getStorageUsagePercentage()
+        let fileVaultEnabled = isFileVaultEnabled()
+
+        let progressBar = String(repeating: "▓", count: Int(storageUsage / 10)) +
+                                  String(repeating: "░", count: 10 - Int(storageUsage / 10))
+
+        print("""
+        💾 Storage Information
+        -----------------------
+        Storage Name:  \(storageName)
+        Usage:         \(progressBar) \(storageUsage)%
+        FileVault:     \(fileVaultEnabled ? "Enabled ✅" : "Disabled ❌")
+        """)
+    }
+
+    static func getBatteryInfo() {
+        let batteryTemp = getBatteryTemperature()
+        let designCapacity = getBatteryDesignCapacity() ?? 0
+        let maxCapacity = getBatteryMaxCapacity() ?? 0
+        let health: Int
+        if designCapacity > 0 {
+            health = Int(round((Double(maxCapacity) / Double(designCapacity)) * 100))
+        } else {
+            health = 0
+        }
+        let chargingStatus = isBatteryCharging()
+        let timeRemaining = getBatteryTimeRemaining() ?? "Unknown"
+
+        print("""
+        🔋 Battery Information
+        -----------------------
+        Health:          \(health)% 🔋
+        Cycle Count:     \(String(getBatteryCycleCount() ?? 0))
+        Temperature:     \(String(format: "%.1f", batteryTemp ?? 0))°C 🌡️
+        Charging Status: \(chargingStatus)
+        Time Remaining:  \(timeRemaining)
+        """)
+    }
+
     static func printUsage() {
         print("""
         Usage: SupportCompanionCLI <command>
@@ -100,10 +217,15 @@ struct SupportCompanionCLI {
           version    Output the app's version.
           reset      Reset UserDefaults to default values.
           prefs      Output the current user defaults preferences.
+          action     Trigger an action by name. Provide the action name as an argument.
+          battery    Output battery information.
+          device     Output device information.
+          storage    Output storage information.
+          mdm        Output MDM information.
           help       Show this help message.
         """)
     }
 }
 
 // Run the CLI
-SupportCompanionCLI.main()
+await SupportCompanionCLI.main()

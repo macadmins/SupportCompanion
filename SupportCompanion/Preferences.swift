@@ -92,6 +92,8 @@ class Preferences: ObservableObject {
     @Published var hiddenActions: [String] = UserDefaults.standard.array(forKey: "HiddenActions") as? [String] ?? []
     
     @Published var logFolders: [String] = UserDefaults.standard.array(forKey: "LogFolders") as? [String] ?? []
+
+    @AppStorage("RequirePrivilegedActionAuthentication") var requirePrivilegedActionAuthentication: Bool = true
     
     // MARK: - Desktop Info
     

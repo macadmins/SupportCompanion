@@ -3,13 +3,13 @@ import Foundation
 import SwiftUI
 import Combine
 
-func authenticateWithTouchIDOrPassword(completion: @escaping (Bool) -> Void) {
+func authenticateWithTouchIDOrPassword(completion: @escaping (Bool) -> Void, reason: String) {
     let context = LAContext()
     var error: NSError?
 
     if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
         // Try Touch ID/Face ID
-        context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: "Authenticate to elevate privileges") { success, authError in
+        context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason) { success, authError in
             if success {
                 // Authentication successful
                 DispatchQueue.main.async {
@@ -17,22 +17,22 @@ func authenticateWithTouchIDOrPassword(completion: @escaping (Bool) -> Void) {
                 }
             } else {
                 // Fallback to password
-                authenticateWithPassword(completion: completion)
+                authenticateWithPassword(completion: completion, reason: reason)
             }
         }
     } else {
         // Biometrics unavailable, fallback to password
-        authenticateWithPassword(completion: completion)
+        authenticateWithPassword(completion: completion, reason: reason)
     }
 }
 
-func authenticateWithPassword(completion: @escaping (Bool) -> Void) {
+func authenticateWithPassword(completion: @escaping (Bool) -> Void, reason: String) {
     let context = LAContext()
     var error: NSError?
 
     // Check if deviceOwnerAuthentication (password fallback) is available
     if context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error) {
-        context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: "Authenticate to elevate privileges") { success, authError in
+        context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: reason) { success, authError in
             DispatchQueue.main.async {
                 if success {
                     // Authentication successful
