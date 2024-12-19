@@ -99,6 +99,8 @@ class Preferences: ObservableObject {
     
     @AppStorage("DesktopInfoBackgroundOpacity") var desktopInfoBackgroundOpacity: Double = 0.001
     
+    @AppStorage("DesktopInfoBackgroundFrosted") var desktopInfoBackgroundFrosted: Bool = false
+    
     @AppStorage("DesktopInfoWindowPosition") var desktopInfoWindowPosition: String = "LowerRight"
     @Published var currentWindowPosition: String = "LowerRight"
     

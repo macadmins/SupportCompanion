@@ -18,10 +18,19 @@ struct TransparentView: View {
     
     var body: some View {
         ZStack {
+            if appState.preferences.desktopInfoBackgroundFrosted {
+                BlurEffectView(
+                    material: .fullScreenUI,
+                    blendingMode: .behindWindow
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 15))
+                .edgesIgnoringSafeArea(.all)
+            }
+            
             RoundedRectangle(cornerRadius: 15)
-                .fill(Color.black.opacity(appState.preferences.desktopInfoBackgroundOpacity))
-                .shadow(radius: 10) // Shadow for depth
-                .clipShape(RoundedRectangle(cornerRadius: 15)) // Ensure clipping
+            .fill(Color.black.opacity(appState.preferences.desktopInfoBackgroundOpacity))
+            .shadow(radius: 10) // Shadow for depth
+            .clipShape(RoundedRectangle(cornerRadius: 15))
 
             VStack(alignment: .leading) {
                 // Title for the Info View
@@ -250,6 +259,25 @@ struct TransparentView: View {
             }
         }
         .id(appState.preferences.desktopInfoHideItems)
+    }
+}
+
+struct BlurEffectView: NSViewRepresentable {
+    let material: NSVisualEffectView.Material
+    let blendingMode: NSVisualEffectView.BlendingMode
+
+    func makeNSView(context: Context) -> NSVisualEffectView {
+        let view = NSVisualEffectView()
+        view.material = material          // Set material to ultra-thin equivalent
+        view.blendingMode = blendingMode  // Set blending mode to behindWindow or withinWindow
+        view.state = .active              // Ensure the effect is active
+        return view
+    }
+
+    func updateNSView(_ nsView: NSVisualEffectView, context: Context) {
+        nsView.material = material
+        nsView.blendingMode = blendingMode
+        nsView.state = .active
     }
 }
 
