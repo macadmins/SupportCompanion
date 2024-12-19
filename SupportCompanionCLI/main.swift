@@ -43,6 +43,12 @@ struct SupportCompanionCLI {
             getStorageInfo()
         case "mdm":
             await getMDMInfo()
+        case "user":
+            await getUserInfo()
+        case "kerberos":
+            await getKerberosSSOInfo()
+        case "psso":
+            await getPSSOInfo()
         case "help":
             printUsage()
         default:
@@ -212,6 +218,62 @@ struct SupportCompanionCLI {
         Time Remaining:  \(timeRemaining)
         """)
     }
+    
+    static func getUserInfo() async {
+        let userInfoHelper = UserInfoHelper()
+            do {
+                let userInfo = try await userInfoHelper.fetchUserInfo()
+                print("""
+            👤 User Information
+            -----------------------
+            Login: \(userInfo.login)
+            Name: \(userInfo.name)
+            Home Directory: \(userInfo.homeDir)
+            Shell: \(userInfo.shell)
+            Admin: \(userInfo.isAdmin ? "Yes" : "No")
+            """)
+            } catch {
+                print("Failed to fetch user information: \(error.localizedDescription)")
+            }
+    }
+
+    static func getKerberosSSOInfo() async {
+        do {
+            let kerberosHelper = SSOInfoHelpers()
+            let kerberosInfo = try await kerberosHelper.fetchKerberosSSO()
+            print("""
+            🎟 Kerberos SSO Information
+            -----------------------
+            Username: \(kerberosInfo.username)
+            Realm: \(kerberosInfo.realm)
+            Password Expires: \(kerberosInfo.expiryDays) days
+            Last Password Change: \(kerberosInfo.lastSSOPasswordChangeDays) days
+            Last Local Password Change: \(kerberosInfo.lastLocalPasswordChangeDays) days
+            """)
+        } catch {
+            print("Failed to fetch Kerberos SSO information: \(error.localizedDescription)")
+        }
+    }
+
+    static func getPSSOInfo() async {
+        do {
+        let ssoHelper = SSOInfoHelpers()
+        let ssoInfo = try await ssoHelper.fetchPlatformSSO()
+            print("""
+            🎟 Platform SSO Information
+            -----------------------
+            Login Frequency: \(ssoInfo.loginFrequency)
+            Login Type: \(ssoInfo.loginType)
+            New User Autorization Mode: \(ssoInfo.newUserAuthorizationMode)
+            Registration Completed: \(ssoInfo.registrationCompleted)
+            SDK Version: \(ssoInfo.sdkVersionString)
+            Shared Device Keys: \(ssoInfo.sharedDeviceKeys)
+            User Authorization Mode: \(ssoInfo.userAuthorizationMode)
+            """)
+        } catch {
+            print("Failed to fetch Platform SSO information: \(error.localizedDescription)")
+        }
+    }
 
     static func printUsage() {
         print("""
@@ -226,6 +288,9 @@ struct SupportCompanionCLI {
           device     Output device information.
           storage    Output storage information.
           mdm        Output MDM information.
+          user       Output user information.
+          kerberos   Output Kerberos SSO information.
+          psso       Output Platform SSO information.
           help       Show this help message.
         """)
     }
