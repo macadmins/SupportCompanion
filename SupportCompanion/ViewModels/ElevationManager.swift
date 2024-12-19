@@ -87,6 +87,8 @@ class ElevationManager {
                 if remainingTime == duration / 2 {
                     NotificationService(appState: self.appState).sendNotification(
                         message: "\(Constants.Notifications.Elevation.ElevationHalfwayMessage) \(timeToDemote.formattedTimeUnit()).",
+                        buttonText: Constants.General.demote,
+                        command: "demote",
                         notificationType: .generic
                     )
                 }

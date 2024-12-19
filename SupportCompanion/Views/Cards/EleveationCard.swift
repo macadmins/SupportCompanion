@@ -31,17 +31,29 @@ struct ElevationCard: View {
                     }
 
                     Spacer()
-
-                    ScButton(Constants.General.elevate, disabled: appState.userInfoManager.userInfo.isAdmin || appState.isDemotionActive) {
-                        if appState.preferences.requireReasonForElevation {
-                            showReasonInput = true // Show reason input modal
-                        } else {
-                            elevationManager.handleElevation(reason: "")
+                    
+                    HStack {
+                        ScButton(Constants.General.elevate, disabled: appState.userInfoManager.userInfo.isAdmin || appState.isDemotionActive) {
+                            if appState.preferences.requireReasonForElevation {
+                                showReasonInput = true // Show reason input modal
+                            } else {
+                                elevationManager.handleElevation(reason: "")
+                            }
                         }
+                        .padding(.top)
+                        
+                        ScButton(Constants.General.demote, disabled: !appState.isDemotionActive) {
+                            appState.stopDemotionTimer()
+                            elevationManager.demotePrivileges(completion: { success in
+                                if success {
+                                    Logger.shared.logDebug("Successfully demoted privileges")
+                                } else {
+                                    Logger.shared.logError("Failed to demote privileges")
+                                }
+                            })
+                        }
+                        .padding(.top)
                     }
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.horizontal)
-                    .padding(.top)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal)

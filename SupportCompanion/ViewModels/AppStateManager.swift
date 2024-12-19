@@ -104,6 +104,12 @@ class AppStateManager: ObservableObject {
             }
         }
     }
+
+    func stopDemotionTimer() {
+        elevationManager.stopDemotionTimer()
+        self.timeToDemote = 0
+        self.isDemotionActive = false
+    }
     
     @MainActor
     func refreshAll() {

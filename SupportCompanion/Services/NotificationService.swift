@@ -109,12 +109,23 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
         if response.actionIdentifier == "RUN_COMMAND",
            let command = response.notification.request.content.userInfo["Command"] as? String {
             Logger.shared.logDebug("Notification button clicked, running command: \(command)")
-            Task {
-                do {
-                    _ = try await ExecutionService.executeShellCommand(command)
+            if command == "demote" {
+                AppStateManager.shared.stopDemotionTimer()
+                ElevationManager.shared.demotePrivileges { success in
+                    if success {
+                        Logger.shared.logDebug("Successfully demoted privileges")
+                    } else {
+                        Logger.shared.logError("Failed to demote privileges")
+                    }
                 }
-                catch {
-                    Logger.shared.logError("Failed to execute notificaiton command: \(error)")
+            } else {
+                Task {
+                    do {
+                        _ = try await ExecutionService.executeShellCommand(command)
+                    }
+                    catch {
+                        Logger.shared.logError("Failed to execute notificaiton command: \(error)")
+                    }
                 }
             }
         }

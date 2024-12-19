@@ -47,6 +47,7 @@ enum Constants {
         static let manage = String(localized: "General.Manage", defaultValue: "Manage", comment: "Manage")
         static let close = String(localized: "General.Close", defaultValue: "Close", comment: "Close")
         static let elevate = String(localized: "General.Elevate", defaultValue: "Elevate", comment: "Elevate")
+        static let demote: String = String(localized: "General.Demote", defaultValue: "Demote", comment: "Demote")
     }
     
     enum AppPaths {
