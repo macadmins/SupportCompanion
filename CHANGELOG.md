@@ -6,7 +6,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.2.0] - 2024-12-17
 ### Changed
-- Device info is now gathered every 8h instead of every 24h.
 - A slight background has been added increasing visaibility of the text.
 - Main window is now slightly resizeable to allow for window to be resized to a smaller size.
 - Last reboot time is now monitored and updated every 5 minutes. Displaying in minutes, hours or days depending on the time since last reboot.
@@ -33,7 +32,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - The configured logo will now be displayed in the tray menu as well. Can be hidden by setting `ShowLogoInTrayMenu` to `false` in the configuration.
-- A new option to show a custom view in the navigation bat based on a Markdown file. This allows for creating a custom view with custom information relevant to your organization. The view will be displayed in the navigation bar. Example configuration:
+- A new option to show the desktop information window "frosted". This allows for a frosted glass effect on the desktop information window. Example configuration:
+```xml
+<key>DesktopInfoBackgroundFrosted</key>
+<true/>
+```
+- A new option to show a custom view in the navigation bar based on a Markdown file. This allows for creating a custom view with custom information relevant to your organization. Example configuration:
 ```xml
 <key>MarkdownFilePath</key>
 <string>/path/to/custom/view.md</string>
