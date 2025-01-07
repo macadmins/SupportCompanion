@@ -26,6 +26,9 @@ struct Identity: View {
                     if !appState.ssoInfoManager.platformSSO.loginType.isEmpty {
                         PSSOCard()
                     }
+                    if appState.preferences.enableElevation {
+                        ElevationCard()
+                    }
                 }
                 .padding(.leading, 20)
                 .padding(.trailing, 20)

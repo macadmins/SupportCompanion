@@ -36,10 +36,18 @@ enum Constants {
     
     enum General {
         static let days = String(localized: "General.Days", defaultValue: "Days", comment: "Number of days")
-        static let daysAgo = String(localized: "General.DaysAgo", defaultValue: "Days ago", comment: "Number of days ago")
+        static let dayAgo = String(localized: "General.DayAgo", defaultValue: "Day Ago", comment: "Number of day ago")
+        static let daysAgo = String(localized: "General.DaysAgo", defaultValue: "Days Ago", comment: "Number of days ago")
+        static let hours = String(localized: "General.Hours", defaultValue: "Hours", comment: "Number of hours")
+        static let hour = String(localized: "General.Hour", defaultValue: "Hour", comment: "Number of hour")
+        static let minute = String(localized: "General.Minute", defaultValue: "Minute", comment: "Number of minute")
         static let minutes = String(localized: "General.Minutes", defaultValue: "Minutes", comment: "Number of minutes")
+        static let second = String(localized: "General.Second", defaultValue: "Second", comment: "Number of second")
+        static let seconds = String(localized: "General.Seconds", defaultValue: "Seconds", comment: "Number of seconds")
         static let manage = String(localized: "General.Manage", defaultValue: "Manage", comment: "Manage")
         static let close = String(localized: "General.Close", defaultValue: "Close", comment: "Close")
+        static let elevate = String(localized: "General.Elevate", defaultValue: "Elevate", comment: "Elevate")
+        static let demote: String = String(localized: "General.Demote", defaultValue: "Demote", comment: "Demote")
     }
     
     enum AppPaths {
@@ -73,6 +81,12 @@ enum Constants {
         enum AppUpdate {
             static let UpdateNotificationMessage = String(localized: "Notification.AppUpdateAvailable", defaultValue: "App Updates Available. Please update your apps to the latest version.", comment: "Notification message when an update is available")
             static let UpdateNotificationButtonText = String(localized: "Notification.UpdateNow", defaultValue: "Update Now 🚀", comment: "Notification button text when an update is available")
+        }
+
+        enum Elevation {
+            static let ElevationStartedMessage = String(localized: "Notification.ElevationStarted", defaultValue: "Privliged session started. You will be demoted in", comment: "Notification message when an elevation is started")
+            static let ElevationHalfwayMessage = String(localized: "Notification.ElevationHalfway", defaultValue: "Your elevated privileges will be demoted in", comment: "Notification message when half the time has passed")
+            static let ElevationDemotedMessage = String(localized: "Notification.ElevationDemoted", defaultValue: "Your elevated privileges have been demoted.", comment: "Notification message when the elevation is demoted")
         }
     }
     
@@ -110,6 +124,7 @@ enum Constants {
         static let userInfo = String(localized: "Card.UserInfoTitle", defaultValue: "User Information", comment: "Title for user info card")
         static let pendingUpdates = String(localized: "Card.PendingUpdatesTitle", defaultValue: "Pending Updates", comment: "Title for pending updates card")
         static let installedApps = String(localized: "Card.InstalledAppsTitle", defaultValue: "Installed Applications", comment: "Title for installed apps card")
+        static let privileges = String(localized: "Card.PrivilegesTitle", defaultValue: "Privileges", comment: "Title for privileges card")
     }
     
     enum RebootModal {

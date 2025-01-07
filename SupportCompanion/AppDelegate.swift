@@ -17,6 +17,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     var windowController: NSWindowController?
     var transparentWindowController: TransparentWindowController?
     let appStateManager = AppStateManager.shared
+    let elevationManager = ElevationManager.shared
     var mainWindow: NSWindow?
     static var urlLaunch = false
     static var shouldExit = false
@@ -30,8 +31,47 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         appStateManager.pendingUpdatesCount > 0 || appStateManager.systemUpdateCache.count > 0
     }
 
+    private func executeAction(_ action: Action) {
+        Task {
+            do {
+                _ = try await ExecutionService.executeShellCommand(action.command, isPrivileged: action.isPrivileged)
+            } catch {
+                Logger.shared.logError("Failed to execute action: \(error)")
+            }
+        }
+    }
+
     func application(_ application: NSApplication, open urls: [URL]) {
         guard let url = urls.first else { return }
+
+        if url.host == "run" {
+            Logger.shared.logDebug("Received run command request")
+            if let queryItems = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems {
+                if let actionName = queryItems.first(where: { $0.name == "action" })?.value {
+                    // Get the action details
+                    if let action = appStateManager.preferences.actions.first(where: { $0.name == actionName }) {
+                        Logger.shared.logDebug("Found action: \(action.name)")
+                        if action.isPrivileged ?? false && appStateManager.preferences.requirePrivilegedActionAuthentication {
+                            Logger.shared.logDebug("Action requires authentication") 
+                            authenticateWithTouchIDOrPassword(completion: { success in
+                                if success {
+                                    self.executeAction(action)
+                                } else {
+                                    Logger.shared.logError("Authentication failed. Action: \(action.name) was not executed.")
+                                }
+                            }, reason: "authenticate to execute this privileged action.")
+                        } else {
+                            Logger.shared.logDebug("Executing action: \(action.name)")
+                            self.executeAction(action)
+                        }
+                    } else {
+                        Logger.shared.logError("Action not found: \(actionName)")
+                    }
+                }
+            }
+            return
+        }
+
         switch url.host?.lowercased() {
             case nil:
                 AppDelegate.shouldExit = true
@@ -55,7 +95,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
         popover = NSPopover()
         popover.behavior = .transient // Closes when clicking outside
-        popover.contentSize = NSSize(width: 500, height: 520)
+        popover.contentSize = NSSize(width: 500, height: 500)
         popover.contentViewController = NSHostingController(
             rootView: TrayMenuView(
                 viewModel: CardGridViewModel(appState: AppStateManager.shared)
@@ -87,6 +127,29 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         UNUserNotificationCenter.current().delegate = notificationDelegate
         appStateManager.startBackgroundTasks()
         appStateManager.refreshAll()
+        checkAndHandleDemotionOnLaunch()
+    }
+
+    private func checkAndHandleDemotionOnLaunch() {
+    if let endTime = elevationManager.loadPersistedDemotionState(), Date() >= endTime {
+        elevationManager.demotePrivileges { success in
+                if success {
+                    Logger.shared.logDebug("Privileges automatically demoted on app launch.")
+                    // Clear persisted state
+                    UserDefaults.standard.removeObject(forKey: "PrivilegeDemotionEndTime")
+                } else {
+                    Logger.shared.logError("Failed to demote privileges on app launch.")
+                }
+            }
+    } else if let endTime = elevationManager.loadPersistedDemotionState() {
+            let remainingTime = endTime.timeIntervalSinceNow
+            elevationManager.startDemotionTimer(duration: remainingTime) { remainingTime in
+                DispatchQueue.main.async {
+                    AppStateManager.shared.timeToDemote = remainingTime
+                    AppStateManager.shared.isDemotionActive = remainingTime > 0
+                }
+            }
+        }
     }
 
     private func setupTrayMenu() {
@@ -128,7 +191,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         func updateTrayIcon(hasUpdates: Bool) {
             let iconName = "MenuIcon"
             guard let baseIcon = NSImage(named: iconName) else {
-                print("Error: \(iconName) not found")
+                Logger.shared.logDebug("Failed to load tray icon: \(iconName)")
                 return
             }
 
@@ -175,7 +238,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
     @objc private func togglePopover() {
         guard let button = trayManager.getStatusItem().button else {
-            print("Error: TrayMenuManager's statusItem.button is nil")
+            Logger.shared.logError("Error: TrayMenuManager's statusItem.button is nil")
             return
         }
 
@@ -214,14 +277,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             let contentView = ContentView()
                 .environmentObject(AppStateManager.shared)
                 .environmentObject(Preferences())
-                .frame(minWidth: 1500, minHeight: 950)
+                .frame(minWidth: 1100, minHeight: 650)
 
             let hostingController = NSHostingController(rootView: contentView)
 
             let window = NSWindow(contentViewController: hostingController)
-            window.setContentSize(NSSize(width: 1500, height: 950))
+            window.setContentSize(NSSize(width: 1500, height: 1020))
             window.styleMask = [.titled, .closable, .resizable]
-            window.minSize = NSSize(width: 1500, height: 950)
+            window.minSize = NSSize(width: 1100, height: 650)
             window.title = ""
             window.isReleasedWhenClosed = false
             window.backgroundColor = .clear

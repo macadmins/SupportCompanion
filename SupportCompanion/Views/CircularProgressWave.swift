@@ -47,7 +47,6 @@ struct CircularProgressWithWave: View {
     var size: CGFloat
     var waveHeight: CGFloat
     var gradient: Gradient = Gradient(colors: [.blue, .purple])
-    var accentColor: Color = .gray.opacity(0.5) // Accent ring color
     @Environment(\.colorScheme) var colorScheme // Access system light/dark mode
     @EnvironmentObject var appState: AppStateManager
     @State private var isAnimating = false // Track animation state
@@ -56,7 +55,12 @@ struct CircularProgressWithWave: View {
         ZStack {
             // Accent ring
             Circle()
-                .stroke(accentColor, lineWidth: size * 0.02) // Thinner ring
+                .stroke(
+                    colorScheme == .dark 
+                        ? Color(nsColor: .gray).opacity(0.5) 
+                        : Color(nsColor: .gray).opacity(0.3), 
+                    lineWidth: size * 0.02
+                )// Thinner ring
                 .frame(width: size, height: size)
 
             // Wave shape masked to a circle

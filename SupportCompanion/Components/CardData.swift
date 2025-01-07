@@ -49,7 +49,7 @@ struct CardData: View {
             case Constants.Battery.Keys.health:
                 healthContent(value: value)
             case Constants.DeviceInfo.Keys.lastRestart:
-                daysContent(value: value, suffix: " \(Constants.General.days)", color: colorForValue(key: key, value: value))
+                rebootContent(value: value.rawValue as? Int ?? 0)
             case "FileVault":
                 fileVaultContent(value: value)
             case Constants.KerberosSSO.Keys.expiryDays:
@@ -61,9 +61,18 @@ struct CardData: View {
                 temperatureContent(value: value)
             case Constants.PlatformSSO.Keys.registrationCompleted:
                 pssoRegistrationContent(value: value)
+            case Constants.UserInfo.Keys.isAdmin:
+                userInfoAdminContent(value: value)
             default:
                 defaultText(value: value, key: key)
             }
+        }
+    }
+    
+    private func userInfoAdminContent(value: InfoValue) -> some View {
+        return HStack(spacing: 0) {
+            Text(value.displayValue == "Enabled" ? "Yes" : "No")
+                .font(.system(size: fontSize ?? 14))
         }
     }
 
@@ -82,12 +91,14 @@ struct CardData: View {
     
     private func temperatureContent(value: InfoValue) -> some View {
         let color = colorForValue(key: Constants.Battery.Keys.temperature, value: value)
+        let locale = Locale.current
+        let usesMetric = locale.measurementSystem == .metric
         
         return HStack(spacing: 0) {
             Text(value.displayValue)
                 .foregroundColor(color)
                 .font(.system(size: fontSize ?? 14))
-            Text("°C")
+            Text(usesMetric ? "°C" : "°F")
                 .font(.system(size: fontSize ?? 14))
         }
     }
@@ -99,6 +110,25 @@ struct CardData: View {
             .font(.system(size: fontSize ?? 14))
         + Text(suffix)
             .font(.system(size: fontSize ?? 14))
+    }
+
+    private func rebootContent(value: Int) -> some View {
+        let formattedLastRestart = formattedRebootContent(value: value)
+        return Text(formattedLastRestart)
+            .foregroundColor(colorForLastRestart(value: value))
+            .font(.system(size: fontSize ?? 14))
+    }
+
+    private func colorForLastRestart(value: Int) -> Color {
+        let days = value / 1440
+        switch days {
+        case 0...2:
+            return .ScGreen
+        case 3...7:
+            return colorScheme == .light ? .orangeLight : .orange
+        default:
+            return colorScheme == .light ? .redLight : .red
+        }
     }
     
     private func pssoRegistrationContent(value: InfoValue) -> some View {
@@ -131,6 +161,9 @@ struct CardData: View {
 
     /// Determines the color for specific values.
     private func colorForValue(key: String, value: InfoValue) -> Color {
+        let locale = Locale.current
+        let usesMetric = locale.measurementSystem == .metric
+
         switch key {
         case "Health":
             if let intValue = value.rawValue as? Int {
@@ -139,17 +172,6 @@ struct CardData: View {
                     : (intValue < 80
                         ? (colorScheme == .light ? .orangeLight : .orange)
                        : .ScGreen)
-            }
-        case "LastRestart":
-            if let intValue = value.rawValue as? Int {
-                switch intValue {
-                case 0...2:
-                    return .ScGreen
-                case 3...7:
-                    return colorScheme == .light ? .orangeLight : .orange
-                default:
-                    return colorScheme == .light ? .redLight : .red
-                }
             }
         case "FileVault":
             if let boolValue = value.rawValue as? Bool {
@@ -164,13 +186,24 @@ struct CardData: View {
                 return intValue <= 30 ? (colorScheme == .light ? .orangeLight : .orange) : (intValue < 2 ? (colorScheme == .light ? .redLight : .red) : .ScGreen)
             }
         case Constants.Battery.Keys.temperature:
-            if let doubleValue = value.rawValue as? Double {
-                return doubleValue > 80 ? (colorScheme == .light ? .redLight : .red) : (doubleValue >= 60 ? (colorScheme == .light ? .orange : .orange) : .ScGreen)
-            } else if let intValue = value.rawValue as? Int {
-                let temperature = Double(intValue)
-                return temperature > 80 ? (colorScheme == .light ? .redLight : .red) : (temperature >= 60 ? (colorScheme == .light ? .orangeLight : .orange) : .ScGreen)
+            if usesMetric {
+                if let doubleValue = value.rawValue as? Double {
+                    return doubleValue > 80 ? (colorScheme == .light ? .redLight : .red) : (doubleValue >= 60 ? (colorScheme == .light ? .orange : .orange) : .ScGreen)
+                } else if let intValue = value.rawValue as? Int {
+                    let temperature = Double(intValue)
+                    return temperature > 80 ? (colorScheme == .light ? .redLight : .red) : (temperature >= 60 ? (colorScheme == .light ? .orangeLight : .orange) : .ScGreen)
+                } else {
+                    return .primary
+                }
             } else {
-                return .primary
+                if let doubleValue = value.rawValue as? Double {
+                    return doubleValue > 176 ? (colorScheme == .light ? .redLight : .red) : (doubleValue >= 140 ? (colorScheme == .light ? .orange : .orange) : .ScGreen)
+                } else if let intValue = value.rawValue as? Int {
+                    let temperature = Double(intValue)
+                    return temperature > 176 ? (colorScheme == .light ? .redLight : .red) : (temperature >= 140 ? (colorScheme == .light ? .orangeLight : .orange) : .ScGreen)
+                } else {
+                    return .primary
+                }
             }
         default:
             return .primary

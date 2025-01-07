@@ -23,7 +23,7 @@ class TransparentWindowController: NSWindowController {
         
         window.isOpaque = false
         window.backgroundColor = .clear
-        window.hasShadow = true
+        window.hasShadow = false
         window.level = NSWindow.Level(Int(CGWindowLevelForKey(.desktopWindow)))
         window.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
         window.appearance = NSAppearance(named: .darkAqua)

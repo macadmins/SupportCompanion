@@ -7,6 +7,7 @@
 
 import Foundation
 import UserNotifications
+import SwiftUI
 
 class NotificationService {
     private let appState: AppStateManager
@@ -35,8 +36,8 @@ class NotificationService {
 
     func sendNotification(
         message: String,
-        buttonText: String,
-        command: String,
+        buttonText: String? = nil,
+        command: String? = nil,
         notificationType: NotificationType
     ) {
         guard appState.preferences.notificationInterval > 0 else {
@@ -46,10 +47,12 @@ class NotificationService {
         
         let imagePath = appState.preferences.notificationImage.isEmpty ? nil : appState.preferences.notificationImage
 
-        if let lastDate = AppStorageHelper.shared.getLastNotificationDate(for: notificationType),
-           Date().timeIntervalSince(lastDate) < TimeInterval(appState.preferences.notificationInterval * 3600) {
-            Logger.shared.logDebug("Notification interval for \(notificationType) not reached, skipping notification")
-            return
+        if notificationType != .generic {
+            if let lastDate = AppStorageHelper.shared.getLastNotificationDate(for: notificationType),
+            Date().timeIntervalSince(lastDate) < TimeInterval(appState.preferences.notificationInterval * 3600) {
+                Logger.shared.logDebug("Notification interval for \(notificationType) not reached, skipping notification")
+                return
+            }
         }
 
         let content = UNMutableNotificationContent()
@@ -67,15 +70,20 @@ class NotificationService {
                 Logger.shared.logError("Failed to attach image: \(error.localizedDescription)")
             }
         }
-        // Define the notification category and actions
-        let action = UNNotificationAction(
-            identifier: "RUN_COMMAND",
-            title: buttonText,
-            options: [.foreground]
-        )
+
+        var actions: [UNNotificationAction] = []
+        if let buttonText = buttonText, let command = command {
+            let action = UNNotificationAction(
+                identifier: "RUN_COMMAND",
+                title: buttonText,
+                options: [.foreground]
+            )
+            actions.append(action)
+        }
+
         let category = UNNotificationCategory(
             identifier: "ACTIONABLE",
-            actions: [action],
+            actions: actions,
             intentIdentifiers: []
         )
         UNUserNotificationCenter.current().setNotificationCategories([category])
@@ -101,16 +109,60 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
         if response.actionIdentifier == "RUN_COMMAND",
            let command = response.notification.request.content.userInfo["Command"] as? String {
             Logger.shared.logDebug("Notification button clicked, running command: \(command)")
-            Task {
-                do {
-                    _ = try await ExecutionService.executeShellCommand(command)
+            if command == "demote" {
+                AppStateManager.shared.stopDemotionTimer()
+                ElevationManager.shared.demotePrivileges { success in
+                    if success {
+                        Logger.shared.logDebug("Successfully demoted privileges")
+                    } else {
+                        Logger.shared.logError("Failed to demote privileges")
+                    }
                 }
-                catch {
-                    Logger.shared.logError("Failed to execute notificaiton command: \(error)")
+            } else {
+                Task {
+                    do {
+                        _ = try await ExecutionService.executeShellCommand(command)
+                    }
+                    catch {
+                        Logger.shared.logError("Failed to execute notificaiton command: \(error)")
+                    }
                 }
             }
         }
         completionHandler()
+    }
+}
+
+class BadgeManager {
+    static let shared = BadgeManager()
+    private(set) var badgeCount = 0
+    private let lock = NSLock()
+
+    func incrementBadgeCount(count: Int) {
+        lock.lock()
+        badgeCount = count
+        lock.unlock()
+        updateBadge()
+    }
+
+    func currentBadgeCount() -> Int {
+        lock.lock()
+        let count = badgeCount
+        lock.unlock()
+        return count
+    }
+
+    private func updateBadge() {
+        DispatchQueue.main.async {
+            if self.badgeCount > 0 {
+                NSApplication.shared.dockTile.showsApplicationBadge = true
+                NSApplication.shared.dockTile.badgeLabel = nil
+                NSApplication.shared.dockTile.badgeLabel = String(self.badgeCount)
+            } else {
+                NSApplication.shared.dockTile.badgeLabel = nil
+                NSApplication.shared.dockTile.showsApplicationBadge = false
+            }
+        }
     }
 }
 

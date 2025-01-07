@@ -31,12 +31,32 @@ func getBatteryHealthPercentage() -> Double? {
     return nil
 }
 
-func getBatteryTemperature() -> Double? {
+/*func getBatteryTemperature() -> Double? {
     if let temperature = getBatteryProperty(forKey: "Temperature") as? Int {
         // Convert temperature from deciKelvins to Celsius
         return Double(temperature) / 10.0 - 273.15
     }
     return nil
+}*/
+
+func getBatteryTemperature() -> Double? {
+    guard let temperature = getBatteryProperty(forKey: "Temperature") as? Int else {
+        return nil
+    }
+    
+    // Convert temperature from deciKelvins to Celsius
+    let celsius = Double(temperature) / 10.0 - 273.15
+    
+    // Determine the preferred unit (Celsius or Fahrenheit)
+    let locale = Locale.current
+    let usesMetric = locale.measurementSystem == .metric
+    
+    if usesMetric {
+        return celsius
+    } else {
+        let fahrenheit = celsius * 9/5 + 32
+        return fahrenheit
+    }
 }
 
 func isBatteryCharging() -> String {

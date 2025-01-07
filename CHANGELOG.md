@@ -4,6 +4,107 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2025-01-07
+### Changed
+- A slight background has been added increasing visaibility of the text.
+- Main window is now slightly resizeable to allow for window to be resized to a smaller size.
+- Last reboot time is now monitored and updated every 5 minutes. Displaying in minutes, hours or days depending on the time since last reboot.
+- Battery temperature will adapt to the configured measurement system in macOS and show temp in either Celsius or Fahrenheit.
+- Storage API has been changed for a more accurate reading of actual storage used.
+- "Is Admin" will now display "yes" or "no" localized instead of enabled or disabled.
+- In addition to only checking if Company Portal exists when dynamically setting the `Mode` to use, the server url will now also be checked. If the server url contains "i.manage.microsoft.com", the MDM will be set to Intune. This is because Company Portal can validly exist on a device without the device being managed by Intune.
+- Button labels on actions can now be set to a custom value. This allows for admins to set custom labels for actions that are displayed in the `Self Service` page. Example configuration:
+```xml
+<dict>
+    <key>Command</key>
+    <string>open https://github.com/macadmins/supportcompanion</string>
+    <key>Description</key>
+    <string/>
+    <key>Icon</key>
+    <string>heart.fill</string>
+    <key>Name</key>
+    <string>Open Intranet</string>
+    <key>ButtonLabel</key>
+    <string>Open</string>
+</dict>
+```
+
+### Fixed
+- Artifacts were being left behind on the desktop window when IP address was updated.
+
+### Added
+- The configured logo will now be displayed in the tray menu as well. Can be hidden by setting `ShowLogoInTrayMenu` to `false` in the configuration.
+- A new option to show the desktop information window "frosted". This allows for a frosted glass effect on the desktop information window. Example configuration:
+```xml
+<key>DesktopInfoBackgroundFrosted</key>
+<true/>
+```
+- A new option to show a custom view in the navigation bar based on a Markdown file. This allows for creating a custom view with custom information relevant to your organization. Example configuration:
+```xml
+<key>MarkdownFilePath</key>
+<string>/path/to/custom/view.md</string>
+<key>MarkdownMenuLabel</key>
+<string>Custom View</string>
+<key>MarkdownMenuIcon</key>
+<string>doc.text</string>
+```
+- A new option to show custom cards in the navigation bar. This allows for displaying large numbers of cards without cluttering the home view, by moving them to their own view. Example configuration:
+```xml
+<key>CustomCardsMenuLabel</key>
+<string>Custom Cards</string>
+<key>CustomCardsMenuIcon</key>
+<string>doc.text</string>
+<key>CustomCardPath</key>
+<string>/path/to/custom/cards.json</string>
+```
+- A new option to trigger actions using the CLI. This allows for triggering actions using the CLI instead of the UI. This can be useful for automating actions or triggering actions from a script. By default, actions configured as privileged will require authentication. This can be disabled by setting `RequirePrivilegedActionAuthentication` to `false`. Example usage:
+```bash
+/Applications/SupportCompanion.app/Contents/Resources/SupportCompanionCLI action "Restart clipboard"
+```
+- Additional arguments to the CLI to allow for getting additional information that is displayed in the app. Example usage:
+```bash
+/Applications/SupportCompanion.app/Contents/Resources/SupportCompanionCLI battery
+```
+Example output:
+```plaintext
+🔋 Battery Information
+-----------------------
+Health:          93% 🔋
+Cycle Count:     37
+Temperature:     36.7°C 🌡️
+Charging Status: Not Charging
+Time Remaining:  N/A
+```
+- A new feature that allows for user elevation of standard users to admin users. This feature is useful for instances where a user needs to perform an action that requires admin rights. The user can request elevation by clicking the `Elevate` button in the tray menu or Identity menu. The admin can configure wether a reason is required, how long the reason must be and if the reason should be sent via a webhook to a specified URL or saved to disk. Example configuration:
+```xml
+<key>EnableElevation</key>
+<true/>
+<key>RequireResonForElevation</key>
+<true/>
+<key>ReasonMinLength</key>
+<integer>20</integer>
+<key>MaxElevationTime</key>
+<integer>60</integer>
+<key>ElevationWebhookUrl</key>
+<string>https://webhook.url</string>
+<key>ShowElevateTrayCard</key>
+<true/>
+<key>ElevationSeverity</key>
+<integer>6</integer>
+```
+
+Example of JSON payload sent to webhook:
+```json
+{
+  "severity" : 6,
+  "date" : "2024-12-16T11:21:01Z",
+  "host" : "Tobias's MacBook",
+  "user" : "tobias",
+  "serial" : "H123456789",
+  "reason" : "Awesome dev stuff"
+}
+```
+
 ## [2.1.0] - 2024-12-11
 ### Changed
 - The tray menu has been changed to a custom menu that is an extension of the apps main UI. This allows for a more consistent look and feel between the tray menu and the main app. The tray menu now displays the same information as the main app, including device information, storage information and patching progress as well as actions. If you have custom actions configured using `Actions`, the first 6 actions will be displayed in the tray menu. If you have more than 6 actions, the rest can be run from the Self Service section in the main app.

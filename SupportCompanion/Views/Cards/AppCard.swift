@@ -125,7 +125,7 @@ struct PlistService {
         // Ensure the file exists at the given path
         guard FileManager.default.fileExists(atPath: path),
               let plistData = FileManager.default.contents(atPath: path) else {
-            print("Error: Could not read plist at path: \(path)")
+            Logger.shared.logError("Could not read plist at path: \(path)")
             return nil
         }
         
@@ -135,7 +135,7 @@ struct PlistService {
                 return plist[key]
             }
         } catch {
-            print("Error: Failed to parse plist. \(error.localizedDescription)")
+            Logger.shared.logError("Error: Failed to parse plist. \(error.localizedDescription)")
         }
         
         return nil

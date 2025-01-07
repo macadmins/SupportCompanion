@@ -18,10 +18,19 @@ struct TransparentView: View {
     
     var body: some View {
         ZStack {
+            if appState.preferences.desktopInfoBackgroundFrosted {
+                BlurEffectView(
+                    material: .fullScreenUI,
+                    blendingMode: .behindWindow
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 15))
+                .edgesIgnoringSafeArea(.all)
+            }
+            
             RoundedRectangle(cornerRadius: 15)
-                .fill(Color.black.opacity(appState.preferences.desktopInfoBackgroundOpacity))
-                .shadow(radius: 10) // Shadow for depth
-                .clipShape(RoundedRectangle(cornerRadius: 15)) // Ensure clipping
+            .fill(Color.black.opacity(appState.preferences.desktopInfoBackgroundOpacity))
+            .shadow(radius: 10) // Shadow for depth
+            .clipShape(RoundedRectangle(cornerRadius: 15))
 
             VStack(alignment: .leading) {
                 // Title for the Info View
@@ -90,7 +99,7 @@ struct TransparentView: View {
             .padding()
             .background(GeometryReader { geometry in
                 Color.clear
-                    .onChange(of: combinedPreferences) { _ in
+                    .onChange(of: combinedPreferences) { _, _ in
                         contentHeight = geometry.size.height // Recalculate height
                     }
                     .onAppear {
@@ -253,6 +262,25 @@ struct TransparentView: View {
     }
 }
 
+struct BlurEffectView: NSViewRepresentable {
+    let material: NSVisualEffectView.Material
+    let blendingMode: NSVisualEffectView.BlendingMode
+
+    func makeNSView(context: Context) -> NSVisualEffectView {
+        let view = NSVisualEffectView()
+        view.material = material          // Set material to ultra-thin equivalent
+        view.blendingMode = blendingMode  // Set blending mode to behindWindow or withinWindow
+        view.state = .active              // Ensure the effect is active
+        return view
+    }
+
+    func updateNSView(_ nsView: NSVisualEffectView, context: Context) {
+        nsView.material = material
+        nsView.blendingMode = blendingMode
+        nsView.state = .active
+    }
+}
+
 struct SectionHeaderTransparent: View {
     let title: String
     let addHeader: Bool
@@ -350,15 +378,17 @@ struct LastRestartRowTransparent: View {
     let label: String
     let value: Int // Days since last restart
     let fontSize: CGFloat
-    
+
     var body: some View {
+        let formattedLastRestart = formattedRebootContent(value: value)
+
         HStack {
             Text(label)
                 .font(.system(size: fontSize))
                 .bold()
             Spacer()
             HStack(spacing: 5) {
-                Text("\(value) \(Constants.General.days)")
+                Text(formattedLastRestart)
                 .shadow(radius: 2)
                 Image(systemName: "clock.fill")
             }

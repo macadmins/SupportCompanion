@@ -11,6 +11,7 @@ import SwiftUI
 struct PendingUpdatesCard: View {
     @ObservedObject var viewModel: CardGridViewModel
     @EnvironmentObject var appState: AppStateManager
+    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         if viewModel.isCardVisible(Constants.Cards.pendingAppUpdates) {
@@ -23,6 +24,7 @@ struct PendingUpdatesCard: View {
                             headerView
                             pendingUpdatesList
                             viewModel.createOpenManagementAppButton(type: .update)
+                                .padding(.top, 10)
                         }
                     }
                 )
@@ -78,7 +80,7 @@ struct PendingUpdatesCard: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                         Text(update.version)
                             .frame(maxWidth: .infinity, alignment: .trailing)
-                            .foregroundColor(.gray)
+                            .foregroundColor(colorScheme == .dark ? .gray : .grayLight)
                         if let intuneUpdate = update as? PendingIntuneUpdate, intuneUpdate.showInfoIcon {
                             Image(systemName: "info.circle")
                                 .help(intuneUpdate.pendingReason)

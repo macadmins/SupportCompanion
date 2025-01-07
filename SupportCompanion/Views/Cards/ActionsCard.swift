@@ -51,8 +51,8 @@ struct ActionsCard: View {
                         }
                     }
                 }
-                .padding(16)
-                .frame(maxWidth: .infinity, alignment: .center)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal)
             })
         }
     }

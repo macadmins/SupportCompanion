@@ -16,6 +16,18 @@ struct BatteryEvergreenStack: View {
         if !viewModel.isCardVisible(Constants.Cards.evergreen) && !viewModel.isCardVisible(Constants.Cards.battery) {
         } else{
             VStack(alignment: .leading){
+                if viewModel.isCardVisible(Constants.Cards.battery) {
+                    ScCard(title: "\(Constants.CardTitle.battery)", titleImageName: "battery.100percent.bolt", imageSize: (25,25), content: {
+                        VStack(alignment: .leading) {
+                            CardData(info: appState.batteryInfoManager.batteryInfo.toKeyValuePairs())
+                        }
+                        .frame(height: 110)
+                        .padding(.horizontal)
+                    }
+                )
+                .fixedSize(horizontal: false, vertical: true)
+                }
+                
                 if viewModel.isCardVisible(Constants.Cards.evergreen) && appState.preferences.mode == Constants.modes.munki {
                     ScCard(title: "\(Constants.CardTitle.evergreen)", titleImageName: "leaf.fill", content: {
                         VStack(alignment: .leading) {
@@ -31,34 +43,11 @@ struct BatteryEvergreenStack: View {
                                 }
                             }
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .frame(height: 116)
                         .padding(.horizontal)
-                        .onAppear {
-                            appState.evergreenInfoManager.refresh()
-                        }
                     })
+                    .fixedSize(horizontal: false, vertical: true)
                 }
-                
-                if viewModel.isCardVisible(Constants.Cards.battery) {
-                    ScCard(title: "\(Constants.CardTitle.battery)", titleImageName: "battery.100percent.bolt", imageSize: (25,25), content: {
-                        VStack(alignment: .leading) {
-                            CardData(info: appState.batteryInfoManager.batteryInfo.toKeyValuePairs())
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal)
-                        .onAppear {
-                            appState.batteryInfoManager.startMonitoring()
-                        }
-                        .onDisappear {
-                            appState.batteryInfoManager.stopMonitoring()
-                        }
-                        .onChange(of: appState.windowIsVisible) { oldValue, newValue in
-                            if !newValue {
-                                appState.batteryInfoManager.stopMonitoring()
-                            }
-                        }
-                    }
-                )}
             }
         }
     }

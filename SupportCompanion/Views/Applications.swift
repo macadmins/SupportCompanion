@@ -27,14 +27,26 @@ struct Applications: View {
                 .background(Color.clear)
                 .ignoresSafeArea() // Ensure it covers the entire screen
             } else {
-                ScrollView {
-                    LazyVGrid(
-                        columns: columns,
-                        alignment: .leading
-                    ) {
-                        if appState.installedApplications.isEmpty {
-                            Text("No installed applications found")
-                        } else {
+                if appState.installedApplications.isEmpty {
+                    VStack {
+                        Image(systemName: "exclamationmark.triangle")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 50, height: 50)
+                            .foregroundColor(.primary)
+                        Text("No installed applications found")
+                            .font(.title)
+                            .foregroundColor(.primary)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity) // Full screen
+                    .background(Color.clear)
+                    .ignoresSafeArea() // Ensure it covers the entire screen
+                } else {
+                    ScrollView {
+                        LazyVGrid(
+                            columns: columns,
+                            alignment: .leading
+                        ) {
                             ForEach(appState.installedApplications) { card in
                                 AppCard(card: card)
                                     .fixedSize(horizontal: false, vertical: false) // Allow vertical expansion

@@ -150,6 +150,7 @@ struct LastRestartRow: View {
     let colorScheme: ColorScheme
 
     var body: some View {
+        let formattedLastRestart = formattedRebootContent(value: value)
         let color = colorForLastRestart(value: value)
 
         HStack {
@@ -160,7 +161,7 @@ struct LastRestartRow: View {
 
             Spacer()
             HStack(spacing: 5) {
-                Text("\(value) \(Constants.General.days)")
+                Text(formattedLastRestart)
                     .foregroundColor(color)
                 Image(systemName: "clock.fill")
                     .foregroundColor(color)
@@ -171,7 +172,8 @@ struct LastRestartRow: View {
     }
 
     private func colorForLastRestart(value: Int) -> Color {
-        switch value {
+        let days = value / 1440
+        switch days {
         case 0...2:
             return .ScGreen
         case 3...7:

@@ -13,7 +13,8 @@ struct ScCardCompactButton<Content: View>: View {
     let titleImageName: String?
     let content: Content
     let buttonImageName: String?
-    let buttonAction: Action
+    let buttonAction: Action?
+    let customAction: (() async -> Void)?
     let imageSize: (CGFloat, CGFloat)?
     let useMultiColor: Bool?
 
@@ -25,7 +26,8 @@ struct ScCardCompactButton<Content: View>: View {
         title: String,
         titleImageName: String? = nil,
         buttonImageName: String? = nil,
-        buttonAction: Action,
+        buttonAction: Action? = nil,
+        customAction: (() async -> Void)? = nil,
         imageSize: (CGFloat, CGFloat) = (16, 16),
         useMultiColor: Bool = true,
         @ViewBuilder content: () -> Content = { EmptyView() }
@@ -34,6 +36,7 @@ struct ScCardCompactButton<Content: View>: View {
         self.titleImageName = titleImageName
         self.buttonImageName = buttonImageName
         self.buttonAction = buttonAction
+        self.customAction = customAction
         self.content = content()
         self.imageSize = imageSize
         self.useMultiColor = useMultiColor
@@ -41,10 +44,20 @@ struct ScCardCompactButton<Content: View>: View {
 
     var body: some View {
         Button(action: {
-            Task {
-                isRunning = true // Set running state to true
-                _ = try await ExecutionService.executeShellCommand(buttonAction.command, isPrivileged: buttonAction.isPrivileged)
-                isRunning = false // Reset running state
+            if customAction != nil {
+                Task {
+                    isRunning = true // Set running state to true
+                    await customAction!()
+                    isRunning = false // Reset running state
+                }
+            }
+
+            if let buttonAction = buttonAction {
+                Task {
+                    isRunning = true // Set running state to true
+                    _ = try await ExecutionService.executeShellCommand(buttonAction.command, isPrivileged: buttonAction.isPrivileged)
+                    isRunning = false // Reset running state
+                }
             }
         }) {
             VStack(alignment: .center, spacing: 10) {

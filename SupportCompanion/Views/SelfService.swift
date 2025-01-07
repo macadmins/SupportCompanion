@@ -59,7 +59,7 @@ struct SelfService: View {
                                 .padding()
                                 .frame(maxWidth: .infinity, alignment: .center)
                         } else {*/
-                            ScButton("Run", maxWidth: 150) {
+                            ScButton(action.buttonLabel ?? "Run", maxWidth: 150) {
                                 //isRunning = true
                                 //defer { isRunning = false }
                                 _ = try? await ExecutionService.executeShellCommand(action.command, isPrivileged: action.isPrivileged)

@@ -78,20 +78,13 @@
     "%lld" : {
 
     },
-    "%lld %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$lld %2$@"
-          }
-        }
-      }
-    },
     "%lld%%" : {
 
     },
     "°C" : {
+
+    },
+    "°F" : {
 
     },
     "Action.ChangePassword" : {
@@ -1103,6 +1096,48 @@
         }
       }
     },
+    "Card.PrivilegesTitle" : {
+      "comment" : "Title for privileges card",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Berechtigungen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Privileges"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privilèges"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "権限"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rettigheter"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rättigheter"
+          }
+        }
+      }
+    },
     "Card.StorageTitle" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1744,6 +1779,40 @@
         }
       }
     },
+    "Enter Reason for Elevation" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geben Sie den Grund für die Erhöhung ein"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entrez la raison de l’élévation"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "昇格の理由を入力してください"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Angi grunn for heving"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ange anledning"
+          }
+        }
+      }
+    },
     "Error.CommandFailed" : {
       "comment" : "Error message when a command failed",
       "extractionState" : "extracted_with_value",
@@ -1971,6 +2040,48 @@
         }
       }
     },
+    "General.DayAgo" : {
+      "comment" : "Number of day ago",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "tag zuvor"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Day Ago"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "jour avant"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日前"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "dag siden"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "dag sedan"
+          }
+        }
+      }
+    },
     "General.Days" : {
       "comment" : "Number of days",
       "extractionState" : "manual",
@@ -1978,7 +2089,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tage"
+            "value" : "tage"
           }
         },
         "en" : {
@@ -1990,7 +2101,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Jours"
+            "value" : "jours"
           }
         },
         "ja" : {
@@ -2002,7 +2113,7 @@
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dager"
+            "value" : "dager"
           }
         },
         "sv" : {
@@ -2020,7 +2131,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vor Tagen"
+            "value" : "vor tagen"
           }
         },
         "en" : {
@@ -2032,7 +2143,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Jours avant"
+            "value" : "jours avant"
           }
         },
         "ja" : {
@@ -2051,6 +2162,174 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "dagar sedan"
+          }
+        }
+      }
+    },
+    "General.Demote" : {
+      "comment" : "Demote",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Herabstufen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Demote"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rétrograder"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "降格する"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nedgradere"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nedgradera"
+          }
+        }
+      }
+    },
+    "General.Elevate" : {
+      "comment" : "Elevate",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erhöhen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Elevate"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Élever"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "昇格"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hev"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elevera"
+          }
+        }
+      }
+    },
+    "General.Hour" : {
+      "comment" : "Number of hour",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "stunde"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Hour"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "heure"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "時間"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "time"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "timme"
+          }
+        }
+      }
+    },
+    "General.Hours" : {
+      "comment" : "Number of hours",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "stunden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Hours"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "heures"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "時間"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "timer"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "timmar"
           }
         }
       }
@@ -2097,6 +2376,42 @@
         }
       }
     },
+    "General.Minute" : {
+      "comment" : "Number of minute",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "minuten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Minute"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "minutt"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "minut"
+          }
+        }
+      }
+    },
     "General.Minutes" : {
       "comment" : "Number of minutes",
       "extractionState" : "extracted_with_value",
@@ -2104,7 +2419,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minuten"
+            "value" : "minuten"
           }
         },
         "en" : {
@@ -2122,13 +2437,97 @@
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minutter"
+            "value" : "minutter"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "minuter"
+          }
+        }
+      }
+    },
+    "General.Second" : {
+      "comment" : "Number of second",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "sekunde"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Second"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "seconde"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "秒"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "sekund"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "sekund"
+          }
+        }
+      }
+    },
+    "General.Seconds" : {
+      "comment" : "Number of seconds",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "sekunden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Seconds"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "secondes"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "秒"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "sekunder"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "sekunder"
           }
         }
       }
@@ -2698,6 +3097,40 @@
         }
       }
     },
+    "No" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nein"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "いいえ"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nei"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nej"
+          }
+        }
+      }
+    },
     "No installed applications found" : {
       "localizations" : {
         "de" : {
@@ -2804,6 +3237,132 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Appuppdateringar tillgängliga. Uppdatera dina appar till senaste versionen."
+          }
+        }
+      }
+    },
+    "Notification.ElevationDemoted" : {
+      "comment" : "Notification message when the elevation is demoted",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihre erhöhten Berechtigungen wurden herabgestuft."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Your elevated privileges have been demoted."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vos privilèges élevés ont été rétrogradés."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "あなたの昇格された権限が降格されました。"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dine hevede rettigheter har blitt nedgradert."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privilegierade rättigheter borttagna."
+          }
+        }
+      }
+    },
+    "Notification.ElevationHalfway" : {
+      "comment" : "Notification message when half the time has passed",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihre erhöhten Berechtigungen werden herabgestuft in"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Your elevated privileges will be demoted in"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vos privilèges élevés seront rétrogradés dans"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "あなたの昇格された権限は以下で降格されます"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dine hevede rettigheter vil bli nedgradert om"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Priviligerade rättigheter tas bort inom"
+          }
+        }
+      }
+    },
+    "Notification.ElevationStarted" : {
+      "comment" : "Notification message when an elevation is started",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privilegierte Sitzung gestartet. Sie werden herabgestuft in"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Privliged session started. You will be demoted in"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Session privilégiée démarrée. Vous serez rétrogradé dans"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "特権セッションが開始されました。以下で降格されます"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privilegert økt startet. Du vil bli nedgradert om"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privilegierad session startad. Rättigheter tas bort om"
           }
         }
       }
@@ -3186,6 +3745,40 @@
         }
       }
     },
+    "Please provide a reason for elevating your privileges. This will be logged for auditing purposes." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bitte geben Sie einen Grund für die Erhöhung Ihrer Berechtigungen an. Dies wird zu Prüfzwecken protokolliert."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Veuillez fournir une raison pour élever vos privilèges. Cela sera enregistré à des fins d’audit."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "権限を昇格させる理由を提供してください。これは監査目的で記録されます。"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vennligst oppgi en grunn for å heve dine rettigheter. Dette vil bli loggført for revisjonsformål."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ange en anledning till att du behöver höja dina behörigheter. Detta kommer att loggas för revisionsändamål."
+          }
+        }
+      }
+    },
     "Realm:" : {
       "localizations" : {
         "ja" : {
@@ -3226,6 +3819,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Startar om inom %lld seconds..."
+          }
+        }
+      }
+    },
+    "Revocation in: " : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widerruf in:"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Révocation dans:"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取り消しまで:"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tilbakekalling om:"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Revokeras inom:"
           }
         }
       }
@@ -3956,6 +4583,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Användarnamn:"
+          }
+        }
+      }
+    },
+    "Yes" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ja"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oui"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "はい"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ja"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ja"
           }
         }
       }

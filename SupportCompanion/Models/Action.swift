@@ -14,4 +14,5 @@ struct Action: Identifiable, Equatable, Hashable {
     let icon: String?
     let isPrivileged: Bool?
     let description: String?
+    let buttonLabel: String?
 }

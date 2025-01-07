@@ -9,9 +9,16 @@ import Foundation
 
 class JsonCardManager: ObservableObject {
     private var appState: AppStateManager
+    private var fileWatcher: FileWatcher?
     
     init(appState: AppStateManager) {
         self.appState = appState
+    }
+
+    func watchFile(_ filePath: String) {
+        fileWatcher = FileWatcher(filePath: filePath) { [weak self] in
+            self?.loadFromFile(filePath)
+        }
     }
     
     func loadFromFile(_ fileName: String) {

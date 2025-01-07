@@ -87,6 +87,23 @@ func getLastRebootDays() -> Int? {
     return daysSinceReboot
 }
 
+func getLastRestartMinutes() -> Int? {
+    var mib = [CTL_KERN, KERN_BOOTTIME]
+    var bootTime = timeval()
+    var size = MemoryLayout<timeval>.stride
+
+    let result = sysctl(&mib, 2, &bootTime, &size, nil, 0)
+    guard result == 0 else {
+        return nil
+    }
+
+    let bootDate = Date(timeIntervalSince1970: TimeInterval(bootTime.tv_sec))
+    let currentDate = Date()
+
+    let elapsedMinutes = Int(currentDate.timeIntervalSince(bootDate) / 60)
+    return elapsedMinutes
+}
+
 func getModelName() -> String {
     return getPropertyValue(forKey: "product-name", service: "product") ?? "Unknown"
 }
@@ -181,6 +198,30 @@ class IPAddressMonitor {
     }
 }
 
+func formattedRebootContent(value: Int) -> String {
+    var formattedLastRestart: String {
+        if value >= 1440 { // 1440 minutes in a day
+            let days = value / 1440
+            if days == 1 {
+                return "\(days) \(Constants.General.dayAgo)"
+            }
+            return "\(days) \(Constants.General.daysAgo)"
+        } else if value >= 60 { // More than an hour
+            let hours = value / 60
+            if hours == 1 {
+                return "\(hours) \(Constants.General.hour)"
+            }
+            return "\(hours) \(Constants.General.hours)"
+        } else { // Less than an hour
+            if value == 1 {
+                return "\(value) \(Constants.General.minute)"
+            }
+            return "\(value) \(Constants.General.minutes)"
+        }
+    }
+    return formattedLastRestart
+}
+
 class LastRebootMonitor {
     static let shared = LastRebootMonitor()
     private var updateHandler: ((Int) -> Void)?
@@ -190,21 +231,8 @@ class LastRebootMonitor {
     func startMonitoring(onUpdate: @escaping (Int) -> Void) {
         self.updateHandler = onUpdate
 
-        // Check if 24 hours have passed since the last update
-        let lastRunKey = "LastRebootMonitorLastRun"
-        let defaults = UserDefaults.standard
-        let now = Date()
-
-        if let lastRun = defaults.object(forKey: lastRunKey) as? Date, now.timeIntervalSince(lastRun) < 86400 {
-            // 24 hours haven't passed, skip this run
-            return
-        }
-
-        // Update the last run time
-        defaults.set(now, forKey: lastRunKey)
-
         // Perform the reboot check
-        let lastRebootDays = getLastRebootDays()
+        let lastRebootDays = getLastRestartMinutes()
         DispatchQueue.main.async {
             self.updateHandler?(lastRebootDays ?? 0)
         }

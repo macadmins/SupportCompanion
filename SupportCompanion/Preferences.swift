@@ -68,6 +68,18 @@ class Preferences: ObservableObject {
     @AppStorage("MenuShowKnowledgeBase") var menuShowKnowledgeBase: Bool = true
     
     @AppStorage("KnowledgeBaseUrl") var knowledgeBaseUrl: String = ""
+
+    @AppStorage("ShowLogoInTrayMenu") var showLogoInTrayMenu: Bool = true
+
+    @AppStorage("MarkdownFilePath") var markdownFilePath: String = ""
+
+    @AppStorage("MarkdownMenuLabel") var markdownMenuLabel: String = ""
+
+    @AppStorage("MarkdownMenuIcon") var markdownMenuIcon: String = ""
+    
+    @AppStorage("CustomCardsMenuLabel") var customCardsMenuLabel: String = ""
+    
+    @AppStorage("CustomCardsMenuIcon") var customCardsMenuIcon: String = ""
     
     // MARK: - Actions
     
@@ -84,10 +96,14 @@ class Preferences: ObservableObject {
     @Published var hiddenActions: [String] = UserDefaults.standard.array(forKey: "HiddenActions") as? [String] ?? []
     
     @Published var logFolders: [String] = UserDefaults.standard.array(forKey: "LogFolders") as? [String] ?? []
+
+    @AppStorage("RequirePrivilegedActionAuthentication") var requirePrivilegedActionAuthentication: Bool = true
     
     // MARK: - Desktop Info
     
     @AppStorage("DesktopInfoBackgroundOpacity") var desktopInfoBackgroundOpacity: Double = 0.001
+    
+    @AppStorage("DesktopInfoBackgroundFrosted") var desktopInfoBackgroundFrosted: Bool = false
     
     @AppStorage("DesktopInfoWindowPosition") var desktopInfoWindowPosition: String = "LowerRight"
     @Published var currentWindowPosition: String = "LowerRight"
@@ -115,10 +131,28 @@ class Preferences: ObservableObject {
     @AppStorage("SupportEmail") var supportEmail: String = ""
     
     @AppStorage("SupportPhone") var supportPhone: String = ""
+
+    // MARK: - Elevate privileges
+
+    @AppStorage("EnableElevation") var enableElevation: Bool = false
+
+    @AppStorage("ShowElevateTrayCard") var showElevateTrayCard: Bool = true
+
+    @AppStorage("MaxElevationTime") var maxElevationTime: Int = 5
+
+    @AppStorage("RequireResonForElevation") var requireReasonForElevation: Bool = true
+
+    @AppStorage("ReasonMinLength") var reasonMinLength: Int = 10
+
+    @AppStorage("ElevationWebhookUrl") var elevationWebhookURL: String = ""
+
+    @AppStorage("ElevationSeverity") var elevationSeverity: Int = 6 // Default to "Informational"
     
+    var mdm: String = "Unknown"
+        
     init() {
         ensureDefaultsInitialized()
-
+        
         NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)
             .sink { [weak self] _ in
                 guard let self = self else { return }
@@ -137,11 +171,12 @@ class Preferences: ObservableObject {
                 self?.loadHiddenActions()
                 self?.loadDesktopInfoHideItems()
             }
-        
-        detectModeAndSetLogFolders()
+        Task {
+            await detectModeAndSetLogFolders()
+        }
     }
     
-    private func detectModeAndSetLogFolders() {
+    private func detectModeAndSetLogFolders() async {
         //if !logFolders.isEmpty {
         //    Logger.shared.logDebug("Log folders already initialized: \(logFolders)")
         //    return
@@ -155,12 +190,23 @@ class Preferences: ObservableObject {
         let fileManager = FileManager.default
         let companyPortalExists = fileManager.fileExists(atPath: Constants.AppPaths.companyPortal)
         let mscExists = fileManager.fileExists(atPath: Constants.AppPaths.MSC)
+        let mdmUrl = await getMDMUrl()
+        
+        print(mdmUrl)
 
+        if mdmUrl != "Unknown" {
+            Logger.shared.logDebug("MDM URL detected: \(mdmUrl)")
+            if mdmUrl.contains("i.manage.microsoft.com") {
+                Logger.shared.logDebug("MDM URL contains i.manage.microsoft.com, setting mdm to Intune.")
+                mdm = "Intune"
+            }
+        }
+        
         if companyPortalExists && mscExists {
             Logger.shared.logDebug("Both Munki and Company Portal paths exist, defaulting to Munki mode.")
             mode = Constants.modes.munki
             logFolders = ["/Library/Managed Installs/Logs", "/Library/Logs/Microsoft"]
-        } else if companyPortalExists {
+        } else if companyPortalExists && mdm == "Intune" {
             Logger.shared.logDebug("Company Portal path exists, setting mode to Intune.")
             mode = Constants.modes.intune
             logFolders = ["/Library/Logs/Microsoft"]
@@ -220,7 +266,8 @@ class Preferences: ObservableObject {
                     command: dict["Command"] as? String ?? "",
                     icon: dict["Icon"] as? String,
                     isPrivileged: dict["IsPrivileged"] as? Bool ?? false,
-                    description: dict["Description"] as? String ?? ""
+                    description: dict["Description"] as? String ?? "",
+                    buttonLabel: dict["ButtonLabel"] as? String ?? "Run"
                 )
             }
             self?.actions = newActions
@@ -296,7 +343,7 @@ class Preferences: ObservableObject {
             } else if let value = value as? Double {
                 writeCommand = "defaults write \(bundleIdentifier) \(key) -float \(value)"
             } else {
-                print("Unsupported value type for key: \(key)")
+                Logger.shared.logError("Unsupported value type for key: \(key)")
                 continue
             }
 
@@ -304,7 +351,10 @@ class Preferences: ObservableObject {
             executeShellCommand(command: writeCommand)
         }
         
-        detectModeAndSetLogFolders()
+        Task {
+            await detectModeAndSetLogFolders()
+        }
+        
         Logger.shared.logDebug("Defaults have been reset using defaults write.")
     }
 

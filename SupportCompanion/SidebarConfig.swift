@@ -58,6 +58,32 @@ func generateSidebarItems(preferences: Preferences, stateManager: WebViewStateMa
             )
         )
     }
+
+    if !preferences.markdownFilePath.isEmpty && !preferences.markdownMenuLabel.isEmpty {
+        if FileManager.default.fileExists(atPath: preferences.markdownFilePath) {
+            items.append(
+                SidebarItem(
+                    label: preferences.markdownMenuLabel,
+                    systemImage: preferences.markdownMenuIcon,
+                    destination: AnyView(
+                        CustomMarkdown(markdown: loadMarkdown(mdPath: preferences.markdownFilePath))
+                    )
+                )
+            )
+        }
+    }
+    
+    if !preferences.customCardPath.isEmpty && !preferences.customCardsMenuLabel.isEmpty {
+        if FileManager.default.fileExists(atPath: preferences.customCardPath) {
+            items.append(
+                SidebarItem(
+                    label: preferences.customCardsMenuLabel,
+                    systemImage: preferences.customCardsMenuIcon,
+                    destination: AnyView(CustomCardsView())
+                )
+            )
+        }
+    }
     
     // Add "Company Portal" with persistent WebViewState
     if preferences.menuShowCompanyPortal {

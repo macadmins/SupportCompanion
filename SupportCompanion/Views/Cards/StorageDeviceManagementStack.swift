@@ -49,8 +49,9 @@ struct StorageDeviceManagementStack: View {
                             )
                         }
                         .padding(.horizontal)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .frame(height: 116)
                     })
+                    .fixedSize(horizontal: false, vertical: true)
                 }
                 
                 // Device Management Card
@@ -60,8 +61,9 @@ struct StorageDeviceManagementStack: View {
                             CardData(info: appState.mdmInfoManager.mdmInfo.toKeyValuePairs())
                         }
                         .padding(.horizontal)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .frame(height: 116)
                     })
+                    .fixedSize(horizontal: false, vertical: true)
                 }
             }
             .frame(maxWidth: .infinity)
