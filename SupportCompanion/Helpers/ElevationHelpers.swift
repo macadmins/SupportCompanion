@@ -97,9 +97,17 @@ func saveReasonToDisk(reason: String) {
     var existingEntries: [[String: Any]] = []
 
     // Read existing entries if the file exists
-    if let data = try? Data(contentsOf: fileURL),
-       let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [[String: String]] {
-        existingEntries = json
+    if fileManager.fileExists(atPath: fileURL.path) {
+        do {
+            let data = try Data(contentsOf: fileURL)
+            if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]] {
+                existingEntries = json
+            } else {
+                Logger.shared.logError("Failed to parse JSON from file. Overwriting with new entries.")
+            }
+        } catch {
+            Logger.shared.logError("Error reading file: \(error.localizedDescription)")
+        }
     }
 
     // Add the new entry
