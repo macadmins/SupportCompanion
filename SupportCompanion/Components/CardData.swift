@@ -61,9 +61,18 @@ struct CardData: View {
                 temperatureContent(value: value)
             case Constants.PlatformSSO.Keys.registrationCompleted:
                 pssoRegistrationContent(value: value)
+            case Constants.UserInfo.Keys.isAdmin:
+                userInfoAdminContent(value: value)
             default:
                 defaultText(value: value, key: key)
             }
+        }
+    }
+    
+    private func userInfoAdminContent(value: InfoValue) -> some View {
+        return HStack(spacing: 0) {
+            Text(value.displayValue == "Enabled" ? "Yes" : "No")
+                .font(.system(size: fontSize ?? 14))
         }
     }
 
