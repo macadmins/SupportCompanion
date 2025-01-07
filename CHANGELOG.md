@@ -4,12 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.2.0] - 2024-12-17
+## [2.2.0] - 2025-01-07
 ### Changed
 - A slight background has been added increasing visaibility of the text.
 - Main window is now slightly resizeable to allow for window to be resized to a smaller size.
 - Last reboot time is now monitored and updated every 5 minutes. Displaying in minutes, hours or days depending on the time since last reboot.
 - Battery temperature will adapt to the configured measurement system in macOS and show temp in either Celsius or Fahrenheit.
+- Storage API has been changed for a more accurate reading of actual storage used.
+- "Is Admin" will now display "yes" or "no" localized instead of enabled or disabled.
 - In addition to only checking if Company Portal exists when dynamically setting the `Mode` to use, the server url will now also be checked. If the server url contains "i.manage.microsoft.com", the MDM will be set to Intune. This is because Company Portal can validly exist on a device without the device being managed by Intune.
 - Button labels on actions can now be set to a custom value. This allows for admins to set custom labels for actions that are displayed in the `Self Service` page. Example configuration:
 ```xml
@@ -45,6 +47,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <string>Custom View</string>
 <key>MarkdownMenuIcon</key>
 <string>doc.text</string>
+```
+- A new option to show custom cards in the navigation bar. This allows for displaying large numbers of cards without cluttering the home view, by moving them to their own view. Example configuration:
+```xml
+<key>CustomCardsMenuLabel</key>
+<string>Custom Cards</string>
+<key>CustomCardsMenuIcon</key>
+<string>doc.text</string>
+<key>CustomCardPath</key>
+<string>/path/to/custom/cards.json</string>
 ```
 - A new option to trigger actions using the CLI. This allows for triggering actions using the CLI instead of the UI. This can be useful for automating actions or triggering actions from a script. By default, actions configured as privileged will require authentication. This can be disabled by setting `RequirePrivilegedActionAuthentication` to `false`. Example usage:
 ```bash
