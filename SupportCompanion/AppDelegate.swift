@@ -282,7 +282,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             let hostingController = NSHostingController(rootView: contentView)
 
             let window = NSWindow(contentViewController: hostingController)
-            window.setContentSize(NSSize(width: 1520, height: 960))
+            window.setContentSize(NSSize(width: 1500, height: 1020))
             window.styleMask = [.titled, .closable, .resizable]
             window.minSize = NSSize(width: 1100, height: 650)
             window.title = ""

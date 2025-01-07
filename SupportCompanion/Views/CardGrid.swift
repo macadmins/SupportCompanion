@@ -18,7 +18,9 @@ struct CardGrid: View {
     @State private var modalMessage = ""
 
     var body: some View {
-        let columns = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), ]
+        let columns = [
+            GridItem(.adaptive(minimum: 300), alignment: .top)
+        ]
         ZStack{
             ScrollView {
                 LazyVGrid(
@@ -28,8 +30,11 @@ struct CardGrid: View {
                     // Device Information Card
                     DeviceInformationCard(viewModel: viewModel)
                     
-                    // Evergreen and Battery cards
-                    BatteryEvergreenStack(viewModel: viewModel)
+                    // Patching progress card
+                    if appState.preferences.mode == Constants.modes.munki || appState.preferences.mode == Constants.modes.intune {
+                        PatchingProgressCard(viewModel: viewModel)
+                        PendingUpdatesCard(viewModel: viewModel)
+                    }
                     
                     // Actions Card
                     ActionsCard(
@@ -42,26 +47,26 @@ struct CardGrid: View {
                         }
                     )
                     
-                    // Storage and Device Management cards
-                    StorageDeviceManagementStack(viewModel: viewModel)
-                    
-                    // Patching progress card
-                    if appState.preferences.mode == Constants.modes.munki || appState.preferences.mode == Constants.modes.intune {
-                        PatchingProgressCard(viewModel: viewModel)
-                        PendingUpdatesCard(viewModel: viewModel)
+                    ForEach(getVisibleStacks(viewModel: viewModel), id: \.id) { stack in
+                        stack.view
+                            .frame(maxWidth: .infinity)
                     }
-                    
-                    if appState.JsonCards.count > 0 {
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 20)
+
+                LazyVGrid(columns: columns) {
+                    if appState.JsonCards.count > 0 && appState.preferences.customCardsMenuLabel.isEmpty {
                         ForEach(appState.JsonCards) { card in
                             JsonCardView(card: card)
                         }
                     }
                 }
-                .padding(20)
+                .padding(.horizontal, 20)
+                .padding(.bottom, 20)
                 .onAppear{
-                    if !appState.preferences.customCardPath.isEmpty {
-                        let cardManager = JsonCardManager(appState: appState)
-                        cardManager.loadFromFile(appState.preferences.customCardPath)
+                    if appState.preferences.customCardPath.isEmpty && appState.preferences.customCardsMenuLabel.isEmpty {
+                        appState.refreshJsonCards()
                     }
                 }
             }
@@ -73,6 +78,19 @@ struct CardGrid: View {
             ) {
                 modalCountdown = Constants.RebootModal.countdown // Reset countdown in CardGrid
                 showRebootModal = false                         // Close the modal
+            }
+        }
+        .onAppear {
+            if !appState.preferences.hiddenCards.contains(Constants.CardTitle.evergreen) {
+                appState.evergreenInfoManager.refresh()
+            }
+            if !appState.preferences.hiddenCards.contains(Constants.CardTitle.battery) {
+                appState.batteryInfoManager.startMonitoring()
+            }
+        }
+        .onDisappear {
+            if !appState.preferences.hiddenCards.contains(Constants.CardTitle.battery) {
+                appState.batteryInfoManager.stopMonitoring()
             }
         }
         .toast(isPresenting: Binding(
@@ -92,10 +110,57 @@ struct CardGrid: View {
     }
 }
 
+func getVisibleStacks(viewModel: CardGridViewModel) -> [(id: String, view: AnyView)] {
+    var visibleStacks: [(id: String, view: AnyView)] = []
+    
+    // Conditional logic to arrange Battery and Storage/Device stacks
+    if viewModel.isCardVisible(Constants.Cards.storage) && viewModel.isCardVisible(Constants.Cards.deviceManagement) {
+        // Both Storage and Device Management are visible: Split columns
+        visibleStacks.append(
+            (id: "StorageDeviceManagement",
+             view: AnyView(
+                StorageDeviceManagementStack(viewModel: viewModel)
+                    .frame(maxWidth: .infinity)
+                    .gridCellColumns(1)
+            ))
+        )
+        
+        visibleStacks.append(
+            (id: "BatteryEvergreen",
+             view: AnyView(
+                BatteryEvergreenStack(viewModel: viewModel)
+                    .frame(maxWidth: .infinity)
+                    .gridCellColumns(1)
+            ))
+        )
+    } else {
+        // Otherwise, span the grid
+        visibleStacks.append(
+            (id: "BatteryEvergreen",
+             view: AnyView(
+                BatteryEvergreenStack(viewModel: viewModel)
+                    .frame(maxWidth: .infinity)
+                    .gridCellColumns(2)
+            ))
+        )
+        
+        visibleStacks.append(
+            (id: "StorageDeviceManagement",
+             view: AnyView(
+                StorageDeviceManagementStack(viewModel: viewModel)
+                    .frame(maxWidth: .infinity)
+                    .gridCellColumns(2)
+            ))
+        )
+    }
+
+    return visibleStacks
+}
+
 struct CardGridView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
         .environmentObject(AppStateManager.shared)
-        .frame(width: 1400, height: 900)
+        .frame(width: 1500, height: 100)
     }
 }
