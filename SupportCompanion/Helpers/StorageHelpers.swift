@@ -22,9 +22,12 @@ func getStorageName() -> String {
 func getStorageUsagePercentage() -> Double {
     let fileURL = URL(fileURLWithPath: "/")
     do {
-        let values = try fileURL.resourceValues(forKeys: [.volumeTotalCapacityKey, .volumeAvailableCapacityKey])
-        if let totalSpace = values.volumeTotalCapacity, let freeSpace = values.volumeAvailableCapacity {
-            let usedSpace = totalSpace - freeSpace
+        // Fetch resource values for total and available capacity
+        let values = try fileURL.resourceValues(forKeys: [.volumeTotalCapacityKey, .volumeAvailableCapacityForImportantUsageKey])
+        if let totalSpace = values.volumeTotalCapacity, let freeSpace = values.volumeAvailableCapacityForImportantUsage {
+            Logger.shared.logDebug("Free space: \(freeSpace), Total space: \(totalSpace)")
+            // Convert totalSpace to Int64 for compatibility
+            let usedSpace = Int64(totalSpace) - freeSpace
             return ((Double(usedSpace) / Double(totalSpace)) * 100).rounded(toPlaces: 1)
         }
     } catch {
