@@ -77,6 +77,10 @@ class Preferences: ObservableObject {
 
     @AppStorage("MarkdownMenuIcon") var markdownMenuIcon: String = ""
     
+    @AppStorage("CustomCardsMenuLabel") var customCardsMenuLabel: String = ""
+    
+    @AppStorage("CustomCardsMenuIcon") var customCardsMenuIcon: String = ""
+    
     // MARK: - Actions
     
     @AppStorage("SupportPageUrl") var supportPageURL: String = ""

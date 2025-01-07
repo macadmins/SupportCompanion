@@ -17,6 +17,7 @@ class AppStateManager: ObservableObject {
     lazy var pendingIntuneUpdatesManager = PendingIntuneUpdatesManager(appState: self)
     lazy var evergreenInfoManager = EvergreenInfoManager(appState: self)
     lazy var elevationManager = ElevationManager(appState: self)
+    var jsonCardManager: JsonCardManager?
     @Published var isRefreshing: Bool = false
     @Published var deviceInfoManager = DeviceInfoManager.shared
     @Published var storageInfoManager = StorageInfoManager.shared
@@ -93,6 +94,8 @@ class AppStateManager: ObservableObject {
                 self?.objectWillChange.send()
             }
             .store(in: &cancellables)
+
+        setupCardManager()
     }
 
     func startDemotionTimer(duration: TimeInterval) {
@@ -109,6 +112,17 @@ class AppStateManager: ObservableObject {
         elevationManager.stopDemotionTimer()
         self.timeToDemote = 0
         self.isDemotionActive = false
+    }
+
+    private func setupCardManager() {
+        guard !preferences.customCardPath.isEmpty else { return }
+        jsonCardManager = JsonCardManager(appState: self)
+        jsonCardManager?.loadFromFile(preferences.customCardPath)
+        jsonCardManager?.watchFile(preferences.customCardPath)
+    }
+
+    func refreshJsonCards() {
+        jsonCardManager?.loadFromFile(preferences.customCardPath)
     }
     
     @MainActor

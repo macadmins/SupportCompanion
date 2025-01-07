@@ -78,6 +78,7 @@ extension AppDelegate: NSWindowDelegate {
         Logger.shared.logDebug("Main window is closing.")
         AppStateManager.shared.windowIsVisible = false
         windowController = nil
+        AppStateManager.shared.jsonCardManager = nil
         NSApp.setActivationPolicy(.accessory)
     }
 
