@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - A new option to set a custom branding tray menu icon by specifying a base64 string of the icon using `TrayMenuBrandingIcon`. Note that the icon should be a monochrome icon to fit the design of the tray menu.
 
+
+### Changed
+- Additional options to the rendering of brand logos has been added that allows for a higher quality rendering of the logo as it in some cases could look blurry or jagged.
+
 ## [2.2.0] - 2025-01-07
 ### Changed
 - A slight background has been added increasing visaibility of the text.
