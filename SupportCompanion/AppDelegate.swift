@@ -197,11 +197,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
         func updateTrayIcon(hasUpdates: Bool) {
             let iconName = "MenuIcon"
-            let iconPath = appStateManager.preferences.trayMenuBrandingIconPath
+            let base64Logo = appStateManager.preferences.trayMenuBrandingIcon
+            var showLogo = false
             var baseIcon: NSImage?
 
-            if !iconPath.isEmpty && fileManager.fileExists(atPath: iconPath) {
-                baseIcon = NSImage(contentsOfFile: iconPath)
+            showLogo = loadLogo(base64Logo: base64Logo)
+            if showLogo {
+                baseIcon = NSImage(data: Data(base64Encoded: base64Logo)!)
             } else {
                 baseIcon = NSImage(named: iconName)
             }
