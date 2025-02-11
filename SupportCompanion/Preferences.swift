@@ -80,6 +80,8 @@ class Preferences: ObservableObject {
     @AppStorage("CustomCardsMenuLabel") var customCardsMenuLabel: String = ""
     
     @AppStorage("CustomCardsMenuIcon") var customCardsMenuIcon: String = ""
+
+    @AppStorage("TrayMenuBrandingIconPath") var trayMenuBrandingIconPath: String = ""
     
     // MARK: - Actions
     

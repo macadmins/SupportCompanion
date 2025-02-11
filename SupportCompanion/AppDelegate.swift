@@ -186,7 +186,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
     class TrayMenuManager {
         static let shared = TrayMenuManager()
-        
+        let appStateManager = AppStateManager.shared
+        let fileManager = FileManager.default
         private var statusItem: NSStatusItem
 
         private init() {
@@ -196,8 +197,17 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
         func updateTrayIcon(hasUpdates: Bool) {
             let iconName = "MenuIcon"
-            guard let baseIcon = NSImage(named: iconName) else {
-                Logger.shared.logDebug("Failed to load tray icon: \(iconName)")
+            let iconPath = appStateManager.preferences.trayMenuBrandingIconPath
+            var baseIcon: NSImage?
+
+            if !iconPath.isEmpty && fileManager.fileExists(atPath: iconPath) {
+                baseIcon = NSImage(contentsOfFile: iconPath)
+            } else {
+                baseIcon = NSImage(named: iconName)
+            }
+
+            guard let baseIcon = baseIcon else {
+                Logger.shared.logError("Error: Failed to load tray menu icon")
                 return
             }
 
