@@ -167,11 +167,17 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     }
 
     func setupTrayMenuIconBinding() {
-        appStateManager.$pendingUpdatesCount
-            .combineLatest(appStateManager.$systemUpdateCache)
-            .map { pendingUpdatesCount, systemUpdateCache in
-                pendingUpdatesCount > 0 || systemUpdateCache.count > 0
-            }
+        Publishers.CombineLatest4(
+            appStateManager.$pendingUpdatesCount,
+            appStateManager.$systemUpdateCache,
+            appStateManager.preferences.$hiddenActions,
+            appStateManager.preferences.$hiddenCards
+        )
+        .map { pendingUpdatesCount, systemUpdateCache, hiddenActions, hiddenCards in
+            let hasPendingUpdates = !hiddenCards.contains("PendingAppUpdates") && pendingUpdatesCount > 0
+            let hasSoftwareUpdates = !hiddenActions.contains("SoftwareUpdates") && systemUpdateCache.count > 0
+            return hasPendingUpdates || hasSoftwareUpdates
+        }
             .sink { hasUpdates in
                 TrayMenuManager.shared.updateTrayIcon(hasUpdates: hasUpdates)
             }
