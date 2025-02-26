@@ -120,7 +120,7 @@ class PendingMunkiUpdatesManager {
                     self.appState.pendingUpdatesCount = updates
                 }
             }
-            if updates > 0 {
+            if updates > 0 && !appState.preferences.hiddenCards.contains("PendingAppUpdates") {
                 NotificationService(appState: appState).sendNotification(
                     message: appState.preferences.appUpdateNotificationMessage,
                     buttonText: appState.preferences.appUpdateNotificationButtonText,

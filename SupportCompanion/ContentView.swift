@@ -31,8 +31,11 @@ struct ContentView: View {
                 if showLogo, let logo = brandLogo {
                     logo
                         .resizable()
+                        .interpolation(.high)
+                        .antialiased(true)
                         .scaledToFit()
                         .frame(maxWidth: 230)
+                        .drawingGroup()
                         .fixedSize(horizontal: false, vertical: true)
                         .padding(.top, 20) // Minimal padding
                         .padding(.horizontal, 20)

@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.1] - 2025-02-26
+### Fixed
+- Even if `SoftwareUpdates` or `PendingAppUpdates` were hidden, the badge would still be displayed in the tray menu and dock. This has been fixed by checking if the widget is hidden before displaying the badge.
+
+### Added
+- A new option to set a custom branding tray menu icon by specifying a base64 string of the icon using `TrayMenuBrandingIcon`. Note that the icon should be a monochrome icon to fit the design of the tray menu.
+
+
+### Changed
+- Additional options to the rendering of brand logos has been added that allows for a higher quality rendering of the logo as it in some cases could look blurry or jagged.
+
 ## [2.2.0] - 2025-01-07
 ### Changed
 - A slight background has been added increasing visaibility of the text.

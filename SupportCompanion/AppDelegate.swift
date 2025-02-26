@@ -167,11 +167,17 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     }
 
     func setupTrayMenuIconBinding() {
-        appStateManager.$pendingUpdatesCount
-            .combineLatest(appStateManager.$systemUpdateCache)
-            .map { pendingUpdatesCount, systemUpdateCache in
-                pendingUpdatesCount > 0 || systemUpdateCache.count > 0
-            }
+        Publishers.CombineLatest4(
+            appStateManager.$pendingUpdatesCount,
+            appStateManager.$systemUpdateCache,
+            appStateManager.preferences.$hiddenActions,
+            appStateManager.preferences.$hiddenCards
+        )
+        .map { pendingUpdatesCount, systemUpdateCache, hiddenActions, hiddenCards in
+            let hasPendingUpdates = !hiddenCards.contains("PendingAppUpdates") && pendingUpdatesCount > 0
+            let hasSoftwareUpdates = !hiddenActions.contains("SoftwareUpdates") && systemUpdateCache.count > 0
+            return hasPendingUpdates || hasSoftwareUpdates
+        }
             .sink { hasUpdates in
                 TrayMenuManager.shared.updateTrayIcon(hasUpdates: hasUpdates)
             }
@@ -180,7 +186,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
     class TrayMenuManager {
         static let shared = TrayMenuManager()
-        
+        let appStateManager = AppStateManager.shared
+        let fileManager = FileManager.default
         private var statusItem: NSStatusItem
 
         private init() {
@@ -190,8 +197,19 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
         func updateTrayIcon(hasUpdates: Bool) {
             let iconName = "MenuIcon"
-            guard let baseIcon = NSImage(named: iconName) else {
-                Logger.shared.logDebug("Failed to load tray icon: \(iconName)")
+            let base64Logo = appStateManager.preferences.trayMenuBrandingIcon
+            var showLogo = false
+            var baseIcon: NSImage?
+
+            showLogo = loadLogo(base64Logo: base64Logo)
+            if showLogo {
+                baseIcon = NSImage(data: Data(base64Encoded: base64Logo)!)
+            } else {
+                baseIcon = NSImage(named: iconName)
+            }
+
+            guard let baseIcon = baseIcon else {
+                Logger.shared.logError("Error: Failed to load tray menu icon")
                 return
             }
 

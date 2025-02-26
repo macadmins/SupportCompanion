@@ -27,6 +27,9 @@ struct TrayMenuView: View {
             if showLogo, let logo = brandLogo {
                     logo
                         .resizable()
+                        .interpolation(.high)
+                        .antialiased(true)
+                        .drawingGroup()
                         .scaledToFit()
                         .frame(maxWidth: 150)
                         .fixedSize(horizontal: false, vertical: true)

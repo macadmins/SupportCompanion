@@ -38,7 +38,7 @@ class SystemUpdatesManager: ObservableObject {
         monitorTask = Task {
             while !Task.isCancelled {
                 do {
-                    let result = await ActionHelpers.getSystemUpdateStatus(sendNotification: true)
+                    let result = await ActionHelpers.getSystemUpdateStatus(sendNotification: !appState.preferences.hiddenActions.contains("SoftwareUpdates"))
                     switch result {
                     case .success(let (count, updates)):
                         if count != self.previousUpdateCount {
