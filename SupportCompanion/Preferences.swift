@@ -99,6 +99,8 @@ class Preferences: ObservableObject {
     
     @Published var logFolders: [String] = UserDefaults.standard.array(forKey: "LogFolders") as? [String] ?? []
 
+    @Published var excludedLogFolders: [String] = UserDefaults.standard.array(forKey: "ExcludedLogFolders") as? [String] ?? []
+
     @AppStorage("RequirePrivilegedActionAuthentication") var requirePrivilegedActionAuthentication: Bool = true
     
     // MARK: - Desktop Info
@@ -169,6 +171,7 @@ class Preferences: ObservableObject {
             .sink { [weak self] _ in
                 self?.loadHiddenCards()
                 self?.loadLogFolders()
+                self?.loadExcludedLogFolders()
                 self?.loadActions()
                 self?.loadHiddenActions()
                 self?.loadDesktopInfoHideItems()
@@ -251,6 +254,13 @@ class Preferences: ObservableObject {
             self?.hiddenActions = UserDefaults.standard.array(forKey: "HiddenActions") as? [String] ?? []
         }
     }
+
+    private func loadExcludedLogFolders() {
+        DispatchQueue.main.async { [weak self] in
+            self?.excludedLogFolders = UserDefaults.standard.array(forKey: "ExcludedLogFolders") as? [String] ?? []
+        }
+    }
+
     
     private func loadDesktopInfoHideItems() {
         DispatchQueue.main.async { [weak self] in

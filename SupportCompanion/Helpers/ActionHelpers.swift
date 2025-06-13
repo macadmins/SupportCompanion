@@ -197,7 +197,7 @@ struct ActionHelpers {
     }
     
     static func gatherLogs(preferences: Preferences, completion: @escaping (OperationResult) -> Void) {
-        let command = buildZipCommand(for: preferences.logFolders)
+        let command = buildZipCommand(for: preferences.logFolders, excluding: preferences.excludedLogFolders)
         Logger.shared.logDebug("Gathering logs with command: \(command)")
         Task {
             do {
@@ -218,13 +218,17 @@ struct ActionHelpers {
         }
     }
 
-    static private func buildZipCommand(for logFolders: [String]) -> String {
+    static private func buildZipCommand(for logFolders: [String], excluding excludedLogFolders: [String]) -> String {
         let fileManager = FileManager.default
         if fileManager.fileExists(atPath: tempArchivePath) {
             _ = try? fileManager.removeItem(at: URL(fileURLWithPath: tempArchivePath))
         }
         var command = "/usr/bin/zip -r \(tempArchivePath)"
         logFolders.forEach { command += " '\($0)'" }
+        if !excludedLogFolders.isEmpty {
+            command += " -x"
+            excludedLogFolders.forEach { command += " '\($0)/*'" }
+        }
         return command
     }
 
