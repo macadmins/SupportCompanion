@@ -36,7 +36,7 @@ class CardGridViewModel: ObservableObject {
                 ("OS Version:", appState.deviceInfoManager.deviceInfo?.osVersion ?? ""),
                 ("OS Build:", appState.deviceInfoManager.deviceInfo?.osBuild ?? ""),
                 ("IP Address:", appState.deviceInfoManager.deviceInfo?.ipAddress ?? ""),
-                ("Last Reboot:", "\(appState.deviceInfoManager.deviceInfo?.lastRestart ?? 0) days"),
+                ("Last Reboot:", "\(appState.deviceInfoManager.deviceInfo?.lastRestartDays ?? 0) days"),
                 ("--------------------- Battery ---------------------", ""),
                 ("Health:", "\(healthPercentage)%"),
                 ("Cycle Count:", appState.batteryInfoManager.batteryInfo.cycleCount),

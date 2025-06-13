@@ -23,6 +23,7 @@ class DeviceInfoManager: ObservableObject {
             ipAddress: "",
             serialNumber: "",
             lastRestart: 0,
+            lastRestartDays: 0,
             model: ""
         )
     )
@@ -60,6 +61,7 @@ class DeviceInfoManager: ObservableObject {
                 ipAddress: currentIPAddress,
                 serialNumber: getSerialNumber(),
                 lastRestart: getLastRestartMinutes() ?? 0,
+                lastRestartDays: getLastRebootDays() ?? 0,
                 model: getModelName()
             )
         }
@@ -81,6 +83,7 @@ class DeviceInfoManager: ObservableObject {
                     ipAddress: updatedIPAddress,
                     serialNumber: currentDeviceInfo.serialNumber,
                     lastRestart: currentDeviceInfo.lastRestart,
+                    lastRestartDays: currentDeviceInfo.lastRestartDays,
                     model: currentDeviceInfo.model
                 )
             }
