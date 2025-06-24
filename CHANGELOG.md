@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2025-06-24
+### Changed
+- Updated UI elements to match the new look introduced in macOS 26 (Tahoe).
+- Cards now use the liquid glass effect and updated corner radius to better align with the new design language.
+- Moved the dark/light mode toggle and support info button to the top-right toolbar.
+
 ## [2.2.2] - 2025-06-13
 ### Fixed
 - Last restart now correctly displays the time since last restart in the correct format when copying device information to the clipboard.
