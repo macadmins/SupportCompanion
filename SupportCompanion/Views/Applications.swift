@@ -56,7 +56,8 @@ struct Applications: View {
                 }
             }
         }
-        .padding(20)
+        .padding(.horizontal, 20)
+        .padding(.bottom, 20)
         .onAppear {
             isLoading = true
             let appInfoManager = ApplicationsInfoManager(appState: appState) // Local instance

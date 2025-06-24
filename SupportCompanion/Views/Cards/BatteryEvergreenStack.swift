@@ -20,12 +20,15 @@ struct BatteryEvergreenStack: View {
                     ScCard(title: "\(Constants.CardTitle.battery)", titleImageName: "battery.100percent.bolt", imageSize: (25,25), content: {
                         VStack(alignment: .leading) {
                             CardData(info: appState.batteryInfoManager.batteryInfo.toKeyValuePairs())
+                            Spacer()
                         }
-                        .frame(height: 110)
+                        //.frame(height: 110)
+                        .frame(maxHeight: .infinity, alignment: .top)
+                        .frame(minHeight: 110)
                         .padding(.horizontal)
                     }
                 )
-                .fixedSize(horizontal: false, vertical: true)
+                .fixedSize(horizontal: false, vertical: false)
                 }
                 
                 if viewModel.isCardVisible(Constants.Cards.evergreen) && appState.preferences.mode == Constants.modes.munki {
@@ -42,11 +45,14 @@ struct BatteryEvergreenStack: View {
                                         .font(.system(size: 14))
                                 }
                             }
+                            Spacer()
                         }
-                        .frame(height: 116)
+                        //.frame(height: 116)
+                        .frame(maxHeight: .infinity, alignment: .top)
+                        .frame(minHeight: 110)
                         .padding(.horizontal)
                     })
-                    .fixedSize(horizontal: false, vertical: true)
+                    .fixedSize(horizontal: false, vertical: false)
                 }
             }
         }

@@ -194,3 +194,18 @@ extension Theme {
                 .relativeLineSpacing(.em(0.25))
             }
 }
+
+extension View {
+    @ViewBuilder
+    func isGlass() -> some View {
+        if #available(macOS 26, *) {
+            self.glassEffect(in: .rect(cornerRadius: 12))
+        }
+        else {
+            self.background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(.ultraThinMaterial)
+            )
+        }
+    }
+}

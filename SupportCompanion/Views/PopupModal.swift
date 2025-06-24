@@ -32,7 +32,7 @@ struct PopupModal: View {
         .padding()
         .frame(minWidth: 200, idealWidth: 300, maxWidth: 500, minHeight: 200)
         .background(Color.clear)
-        .cornerRadius(12)
+        .cornerRadius(14)
         .shadow(radius: 8)
     }
 }

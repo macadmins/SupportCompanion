@@ -47,11 +47,14 @@ struct StorageDeviceManagementStack: View {
                                     return AnyView(EmptyView())
                                 }
                             )
+                            Spacer()
                         }
                         .padding(.horizontal)
-                        .frame(height: 116)
+                        //.frame(height: 116)
+                        .frame(maxHeight: .infinity, alignment: .top)
+                        .frame(minHeight: 110)
                     })
-                    .fixedSize(horizontal: false, vertical: true)
+                    .fixedSize(horizontal: false, vertical: false)
                 }
                 
                 // Device Management Card
@@ -59,14 +62,18 @@ struct StorageDeviceManagementStack: View {
                     ScCard(title: "\(Constants.CardTitle.deviceManagement)", titleImageName: "lock.shield", content:  {
                         VStack(alignment: .leading, spacing: 5) {
                             CardData(info: appState.mdmInfoManager.mdmInfo.toKeyValuePairs())
+                            Spacer()
                         }
                         .padding(.horizontal)
-                        .frame(height: 116)
+                        //.frame(height: 116)
+                        .frame(maxHeight: .infinity, alignment: .top)
+                        .frame(minHeight: 110)
                     })
-                    .fixedSize(horizontal: false, vertical: true)
+                    .fixedSize(horizontal: false, vertical: false)
                 }
             }
             .frame(maxWidth: .infinity)
+            .frame(maxHeight: .infinity)
         }
     }
 }

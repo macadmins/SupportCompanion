@@ -75,14 +75,16 @@ struct DeviceInfoSection: View {
 
             VStack(alignment: .leading, spacing: 5) {
                 ForEach(group.1, id: \.key) { item in
-                    if item.key == Constants.DeviceInfo.Keys.lastRestart {
-                        LastRestartRow(
-                            label: item.display,
-                            value: item.value.rawValue as? Int ?? 0,
-                            colorScheme: colorScheme // Pass colorScheme explicitly
-                        )
-                    } else {
-                        DeviceInfoRow(label: item.display, value: item.value.displayValue)
+                    if item.key != "lastRestartDays" {
+                        if item.key == Constants.DeviceInfo.Keys.lastRestart {
+                            LastRestartRow(
+                                label: item.display,
+                                value: item.value.rawValue as? Int ?? 0,
+                                colorScheme: colorScheme // Pass colorScheme explicitly
+                            )
+                        } else {
+                            DeviceInfoRow(label: item.display, value: item.value.displayValue)
+                        }
                     }
                 }
             }

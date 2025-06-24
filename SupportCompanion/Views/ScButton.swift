@@ -76,7 +76,7 @@ struct ScButton: View, Hashable {
                 .frame(maxWidth: maxWidth ?? nil) // Keep consistent button size
                 .background(Color(NSColor(hex: appState.preferences.accentColor ?? "") ?? NSColor.controlAccentColor))
                 .foregroundColor(.white)
-                .cornerRadius(8)
+                .cornerRadius(12)
                 .multilineTextAlignment(.leading)
             }
             .buttonStyle(PlainButtonStyle())

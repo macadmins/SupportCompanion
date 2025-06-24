@@ -32,7 +32,7 @@ struct Identity: View {
                 }
                 .padding(.leading, 20)
                 .padding(.trailing, 20)
-                .padding(.top, 20)
+                //.padding(.top, 20)
             }
             .onAppear {
                 appState.userInfoManager.refresh()

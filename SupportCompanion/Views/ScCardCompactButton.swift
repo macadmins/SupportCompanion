@@ -106,6 +106,7 @@ struct ScCardCompactButton<Content: View>: View {
             .shadow(radius: isHovered ? 8 : 4)
             .scaleEffect(isHovered ? 1.02 : 1.0)
             .animation(.easeInOut(duration: 0.2), value: isHovered)
+            .isGlass()
         }
         .buttonStyle(PlainButtonStyle())
         .onHover { hovering in

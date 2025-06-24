@@ -31,6 +31,7 @@ struct TransparentView: View {
             .fill(Color.black.opacity(appState.preferences.desktopInfoBackgroundOpacity))
             .shadow(radius: 10) // Shadow for depth
             .clipShape(RoundedRectangle(cornerRadius: 15))
+            .isGlass()
 
             VStack(alignment: .leading) {
                 // Title for the Info View
@@ -183,23 +184,27 @@ struct TransparentView: View {
     }
     
     private func deviceInfoRow(for item: (key: String, display: String, value: InfoValue)) -> some View {
-        if item.key == Constants.DeviceInfo.Keys.lastRestart {
-            return AnyView(
-                LastRestartRowTransparent(
-                    label: item.display,
-                    value: item.value.rawValue as? Int ?? 0,
-                    fontSize: CGFloat(appState.preferences.desktopInfoFontSize)
-                )
-            )
+        if item.key == "lastRestartDays" {
+            return AnyView(EmptyView())
         } else {
-            return AnyView(
-                DeviceInfoRowTransparent(
-                    label: item.display,
-                    value: item.value.displayValue,
-                    fontSize: CGFloat(appState.preferences.desktopInfoFontSize)
+            if item.key == Constants.DeviceInfo.Keys.lastRestart {
+                return AnyView(
+                    LastRestartRowTransparent(
+                        label: item.display,
+                        value: item.value.rawValue as? Int ?? 0,
+                        fontSize: CGFloat(appState.preferences.desktopInfoFontSize)
+                    )
                 )
-                .id(item.value.displayValue)
-            )
+            } else {
+                return AnyView(
+                    DeviceInfoRowTransparent(
+                        label: item.display,
+                        value: item.value.displayValue,
+                        fontSize: CGFloat(appState.preferences.desktopInfoFontSize)
+                    )
+                    .id(item.value.displayValue)
+                )
+            }
         }
     }
     

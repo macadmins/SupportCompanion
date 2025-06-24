@@ -108,7 +108,7 @@ struct TrayMenuView: View {
         .onChange(of: colorScheme) { _, _ in
             loadLogoForCurrentColorScheme()
         }
-        .background(colorScheme == .dark ? Color.black.opacity(0.2) : Color.white.opacity(0.2))
+        .background(colorScheme == .dark ? Color.black.opacity(0.4) : Color.white.opacity(0.4))
     }
 
     /// Calculates the ideal height for the VStack based on the number of elements.

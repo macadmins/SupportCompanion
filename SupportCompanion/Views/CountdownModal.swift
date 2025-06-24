@@ -64,7 +64,7 @@ struct CountdownModal: View {
                             .frame(maxWidth: 250)
                             .background(Color.red)
                             .foregroundColor(.white)
-                            .cornerRadius(12)
+                            .cornerRadius(14)
                     }
                     .buttonStyle(PlainButtonStyle())
                     
