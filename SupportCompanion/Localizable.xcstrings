@@ -2040,6 +2040,48 @@
         }
       }
     },
+    "General.Day" : {
+      "comment" : "Number of day",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "tag"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Day"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "jour"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "dag"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "dag"
+          }
+        }
+      }
+    },
     "General.DayAgo" : {
       "comment" : "Number of day ago",
       "extractionState" : "extracted_with_value",
@@ -3363,6 +3405,48 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Privilegierad session startad. Rättigheter tas bort om"
+          }
+        }
+      }
+    },
+    "Notification.RebootReminder" : {
+      "comment" : "Notification message reminding the user to reboot their device",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihr Gerät wurde zuletzt vor %lld %@ neu gestartet. Bitte starten Sie Ihr Gerät neu, um optimale Leistung und Sicherheit zu gewährleisten."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Your device was last restarted %lld %@ ago. Please reboot your device to ensure optimal performance and security."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Votre appareil a été redémarré pour la dernière fois il y a %lld %@. Veuillez redémarrer votre appareil afin d’assurer des performances et une sécurité optimales."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "お使いのデバイスは%lld %@前に最後に再起動されました。最適なパフォーマンスとセキュリティを確保するため、デバイスを再起動してください。"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enheten din ble sist startet på nytt for %lld %@ siden. Start enheten på nytt for å sikre optimal ytelse og sikkerhet."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Din enhet startades om senast för %lld %@ sedan. Starta om enheten för att säkerställa optimal prestanda och säkerhet."
           }
         }
       }

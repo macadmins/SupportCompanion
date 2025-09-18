@@ -36,6 +36,7 @@ enum Constants {
     
     enum General {
         static let days = String(localized: "General.Days", defaultValue: "Days", comment: "Number of days")
+        static let day = String(localized: "General.Day", defaultValue: "Day", comment: "Number of day")
         static let dayAgo = String(localized: "General.DayAgo", defaultValue: "Day Ago", comment: "Number of day ago")
         static let daysAgo = String(localized: "General.DaysAgo", defaultValue: "Days Ago", comment: "Number of days ago")
         static let hours = String(localized: "General.Hours", defaultValue: "Hours", comment: "Number of hours")
@@ -87,6 +88,10 @@ enum Constants {
             static let ElevationStartedMessage = String(localized: "Notification.ElevationStarted", defaultValue: "Privliged session started. You will be demoted in", comment: "Notification message when an elevation is started")
             static let ElevationHalfwayMessage = String(localized: "Notification.ElevationHalfway", defaultValue: "Your elevated privileges will be demoted in", comment: "Notification message when half the time has passed")
             static let ElevationDemotedMessage = String(localized: "Notification.ElevationDemoted", defaultValue: "Your elevated privileges have been demoted.", comment: "Notification message when the elevation is demoted")
+        }
+
+        enum Reboot {
+            static let RebootMessage = String(localized: "Notification.RebootReminder", defaultValue: "Your device was last restarted %lld %@ ago. Please reboot your device to ensure optimal performance and security.", comment: "Notification message reminding the user to reboot their device")
         }
     }
     

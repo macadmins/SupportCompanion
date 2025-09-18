@@ -11,7 +11,7 @@ import Combine
 class DeviceInfoManager: ObservableObject {
     //private var timer: AnyCancellable?
     private var timer: Timer?
-
+    
     static let shared = DeviceInfoManager(
         deviceInfo: DeviceInfo(
             id: UUID(),
@@ -33,7 +33,7 @@ class DeviceInfoManager: ObservableObject {
     init(deviceInfo: DeviceInfo) {
         self.deviceInfo = deviceInfo
     }
-
+    
     func startMonitoring() {
         Logger.shared.logDebug("Starting device info monitoring")
         timer?.invalidate()
@@ -42,7 +42,7 @@ class DeviceInfoManager: ObservableObject {
             self.refresh()
         }
     }
-
+    
     func stopMonitoring() {
         Logger.shared.logDebug("Stopping device info monitoring")
         timer?.invalidate()
@@ -64,6 +64,21 @@ class DeviceInfoManager: ObservableObject {
                 lastRestartDays: getLastRebootDays() ?? 0,
                 model: getModelName()
             )
+            
+            guard let lastRebootDays = self.deviceInfo?.lastRestartDays else {
+                return
+            }
+            if lastRebootDays >= AppStateManager.shared.preferences.rebootReminderDays && AppStateManager.shared.preferences.rebootReminderDays > 0 {
+                let dayWord = lastRebootDays == 1 ? Constants.General.day : Constants.General.days
+                let message = String(format: Constants.Notifications.Reboot.RebootMessage, lastRebootDays, dayWord.lowercased())
+
+                NotificationService(appState: AppStateManager.shared).sendNotification(
+                    message: message,
+                    buttonText: "",
+                    command: "",
+                    notificationType: .rebootReminder
+                )
+            }
         }
         
         IPAddressMonitor.startMonitoring { newIPAddresses in

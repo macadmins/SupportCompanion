@@ -44,6 +44,8 @@ class Preferences: ObservableObject {
     @AppStorage("AppUpdateNotificationButtonText") var appUpdateNotificationButtonText: String = Constants.Notifications.AppUpdate.UpdateNotificationButtonText
     
     @AppStorage("AppUpdateNotificationCommand") var appUpdateNotificationCommand: String = ""
+
+    @AppStorage("RebootReminderDays") var rebootReminderDays: Int = 0
         
     // MARK: - branding
     
