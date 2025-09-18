@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		F60FAB742CE8D40A00ECAC53 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = F60FAB732CE8D40A00ECAC53 /* AlertToast */; };
 		F60FAB872CEA108A00ECAC53 /* SidebarConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60FAB862CEA108A00ECAC53 /* SidebarConfig.swift */; };
+		F627CBCB2E0AF1DF00164680 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = F627CBCA2E0AF1DF00164680 /* AppIcon.icon */; };
 		F64927372CF9EA8D00C34D90 /* com.github.macadmins.SupportCompanion.helper in CopyFiles */ = {isa = PBXBuildFile; fileRef = F6F8AE7D2CE345A8009B0A1F /* com.github.macadmins.SupportCompanion.helper */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		F6575A992D117108007DBC83 /* ExecutionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6F8AE9C2CE34E54009B0A1F /* ExecutionService.swift */; };
 		F6575A9A2D117114007DBC83 /* HelperRemoteProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6F8AE9E2CE34E72009B0A1F /* HelperRemoteProvider.swift */; };
@@ -74,6 +75,7 @@
 
 /* Begin PBXFileReference section */
 		F60FAB862CEA108A00ECAC53 /* SidebarConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarConfig.swift; sourceTree = "<group>"; };
+		F627CBCA2E0AF1DF00164680 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		F649273D2CF9FFD600C34D90 /* CHANGELOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = "<group>"; };
 		F64928192CFA02AD00C34D90 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		F6890EE22CFF308F00244985 /* SupportCompanionCLI */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SupportCompanionCLI; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -166,6 +168,7 @@
 		F68910C62D009DB500244985 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				AppIcon.icns,
 				MenuIcon.png,
 			);
 			target = F6F3BEB82CE1E7BA0036ADB9 /* SupportCompanion */;
@@ -288,6 +291,7 @@
 				F60ED7952CEB278400960264 /* Frameworks */,
 				F6F3BEBA2CE1E7BA0036ADB9 /* Products */,
 				F69455982CF6076100B887F8 /* build.zsh */,
+				F627CBCA2E0AF1DF00164680 /* AppIcon.icon */,
 			);
 			sourceTree = "<group>";
 		};
@@ -491,6 +495,7 @@
 			files = (
 				F6F3BEC12CE1E7BB0036ADB9 /* Assets.xcassets in Resources */,
 				F6A4E0FA2CEC9FFB002B4D74 /* Localizable.xcstrings in Resources */,
+				F627CBCB2E0AF1DF00164680 /* AppIcon.icon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -626,7 +631,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx;
+				SDKROOT = macosx26.0;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -685,7 +690,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = NO;
-				SDKROOT = macosx;
+				SDKROOT = macosx26.0;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 			};
@@ -722,6 +727,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.github.macadmins.SupportCompanion;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TEAM_ID = H92SB6Z7S4;
@@ -759,6 +765,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.github.macadmins.SupportCompanion;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TEAM_ID = T4SK8ZXCXG;

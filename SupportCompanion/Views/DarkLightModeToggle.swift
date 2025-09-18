@@ -16,14 +16,18 @@ struct DarkLightModeToggle: View {
     var body: some View {
         ZStack {
             // Background of the toggle
-            RoundedRectangle(cornerRadius: 20)
+            Capsule()
                 .fill(LinearGradient(
                     gradient: Gradient(colors: resolvedTheme == .dark ? [.purple, .black] : [.yellow, .orange]),
                     startPoint: .leading,
                     endPoint: .trailing
                 ))
-                .frame(width: 70, height: 30)
+                .frame(width: 50, height: 30)
                 .shadow(color: .black.opacity(0.2), radius: 5, x: 0, y: 2)
+                .overlay(
+                    Capsule()
+                        .stroke(Color.gray.opacity(0.4), lineWidth: 1)
+                )
 
             // Sliding Circle
             Circle()
@@ -41,7 +45,7 @@ struct DarkLightModeToggle: View {
         .onTapGesture {
             toggleAppearance()
         }
-        .frame(width: 70, height: 30)
+        .frame(width: 50, height: 30)
         .onAppear {
             updateAppAppearance()
             currentSystemTheme = colorScheme // Initialize system theme
@@ -82,8 +86,8 @@ struct DarkLightModeToggle: View {
     // MARK: - Circle Offset
     private var circleOffset: CGFloat {
         switch isDarkMode {
-        case 1: return 15
-        case 0: return -15
+        case 1: return 10
+        case 0: return -10
         default: return 0
         }
     }

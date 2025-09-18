@@ -4,6 +4,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2025-09-18
+### Changed
+- Updated UI elements to match the new look introduced in macOS 26 (Tahoe).
+- Cards now use the liquid glass effect and updated corner radius to better align with the new design language.
+- Moved the dark/light mode toggle and support info button to the top-right toolbar.
+- Added reboot reminder notifications, turned off by default and can be enabled using the key `RebootReminderDays`. Example configuration,
+```xml
+<key>RebootReminderDays</key>
+<integer>7</integer>
+```
+- Minor UI tweaks for cards, removed shadows for text.
+- Removed entitlements from helper to reduce attack surface.
+
+## [2.2.2] - 2025-06-13
+### Fixed
+- Last restart now correctly displays the time since last restart in the correct format when copying device information to the clipboard.
+
+### Added
+- A new option to exclude certain folders from log collection. This allows for admins to exclude certain folders from being collected when the user runs the log collection action. This can be useful for excluding large folders that are not relevant to the support case or for excluding folders that contain sensitive information. Example configuration:
+```xml
+<key>ExcludedLogFolders</key>
+<array>
+    <string>/Library/Logs/Microsoft/mdatp</string>
+</array>
+```
+
 ## [2.2.1] - 2025-02-26
 ### Fixed
 - Even if `SoftwareUpdates` or `PendingAppUpdates` were hidden, the badge would still be displayed in the tray menu and dock. This has been fixed by checking if the widget is hidden before displaying the badge.

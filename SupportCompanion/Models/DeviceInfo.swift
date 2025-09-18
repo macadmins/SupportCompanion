@@ -17,6 +17,7 @@ struct DeviceInfo: Identifiable, Equatable {
     var ipAddress: String
     let serialNumber: String
     var lastRestart: Int
+    var lastRestartDays: Int
     let model: String
     
     static func == (lhs: DeviceInfo, rhs: DeviceInfo) -> Bool {
@@ -74,6 +75,12 @@ struct DeviceInfo: Identifiable, Equatable {
                 key: Constants.DeviceInfo.Keys.lastRestart,
                 display: Constants.DeviceInfo.Labels.lastRestart,
                 value: .int(lastRestart),
+                category: Constants.DeviceInfo.Categories.systemInfo
+            ),
+            (
+                key: "lastRestartDays",
+                display: Constants.DeviceInfo.Labels.lastRestart,
+                value: .int(lastRestartDays),
                 category: Constants.DeviceInfo.Categories.systemInfo
             ),
             

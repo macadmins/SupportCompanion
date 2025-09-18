@@ -53,7 +53,7 @@ struct CardGrid: View {
                     }
                 }
                 .padding(.horizontal, 20)
-                .padding(.top, 20)
+                //.padding(.top, 20)
 
                 LazyVGrid(columns: columns) {
                     if appState.JsonCards.count > 0 && appState.preferences.customCardsMenuLabel.isEmpty {

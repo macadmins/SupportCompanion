@@ -25,7 +25,7 @@ struct CustomMarkdown: View {
                     .padding(20)
             }
         }
-        .padding(20)
+        .padding(.horizontal, 20)
         .background(Color.clear)
     }
 }

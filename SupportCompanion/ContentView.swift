@@ -22,7 +22,7 @@ struct ContentView: View {
 
     var body: some View {
         let sidebarItems = generateSidebarItems(preferences: appState.preferences, stateManager: webViewStateManager)
-
+        
         NavigationSplitView {
             VStack(spacing: 10) {
                 Spacer() // Push content to the center dynamically
@@ -77,52 +77,36 @@ struct ContentView: View {
                     }
                 }
                 .background(Color.clear)
-                
-                if !appState.preferences.supportEmail.isEmpty && !appState.preferences.supportPhone.isEmpty {
-                    HStack {
-                        Spacer()
-                        Button(action: {
-                            isShowingPopup = true // Show popup
-                        }) {
-                            Text("Support Information")
-                                .padding()
-                                .foregroundColor(
-                                    modalButtonHovered
-                                    ? Color(NSColor(hex: appState.preferences.accentColor ?? "") ?? NSColor.controlAccentColor)
-                                    : .primary
-                                )
-                                .cornerRadius(8)
-                        }
-                        .buttonStyle(PlainButtonStyle())
-                        .onHover { hovering in
-                            modalButtonHovered = hovering
-                        }
-                        Spacer()
-                    }
-                }
-
-                HStack {
-                    Spacer()
-                    DarkLightModeToggle()
-                    Spacer()
-                }
-                .padding()
-                .frame(maxWidth: .infinity)
             }
             .navigationSplitViewColumnWidth(
                 min: 280, ideal: 280, max: 320)
             .frame(maxHeight: .infinity, alignment: .top)
             .background(Color.clear)
         } detail: {
-            if let selectedItem = selectedItem {
-                selectedItem.destination
-                    .id(selectedItem.id)
-                    .ignoresSafeArea(edges: .all)
-            } else {
-                Text("Select an option") // Placeholder if nothing is selected
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color.gray.opacity(0.2))
-            }
+                Group{
+                    if let selectedItem = selectedItem {
+                        selectedItem.destination
+                            .id(selectedItem.id)
+                        //.ignoresSafeArea(edges: .all)
+                    } else {
+                        Text("Select an option") // Placeholder if nothing is selected
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .background(Color.gray.opacity(0.1))
+                    }
+                }
+                .toolbar {
+                    ToolbarItem(placement: .automatic) {
+                        ToolbarSupportButton(isShowingPopup: $isShowingPopup)
+                    }
+
+                    if #available(macOS 26.0, *) {
+                        ToolbarSpacer(.fixed)
+                    }
+
+                    ToolbarItem(placement: .automatic) {
+                        ToolbarDarkModeToggleView()
+                    }
+                }
         }
         .sheet(isPresented: $isShowingPopup) {
             // The popup content
@@ -165,6 +149,30 @@ struct ContentView: View {
         }
     }
 
+    struct ToolbarSupportButton: View {
+        @EnvironmentObject var appState: AppStateManager
+        @Binding var isShowingPopup: Bool
+        
+        var body: some View {
+            if !appState.preferences.supportEmail.isEmpty && !appState.preferences.supportPhone.isEmpty {
+                Button {
+                    isShowingPopup = true
+                } label: {
+                    Label("Support Information", systemImage: "phone")
+                }
+            }
+        }
+    }
+
+    struct ToolbarDarkModeToggleView: View {
+        var body: some View {
+            DarkLightModeToggle()
+                .padding(.trailing, 5)
+                .padding(.leading, 5)
+        }
+    }
+
+
     @ViewBuilder
     private func sidebarItem(for item: SidebarItem) -> some View {
         HStack {
@@ -179,11 +187,11 @@ struct ContentView: View {
         .background(
             Group {
                 if selectedItem == item {
-                    RoundedRectangle(cornerRadius: 8)
+                    Capsule()
                         .fill(Color(NSColor(hex: appState.preferences.accentColor ?? "") ?? NSColor.controlAccentColor))
                         .matchedGeometryEffect(id: "sidebar-highlight", in: animationNamespace)
                 } else {
-                    RoundedRectangle(cornerRadius: 8)
+                    Capsule()
                         .fill(Color.clear)
                 }
             }
@@ -236,7 +244,7 @@ struct HoverEffectModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .background(
-                RoundedRectangle(cornerRadius: 8)
+                Capsule()
                     .fill(isHovered ? Color.black.opacity(0.2) : Color.clear)
             )
             .onHover { hovering in
