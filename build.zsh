@@ -109,7 +109,7 @@ elif [ "$CONFIGURATION" = "Release" ]; then
     SIGNING_IDENTITY_APP="Developer ID Application: Mac Admins Open Source (T4SK8ZXCXG)"
     SIGNING_IDENTITY="Developer ID Installer: Mac Admins Open Source (T4SK8ZXCXG)"
     KEYCHAIN_PROFILE="supportcompanion"
-    XCODE_PATH="/Applications/Xcode_26_beta.app"
+    XCODE_PATH="/Applications/Xcode_26.0.app"
     TEAM_ID="T4SK8ZXCXG"
 else
     echo "No configuration set, exiting..."
