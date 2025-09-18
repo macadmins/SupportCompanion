@@ -104,7 +104,7 @@ struct ScCardCompact<Content: View>: View {
                 .fill(.ultraThinMaterial)
         )*/
         .isGlass()
-        .shadow(radius: 4) // Adjust shadow for better appearance
+        //.shadow(radius: 4) // Adjust shadow for better appearance
         .padding(5)
     }
 }
