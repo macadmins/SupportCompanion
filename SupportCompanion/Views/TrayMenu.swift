@@ -8,6 +8,14 @@
 import Foundation
 import SwiftUI
 
+func checkModes() -> Bool {
+    if AppStateManager.shared.preferences.mode == Constants.modes.intune || 
+    AppStateManager.shared.preferences.mode == Constants.modes.jamf || 
+    AppStateManager.shared.preferences.mode == Constants.modes.munki {
+        return true
+    }
+    return false
+}
 struct TrayMenuView: View {
     @EnvironmentObject var appState: AppStateManager
     @ObservedObject var viewModel: CardGridViewModel
@@ -54,7 +62,7 @@ struct TrayMenuView: View {
                     if !appState.preferences.hiddenCards.contains(Constants.Cards.storage) {
                         CompactStorageCard()
                     }
-                    if appState.preferences.mode == Constants.modes.munki || appState.preferences.mode == Constants.modes.intune {
+                    if checkModes() {
                         if !appState.preferences.hiddenCards.contains(Constants.Cards.appPatchProgress) {
                             CompactPatchProgressCard()
                         }
@@ -130,7 +138,7 @@ struct TrayMenuView: View {
         if !appState.preferences.hiddenCards.contains(Constants.Cards.battery) { count += 1 }
         if !appState.preferences.hiddenCards.contains(Constants.Cards.deviceInfo) { count += 1 }
         if !appState.preferences.hiddenCards.contains(Constants.Cards.storage) { count += 1 }
-        if appState.preferences.mode == Constants.modes.munki || appState.preferences.mode == Constants.modes.intune {
+        if checkModes() {
             if !appState.preferences.hiddenCards.contains(Constants.Cards.appPatchProgress) {
                 count += 1
             }
@@ -146,7 +154,7 @@ struct TrayMenuView: View {
             AppStateManager.shared.preferences.menuShowApps,
             AppStateManager.shared.preferences.menuShowSelfService,
             viewModel.isButtonVisible(Constants.Actions.HideStrings.changePassword),
-            appState.preferences.mode == Constants.modes.munki || appState.preferences.mode == Constants.modes.intune,
+            checkModes(),
             viewModel.isButtonVisible(Constants.Actions.HideStrings.getSupport),
             viewModel.isButtonVisible(Constants.Actions.HideStrings.gatherLogs),
             viewModel.isButtonVisible(Constants.Actions.HideStrings.softwareUpdate),
@@ -182,7 +190,7 @@ struct ButtonSection: View {
             }),
             viewModel.isButtonVisible(Constants.Actions.HideStrings.changePassword) ? viewModel.createChangePasswordButton(fontSize: 12) : nil,
             viewModel.isButtonVisible(Constants.Actions.HideStrings.getSupport) ? ScButton(Constants.Actions.getSupport, fontSize: 12) { ActionHelpers.openSupportPage(url: appState.preferences.supportPageURL) } : nil,
-            (appState.preferences.mode == Constants.modes.munki || appState.preferences.mode == Constants.modes.intune)
+            (checkModes())
                 ? (viewModel.isButtonVisible(Constants.Actions.HideStrings.openManagementApp) ? viewModel.createOpenManagementAppButton(type: .default, fontSize: 12) : nil)
                 : nil,
             viewModel.isButtonVisible(Constants.Actions.HideStrings.gatherLogs) ? viewModel.createGatherLogsButton(fontSize: 12) : nil,
