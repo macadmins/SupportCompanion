@@ -8,9 +8,12 @@
 import Foundation
 
 func getMDMEnrollmentTime() async -> String {
-    let command = """
+    let profileNames = ["MDM Profile", "Management Profile"]
+    /*let command = """
     /usr/bin/profiles -P -v | grep -A 10 'Management Profile'
-    """
+    """*/
+    let command = "/usr/bin/profiles -P -v | grep -A 10 '\(profileNames[0])' || /usr/bin/profiles -P -v | grep -A 10 '\(profileNames[1])'"
+    
     do {
         let commandOutput = try await ExecutionService.executeCommandPrivileged("/bin/bash", arguments: ["-c", command])
         
