@@ -21,7 +21,8 @@ struct ContentView: View {
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
-        let sidebarItems = generateSidebarItems(preferences: appState.preferences, stateManager: webViewStateManager)
+        let sidebarItems: [SidebarItem] = generateSidebarItems(preferences: appState.preferences, stateManager: webViewStateManager)
+        let accentColor = Color(accentNSColor)
         
         NavigationSplitView {
             VStack(spacing: 10) {
@@ -51,31 +52,36 @@ struct ContentView: View {
 
                 Spacer() // Push content to the center dynamically
 
-                // Sidebar List
-                List(sidebarItems, selection: $selectedItem) { item in
-                    sidebarItem(for: item)
-                }
-                .listStyle(SidebarListStyle())
-                .onAppear {
-                    loadLogoForCurrentColorScheme()
-                    if selectedItem == nil {
-                        selectedItem = sidebarItems.first
-                    }
-                }
-                .onChange(of: colorScheme) { _, _ in
-                    loadLogoForCurrentColorScheme()
-                }
-                .onChange(of: appState.preferences.brandLogo) { _, _ in
-                    loadLogoForCurrentColorScheme()
-                }
-                .onChange(of: appState.preferences.brandLogoLight) { _, _ in
-                    loadLogoForCurrentColorScheme()
-                }
-                .onReceive(NotificationCenter.default.publisher(for: .handleIncomingURL)) { notification in
-                    if let url = notification.object as? URL {
+                // Sidebar List (custom to avoid List clipping)
+                SidebarListView(
+                    items: sidebarItems,
+                    selectedItem: selectedItem,
+                    onSelect: { item in
+                        withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
+                            selectedItem = item
+                        }
+                    },
+                    accentColor: accentColor,
+                    namespace: animationNamespace,
+                    onAppear: {
+                        loadLogoForCurrentColorScheme()
+                        if selectedItem == nil {
+                            selectedItem = sidebarItems.first
+                        }
+                    },
+                    onColorSchemeChange: {
+                        loadLogoForCurrentColorScheme()
+                    },
+                    onBrandLogoChange: {
+                        loadLogoForCurrentColorScheme()
+                    },
+                    onBrandLogoLightChange: {
+                        loadLogoForCurrentColorScheme()
+                    },
+                    onIncomingURL: { url in
                         handleIncomingURL(url, items: sidebarItems)
                     }
-                }
+                )
                 .background(Color.clear)
             }
             .navigationSplitViewColumnWidth(
@@ -142,7 +148,11 @@ struct ContentView: View {
     }
     
     private func loadLogoForCurrentColorScheme() {
-        let base64Logo = colorScheme == .dark ? appState.preferences.brandLogo : appState.preferences.brandLogoLight.isEmpty ? appState.preferences.brandLogo : appState.preferences.brandLogoLight
+        let preferredLight = appState.preferences.brandLogoLight
+        let darkLogo = appState.preferences.brandLogo
+        let lightLogo = preferredLight.isEmpty ? darkLogo : preferredLight
+        let base64Logo = (colorScheme == .dark) ? darkLogo : lightLogo
+
         showLogo = loadLogo(base64Logo: base64Logo)
         if showLogo {
             brandLogo = base64ToImage(base64Logo)
@@ -172,38 +182,118 @@ struct ContentView: View {
         }
     }
 
+    struct SidebarRowView: View {
+        let item: SidebarItem
+        let isSelected: Bool
+        let accentColor: Color
+        let namespace: Namespace.ID
+        let onSelect: () -> Void
+        @State private var isHovered: Bool = false
 
-    @ViewBuilder
-    private func sidebarItem(for item: SidebarItem) -> some View {
-        HStack {
-            Image(systemName: item.systemImage)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 20, height: 20)
-            Text(item.label)
-                .frame(maxWidth: .infinity, alignment: .leading)
+        var body: some View {
+            ZStack {
+                // Background layers: selected capsule or hover capsule
+                if isSelected {
+                    Capsule()
+                        .fill(accentColor)
+                        .matchedGeometryEffect(id: "sidebar-highlight", in: namespace)
+						.frame(height: 50)
+                } else if isHovered {
+                    Capsule()
+                        .fill(Color.primary.opacity(0.08))
+						.frame(height: 50)
+                }
+
+                // Row content
+                HStack(spacing: 8) {
+                    Image(systemName: item.systemImage)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 20, height: 20)
+
+                    Text(item.label)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .padding(.horizontal, 15)
+                .padding(.vertical, 15)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
+            .foregroundColor(isSelected ? .white : .primary)
+            .onTapGesture(perform: onSelect)
+            .onHover { hovering in
+                isHovered = hovering
+            }
         }
-        .padding()
-        .background(
-            Group {
-                if selectedItem == item {
-                    Capsule()
-                        .fill(Color(NSColor(hex: appState.preferences.accentColor ?? "") ?? NSColor.controlAccentColor))
-                        .matchedGeometryEffect(id: "sidebar-highlight", in: animationNamespace)
-                } else {
-                    Capsule()
-                        .fill(Color.clear)
+    }
+}
+
+private struct SidebarHighlight: View {
+    let isSelected: Bool
+    let color: Color
+    let namespace: Namespace.ID
+
+    var body: some View {
+        Group {
+            if isSelected {
+                Capsule()
+                    .fill(color)
+                    .matchedGeometryEffect(id: "sidebar-highlight", in: namespace)
+            } else {
+                Capsule().fill(Color.clear)
+            }
+        }
+    }
+}
+
+private struct SidebarListView: View {
+    let items: [SidebarItem]
+    let selectedItem: SidebarItem?
+    let onSelect: (SidebarItem) -> Void
+    let accentColor: Color
+    let namespace: Namespace.ID
+
+    let onAppear: () -> Void
+    let onColorSchemeChange: () -> Void
+    let onBrandLogoChange: () -> Void
+    let onBrandLogoLightChange: () -> Void
+    let onIncomingURL: (URL) -> Void
+
+    var body: some View {
+        ScrollView {
+            LazyVStack(spacing: 0) {
+                ForEach(items) { item in
+                    ContentView.SidebarRowView(
+                        item: item,
+                        isSelected: selectedItem == item,
+                        accentColor: accentColor,
+                        namespace: namespace,
+                        onSelect: { onSelect(item) }
+                    )
+					.padding(.horizontal, 8)
+					.padding(.vertical, 5)
+                    .zIndex(selectedItem == item ? 1 : 0)
                 }
             }
-        )
-        .contentShape(Rectangle()) // Makes the entire area tappable
-        .foregroundColor(selectedItem == item ? .white : .primary)
-        .onTapGesture {
-            withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
-                selectedItem = item
+            .padding(.vertical, 8)
+        }
+        .onAppear(perform: onAppear)
+        .onChange(of: colorScheme) { _, _ in onColorSchemeChange() }
+        .onReceive(NotificationCenter.default.publisher(for: .handleIncomingURL)) { notification in
+            if let url = notification.object as? URL {
+                onIncomingURL(url)
             }
         }
-        .onHoverEffect(item)
+		.onChange(of: AppStateManager.shared.preferences.brandLogo) { _, _ in onBrandLogoChange() }
+		.onChange(of: AppStateManager.shared.preferences.brandLogoLight) { _, _ in onBrandLogoLightChange() }
+    }
+
+    @Environment(\.colorScheme) private var colorScheme
+}
+
+private extension ContentView {
+    var accentNSColor: NSColor {
+        NSColor(hex: appState.preferences.accentColor ?? "") ?? NSColor.controlAccentColor
     }
 }
 
@@ -222,7 +312,7 @@ struct SidebarItemStyle: ViewModifier {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
-            .environmentObject(Preferences())
+            .environmentObject(AppStateManager.shared.preferences)
             .environmentObject(DeviceInfoManager.shared)
             .environmentObject(StorageInfoManager.shared)
             .environmentObject(MdmInfoManager.shared)
@@ -252,3 +342,4 @@ struct HoverEffectModifier: ViewModifier {
             }
     }
 }
+

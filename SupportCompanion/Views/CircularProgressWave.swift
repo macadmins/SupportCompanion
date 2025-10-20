@@ -24,17 +24,32 @@ struct WaveShape: Shape {
         let height = rect.height
         let midHeight = height * (1 - progress)
 
-        path.move(to: CGPoint(x: 0, y: midHeight))
+        // Extend sampling beyond the visible rect to avoid straight edge at the clip boundary
+        let extra: CGFloat = max(12, width * 0.05)
+        let startX: CGFloat = -extra
+        let endX: CGFloat = width + extra
 
-        for x in stride(from: 0, to: width, by: 2) {
+        // Use a smaller step for smoother appearance
+        let step: CGFloat = 1
+
+        var isFirstPoint = true
+        var x = startX
+        while x <= endX {
             let relativeX = x / width
             let sine = sin((relativeX + phase) * 2 * .pi)
             let y = midHeight + waveHeight * sine
-            path.addLine(to: CGPoint(x: x, y: y))
+            if isFirstPoint {
+                path.move(to: CGPoint(x: x, y: y))
+                isFirstPoint = false
+            } else {
+                path.addLine(to: CGPoint(x: x, y: y))
+            }
+            x += step
         }
 
-        path.addLine(to: CGPoint(x: width, y: height))
-        path.addLine(to: CGPoint(x: 0, y: height))
+        // Close the shape below; this will be clipped by a circle in the parent view
+        path.addLine(to: CGPoint(x: endX, y: height))
+        path.addLine(to: CGPoint(x: startX, y: height))
         path.closeSubpath()
 
         return path
@@ -68,6 +83,7 @@ struct CircularProgressWithWave: View {
                 .fill(LinearGradient(gradient: gradient, startPoint: .top, endPoint: .bottom))
                 .frame(width: size, height: size) // Matches the full size of the ring
                 .clipShape(Circle())
+                .drawingGroup()
                 .onAppear {
                     startAnimation()
                 }
@@ -104,3 +120,4 @@ struct CircularProgressWithWave: View {
         phase = 0 // Reset phase to avoid lingering animation effects
     }
 }
+
