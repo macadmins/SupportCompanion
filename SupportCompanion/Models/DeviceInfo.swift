@@ -15,6 +15,7 @@ struct DeviceInfo: Identifiable, Equatable {
     let cpuType: String
     let ram: String
     var ipAddress: String
+    var ssid: String?
     let serialNumber: String
     var lastRestart: Int
     var lastRestartDays: Int
@@ -89,6 +90,12 @@ struct DeviceInfo: Identifiable, Equatable {
                 key: Constants.DeviceInfo.Keys.ipAddress,
                 display: Constants.DeviceInfo.Labels.ipAddress,
                 value: .string(ipAddress),
+                category: Constants.DeviceInfo.Categories.networkInfo
+            ),
+            (
+                key: "ssid",
+                display: "SSID:",
+                value: .string(ssid ?? "Unknown"),
                 category: Constants.DeviceInfo.Categories.networkInfo
             )
         ]

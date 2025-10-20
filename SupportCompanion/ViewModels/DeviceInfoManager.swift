@@ -21,6 +21,7 @@ class DeviceInfoManager: ObservableObject {
             cpuType: "",
             ram: "",
             ipAddress: "",
+            ssid: nil,
             serialNumber: "",
             lastRestart: 0,
             lastRestartDays: 0,
@@ -59,6 +60,7 @@ class DeviceInfoManager: ObservableObject {
                 cpuType: getCPUName() ?? "",
                 ram: getRAMSize(),
                 ipAddress: currentIPAddress,
+                ssid: getSSID(),
                 serialNumber: getSerialNumber(),
                 lastRestart: getLastRestartMinutes() ?? 0,
                 lastRestartDays: getLastRebootDays() ?? 0,
@@ -81,13 +83,13 @@ class DeviceInfoManager: ObservableObject {
             }
         }
         
-        IPAddressMonitor.startMonitoring { newIPAddresses in
+        IPAddressMonitor.startMonitoring { status in
             DispatchQueue.main.async {
                 guard let currentDeviceInfo = self.deviceInfo else {
                     return // Exit early if `self.deviceInfo` is nil
                 }
 
-                let updatedIPAddress = newIPAddresses.joined(separator: ", ")
+				let updatedIPAddress = status.ipAddresses.joined(separator: ", ")
                 self.deviceInfo = DeviceInfo(
                     id: currentDeviceInfo.id,
                     hostName: currentDeviceInfo.hostName,
@@ -96,6 +98,7 @@ class DeviceInfoManager: ObservableObject {
                     cpuType: currentDeviceInfo.cpuType,
                     ram: currentDeviceInfo.ram,
                     ipAddress: updatedIPAddress,
+					ssid: status.ssid,
                     serialNumber: currentDeviceInfo.serialNumber,
                     lastRestart: currentDeviceInfo.lastRestart,
                     lastRestartDays: currentDeviceInfo.lastRestartDays,
@@ -105,3 +108,4 @@ class DeviceInfoManager: ObservableObject {
         }
     }
 }
+

@@ -36,6 +36,7 @@ class CardGridViewModel: ObservableObject {
                 ("OS Version:", appState.deviceInfoManager.deviceInfo?.osVersion ?? ""),
                 ("OS Build:", appState.deviceInfoManager.deviceInfo?.osBuild ?? ""),
                 ("IP Address:", appState.deviceInfoManager.deviceInfo?.ipAddress ?? ""),
+                ("WiFi SSID:", appState.deviceInfoManager.deviceInfo?.ssid ?? ""),
                 ("Last Reboot:", "\(appState.deviceInfoManager.deviceInfo?.lastRestartDays ?? 0) days"),
                 ("--------------------- Battery ---------------------", ""),
                 ("Health:", "\(healthPercentage)%"),
@@ -140,6 +141,9 @@ class CardGridViewModel: ObservableObject {
         case Constants.modes.intune:
             appName = "Company Portal"
             appURL = Constants.AppPaths.companyPortal
+		case Constants.modes.jamf:
+			appName = "Self Service"
+			appURL = Constants.AppPaths.selfService
         default:
             appName = "Unknown App"
             appURL = ""
@@ -159,7 +163,7 @@ class CardGridViewModel: ObservableObject {
         pasteboard.clearContents()
         let didWrite = pasteboard.setString(clipboardContent, forType: .string)
         
-        if didWrite, let retrievedContent = pasteboard.string(forType: .string) {
+        if didWrite, let _ = pasteboard.string(forType: .string) {
             DispatchQueue.main.async {
                 self.toastConfig = ToastConfig(
                     isShowing: true,

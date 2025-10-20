@@ -282,7 +282,7 @@ struct ActionHelpers {
         } else if preferences.changePasswordMode == "SSOExtension" {
             await handleSSOExtension(completion: completion)
         } else {
-            await openUserPanel()
+            openUserPanel()
         }
     }
 

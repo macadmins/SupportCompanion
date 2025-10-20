@@ -8,6 +8,7 @@
 import Foundation
 import IOKit
 import Network
+import CoreWLAN
 
 func getHostName() -> String? {
     let hostName = ProcessInfo.processInfo.hostName
@@ -164,29 +165,104 @@ func getAllIPAddresses() -> [String] {
     return ipAddresses
 }
 
+func getSSID() -> String? {
+    // Helper to synchronously call async ExecutionService methods
+    func runCommand(_ launchPath: String, _ arguments: [String], privileged: Bool = false) throws -> String {
+        let semaphore = DispatchSemaphore(value: 0)
+        var result: Result<String, Error> = .failure(NSError(domain: "ExecutionService", code: -1))
+
+        let execute: () async throws -> String = {
+            if privileged {
+                return try await ExecutionService.executeCommandPrivileged(launchPath, arguments: arguments)
+            } else {
+                return try await ExecutionService.executeCommand(launchPath, with: arguments)
+            }
+        }
+
+        Task {
+            do {
+                let output = try await execute()
+                result = .success(output)
+            } catch {
+                result = .failure(error)
+            }
+            semaphore.signal()
+        }
+
+        // Wait until task completes
+        semaphore.wait()
+
+        switch result {
+        case .success(let output):
+            return output
+        case .failure(let error):
+            throw error
+        }
+    }
+
+    do {
+        // Enable verbose temporarily; ignore failures
+        // only continue if wifi is on
+		guard let wifi = CWWiFiClient.shared().interface() else { return "WiFi Off" }
+		guard wifi.powerOn() else { return "WiFi Off" }
+
+        do {
+            _ = try runCommand("/bin/sh", ["-c", "/usr/sbin/ipconfig setverbose 1"], privileged: true)
+        } catch {
+            _ = try? runCommand("/bin/sh", ["-c", "/usr/sbin/ipconfig setverbose 1"], privileged: true)
+        }
+
+        // Correctly pass the pipeline to /bin/sh -c without extra quoting
+        let command = "/usr/sbin/ipconfig getsummary en0 | awk -F ' SSID : ' '/ SSID : / {print $2}'"
+        let ssid = try runCommand("/bin/sh", ["-c", command])
+
+        // Disable verbose; ignore failures
+        _ = try? runCommand("/bin/sh", ["-c", "/usr/sbin/ipconfig setverbose 0"], privileged: true)
+
+        let trimmed = ssid.trimmingCharacters(in: .whitespacesAndNewlines)
+        // if trimmed == <redacted> change to nil
+        if trimmed == "<redacted>" {
+            return nil
+        }
+        return trimmed.isEmpty ? nil : trimmed
+    } catch {
+        Logger.shared.logError("Failed to fetch SSID: \(error)")
+        // Ensure we attempt to reset verbose mode even on failure
+        _ = try? runCommand("/bin/sh", ["-c", "/usr/sbin/ipconfig setverbose 0"], privileged: true)
+        return nil
+    }
+}
+
 class IPAddressMonitor {
     private static let monitor = NWPathMonitor()
     private static let queue = DispatchQueue.global(qos: .background)
     private static var lastUpdateTime: Date?
-
+    private static var lastIPs: [String] = []
+	
+	struct NetworkStatus {
+		let ipAddresses: [String]
+		let ssid: String?
+	}
     /// Starts monitoring for IP address changes and calls `onChange` with the updated IPs.
-    static func startMonitoring(onChange: @escaping ([String]) -> Void) {
+    static func startMonitoring(onChange: @escaping (NetworkStatus) -> Void) {
         monitor.pathUpdateHandler = { path in
-            let now = Date()
-            if let lastUpdate = lastUpdateTime, now.timeIntervalSince(lastUpdate) < 2.0 {
-                // Skip updates within 2 seconds
-                return
-            }
-            lastUpdateTime = now
+            // Only proceed when we have a reachable path. If not reachable, treat as empty IP list.
+            let currentIPs: [String]
+            let currentSSID: String?
 
             if path.status == .satisfied {
-                let currentIPAddresses = getAllIPAddresses()
-                DispatchQueue.main.async {
-                    onChange(currentIPAddresses)
-                }
+                currentIPs = getAllIPAddresses()
+                currentSSID = getSSID()
             } else {
+                currentIPs = []
+                currentSSID = nil
+            }
+
+            // Compare sorted lists to be order-insensitive
+            if currentIPs.sorted() != lastIPs.sorted() {
+                lastIPs = currentIPs
                 DispatchQueue.main.async {
-                    onChange(["No network connection"])
+                    onChange(NetworkStatus(ipAddresses: currentIPs, ssid: currentSSID))
                 }
             }
         }
@@ -238,3 +314,4 @@ class LastRebootMonitor {
         }
     }
 }
+
