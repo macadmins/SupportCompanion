@@ -72,7 +72,7 @@ class NotificationService {
         }
 
         var actions: [UNNotificationAction] = []
-        if let buttonText = buttonText, let command = command {
+        if let buttonText = buttonText, let _ = command {
             let action = UNNotificationAction(
                 identifier: "RUN_COMMAND",
                 title: buttonText,

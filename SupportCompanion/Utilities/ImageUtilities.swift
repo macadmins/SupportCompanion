@@ -24,7 +24,7 @@ func base64ToImage(_ base64String: String) -> Image? {
 func loadLogo(base64Logo: String) -> Bool {
     if base64Logo.isEmpty {
         return false
-    } else if let decodedImage = base64ToImage(base64Logo) {
+    } else if let _ = base64ToImage(base64Logo) {
         return true
     } else {
         Logger.shared.logDebug("Invalid Base64 string for brand logo.")
