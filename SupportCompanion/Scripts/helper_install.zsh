@@ -16,7 +16,7 @@ if [[ ! -d "/Library/PrivilegedHelperTools/" ]]; then
 fi
 
 # Copy the PrivilegedHelperTool
-cp "${install_location}/Contents/Library/LaunchServices/${launch_daemon}" "/Library/PrivilegedHelperTools/"
+cp "${install_location}/Contents/Library/LaunchDaemons/${launch_daemon}" "/Library/PrivilegedHelperTools/"
 # Set permissions
 chown root:wheel "${privileged_helper_tool}"
 chmod 544 "${privileged_helper_tool}"

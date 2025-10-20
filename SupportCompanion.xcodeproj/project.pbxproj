@@ -36,7 +36,7 @@
 		F63587542CE22B6000AC5F98 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 12;
-			dstPath = Contents/Library/LaunchServices;
+			dstPath = Contents/Library/LaunchDaemons;
 			dstSubfolderSpec = 1;
 			files = (
 				F64927372CF9EA8D00C34D90 /* com.github.macadmins.SupportCompanion.helper in CopyFiles */,
@@ -204,6 +204,7 @@
 				JsonCardManager.swift,
 				MDMInfoManager.swift,
 				PendingIntuneUpdatesManager.swift,
+				PendingJamfUpdatesManager.swift,
 				PendingMunkiUpdatesManager.swift,
 				ReasonInputManager.swift,
 				SSOInfoManager.swift,

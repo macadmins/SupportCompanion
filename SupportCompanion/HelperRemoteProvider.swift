@@ -16,6 +16,10 @@ enum HelperRemoteProvider {
     // MARK: Computed
 
     private static var isHelperInstalled: Bool { FileManager.default.fileExists(atPath: HelperConstants.helperPath) }
+    
+    // MARK: Exported app proxy for XPC (optional but safer than exporting the enum type)
+    private final class RemoteAppProxy: NSObject, RemoteApplicationProtocol {}
+    private static let exportedAppProxy = RemoteAppProxy()
 }
 
 // MARK: - Remote
@@ -57,46 +61,19 @@ extension HelperRemoteProvider {
 
 extension HelperRemoteProvider {
 
-    /// Install the Helper in the privileged helper tools folder and load the daemon
+    /// Install the Helper in the privileged helper tools folder and register the daemon using SMAppService
+    private static func installHelperModern() throws {
+        do {
+			let service = SMAppService.daemon(plistName: HelperConstants.domain)
+            try service.register()
+        } catch {
+            Logger.shared.logError("SMAppService register failed: \(error.localizedDescription)")
+            throw SupportCompanionErrors.helperInstallation("Error while installing the Helper: \(error.localizedDescription)")
+        }
+    }
+
     private static func installHelper() throws {
-
-        // try to get a valid empty authorization
-        var authRef: AuthorizationRef?
-        try AuthorizationCreate(nil, nil, [.preAuthorize], &authRef).checkError("AuthorizationCreate")
-        defer {
-            if let authRef {
-                AuthorizationFree(authRef, [])
-            }
-        }
-
-        // create an AuthorizationItem to specify we want to bless a privileged Helper
-        let authStatus = kSMRightBlessPrivilegedHelper.withCString { authorizationString in
-            var authItem = AuthorizationItem(name: authorizationString, valueLength: 0, value: nil, flags: 0)
-
-            return withUnsafeMutablePointer(to: &authItem) { pointer in
-                var authRights = AuthorizationRights(count: 1, items: pointer)
-                let flags: AuthorizationFlags = [.interactionAllowed, .extendRights, .preAuthorize]
-                return AuthorizationCreate(&authRights, nil, flags, &authRef)
-            }
-        }
-
-        guard authStatus == errAuthorizationSuccess else {
-           throw SupportCompanionErrors.helperInstallation("Unable to get a valid loading authorization reference to load Helper daemon")
-        }
-
-        // After calling SMJobBless
-        var blessErrorPointer: Unmanaged<CFError>?
-        let wasBlessed = SMJobBless(kSMDomainSystemLaunchd, HelperConstants.domain as CFString, authRef, &blessErrorPointer)
-
-        guard wasBlessed else {
-            if let blessErrorPointer {
-                let errorDescription = CFErrorCopyDescription(blessErrorPointer.takeRetainedValue())
-                Logger.shared.logError("SMJobBless failed: \(errorDescription as String? ?? "Unknown error")")
-                throw SupportCompanionErrors.helperInstallation("Error while installing the Helper: \(errorDescription as String? ?? "Unknown error")")
-            } else {
-                throw SupportCompanionErrors.helperInstallation("Unknown error while installing the Helper")
-            }
-        }
+		try installHelperModern()
     }
 }
 
@@ -115,13 +92,13 @@ extension HelperRemoteProvider {
         let connection = NSXPCConnection(machServiceName: HelperConstants.domain, options: .privileged)
         connection.remoteObjectInterface = NSXPCInterface(with: HelperProtocol.self)
         connection.exportedInterface = NSXPCInterface(with: RemoteApplicationProtocol.self)
-        connection.exportedObject = self
+        connection.exportedObject = exportedAppProxy
 
         connection.invalidationHandler = {
             if isHelperInstalled {
                 Logger.shared.logError("Unable to connect to Helper although it is installed")
             } else {
-                Logger.shared.logError("Help is not installed")
+                Logger.shared.logError("Helper is not installed")
             }
         }
 
