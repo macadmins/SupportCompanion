@@ -33,6 +33,9 @@ struct PatchingProgressCard: View {
                 if appState.preferences.mode == Constants.modes.intune {
                     appState.pendingIntuneUpdatesManager.startInstallPercentageTask()
                 }
+				if appState.preferences.mode == Constants.modes.jamf {
+					appState.pendingJamfUpdatesManager.startInstallPercentageTask()
+				}
             }
             .onDisappear {
                 if appState.preferences.mode == Constants.modes.munki {
@@ -41,6 +44,9 @@ struct PatchingProgressCard: View {
                 if appState.preferences.mode == Constants.modes.intune {
                     appState.pendingIntuneUpdatesManager.stopInstallPercentageTask()
                 }
+				if appState.preferences.mode == Constants.modes.jamf {
+					appState.pendingJamfUpdatesManager.stopInstallPercentageTask()
+				}
             }
             .onChange(of: appState.windowIsVisible) { oldValue, newValue in
                 if !newValue {
@@ -50,6 +56,9 @@ struct PatchingProgressCard: View {
                     if appState.preferences.mode == Constants.modes.intune {
                         appState.pendingIntuneUpdatesManager.stopInstallPercentageTask()
                     }
+					if appState.preferences.mode == Constants.modes.jamf {
+						appState.pendingJamfUpdatesManager.stopInstallPercentageTask()
+					}
                 }
             }
         }

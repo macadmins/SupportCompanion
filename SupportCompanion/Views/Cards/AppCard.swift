@@ -11,6 +11,8 @@ import SwiftUI
 struct AppCard: View {
     let card: InstalledApp
     let version: String
+    
+    @State private var resolvedTitleImage: String = "app.gift.fill"
 
     init(card: InstalledApp) {
         self.card = card
@@ -31,18 +33,31 @@ struct AppCard: View {
             if FileManager.default.fileExists(atPath: iconPath) {
                 return iconPath
             } else {
-                return "app.gift.fill"
+                return resolvedTitleImage
             }
         } else if AppStateManager.shared.preferences.mode == Constants.modes.systemProfiler {
             let appInfoPlistPath = "\(card.path)/Contents/Info.plist"
-            return getIconPath(plistPath: appInfoPlistPath, appPath: card.path) ?? "app.gift.fill"
+            return getIconPath(plistPath: appInfoPlistPath, appPath: card.path) ?? resolvedTitleImage
         } else if AppStateManager.shared.preferences.mode == Constants.modes.intune {
             if let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: card.bundleId) {
                 let appInfoPlistPath = "\(appURL.path)/Contents/Info.plist"
-                return getIconPath(plistPath: appInfoPlistPath, appPath: appURL.path) ?? "app.gift.fill"
+                return getIconPath(plistPath: appInfoPlistPath, appPath: appURL.path) ?? resolvedTitleImage
+            } else {
+                return resolvedTitleImage
             }
+        } else if AppStateManager.shared.preferences.mode == Constants.modes.jamf {
+            // For JAMF, the actual download is handled asynchronously; fall back to current state value
+            return resolvedTitleImage
         }
-        return "app.gift.fill"
+        return resolvedTitleImage
+    }
+    
+    private var buttonText: String {
+        if AppStateManager.shared.preferences.mode == Constants.modes.jamf {
+            return card.actionText ?? ""
+        } else {
+            return Constants.General.manage
+        }
     }
 
     var body: some View {
@@ -52,12 +67,14 @@ struct AppCard: View {
             imageSize: (40, 40),
             content: {
                 VStack(alignment: .leading, spacing: 5) {
-                    HStack(alignment: .top) {
-                        Text("\(Constants.TabelHeaders.version):")
-                            .bold()
-                        Text(version)
+                    if !version.isEmpty {
+                        HStack(alignment: .top) {
+                            Text("\(Constants.TabelHeaders.version):")
+                                .bold()
+                            Text(version)
+                        }
+                        .font(.system(size: 14))
                     }
-                    .font(.system(size: 14))
                     
                     if !card.arch.isEmpty {
                         HStack {
@@ -78,7 +95,7 @@ struct AppCard: View {
                     }
 
                     if card.isSelfServe {
-                        ScButton(Constants.General.manage, action: {
+                        ScButton(buttonText, action: {
                             Task {
                                 if !card.action.isEmpty {
                                     _ = try await ExecutionService.executeShellCommand(card.action)
@@ -93,6 +110,22 @@ struct AppCard: View {
                 .padding(.horizontal)
             }
         )
+        .task {
+            await loadJamfIconIfNeeded()
+        }
+    }
+    
+    @MainActor
+    private func loadJamfIconIfNeeded() async {
+        guard AppStateManager.shared.preferences.mode == Constants.modes.jamf else { return }
+        guard let iconUrl = card.iconUrl, !iconUrl.isEmpty else { return }
+        // Attempt to download icon asynchronously
+        if let iconPath = try? await downloadAppIcon(forApp: card) {
+            resolvedTitleImage = iconPath
+        } else {
+            // Keep fallback if download fails
+            resolvedTitleImage = "app.gift.fill"
+        }
     }
 }
 
@@ -141,3 +174,4 @@ struct PlistService {
         return nil
     }
 }
+

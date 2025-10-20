@@ -84,6 +84,8 @@ class Preferences: ObservableObject {
     @AppStorage("CustomCardsMenuIcon") var customCardsMenuIcon: String = ""
 
     @AppStorage("TrayMenuBrandingIcon") var trayMenuBrandingIcon: String = ""
+
+    @AppStorage("TrayMenuShowIcon") var trayMenuShowIcon: Bool = true
     
     // MARK: - Actions
     
@@ -124,13 +126,34 @@ class Preferences: ObservableObject {
     
     // MARK: - Home
     
-    @AppStorage("CustomCardPath") var customCardPath: String = ""
+    @AppStorage("CustomCardPath") var customCardPath: String = "" {
+        didSet {
+            if customCardPathPublished != customCardPath {
+                if Thread.isMainThread {
+                    Logger.shared.logDebug("Preferences: customCardPath didSet -> '\(customCardPath)'")
+                    customCardPathPublished = customCardPath
+                } else {
+                    DispatchQueue.main.async { [newValue = customCardPath] in
+                        Logger.shared.logDebug("Preferences: customCardPath didSet (async) -> '\(newValue)'")
+                        if self.customCardPathPublished != newValue {
+                            self.customCardPathPublished = newValue
+                        }
+                    }
+                }
+            }
+        }
+    }
+    // Published mirror of customCardPath so non-View subscribers can react to changes
+    @Published var customCardPathPublished: String = ""
     
     @Published var hiddenCards: [String] = UserDefaults.standard.array(forKey: "HiddenCards") as? [String] ?? []
     
     private var cancellable: AnyCancellable?
     
     private var cancellables = Set<AnyCancellable>()
+    // Watcher for ~/Library/Preferences to detect external defaults writes
+    private var prefsDirSource: DispatchSourceFileSystemObject?
+    private var prefsDirFD: Int32 = -1
     
     // MARK: - Support info
     
@@ -158,6 +181,10 @@ class Preferences: ObservableObject {
         
     init() {
         ensureDefaultsInitialized()
+        startWatchingCustomCardPath()
+
+        // Initialize published mirror values from current AppStorage
+        self.customCardPathPublished = self.customCardPath
         
         NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)
             .sink { [weak self] _ in
@@ -170,17 +197,76 @@ class Preferences: ObservableObject {
         
         // Observe changes to UserDefaults specifically for complex types
         cancellable = NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)
+            .receive(on: RunLoop.main)
             .sink { [weak self] _ in
-                self?.loadHiddenCards()
-                self?.loadLogFolders()
-                self?.loadExcludedLogFolders()
-                self?.loadActions()
-                self?.loadHiddenActions()
-                self?.loadDesktopInfoHideItems()
+                guard let self = self else { return }
+                // Explicitly pull latest CustomCardPath from defaults (helps when @AppStorage in classes doesn't auto-refresh)
+                let latestPath = UserDefaults.standard.string(forKey: "CustomCardPath") ?? ""
+                if self.customCardPath != latestPath {
+                    Logger.shared.logDebug("Preferences: observed defaults change for CustomCardPath -> '\(latestPath)'")
+                    self.customCardPath = latestPath
+                }
+                if self.customCardPathPublished != latestPath {
+                    self.customCardPathPublished = latestPath
+                }
+
+                self.loadHiddenCards()
+                self.loadLogFolders()
+                self.loadExcludedLogFolders()
+                self.loadActions()
+                self.loadHiddenActions()
+                self.loadDesktopInfoHideItems()
             }
         Task {
             await detectModeAndSetLogFolders()
         }
+    }
+
+    private func startWatchingCustomCardPath() {
+        // Always watch the Preferences directory; this catches atomic saves and initial file creation
+        let domain = "com.github.macadmins.SupportCompanion"
+        let prefsPlistURL = FileManager.default.homeDirectoryForCurrentUser
+            .appendingPathComponent("Library/Preferences/\(domain).plist")
+        let prefsDirURL = prefsPlistURL.deletingLastPathComponent()
+
+        let fd = open(prefsDirURL.path, O_EVTONLY)
+        guard fd >= 0 else {
+            Logger.shared.logError("Preferences: failed to open preferences directory for watching: \(prefsDirURL.path)")
+            return
+        }
+        prefsDirFD = fd
+        let queue = DispatchQueue(label: "com.github.macadmins.SupportCompanion.PrefsWatch")
+        let src = DispatchSource.makeFileSystemObjectSource(
+            fileDescriptor: fd,
+            eventMask: [.write, .rename, .delete, .extend, .attrib],
+            queue: queue
+        )
+        src.setCancelHandler { [fd] in
+            close(fd)
+        }
+        src.setEventHandler { [weak self] in
+            guard let self = self else { return }
+            // Read value directly from the plist to avoid UserDefaults caching
+            var latest = ""
+            if let dict = NSDictionary(contentsOf: prefsPlistURL) as? [String: Any],
+               let s = dict["CustomCardPath"] as? String {
+                latest = s
+            } else {
+                latest = UserDefaults.standard.string(forKey: "CustomCardPath") ?? ""
+            }
+            DispatchQueue.main.async {
+                if self.customCardPathPublished != latest {
+                    Logger.shared.logInfo("Prefs watcher: CustomCardPath -> '\(latest)'")
+                    if self.customCardPath != latest {
+                        self.customCardPath = latest
+                    }
+                    self.customCardPathPublished = latest
+                }
+            }
+        }
+        src.resume()
+        prefsDirSource = src
+        Logger.shared.logDebug("Preferences: started watching \(prefsDirURL.path)")
     }
     
     private func detectModeAndSetLogFolders() async {
@@ -196,16 +282,18 @@ class Preferences: ObservableObject {
 
         let fileManager = FileManager.default
         let companyPortalExists = fileManager.fileExists(atPath: Constants.AppPaths.companyPortal)
+        let selfServiceExists = fileManager.fileExists(atPath: Constants.AppPaths.selfService)
         let mscExists = fileManager.fileExists(atPath: Constants.AppPaths.MSC)
         let mdmUrl = await getMDMUrl()
         
-        print(mdmUrl)
-
         if mdmUrl != "Unknown" {
             Logger.shared.logDebug("MDM URL detected: \(mdmUrl)")
             if mdmUrl.contains("i.manage.microsoft.com") {
                 Logger.shared.logDebug("MDM URL contains i.manage.microsoft.com, setting mdm to Intune.")
                 mdm = "Intune"
+            } else if mdmUrl.contains("jamf") {
+                Logger.shared.logDebug("MDM URL contains jamf, setting mdm to Jamf.")
+                mdm = "Jamf"
             }
         }
         
@@ -217,6 +305,14 @@ class Preferences: ObservableObject {
             Logger.shared.logDebug("Company Portal path exists, setting mode to Intune.")
             mode = Constants.modes.intune
             logFolders = ["/Library/Logs/Microsoft"]
+        } else if selfServiceExists && mscExists {
+            Logger.shared.logDebug("Both Munki and Self Service paths exist, defaulting to Munki mode.")
+            mode = Constants.modes.munki
+            logFolders = ["/Library/Managed Installs/Logs", "/var/log/jamf.log"]
+        } else if selfServiceExists && mdm == "Jamf" {
+            Logger.shared.logDebug("Self Service path exists, setting mode to Jamf.")
+            mode = Constants.modes.jamf
+            logFolders = ["/var/log/jamf.log"]
         } else if mscExists {
             Logger.shared.logDebug("MSC path exists, setting mode to Munki.")
             mode = Constants.modes.munki

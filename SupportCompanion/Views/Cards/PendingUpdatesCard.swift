@@ -65,7 +65,9 @@ struct PendingUpdatesCard: View {
             updateList(items: appState.pendingMunkiUpdates)
         } else if appState.preferences.mode == Constants.modes.intune {
             updateList(items: appState.pendingIntuneUpdates)
-        }
+		} else if appState.preferences.mode == Constants.modes.jamf {
+			updateList(items: appState.pendingJamfUpdates)
+		}
     }
     
     private func updateList<T: Identifiable>(items: [T]) -> some View where T: PendingUpdate {
@@ -74,22 +76,23 @@ struct PendingUpdatesCard: View {
                 Text("No pending updates")
                     .frame(maxWidth: .infinity, alignment: .leading)
             } else {
-                ForEach(items) { update in
-                    HStack {
-                        Text(update.name)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        Text(update.version)
-                            .frame(maxWidth: .infinity, alignment: .trailing)
-                            .foregroundColor(colorScheme == .dark ? .gray : .grayLight)
-                        if let intuneUpdate = update as? PendingIntuneUpdate, intuneUpdate.showInfoIcon {
-                            Image(systemName: "info.circle")
-                                .help(intuneUpdate.pendingReason)
-                                .frame(maxWidth: .infinity, alignment: .trailing)
-                        }
-                    }
-                    .listRowSeparator(.hidden)
-                    Divider()
-                }
+				ForEach(items) { update in
+					HStack(spacing: 8) {
+						// Keep this leading text flexible
+						Text(update.name)
+							.lineLimit(1)
+							.truncationMode(.tail)
+
+						Spacer()
+
+						// Keep this trailing text compact; no infinite frames
+						Text(update.version)
+							.foregroundColor(colorScheme == .dark ? .gray : .grayLight)
+							.lineLimit(1)
+					}
+					.padding(.vertical, 6)
+					.listRowSeparator(.hidden)
+				}
             }
         }
         .padding(.horizontal, 8)
@@ -104,6 +107,8 @@ struct PendingUpdatesCard: View {
                 appState.pendingMunkiUpdatesManager.startFetchingList()
             } else if appState.preferences.mode == Constants.modes.intune {
                 appState.pendingIntuneUpdatesManager.startFetchingList()
+            } else if appState.preferences.mode == Constants.modes.jamf {
+                appState.pendingJamfUpdatesManager.startFetchingList()
             }
         }
     }
@@ -114,6 +119,8 @@ struct PendingUpdatesCard: View {
                 appState.pendingMunkiUpdatesManager.stopFetchingList()
             } else if appState.preferences.mode == Constants.modes.intune {
                 appState.pendingIntuneUpdatesManager.stopFetchingList()
+            } else if appState.preferences.mode == Constants.modes.jamf {
+                appState.pendingJamfUpdatesManager.stopFetchingList()
             }
         }
     }
@@ -122,12 +129,5 @@ struct PendingUpdatesCard: View {
         if !newValue {
             stopFetching()
         }
-    }
-}
-
-struct PendingMunkiUpdatesCard_Previews: PreviewProvider {
-    static var previews: some View {
-        PendingUpdatesCard(viewModel: CardGridViewModel(appState: AppStateManager()))
-            .previewLayout(.sizeThatFits)
     }
 }

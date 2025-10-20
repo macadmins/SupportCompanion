@@ -27,6 +27,7 @@ enum Constants {
         static let munki = "Munki"
         static let intune = "Intune"
         static let systemProfiler = "SystemProfiler"
+		static let jamf = "Jamf"
     }
     
     enum TrayMenu {
@@ -55,10 +56,12 @@ enum Constants {
         static let companyPortal = "/Applications/Company Portal.app"
         static let MSC = "/Applications/Managed Software Center.app"
         static let MSCUpdates = "munki://updates.html"
+		static let selfService = "/Applications/Self Service+.app"
     }
     
     enum Paths {
         static let tempArchivePath = "/tmp/supportcompanion_logs.zip"
+		static let jamfSelfServiceData = "~/Library/Application Support/osx-self-service.Self-Service.resources/CocoaAppCD.storedata"
     }
     
     enum Panels {

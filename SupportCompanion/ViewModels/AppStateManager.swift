@@ -15,6 +15,7 @@ class AppStateManager: ObservableObject {
     lazy var pendingMunkiUpdatesManager = PendingMunkiUpdatesManager(appState: self)
     lazy var applicationsInfoManager = ApplicationsInfoManager(appState: self)
     lazy var pendingIntuneUpdatesManager = PendingIntuneUpdatesManager(appState: self)
+	lazy var pendingJamfUpdatesManager = PendingJamfUpdatesManager(appState: self)
     lazy var evergreenInfoManager = EvergreenInfoManager(appState: self)
     lazy var elevationManager = ElevationManager(appState: self)
     var jsonCardManager: JsonCardManager?
@@ -31,6 +32,7 @@ class AppStateManager: ObservableObject {
     @Published var pendingUpdatesCount: Int = 0
     @Published var pendingMunkiUpdates: [PendingMunkiUpdate] = []
     @Published var pendingIntuneUpdates: [PendingIntuneUpdate] = []
+	@Published var pendingJamfUpdates: [PendingJamfUpdate] = []
     @Published var installedApplications: [InstalledApp] = []
     @Published var systemUpdateCache: SystemUpdates = SystemUpdates(id: UUID(), count: 0, updates: [])
     @Published var windowIsVisible: Bool = false
@@ -41,6 +43,8 @@ class AppStateManager: ObservableObject {
     @Published var timeToDemote: TimeInterval = 0
 
     private var cancellables: Set<AnyCancellable> = Set<AnyCancellable>()
+    private var customPathCancellable: AnyCancellable?
+    private var defaultsWatcher: FileWatcher?
     var showWindowCallback: (() -> Void)?
 
     func startBackgroundTasks() {
@@ -50,6 +54,9 @@ class AppStateManager: ObservableObject {
         if preferences.mode == Constants.modes.intune {
             pendingIntuneUpdatesManager.startUpdateCheckTimer()
         }
+		if preferences.mode == Constants.modes.jamf {
+			pendingJamfUpdatesManager.startUpdateCheckTimer()
+		}
         systemUpdatesManager.startMonitoring()
         storageInfoManager.startMonitoring()
         deviceInfoManager.startMonitoring()
@@ -96,6 +103,74 @@ class AppStateManager: ObservableObject {
             .store(in: &cancellables)
 
         setupCardManager()
+
+        wirePreferencesObservers()
+
+        // If the Preferences instance is ever replaced, rewire observers
+        $preferences
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.wirePreferencesObservers()
+            }
+            .store(in: &cancellables)
+
+        // Also watch the preferences plist so external `defaults write` changes are picked up live
+        setupDefaultsWatcher()
+    }
+
+    private func setupDefaultsWatcher() {
+        let domain = "com.github.macadmins.SupportCompanion"
+        let prefsURL = FileManager.default.homeDirectoryForCurrentUser
+            .appendingPathComponent("Library/Preferences/\(domain).plist")
+        let path = prefsURL.path
+        defaultsWatcher = FileWatcher(filePath: path) { [weak self] in
+            guard let self = self else { return }
+            // Read directly from the plist to bypass UserDefaults caching
+            if let dict = NSDictionary(contentsOf: prefsURL) as? [String: Any],
+               let latest = dict["CustomCardPath"] as? String {
+                DispatchQueue.main.async {
+                    if self.preferences.customCardPathPublished != latest {
+                        Logger.shared.logInfo("Prefs plist changed -> CustomCardPath='\(latest)'")
+                        if self.preferences.customCardPath != latest {
+                            self.preferences.customCardPath = latest
+                        }
+                        self.preferences.customCardPathPublished = latest
+                    }
+                }
+            }
+        }
+    }
+
+    private func wirePreferencesObservers() {
+        // Cancel any previous subscription tied to the old preferences instance
+        customPathCancellable?.cancel()
+
+        customPathCancellable = preferences.$customCardPathPublished
+            .map { $0.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines) }
+            .removeDuplicates { (lhs: String, rhs: String) -> Bool in
+                lhs == rhs
+            }
+            .receive(on: RunLoop.main)
+            .sink { [weak self] (trimmed: String) in
+                guard let self = self else { return }
+                Logger.shared.logDebug("CustomCardPath changed -> '\(trimmed)'")
+
+                // If path is empty, tear down any existing manager and clear cards
+                guard !trimmed.isEmpty else {
+                    self.jsonCardManager?.stopWatching()
+                    self.jsonCardManager = nil
+                    self.JsonCards.removeAll()
+                    return
+                }
+
+                // Ensure a manager exists, stop any current watcher, then load and start watching the new path
+                if self.jsonCardManager == nil {
+                    self.jsonCardManager = JsonCardManager(appState: self)
+                }
+                self.jsonCardManager?.stopWatching()
+                self.jsonCardManager?.loadFromFile(trimmed)
+                self.jsonCardManager?.watchFile(trimmed)
+            }
     }
 
     func startDemotionTimer(duration: TimeInterval) {
@@ -116,7 +191,9 @@ class AppStateManager: ObservableObject {
 
     private func setupCardManager() {
         guard !preferences.customCardPath.isEmpty else { return }
-        jsonCardManager = JsonCardManager(appState: self)
+        if jsonCardManager == nil {
+            jsonCardManager = JsonCardManager(appState: self)
+        }
         jsonCardManager?.loadFromFile(preferences.customCardPath)
         jsonCardManager?.watchFile(preferences.customCardPath)
     }
@@ -141,3 +218,4 @@ class AppStateManager: ObservableObject {
         }
     }
 }
+

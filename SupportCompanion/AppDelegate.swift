@@ -89,7 +89,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        if !AppDelegate.shouldExit { 
+        if !AppDelegate.shouldExit && appStateManager.preferences.trayMenuShowIcon { 
             setupTrayMenu()
         }
 
@@ -294,7 +294,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             NSApp.setActivationPolicy(.regular)
             let contentView = ContentView()
                 .environmentObject(AppStateManager.shared)
-                .environmentObject(Preferences())
+                .environmentObject(AppStateManager.shared.preferences)
                 .frame(minWidth: 1100, minHeight: 650)
 
             let hostingController = NSHostingController(rootView: contentView)
@@ -333,10 +333,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     }
     
     private func configureAppUpdateNotificationCommand(mode: String) {
-        if mode == "Munki" {
+		if mode == Constants.modes.munki {
             appStateManager.preferences.appUpdateNotificationCommand = "open \(Constants.AppPaths.MSCUpdates)"
-        } else {
+		} else if mode == Constants.modes.intune {
             appStateManager.preferences.appUpdateNotificationCommand = "open \(Constants.AppPaths.companyPortal)"
-        }
-    }
+		} else if mode == Constants.modes.jamf {
+			appStateManager.preferences.appUpdateNotificationCommand = "open \(Constants.AppPaths.selfService)"
+		}
+     }
 }
