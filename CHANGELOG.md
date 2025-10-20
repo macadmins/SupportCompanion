@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.0] - 2025-10-20
+### Added
+- WiFi SSID information is now included in the device information
+- New option to hide tray menu icon. This allows for using the desktop information window without displaying the tray menu icon. Example configuration:
+```xml
+<key>TrayMenuShowIcon</key>
+<false/>
+```
+- Support for monitoring Jamf application patches. When in Jamf mode, the app will now monitor for pending application patches and display them in the tray menu as well as in the main app. The badge will also be displayed in the tray menu icon when there are pending application patches. Requires the use of Self Service+.
+### Changed
+- MDM info now uses multiple MDM profile names to be able to correctly display the enrollment time.
+- The privileged helper tool has been migrated to `SMAppService` in place of `SMJobBless` since `SMJobBless` is deprecated in macOS 14 and later.
+### Fixed
+- File watcher would not correctly detect changes on custom JSON cards if the file was replaced instead of modified. This has been fixed by using a different method to monitor file changes.
+- The pending updates badge on `Software Updates` was transparent in the main app.
+
+
 ## [2.3.1] - 2025-10-06
 ### Changed
 - Refactored the uninstall script with better error handling and logging.
