@@ -142,6 +142,7 @@ struct SupportCompanionCLI {
         let serial = getSerialNumber() ?? "Unknown"
         let processor = getCPUName() ?? "Unknown"
         let ip = getAllIPAddresses().joined(separator: ", ")
+        let ssid = getSSID() ?? "Unknown"
         let lastReboot = getLastRestartMinutes() ?? 0
         let osVersion = getOSVersion()
         let osBuild = getOSBuild()
@@ -157,6 +158,7 @@ struct SupportCompanionCLI {
         Processor:      \(processor)
         Memory:         \(ram)
         IP Address(es): \(ip)
+        WiFi SSID:      \(ssid)
         Last Reboot:    \(formattedLastRestart)
         OS Version:     \(osVersion)
         OS Build:       \(osBuild)
