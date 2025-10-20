@@ -3416,37 +3416,37 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ihr Gerät wurde zuletzt vor %lld %@ neu gestartet. Bitte starten Sie Ihr Gerät neu, um optimale Leistung und Sicherheit zu gewährleisten."
+            "value" : "Ihr Gerät wurde zuletzt vor %1$lld %2$@ neu gestartet. Bitte starten Sie Ihr Gerät neu, um optimale Leistung und Sicherheit zu gewährleisten."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Your device was last restarted %lld %@ ago. Please reboot your device to ensure optimal performance and security."
+            "value" : "Your device was last restarted %1$lld %2$@ ago. Please reboot your device to ensure optimal performance and security."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Votre appareil a été redémarré pour la dernière fois il y a %lld %@. Veuillez redémarrer votre appareil afin d’assurer des performances et une sécurité optimales."
+            "value" : "Votre appareil a été redémarré pour la dernière fois il y a %1$lld %2$@. Veuillez redémarrer votre appareil afin d’assurer des performances et une sécurité optimales."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "お使いのデバイスは%lld %@前に最後に再起動されました。最適なパフォーマンスとセキュリティを確保するため、デバイスを再起動してください。"
+            "value" : "お使いのデバイスは%1$lld %2$@前に最後に再起動されました。最適なパフォーマンスとセキュリティを確保するため、デバイスを再起動してください。"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enheten din ble sist startet på nytt for %lld %@ siden. Start enheten på nytt for å sikre optimal ytelse og sikkerhet."
+            "value" : "Enheten din ble sist startet på nytt for %1$lld %2$@ siden. Start enheten på nytt for å sikre optimal ytelse og sikkerhet."
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Din enhet startades om senast för %lld %@ sedan. Starta om enheten för att säkerställa optimal prestanda och säkerhet."
+            "value" : "Din enhet startades om senast för %1$lld %2$@ sedan. Starta om enheten för att säkerställa optimal prestanda och säkerhet."
           }
         }
       }
