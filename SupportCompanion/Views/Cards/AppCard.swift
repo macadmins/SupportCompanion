@@ -93,18 +93,28 @@ struct AppCard: View {
                         }
                         .font(.system(size: 14))
                     }
-
-                    if card.isSelfServe {
-                        ScButton(buttonText, action: {
-                            Task {
-                                if !card.action.isEmpty {
-                                    _ = try await ExecutionService.executeShellCommand(card.action)
-                                }
-                            }
-                        })
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .padding(.top, 40)
-                    }
+					
+					HStack {
+						if card.isSelfServe {
+							ScButton(buttonText, action: {
+								if !card.action.isEmpty {
+									_ = try? await ExecutionService.executeShellCommand(card.action)
+								}
+							})
+							.padding(.top, 40)
+						}
+						if AppStateManager.shared.preferences.mode == Constants.modes.jamf {
+							if AppStateManager.shared.pendingJamfUpdates.contains(where: { $0.policyName == card.name }) {
+								let patchID = AppStateManager.shared.pendingJamfUpdates.first(where: { $0.policyName == card.name })!.patchId
+								ScButton("Update", action: {
+									_ = try? await ExecutionService.executeCommandPrivileged("/bin/launchctl", arguments: ["asuser", "504", "/usr/local/bin/jamf", "patch", "-id", String(patchID!), "-showSteps", "-selfServiceOnly", "-user", "tobal86"])
+									await AppStateManager.shared.pendingJamfUpdatesManager.getPendingJamfUpdates()
+								})
+								.padding(.top, 40)
+							}
+						}
+					}
+					.frame(maxWidth: .infinity, alignment: .center)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal)

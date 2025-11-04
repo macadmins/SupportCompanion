@@ -53,6 +53,12 @@ struct PendingUpdatesCard: View {
                     .bold()
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
+			if appState.preferences.mode == Constants.modes.jamf {
+				Text("Due by")
+					.font(.subheadline)
+					.bold()
+					.frame(maxWidth: .infinity, alignment: .trailing)
+			}
         }
         .padding(.vertical, 5)
         .padding(.horizontal)
@@ -76,23 +82,33 @@ struct PendingUpdatesCard: View {
                 Text("No pending updates")
                     .frame(maxWidth: .infinity, alignment: .leading)
             } else {
-				ForEach(items) { update in
-					HStack(spacing: 8) {
-						// Keep this leading text flexible
-						Text(update.name)
-							.lineLimit(1)
-							.truncationMode(.tail)
+                ForEach(items, id: \.id) { update in
+                    HStack(spacing: 8) {
+                        // Keep this leading text flexible
+                        Text(update.name)
+                            .lineLimit(1)
+                            .truncationMode(.tail)
 
-						Spacer()
+                        Spacer()
 
-						// Keep this trailing text compact; no infinite frames
-						Text(update.version)
-							.foregroundColor(colorScheme == .dark ? .gray : .grayLight)
-							.lineLimit(1)
-					}
-					.padding(.vertical, 6)
-					.listRowSeparator(.hidden)
-				}
+                        // Keep this trailing text compact; no infinite frames
+                        Text(update.version)
+                            .foregroundColor(colorScheme == .dark ? .gray : .grayLight)
+                            .lineLimit(1)
+							.frame(maxWidth: .infinity, alignment: .trailing)
+
+                        if let jamfUpdate = update as? PendingJamfUpdate {
+                            if let patchDue = jamfUpdate.dueBy {
+                                Text(patchDue)
+									.foregroundColor(colorScheme == .dark ? .gray : .grayLight)
+									.lineLimit(1)
+									.frame(maxWidth: .infinity, alignment: .trailing)
+                            }
+                        }
+                    }
+                    .padding(.vertical, 6)
+                    .listRowSeparator(.hidden)
+                }
             }
         }
         .padding(.horizontal, 8)

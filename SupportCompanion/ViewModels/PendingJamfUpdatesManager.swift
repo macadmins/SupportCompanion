@@ -20,14 +20,30 @@ class PendingJamfUpdatesManager {
 		self.appState = appState
 	}
 	
+	func refreshSlefService() async {
+		let cmd = ["-gj", Constants.AppPaths.selfService]
+		let quitCmd = ["-9", "Self Service+"]
+		let checkProcessCmd = ["-x", "Self Service\\+"]
+		let checkIfRunning = try? await ExecutionService.executeCommand("/usr/bin/pgrep", with: checkProcessCmd)
+		if checkIfRunning == nil {
+			_ = try? await ExecutionService.executeCommand("/usr/bin/open", with: cmd)
+			sleep(2)
+			_ = try? await ExecutionService.executeCommand("/usr/bin/pkill", with: quitCmd)
+		}
+	}
+	
  	nonisolated func getPendingJamfUpdates() async {
 		Logger.shared.logDebug("Getting Jamf pending updates")
 		
 		do {
+			await refreshSlefService()
 			if await parser.parse() {
 				let (pendingUpdates, _, _) = await computeUpdates(policies: parser.policies, patches: parser.patches, now: Date())
 				DispatchQueue.main.async {
 					self.appState.pendingJamfUpdates = pendingUpdates
+					if self.appState.pendingUpdatesCount != pendingUpdates.count {
+						self.appState.pendingUpdatesCount = pendingUpdates.count
+					}
 				}
 				if pendingUpdates.count > 0 && !appState.preferences.hiddenCards.contains("PendingAppUpdates") {
 					NotificationService(appState: appState).sendNotification(
@@ -36,6 +52,10 @@ class PendingJamfUpdatesManager {
 						command: appState.preferences.appUpdateNotificationCommand,
 						notificationType: .appUpdate
 					)
+				}
+				
+				DispatchQueue.main.async {
+					self.appState.pendingUpdatesCount = pendingUpdates.count
 				}
 			}
 		}
@@ -46,6 +66,7 @@ class PendingJamfUpdatesManager {
 		
 		do {
 			// Fetch counts concurrently
+			await refreshSlefService()
 			if await parser.parse() {
 				let (_, updateCount, upToDateCount) = await computeUpdates(policies: parser.policies, patches: parser.patches, now: Date())
 				let totalApps = updateCount + upToDateCount
@@ -137,3 +158,4 @@ class PendingJamfUpdatesManager {
 		updateCheckTimer = nil
 	}
 }
+
