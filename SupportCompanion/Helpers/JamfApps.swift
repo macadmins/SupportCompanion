@@ -7,6 +7,15 @@
 
 import Foundation
 
+extension DateFormatter {
+    static let shortDayMonth: DateFormatter = {
+        let df = DateFormatter()
+        df.locale = Locale(identifier: "en_US_POSIX") // stable month abbreviations
+        df.setLocalizedDateFormatFromTemplate("d MMM")
+        return df
+    }()
+}
+
 // MARK: - Date helpers (CoreData XML uses absolute seconds since 2001-01-01 a lot)
 extension Date {
     static func fromCoreDataEpochSeconds(_ s: String) -> Date? {
@@ -109,13 +118,15 @@ final class SSPlusParser: NSObject, XMLParserDelegate {
         case "SSPATCH":
 			let name = (currentAttributes["name"] ?? "").normalizedAppName
             guard let version = currentAttributes["version"], !version.isEmpty else { return }
-
+			
+			let id = Int(currentAttributes["id"] ?? "") ?? 0
             let available = Date.fromCoreDataEpochSeconds(currentAttributes["availabledate"] ?? "")
             let deadline = Date.fromCoreDataEpochSeconds(currentAttributes["deadline"] ?? "")
             let button = currentAttributes["buttontext"]
             let installStatus = Int(currentAttributes["installstatus"] ?? "")
 			
-            patches.append(Patch(name: name,
+			patches.append(Patch(id: id,
+								 name: name,
                                  version: version,
                                  availableDate: available,
                                  deadlineDate: deadline,
@@ -277,6 +288,7 @@ func computeUpdates(policies: [Policy],
 			}.first
 		}
     var results: [PendingJamfUpdate] = []
+    var matchedPolicyNames = Set<String>()
     var updateCount = 0
     var upToDateCount = 0
 
@@ -288,6 +300,7 @@ func computeUpdates(policies: [Policy],
             matchedPolicy = fuzzyMatchPolicy(for: patch.name, in: policiesByName)
         }
         guard let policy = matchedPolicy else { continue }
+        matchedPolicyNames.insert(policy.name)
 
         let (needed, label) = evaluateUpdate(policy: policy, patch: patch, now: now)
         let details = "available=\(patch.availableDate?.description ?? "nil"), " +
@@ -303,7 +316,10 @@ func computeUpdates(policies: [Policy],
 				needsUpdate: needed,
 				label: label,
 				details: details,
-				showInfoIcon: !details.isEmpty
+				showInfoIcon: !details.isEmpty,
+				dueBy: patch.deadlineDate.map { DateFormatter.shortDayMonth.string(from: $0) },
+				patchId: patch.id,
+				policyName: policy.name
 			))
 		}
 
@@ -314,6 +330,25 @@ func computeUpdates(policies: [Policy],
             upToDateCount += 1
         }
     }
+
+    // Fallback: if there are no patches (or some policies have no corresponding patch),
+    // treat installed policies (installStatus == 4) as up-to-date so the overall percent
+    // does not show 0% patched purely due to missing patch objects.
+    if patches.isEmpty {
+        for (_, policy) in policiesByName {
+            if (policy.installStatus ?? 0) == 4 {
+                upToDateCount += 1
+            }
+        }
+    } else {
+        // Also count installed policies that did not have a matching patch name.
+        for (name, policy) in policiesByName where !matchedPolicyNames.contains(name) {
+            if (policy.installStatus ?? 0) == 4 {
+                upToDateCount += 1
+            }
+        }
+    }
+
     return (results, updateCount, upToDateCount)
 }
 
