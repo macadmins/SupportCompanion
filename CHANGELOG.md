@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <false/>
 ```
 - Support for monitoring Jamf application patches. When in Jamf mode, the app will now monitor for pending application patches and display them in the tray menu as well as in the main app. The badge will also be displayed in the tray menu icon when there are pending application patches. Requires the use of Self Service+.
+    - Correctly monitoring application patches from Self Service+ requires that Self Service+ is configured for SSO. This is because the data in the app is lazy updated when the user starts and authenticates in Self Service+. To work around this, Support Companion will briefly launch Self Service+ in the background to update the patch data. An icon will appear in the dock while this is happening. This process should only take a few seconds.
 ### Changed
 - MDM info now uses multiple MDM profile names to be able to correctly display the enrollment time.
 - The privileged helper tool has been migrated to `SMAppService` in place of `SMJobBless` since `SMJobBless` is deprecated in macOS 14 and later.
