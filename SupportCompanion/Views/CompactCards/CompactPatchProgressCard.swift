@@ -16,8 +16,9 @@ struct CompactPatchProgressCard: View {
                         value: appState.installPercentage,
                         total: 100,
                         label: {
-                            Text("\(String(format: "%.1f", appState.installPercentage))% Patched")
-                            .font(.system(size: 12))}
+							Text("\(String(format: "%1d", Int(appState.installPercentage/100*100)))% Patched")
+                                .font(.system(size: 12))
+                        }
                     )
                     .tint(appState.installPercentage < 90 ? (colorScheme == .light ? .orangeLight : .orange)
                         : appState.installPercentage < 60 ? (colorScheme == .light ? .redLight : .red)
