@@ -14,31 +14,31 @@ For getting started with Support Companion, please refer to the [Wiki](https://g
 ## Overview
 
 ### Tray Menu
-<img width="1920" alt="sctray2 1" src="https://github.com/user-attachments/assets/b8a0ab92-ba5d-4270-9b88-3e58b64f94a8">
+<img width="1513" alt="Screenshot 2025-11-04 at 14 35 40" src="https://github.com/user-attachments/assets/4f3e9d46-8498-4116-a37b-5b972ec8bfc8" />
 
 ### Home
-<img width="1513" alt="1_home" src="https://github.com/user-attachments/assets/ddf7b35d-5921-47b7-ac72-b17d2ead8211">
+<img width="1513" alt="Screenshot_2025-11-04_at_14_36_26" src="https://github.com/user-attachments/assets/d0caf681-9069-4cbb-b206-434a23dd0822" />
 
 ### Identity
-<img width="1513" alt="2_Identity" src="https://github.com/user-attachments/assets/557e14cf-ba13-4754-ac27-3eec2e37dc53">
+<img width="1513" alt="Screenshot 2025-11-04 at 14 36 49" src="https://github.com/user-attachments/assets/712eb394-34a1-4d2a-8522-53901bce153b" />
 
 ### Apps
-<img width="1513" alt="3_Apps" src="https://github.com/user-attachments/assets/355c0624-43f0-4516-9177-def489203a35">
+<img width="1513" alt="Screenshot_2025-11-04_at_14_37_08" src="https://github.com/user-attachments/assets/edee1e90-df0f-4403-8d0e-dc03f9cccd0b" />
 
 ### Self Service
-<img width="1513" alt="4_SelfService" src="https://github.com/user-attachments/assets/ca0e520a-d941-41c1-bbd5-93db3e93f236">
-
-### Company Portal
-<img width="1513" alt="5_CompPortal" src="https://github.com/user-attachments/assets/2cdcb2af-7cf7-47f4-a044-8d722dd85232">
+<img width="1513" alt="Screenshot 2025-11-04 at 14 37 23" src="https://github.com/user-attachments/assets/78d38dcf-38ad-4f09-9f66-ac3a4dfe7102" />
 
 ### KB
-<img width="1513" alt="6_KB" src="https://github.com/user-attachments/assets/bdaaf50d-84ff-4505-983f-334b29498fc8">
+<img width="1513" alt="Screenshot 2025-11-04 at 14 37 42" src="https://github.com/user-attachments/assets/29042dfe-22ce-4470-b882-94acbfaf41c0" />
 
 ### Desktop Info
-<img width="1800" alt="7_Desktop" src="https://github.com/user-attachments/assets/9f104a8e-2298-4582-acb7-3ef68455ab00">
+<img width="1513" alt="Screenshot_2025-11-04_at_14_38_25" src="https://github.com/user-attachments/assets/7eabd11c-400e-4804-8607-b5ec88c1155d" />
 
 ### Notifications
 <img width="365" alt="8_Notifications" src="https://github.com/user-attachments/assets/d4faef1c-624c-444e-8020-deae6d4f074d">
+
+### Company Portal
+<img width="1513" alt="5_CompPortal" src="https://github.com/user-attachments/assets/2cdcb2af-7cf7-47f4-a044-8d722dd85232">
 
 ## Credits
 [woodys-findings](https://www.woodys-findings.com/posts/cocoa-implement-privileged-helper) for privileged helper code
