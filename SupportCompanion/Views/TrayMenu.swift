@@ -70,6 +70,9 @@ struct TrayMenuView: View {
                     if appState.preferences.enableElevation && appState.preferences.showElevateTrayCard {
                         CompactElevationCard()
                     }
+					if !appState.preferences.hiddenCards.contains(Constants.Cards.jamfInfo) && appState.preferences.mode == Constants.modes.jamf {
+						CompactJamfInfoCard()
+					}
                 }
                 
                 Divider()

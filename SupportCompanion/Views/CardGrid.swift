@@ -87,6 +87,9 @@ struct CardGrid: View {
             if !appState.preferences.hiddenCards.contains(Constants.CardTitle.battery) {
                 appState.batteryInfoManager.startMonitoring()
             }
+			if !appState.preferences.hiddenCards.contains(Constants.Cards.jamfInfo) && appState.preferences.mode == Constants.modes.jamf {
+				appState.jamfInfoManager.refresh()
+			}
         }
         .onDisappear {
             if !appState.preferences.hiddenCards.contains(Constants.CardTitle.battery) {
