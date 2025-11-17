@@ -54,6 +54,20 @@ struct BatteryEvergreenStack: View {
                     })
                     .fixedSize(horizontal: false, vertical: false)
                 }
+				
+				if viewModel.isCardVisible(Constants.Cards.jamfInfo) && appState.preferences.mode == Constants.modes.jamf {
+					ScCard(title: Constants.CardTitle.jamfInfo, titleImageName: "server.rack", content: {
+						VStack(alignment: .leading, spacing: 5) {
+							CardData(info: appState.jamfInfoManager.jamfInfo.toKeyValuePairs())
+							Spacer()
+						}
+						.padding(.horizontal)
+						//.frame(height: 116)
+						.frame(maxHeight: .infinity, alignment: .top)
+						.frame(minHeight: 110)
+					})
+					.fixedSize(horizontal: false, vertical: false)
+				}
             }
         }
     }
