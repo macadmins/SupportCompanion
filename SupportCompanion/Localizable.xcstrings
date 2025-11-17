@@ -2032,6 +2032,48 @@
         }
       }
     },
+    "General.Ago" : {
+      "comment" : "Ago",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "tagen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Ago"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "avant"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "siden"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "sedan"
+          }
+        }
+      }
+    },
     "General.Close" : {
       "comment" : "Close",
       "extractionState" : "manual",
@@ -2410,6 +2452,18 @@
         }
       }
     },
+    "General.JustNow" : {
+      "comment" : "Just Now",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Just Now"
+          }
+        }
+      }
+    },
     "General.Manage" : {
       "comment" : "Manage",
       "extractionState" : "manual",
@@ -2604,6 +2658,114 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "sekunder"
+          }
+        }
+      }
+    },
+    "JamfInfo.ID" : {
+      "comment" : "Label for the ID",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "ID:"
+          }
+        }
+      }
+    },
+    "JamfInfo.LastCheckin" : {
+      "comment" : "Label for the last check-in date",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Check-in:"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Check-In:"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Check-in:"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "チェックイン:"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Check-in:"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Check-in:"
+          }
+        }
+      }
+    },
+    "JamfInfo.LastInventory" : {
+      "comment" : "Label for the last update date",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inventur:"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Inventory:"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inventaire:"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "インベントリ:"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inventar:"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inventering:"
+          }
+        }
+      }
+    },
+    "JamfInfo.URL" : {
+      "comment" : "Label for the URL",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "URL:"
           }
         }
       }
