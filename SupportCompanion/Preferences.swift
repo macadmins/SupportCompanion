@@ -176,6 +176,12 @@ class Preferences: ObservableObject {
     @AppStorage("ElevationWebhookUrl") var elevationWebhookURL: String = ""
 
     @AppStorage("ElevationSeverity") var elevationSeverity: Int = 6 // Default to "Informational"
+	
+	// MARK: General
+	
+	@AppStorage("RefreshSelfService") var refreshSelfService: Bool = true
+	
+	@AppStorage("JamfLogPollHours") var jamfLogPollHours: Int = 36
     
     var mdm: String = "Unknown"
         
