@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.4.0] - 2025-10-20
+## [2.4.0] - 2025-11-17
 ### Added
 - WiFi SSID information is now included in the device information
 - New option to hide tray menu icon. This allows for using the desktop information window without displaying the tray menu icon. Example configuration:
@@ -14,12 +14,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ```
 - Support for monitoring Jamf application patches. When in Jamf mode, the app will now monitor for pending application patches and display them in the tray menu as well as in the main app. The badge will also be displayed in the tray menu icon when there are pending application patches. Requires the use of Self Service+.
     - Correctly monitoring application patches from Self Service+ requires that Self Service+ is configured for SSO. This is because the data in the app is lazy updated when the user starts and authenticates in Self Service+. To work around this, Support Companion will briefly launch Self Service+ in the background to update the patch data. An icon will appear in the dock while this is happening. This process should only take a few seconds.
+    - Can be turned off by setting `RefreshSelfService` to `false` in the configuration. Example configuration:
+```xml
+<key>RefreshSelfService</key>
+<false/>
+```
+- A new default card for Jamf mode that displays the last time the device checked in, the last inventorury time and the MDM enrollment time as well as the ID of the device in Jamf. This card is only displayed when in Jamf mode and can be hidden using the `HiddenCards` configuration.
+```xml
+<key>HiddenCards</key>
+<array>
+    <string>Jamf</string>
+</array>
+```
+- A new option for Jamf mode to set the polling interval for logs collection to gather last check in time and last inventory time. This allows for admins to set how often the app should check for new log data. By default, the interval is set to 36 hours. Example configuration:
+```xml
+<key>JamfLogPollHours</key>
+<integer>46</integer>
+```
 ### Changed
 - MDM info now uses multiple MDM profile names to be able to correctly display the enrollment time.
 - The privileged helper tool has been migrated to `SMAppService` in place of `SMJobBless` since `SMJobBless` is deprecated in macOS 14 and later.
+- If `BrandName` is configured, it will now be displayed in the desktop information window as well as the header instead of "Device Information".
 ### Fixed
 - File watcher would not correctly detect changes on custom JSON cards if the file was replaced instead of modified. This has been fixed by using a different method to monitor file changes.
 - The pending updates badge on `Software Updates` was transparent in the main app.
+- `FileVault` did not hide the item on the desktop information window when configured to be hidden.
 
 
 ## [2.3.1] - 2025-10-06

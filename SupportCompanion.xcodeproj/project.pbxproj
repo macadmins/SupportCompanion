@@ -201,6 +201,7 @@
 				ElevationManager.swift,
 				EvergreenInfoManager.swift,
 				IdentityViewModel.swift,
+				JamfInfoManager.swift,
 				JsonCardManager.swift,
 				MDMInfoManager.swift,
 				PendingIntuneUpdatesManager.swift,
@@ -554,6 +555,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.github.macadmins.SupportCompanion.CLI;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -569,6 +571,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.github.macadmins.SupportCompanion.CLI;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
@@ -798,6 +801,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.github.macadmins.SupportCompanion.helper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;
 				TEAM_ID = H92SB6Z7S4;
 			};
@@ -828,6 +832,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.github.macadmins.SupportCompanion.helper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;
 				TEAM_ID = T4SK8ZXCXG;
 			};
