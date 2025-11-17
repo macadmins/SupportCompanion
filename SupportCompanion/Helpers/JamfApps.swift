@@ -179,6 +179,16 @@ enum UpdateLabel: CustomStringConvertible {
     }
 }
 
+// Normalize version strings to compare semantic part only (e.g., "6.6.6" == "6.6.6 (67409)")
+private func normalizeVersionSemantic(_ v: String) -> String {
+    let trimmed = v.trimmingCharacters(in: .whitespacesAndNewlines)
+    // If there's a space or parenthesis, keep only the prefix before it.
+    if let idx = trimmed.firstIndex(where: { $0 == " " || $0 == "(" }) {
+        return String(trimmed[..<idx])
+    }
+    return trimmed
+}
+
 /// If `requireVersionMismatch` is true, we only flag "needed" when the policy version != patch version.
 /// If false, we rely on dates alone (recommended when policyVersion can be missing/noisy).
 func evaluateUpdate(policy: Policy, patch: Patch, now: Date = .init()) -> (needed: Bool, label: UpdateLabel) {
@@ -190,15 +200,16 @@ func evaluateUpdate(policy: Policy, patch: Patch, now: Date = .init()) -> (neede
     // 1. Missing availability → version-only check
     guard let avail = patch.availableDate else {
         if let pv = policy.policyVersion {
-            return (pv != patch.version, pv != patch.version ? due(nil) : .upToDate)
+            let pvNorm = normalizeVersionSemantic(pv)
+            let patchNorm = normalizeVersionSemantic(patch.version)
+            let mismatch = pvNorm != patchNorm
+            return (mismatch, mismatch ? due(nil) : .upToDate)
         }
         return (false, .unknown("missing availableDate"))
     }
 
     // 2. Overdue beats everything
     if let d = patch.deadlineDate, now >= d {
-		// first try version matching
-		
         return (true, .overdue(d))
     }
 
@@ -209,13 +220,21 @@ func evaluateUpdate(policy: Policy, patch: Patch, now: Date = .init()) -> (neede
 
     // 4. Facts
     let installedAfterAvail = (policy.installedOrUpdated ?? .distantPast) >= avail
-    let versionMatches = policy.policyVersion.map { $0 == patch.version } // Optional<Bool>
+    let versionMatches: Bool? = policy.policyVersion.map {
+        normalizeVersionSemantic($0) == normalizeVersionSemantic(patch.version)
+    }
 
     // 5. Installed after availability
     if installedAfterAvail {
         switch versionMatches {
-        case .some(false): return (true, due(patch.deadlineDate))   // known mismatch
-        default:            return (false, .upToDate)               // match or nil → trust the date
+        case .some(false):
+            let pv = normalizeVersionSemantic(policy.policyVersion ?? "")
+            let pvRaw = policy.policyVersion ?? ""
+            let patchNorm = normalizeVersionSemantic(patch.version)
+            print("\(patch.name) is available now, but the installed version (\(pvRaw)) [normalized: \(pv)] doesn't match \(patch.version) [normalized: \(patchNorm)].")
+            return (true, due(patch.deadlineDate))   // known mismatch
+        default:
+            return (false, .upToDate)               // match or nil → trust the date
         }
     }
 
@@ -440,4 +459,3 @@ func downloadAppIcon(forApp: InstalledApp) async -> String {
     }
     return iconFileURL.path
 }
-

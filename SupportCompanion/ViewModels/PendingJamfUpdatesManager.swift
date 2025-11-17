@@ -21,14 +21,18 @@ class PendingJamfUpdatesManager {
 	}
 	
 	func refreshSlefService() async {
-		let cmd = ["-gj", Constants.AppPaths.selfService]
-		let quitCmd = ["-9", "Self Service+"]
-		let checkProcessCmd = ["-x", "Self Service\\+"]
-		let checkIfRunning = try? await ExecutionService.executeCommand("/usr/bin/pgrep", with: checkProcessCmd)
-		if checkIfRunning == nil {
-			_ = try? await ExecutionService.executeCommand("/usr/bin/open", with: cmd)
-			sleep(2)
-			_ = try? await ExecutionService.executeCommand("/usr/bin/pkill", with: quitCmd)
+		if appState.preferences.refreshSelfService {
+			let cmd = ["-gj", Constants.AppPaths.selfService]
+			let quitCmd = ["-9", "Self Service+"]
+			let checkProcessCmd = ["-x", "Self Service\\+"]
+			let checkIfRunning = try? await ExecutionService.executeCommand("/usr/bin/pgrep", with: checkProcessCmd)
+			if checkIfRunning == nil {
+				_ = try? await ExecutionService.executeCommand("/usr/bin/open", with: cmd)
+				sleep(2)
+				_ = try? await ExecutionService.executeCommand("/usr/bin/pkill", with: quitCmd)
+			}
+		} else {
+			Logger.shared.logDebug("Self Service configured to not refresh itself")
 		}
 	}
 	
