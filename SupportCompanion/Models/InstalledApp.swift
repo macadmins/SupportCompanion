@@ -17,4 +17,6 @@ struct InstalledApp: Identifiable {
     let path: String
     let type: String
     let bundleId: String
+	let iconUrl: String?
+	let actionText: String?
 }

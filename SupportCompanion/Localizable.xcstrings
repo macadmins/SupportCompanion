@@ -1779,6 +1779,40 @@
         }
       }
     },
+    "Due by" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bis zum"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pour le"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "までに"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Innen"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Senast"
+          }
+        }
+      }
+    },
     "Enter Reason for Elevation" : {
       "localizations" : {
         "de" : {
@@ -1994,6 +2028,48 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Loggar sparade"
+          }
+        }
+      }
+    },
+    "General.Ago" : {
+      "comment" : "Ago",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "tagen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Ago"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "avant"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "siden"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "sedan"
           }
         }
       }
@@ -2376,6 +2452,18 @@
         }
       }
     },
+    "General.JustNow" : {
+      "comment" : "Just Now",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Just Now"
+          }
+        }
+      }
+    },
     "General.Manage" : {
       "comment" : "Manage",
       "extractionState" : "manual",
@@ -2570,6 +2658,114 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "sekunder"
+          }
+        }
+      }
+    },
+    "JamfInfo.ID" : {
+      "comment" : "Label for the ID",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "ID:"
+          }
+        }
+      }
+    },
+    "JamfInfo.LastCheckin" : {
+      "comment" : "Label for the last check-in date",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Check-in:"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Check-In:"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Check-in:"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "チェックイン:"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Check-in:"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Check-in:"
+          }
+        }
+      }
+    },
+    "JamfInfo.LastInventory" : {
+      "comment" : "Label for the last update date",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inventur:"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Inventory:"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inventaire:"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "インベントリ:"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inventar:"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inventering:"
+          }
+        }
+      }
+    },
+    "JamfInfo.URL" : {
+      "comment" : "Label for the URL",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "URL:"
           }
         }
       }
@@ -3416,37 +3612,37 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ihr Gerät wurde zuletzt vor %lld %@ neu gestartet. Bitte starten Sie Ihr Gerät neu, um optimale Leistung und Sicherheit zu gewährleisten."
+            "value" : "Ihr Gerät wurde zuletzt vor %1$lld %2$@ neu gestartet. Bitte starten Sie Ihr Gerät neu, um optimale Leistung und Sicherheit zu gewährleisten."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Your device was last restarted %lld %@ ago. Please reboot your device to ensure optimal performance and security."
+            "value" : "Your device was last restarted %1$lld %2$@ ago. Please reboot your device to ensure optimal performance and security."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Votre appareil a été redémarré pour la dernière fois il y a %lld %@. Veuillez redémarrer votre appareil afin d’assurer des performances et une sécurité optimales."
+            "value" : "Votre appareil a été redémarré pour la dernière fois il y a %1$lld %2$@. Veuillez redémarrer votre appareil afin d’assurer des performances et une sécurité optimales."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "お使いのデバイスは%lld %@前に最後に再起動されました。最適なパフォーマンスとセキュリティを確保するため、デバイスを再起動してください。"
+            "value" : "お使いのデバイスは%1$lld %2$@前に最後に再起動されました。最適なパフォーマンスとセキュリティを確保するため、デバイスを再起動してください。"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enheten din ble sist startet på nytt for %lld %@ siden. Start enheten på nytt for å sikre optimal ytelse og sikkerhet."
+            "value" : "Enheten din ble sist startet på nytt for %1$lld %2$@ siden. Start enheten på nytt for å sikre optimal ytelse og sikkerhet."
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Din enhet startades om senast för %lld %@ sedan. Starta om enheten för att säkerställa optimal prestanda och säkerhet."
+            "value" : "Din enhet startades om senast för %1$lld %2$@ sedan. Starta om enheten för att säkerställa optimal prestanda och säkerhet."
           }
         }
       }

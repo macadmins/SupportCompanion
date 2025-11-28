@@ -144,7 +144,7 @@ class SSOInfoHelpers {
             // Extract device configuration
             let deviceConfigJSON = extractJSON(from: platformSSOOutput, pattern: deviceConfigPattern)
             guard let deviceConfigData = deviceConfigJSON?.data(using: .utf8),
-                  let deviceConfig = try? JSONSerialization.jsonObject(with: deviceConfigData, options: []) as? [String: Any] else {
+                  let _ = try? JSONSerialization.jsonObject(with: deviceConfigData, options: []) as? [String: Any] else {
                 Logger.shared.logError("Device configuration parsing failed")
                 return false
             }

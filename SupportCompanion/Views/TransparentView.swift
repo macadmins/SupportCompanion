@@ -36,7 +36,9 @@ struct TransparentView: View {
             VStack(alignment: .leading) {
                 // Title for the Info View
                 if !appState.preferences.desktopInfoHideItems.contains("Category") {
-                    Text(Constants.CardTitle.deviceInfo)
+                    let trimmedBrand = appState.preferences.brandName.trimmingCharacters(in: .whitespacesAndNewlines)
+                    let useBrand = !trimmedBrand.isEmpty && trimmedBrand.caseInsensitiveCompare("Support Companion") != .orderedSame
+                    Text(useBrand ? trimmedBrand : Constants.CardTitle.deviceInfo)
                         .font(.title2)
                         .bold()
                         .foregroundColor(.white)
@@ -217,11 +219,13 @@ struct TransparentView: View {
                     }
                 }
                 if item.key == "FileVault" {
-                    StorageInfoRowTransparent(
-                        label: item.display,
-                        value: item.value.displayValue,
-                        fontSize: CGFloat(appState.preferences.desktopInfoFontSize)
-                    )
+                    if !appState.preferences.desktopInfoHideItems.contains(Constants.Storage.Keys.fileVault) {
+                        StorageInfoRowTransparent(
+                            label: item.display,
+                            value: item.value.displayValue,
+                            fontSize: CGFloat(appState.preferences.desktopInfoFontSize)
+                        )
+                    }
                     usageInfoRowTransparent(
                         value: appState.storageInfoManager.storageInfo.usage,
                         fontSize: CGFloat(appState.preferences.desktopInfoFontSize)
@@ -402,3 +406,4 @@ struct LastRestartRowTransparent: View {
         }
     }
 }
+

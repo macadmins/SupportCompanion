@@ -16,15 +16,21 @@ class JsonCardManager: ObservableObject {
     }
 
     func watchFile(_ filePath: String) {
-        fileWatcher = FileWatcher(filePath: filePath) { [weak self] in
-            self?.loadFromFile(filePath)
+        let expanded = (filePath as NSString).expandingTildeInPath
+        let resolved = URL(fileURLWithPath: expanded).resolvingSymlinksInPath().path
+        fileWatcher = nil
+        Logger.shared.logDebug("JsonCardManager: watching file at \(resolved)")
+        fileWatcher = FileWatcher(filePath: resolved) { [weak self] in
+            Logger.shared.logDebug("JsonCardManager: file change detected, reloading")
+            self?.loadFromFile(resolved)
         }
     }
     
     func loadFromFile(_ fileName: String) {
-        let fileURL = URL(fileURLWithPath: fileName)
+        let expanded = (fileName as NSString).expandingTildeInPath
+        let fileURL = URL(fileURLWithPath: expanded).resolvingSymlinksInPath()
         guard FileManager.default.fileExists(atPath: fileURL.path) else {
-            Logger.shared.logDebug("Csutom Card File not found: \(fileURL.path)")
+            Logger.shared.logDebug("Custom Card File not found: \(fileURL.path)")
             return
         }
         
@@ -37,5 +43,9 @@ class JsonCardManager: ObservableObject {
         } catch {
             Logger.shared.logError("Failed to load cards: \(error.localizedDescription)")
         }
+    }
+    
+    func stopWatching() {
+        fileWatcher = nil
     }
 }

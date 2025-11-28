@@ -14,3 +14,4 @@ protocol PendingUpdate: Identifiable {
 
 extension PendingMunkiUpdate: PendingUpdate {}
 extension PendingIntuneUpdate: PendingUpdate {}
+extension PendingJamfUpdate: PendingUpdate {}

@@ -24,7 +24,9 @@ class ApplicationsInfoManager: ObservableObject {
         isSelfServe: false,
         path: "",
         type: "",
-        bundleId: ""
+        bundleId: "",
+		iconUrl: "",
+		actionText: ""
     )
 
     init(appState: AppStateManager) {
@@ -67,6 +69,8 @@ class ApplicationsInfoManager: ObservableObject {
             await getInstalledIntuneApps()
         case Constants.modes.systemProfiler:
             await getInstalledProfilerApps()
+        case Constants.modes.jamf:
+            await getInstalledJamfApps()
         default:
             await getInstalledMunkiApps()
         }
@@ -106,7 +110,9 @@ class ApplicationsInfoManager: ObservableObject {
                     isSelfServe: isSelfServe,
                     path: "",
                     type: "",
-                    bundleId: ""
+                    bundleId: "",
+					iconUrl: "",
+					actionText: ""
                 )
             }
             
@@ -142,7 +148,46 @@ class ApplicationsInfoManager: ObservableObject {
                     isSelfServe: false,
                     path: "",
                     type: type,
-                    bundleId: bundleId
+                    bundleId: bundleId,
+					iconUrl: "",
+					actionText: ""
+                )
+            }
+            
+            let sortedApps = installedApps.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+            
+            DispatchQueue.main.async {
+                self.appState.installedApplications = sortedApps
+            }
+        }
+    }
+	
+	func getInstalledJamfApps() async {
+        do {
+            let apps = await getInstalledJamfAppsFromStore()
+            let installedApps = apps.compactMap { (key: AnyHashable, value: Any) -> InstalledApp? in
+                guard let dict = value as? [String: Any] else { return nil }
+                guard let name = dict["name"] as? String,
+                      let version = dict["version"] as? String else {
+                    return nil
+                }
+                let iconUrl = dict["iconUrl"] as? String ?? ""
+                let id = dict["id"] as? Int ?? 0
+                let command = "open \"selfservicecapability://content?entity=policy&id=\(id)&action=execute\""
+                let actionText = (dict["postInstallText"] as? String) ?? ""
+
+                return InstalledApp(
+                    id: UUID(),
+                    name: name,
+                    version: version,
+                    action: command,
+                    arch: "",
+                    isSelfServe: true,
+                    path: "",
+                    type: "",
+                    bundleId: "",
+					iconUrl: iconUrl,
+					actionText: actionText
                 )
             }
             
@@ -178,7 +223,9 @@ class ApplicationsInfoManager: ObservableObject {
                     isSelfServe: false,
                     path: app["path"] as? String ?? "",
                     type: "",
-                    bundleId: ""
+                    bundleId: "",
+					iconUrl: "",
+					actionText: ""
                 )
             }
             
@@ -190,3 +237,4 @@ class ApplicationsInfoManager: ObservableObject {
         }
     }
 }
+

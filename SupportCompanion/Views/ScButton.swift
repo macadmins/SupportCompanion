@@ -81,20 +81,22 @@ struct ScButton: View, Hashable {
             }
             .buttonStyle(PlainButtonStyle())
             .disabled(disabled ?? false || isLoading)
-
-            // Badge
-            if let badgeNumber = badgeNumber, badgeNumber > 0 {
-                Text("\(badgeNumber)")
-                    .font(.caption)
-                    .foregroundColor(.white)
-                    .padding(8)
-                    .background(Color.red)
-                    .clipShape(Circle())
-                    .offset(x: 10, y: -10)
-                    .opacity(showBadge ? 1.0 : 0.0) // Control visibility
-                    .scaleEffect(showBadge ? 1.0 : 0.5) // Add scaling effect
-                    .animation(.easeInOut(duration: 0.3), value: showBadge) // Smooth animation
-            }
+			.buttonStyle(PlainButtonStyle())
+			.disabled(disabled ?? false || isLoading)
+			.overlay(alignment: .topTrailing) {
+				if let badgeNumber = badgeNumber, badgeNumber > 0 {
+					Text("\(badgeNumber)")
+						.font(.caption.weight(.bold))
+						.foregroundColor(.white)
+						.padding(8)
+						.background(Circle().fill(Color(red: 1, green: 0, blue: 0)))
+						.clipShape(Circle())
+						.offset(x: 10, y: -10)
+						.opacity(showBadge ? 1 : 0)
+						.scaleEffect(showBadge ? 1 : 0.5)
+						.animation(.easeInOut(duration: 0.3), value: showBadge)
+				}
+			}
         }
         .scaleEffect(isHovered ? 1.1 : 1.0) // Apply hover effect to the whole stack
         .shadow(color: .black.opacity(isHovered ? 0.3 : 0), radius: isHovered ? 10 : 0, x: 0, y: 5)

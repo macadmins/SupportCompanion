@@ -11,6 +11,8 @@ import SwiftUI
 struct AppCard: View {
     let card: InstalledApp
     let version: String
+    
+    @State private var resolvedTitleImage: String = "app.gift.fill"
 
     init(card: InstalledApp) {
         self.card = card
@@ -31,18 +33,31 @@ struct AppCard: View {
             if FileManager.default.fileExists(atPath: iconPath) {
                 return iconPath
             } else {
-                return "app.gift.fill"
+                return resolvedTitleImage
             }
         } else if AppStateManager.shared.preferences.mode == Constants.modes.systemProfiler {
             let appInfoPlistPath = "\(card.path)/Contents/Info.plist"
-            return getIconPath(plistPath: appInfoPlistPath, appPath: card.path) ?? "app.gift.fill"
+            return getIconPath(plistPath: appInfoPlistPath, appPath: card.path) ?? resolvedTitleImage
         } else if AppStateManager.shared.preferences.mode == Constants.modes.intune {
             if let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: card.bundleId) {
                 let appInfoPlistPath = "\(appURL.path)/Contents/Info.plist"
-                return getIconPath(plistPath: appInfoPlistPath, appPath: appURL.path) ?? "app.gift.fill"
+                return getIconPath(plistPath: appInfoPlistPath, appPath: appURL.path) ?? resolvedTitleImage
+            } else {
+                return resolvedTitleImage
             }
+        } else if AppStateManager.shared.preferences.mode == Constants.modes.jamf {
+            // For JAMF, the actual download is handled asynchronously; fall back to current state value
+            return resolvedTitleImage
         }
-        return "app.gift.fill"
+        return resolvedTitleImage
+    }
+    
+    private var buttonText: String {
+        if AppStateManager.shared.preferences.mode == Constants.modes.jamf {
+            return card.actionText ?? ""
+        } else {
+            return Constants.General.manage
+        }
     }
 
     var body: some View {
@@ -52,12 +67,14 @@ struct AppCard: View {
             imageSize: (40, 40),
             content: {
                 VStack(alignment: .leading, spacing: 5) {
-                    HStack(alignment: .top) {
-                        Text("\(Constants.TabelHeaders.version):")
-                            .bold()
-                        Text(version)
+                    if !version.isEmpty {
+                        HStack(alignment: .top) {
+                            Text("\(Constants.TabelHeaders.version):")
+                                .bold()
+                            Text(version)
+                        }
+                        .font(.system(size: 14))
                     }
-                    .font(.system(size: 14))
                     
                     if !card.arch.isEmpty {
                         HStack {
@@ -76,23 +93,49 @@ struct AppCard: View {
                         }
                         .font(.system(size: 14))
                     }
-
-                    if card.isSelfServe {
-                        ScButton(Constants.General.manage, action: {
-                            Task {
-                                if !card.action.isEmpty {
-                                    _ = try await ExecutionService.executeShellCommand(card.action)
-                                }
-                            }
-                        })
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .padding(.top, 40)
-                    }
+					
+					HStack {
+						if card.isSelfServe {
+							ScButton(buttonText, action: {
+								if !card.action.isEmpty {
+									_ = try? await ExecutionService.executeShellCommand(card.action)
+								}
+							})
+							.padding(.top, 40)
+						}
+						if AppStateManager.shared.preferences.mode == Constants.modes.jamf {
+							if AppStateManager.shared.pendingJamfUpdates.contains(where: { $0.policyName == card.name }) {
+								let patchID = AppStateManager.shared.pendingJamfUpdates.first(where: { $0.policyName == card.name })!.patchId
+								ScButton("Update", action: {
+									_ = try? await ExecutionService.executeCommandPrivileged("/bin/launchctl", arguments: ["asuser", "504", "/usr/local/bin/jamf", "patch", "-id", String(patchID!), "-showSteps", "-selfServiceOnly", "-user", "tobal86"])
+									await AppStateManager.shared.pendingJamfUpdatesManager.getPendingJamfUpdates()
+								})
+								.padding(.top, 40)
+							}
+						}
+					}
+					.frame(maxWidth: .infinity, alignment: .center)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal)
             }
         )
+        .task {
+            await loadJamfIconIfNeeded()
+        }
+    }
+    
+    @MainActor
+    private func loadJamfIconIfNeeded() async {
+        guard AppStateManager.shared.preferences.mode == Constants.modes.jamf else { return }
+        guard let iconUrl = card.iconUrl, !iconUrl.isEmpty else { return }
+        // Attempt to download icon asynchronously
+        if let iconPath = try? await downloadAppIcon(forApp: card) {
+            resolvedTitleImage = iconPath
+        } else {
+            // Keep fallback if download fails
+            resolvedTitleImage = "app.gift.fill"
+        }
     }
 }
 
@@ -141,3 +184,4 @@ struct PlistService {
         return nil
     }
 }
+

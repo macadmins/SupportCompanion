@@ -31,10 +31,10 @@ struct CardGrid: View {
                     DeviceInformationCard(viewModel: viewModel)
                     
                     // Patching progress card
-                    if appState.preferences.mode == Constants.modes.munki || appState.preferences.mode == Constants.modes.intune {
+					if appState.preferences.mode == Constants.modes.munki || appState.preferences.mode == Constants.modes.intune || appState.preferences.mode == Constants.modes.jamf {
                         PatchingProgressCard(viewModel: viewModel)
                         PendingUpdatesCard(viewModel: viewModel)
-                    }
+					}
                     
                     // Actions Card
                     ActionsCard(
@@ -65,7 +65,7 @@ struct CardGrid: View {
                 .padding(.horizontal, 20)
                 .padding(.bottom, 20)
                 .onAppear{
-                    if appState.preferences.customCardPath.isEmpty && appState.preferences.customCardsMenuLabel.isEmpty {
+                    if !appState.preferences.customCardPath.isEmpty && appState.preferences.customCardsMenuLabel.isEmpty {
                         appState.refreshJsonCards()
                     }
                 }
@@ -87,6 +87,9 @@ struct CardGrid: View {
             if !appState.preferences.hiddenCards.contains(Constants.CardTitle.battery) {
                 appState.batteryInfoManager.startMonitoring()
             }
+			if !appState.preferences.hiddenCards.contains(Constants.Cards.jamfInfo) && appState.preferences.mode == Constants.modes.jamf {
+				appState.jamfInfoManager.refresh()
+			}
         }
         .onDisappear {
             if !appState.preferences.hiddenCards.contains(Constants.CardTitle.battery) {

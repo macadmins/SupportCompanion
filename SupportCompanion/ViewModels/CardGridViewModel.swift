@@ -36,6 +36,7 @@ class CardGridViewModel: ObservableObject {
                 ("OS Version:", appState.deviceInfoManager.deviceInfo?.osVersion ?? ""),
                 ("OS Build:", appState.deviceInfoManager.deviceInfo?.osBuild ?? ""),
                 ("IP Address:", appState.deviceInfoManager.deviceInfo?.ipAddress ?? ""),
+                ("WiFi SSID:", appState.deviceInfoManager.deviceInfo?.ssid ?? ""),
                 ("Last Reboot:", "\(appState.deviceInfoManager.deviceInfo?.lastRestartDays ?? 0) days"),
                 ("--------------------- Battery ---------------------", ""),
                 ("Health:", "\(healthPercentage)%"),
@@ -140,6 +141,9 @@ class CardGridViewModel: ObservableObject {
         case Constants.modes.intune:
             appName = "Company Portal"
             appURL = Constants.AppPaths.companyPortal
+		case Constants.modes.jamf:
+			appName = "Self Service"
+			appURL = Constants.AppPaths.selfService
         default:
             appName = "Unknown App"
             appURL = ""
@@ -159,7 +163,7 @@ class CardGridViewModel: ObservableObject {
         pasteboard.clearContents()
         let didWrite = pasteboard.setString(clipboardContent, forType: .string)
         
-        if didWrite, let retrievedContent = pasteboard.string(forType: .string) {
+        if didWrite, let _ = pasteboard.string(forType: .string) {
             DispatchQueue.main.async {
                 self.toastConfig = ToastConfig(
                     isShowing: true,
@@ -203,4 +207,44 @@ class CardGridViewModel: ObservableObject {
     func isButtonVisible(_ button: String) -> Bool {
         !appState.preferences.hiddenActions.contains(button)
     }
+	
+	@Published var isUpdating = false
+
+	func runJamfUpdate(forId: String) async {
+		await MainActor.run { self.isUpdating = true }
+		defer { Task { await MainActor.run { self.isUpdating = false } } }
+
+		// Kick off the update; ideally obtain a process handle or PID
+		do {
+			_ = try await ExecutionService.executeCommandPrivileged(
+				"/usr/local/bin/jamf",
+				arguments: ["patch", "-id", forId]
+			)
+		} catch {
+			// Log and bail
+			Logger.shared.logError("jamf patch launch failed: \(error)")
+			return
+		}
+
+		// Poll conservatively with delay; add timeout
+		let pattern = "jamf patch -id \(forId)"
+		let deadline = Date().addingTimeInterval(600) // 10 min timeout
+
+		while Date() < deadline && !Task.isCancelled {
+			do {
+				let result = try await ExecutionService.executeCommand(
+					"/usr/bin/pgrep",
+					with: ["-lf", pattern]
+				)
+				if result.isEmpty {
+					break // process no longer running
+				}
+			} catch {
+				// If pgrep errors, consider breaking or retrying a few times
+				Logger.shared.logError("pgrep error: \(error)")
+			}
+
+			try? await Task.sleep(for: .seconds(0.5))
+		}
+	}
 }

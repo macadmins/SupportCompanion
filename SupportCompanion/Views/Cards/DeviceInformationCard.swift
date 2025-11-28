@@ -165,11 +165,12 @@ struct LastRestartRow: View {
             HStack(spacing: 5) {
                 Text(formattedLastRestart)
                     .foregroundColor(color)
-                Image(systemName: "clock.fill")
-                    .foregroundColor(color)
+                //Image(systemName: "clock.fill")
+                //    .foregroundColor(color)
+				InfoHelp(text: Constants.ToolTips.deviceLastRebooted, icon: "clock.fill", color: color)
             }
             .font(.system(size: 14))
-            .help(Constants.ToolTips.deviceLastRebooted)
+            //.help(Constants.ToolTips.deviceLastRebooted)
         }
     }
 

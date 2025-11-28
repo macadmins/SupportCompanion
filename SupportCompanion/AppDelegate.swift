@@ -89,7 +89,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        if !AppDelegate.shouldExit { 
+        if !AppDelegate.shouldExit && appStateManager.preferences.trayMenuShowIcon { 
             setupTrayMenu()
         }
 
@@ -128,11 +128,27 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         appStateManager.startBackgroundTasks()
         appStateManager.refreshAll()
         checkAndHandleDemotionOnLaunch()
+		if !appStateManager.preferences.hiddenCards.contains(Constants.Cards.jamfInfo) && appStateManager.preferences.mode == Constants.modes.jamf {
+			//fetchAndStoreJamfId()
+			Task {
+				let id: String
+				do {
+					id = try await getJamfId()
+				} catch {
+					Logger.shared.logError("getJamfId failed: \(error.localizedDescription)")
+					id = "Unknown"
+				}
+				await MainActor.run {
+					AppStateManager.shared.jamfId = id
+					AppStateManager.shared.jamfInfoManager.refresh()
+				}
+			}
+		}
     }
 
     private func checkAndHandleDemotionOnLaunch() {
-    if let endTime = elevationManager.loadPersistedDemotionState(), Date() >= endTime {
-        elevationManager.demotePrivileges { success in
+        if let endTime = elevationManager.loadPersistedDemotionState(), Date() >= endTime {
+            elevationManager.demotePrivileges { success in
                 if success {
                     Logger.shared.logDebug("Privileges automatically demoted on app launch.")
                     // Clear persisted state
@@ -141,7 +157,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
                     Logger.shared.logError("Failed to demote privileges on app launch.")
                 }
             }
-    } else if let endTime = elevationManager.loadPersistedDemotionState() {
+        } else if let endTime = elevationManager.loadPersistedDemotionState() {
             let remainingTime = endTime.timeIntervalSinceNow
             elevationManager.startDemotionTimer(duration: remainingTime) { remainingTime in
                 DispatchQueue.main.async {
@@ -294,7 +310,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             NSApp.setActivationPolicy(.regular)
             let contentView = ContentView()
                 .environmentObject(AppStateManager.shared)
-                .environmentObject(Preferences())
+                .environmentObject(AppStateManager.shared.preferences)
                 .frame(minWidth: 1100, minHeight: 650)
 
             let hostingController = NSHostingController(rootView: contentView)
@@ -333,10 +349,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     }
     
     private func configureAppUpdateNotificationCommand(mode: String) {
-        if mode == "Munki" {
+		if mode == Constants.modes.munki {
             appStateManager.preferences.appUpdateNotificationCommand = "open \(Constants.AppPaths.MSCUpdates)"
-        } else {
+		} else if mode == Constants.modes.intune {
             appStateManager.preferences.appUpdateNotificationCommand = "open \(Constants.AppPaths.companyPortal)"
-        }
-    }
+		} else if mode == Constants.modes.jamf {
+			appStateManager.preferences.appUpdateNotificationCommand = "open \(Constants.AppPaths.selfService)"
+		}
+     }
 }
+
