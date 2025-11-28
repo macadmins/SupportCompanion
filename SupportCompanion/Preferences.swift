@@ -293,44 +293,45 @@ class Preferences: ObservableObject {
         let selfServiceExists = fileManager.fileExists(atPath: Constants.AppPaths.selfService)
         let mscExists = fileManager.fileExists(atPath: Constants.AppPaths.MSC)
         let mdmUrl = await getMDMUrl()
-				if mdmUrl != "Unknown" {
-						Logger.shared.logDebug("MDM URL detected: \(mdmUrl)")
 
-						// Try to parse the URL and inspect the host
-						if let url = URL(string: mdmUrl),
-							 let host = url.host?.lowercased() {
-
-								// Detect Intune via manage.microsoft.* host
-								let pattern = #"(^|\.)manage\.microsoft\.[a-z0-9-]{2,63}$"#
-								if let regex = try? NSRegularExpression(pattern: pattern, options: []) {
-										let range = NSRange(host.startIndex..<host.endIndex, in: host)
-										if regex.firstMatch(in: host, options: [], range: range) != nil {
-												Logger.shared.logDebug("MDM host '\(host)' is a manage.microsoft.* endpoint, setting MDM to Intune.")
-												mdm = "Intune"
-												return
-										}
-								}
-
-								// Detect Jamf via host substring
-								if host.contains("jamf") {
-										Logger.shared.logDebug("MDM host '\(host)' contains 'jamf', setting MDM to Jamf.")
-										mdm = "Jamf"
-										return
-								}
-
-						} else {
-								// Fallback: work directly on the raw URL string if parsing fails
-								let lower = mdmUrl.lowercased()
-
-								if lower.contains("i.manage.microsoft.com") {
-										Logger.shared.logDebug("MDM URL contains i.manage.microsoft.com, setting MDM to Intune.")
-										mdm = "Intune"
-								} else if lower.contains("jamf") {
-										Logger.shared.logDebug("MDM URL contains jamf, setting MDM to Jamf.")
-										mdm = "Jamf"
-								}
-						}
-				}
+	    if mdmUrl != "Unknown" {
+	        Logger.shared.logDebug("MDM URL detected: \(mdmUrl)")
+	
+	        // Try to parse the URL and inspect the host
+	        if let url = URL(string: mdmUrl),
+	           let host = url.host?.lowercased() {
+	
+	            // Detect Intune via manage.microsoft.* host
+	            let pattern = #"(^|\.)manage\.microsoft\.[a-z0-9-]{2,63}$"#
+	            if let regex = try? NSRegularExpression(pattern: pattern, options: []) {
+	                let range = NSRange(host.startIndex..<host.endIndex, in: host)
+	                if regex.firstMatch(in: host, options: [], range: range) != nil {
+	                    Logger.shared.logDebug("MDM host '\(host)' is a manage.microsoft.* endpoint, setting MDM to Intune.")
+	                    mdm = "Intune"
+	                    return
+	                }
+	            }
+	
+	            // Detect Jamf via host substring
+	            if host.contains("jamf") {
+	                Logger.shared.logDebug("MDM host '\(host)' contains 'jamf', setting MDM to Jamf.")
+	                mdm = "Jamf"
+	                return
+	            }
+	
+	        } else {
+	            // Fallback: work directly on the raw URL string if parsing fails
+	            let lower = mdmUrl.lowercased()
+	
+	            if lower.contains("i.manage.microsoft.com") {
+	                Logger.shared.logDebug("MDM URL contains i.manage.microsoft.com, setting MDM to Intune.")
+	                mdm = "Intune"
+	            } else if lower.contains("jamf") {
+	                Logger.shared.logDebug("MDM URL contains jamf, setting MDM to Jamf.")
+	                mdm = "Jamf"
+	            }
+	        }
+	    }
 
         if companyPortalExists && mscExists {
             Logger.shared.logDebug("Both Munki and Company Portal paths exist, defaulting to Munki mode.")
