@@ -182,6 +182,9 @@ class Preferences: ObservableObject {
 	@AppStorage("RefreshSelfService") var refreshSelfService: Bool = true
 	
 	@AppStorage("JamfLogPollHours") var jamfLogPollHours: Int = 36
+
+    // MARK: - Logging
+    @AppStorage("FileDebugLogging") var debugLogging: Bool = false
     
     var mdm: String = "Unknown"
         
@@ -191,7 +194,11 @@ class Preferences: ObservableObject {
 
         // Initialize published mirror values from current AppStorage
         self.customCardPathPublished = self.customCardPath
-        
+
+        // Apply initial file debug logging preference to Logger
+        Logger.shared.setFileDebugLogging(debugLogging)
+
+        // Keep window position mirror in sync when defaults change
         NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)
             .sink { [weak self] _ in
                 guard let self = self else { return }
@@ -201,7 +208,7 @@ class Preferences: ObservableObject {
             }
             .store(in: &cancellables)
         
-        // Observe changes to UserDefaults specifically for complex types
+        // Observe changes to UserDefaults specifically for complex types and logging flag
         cancellable = NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
@@ -215,6 +222,15 @@ class Preferences: ObservableObject {
                 if self.customCardPathPublished != latestPath {
                     self.customCardPathPublished = latestPath
                 }
+                
+				// Sync file debug logging flag from defaults and apply to Logger
+				if let anyVal = UserDefaults.standard.object(forKey: "FileDebugLogging") {
+					let latestDebug = (anyVal as? Bool) ?? (anyVal as? NSNumber)?.boolValue ?? false
+					if self.debugLogging != latestDebug {
+						self.debugLogging = latestDebug
+					}
+					Logger.shared.setFileDebugLogging(latestDebug)
+				}
 
                 self.loadHiddenCards()
                 self.loadLogFolders()
@@ -486,3 +502,4 @@ class Preferences: ObservableObject {
 extension NSNotification.Name {
     static let desktopInfoPositionChanged = NSNotification.Name("desktopInfoPositionChanged")
 }
+
