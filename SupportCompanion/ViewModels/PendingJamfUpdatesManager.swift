@@ -16,6 +16,9 @@ class PendingJamfUpdatesManager {
 	private var isInstallPercentageTaskRunning = false
 	private var parser = SSPlusParser()
 
+    // Track running patch installs across views/navigation
+    @Published private(set) var runningPatchIds: Set<Int> = []
+
 	init(appState: AppStateManager) {
 		self.appState = appState
 	}
@@ -142,7 +145,7 @@ class PendingJamfUpdatesManager {
 	func startUpdateCheckTimer() {
 		Logger.shared.logDebug("Starting app update check timer")
 
-		// Run the task immediately
+        // Run the task immediately
 		Task {
 			await getPendingJamfUpdates()
 		}
@@ -161,5 +164,33 @@ class PendingJamfUpdatesManager {
 		updateCheckTimer?.invalidate()
 		updateCheckTimer = nil
 	}
+
+    // MARK: - Running state and execution
+
+    func isRunning(patchId: Int) -> Bool {
+        runningPatchIds.contains(patchId)
+    }
+
+    func runPatch(patchId: Int, userId: String? = nil) async {
+        await MainActor.run {
+            self.runningPatchIds.insert(patchId)
+        }
+        defer {
+            Task { @MainActor in
+                self.runningPatchIds.remove(patchId)
+            }
+        }
+
+        // Build the command; keep your existing flags but avoid hard-coded uid/user if possible
+        var args: [String] = ["asuser", "504", "/usr/local/bin/jamf", "patch", "-id", String(patchId), "-showSteps", "-selfServiceOnly"]
+        if let userId = userId, !userId.isEmpty {
+            args += ["-user", userId]
+        }
+
+        _ = try? await ExecutionService.executeCommandPrivileged("/bin/launchctl", arguments: args)
+
+        // Refresh the pending list after completion
+        await getPendingJamfUpdates()
+    }
 }
 

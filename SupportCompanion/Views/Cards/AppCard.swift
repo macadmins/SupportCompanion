@@ -104,12 +104,13 @@ struct AppCard: View {
 							.padding(.top, 40)
 						}
 						if AppStateManager.shared.preferences.mode == Constants.modes.jamf {
-							if AppStateManager.shared.pendingJamfUpdates.contains(where: { $0.policyName == card.name }) {
-								let patchID = AppStateManager.shared.pendingJamfUpdates.first(where: { $0.policyName == card.name })!.patchId
-								ScButton("Update", action: {
-									_ = try? await ExecutionService.executeCommandPrivileged("/bin/launchctl", arguments: ["asuser", "504", "/usr/local/bin/jamf", "patch", "-id", String(patchID!), "-showSteps", "-selfServiceOnly", "-user", "tobal86"])
-									await AppStateManager.shared.pendingJamfUpdatesManager.getPendingJamfUpdates()
+							if let pending = AppStateManager.shared.pendingJamfUpdates.first(where: { $0.policyName == card.name }),
+							   let patchID = pending.patchId {
+                                let isRunning = AppStateManager.shared.pendingJamfUpdatesManager.isRunning(patchId: patchID)
+								ScButton(isRunning ? "Updating…" : "Update", action: {
+                                    await AppStateManager.shared.pendingJamfUpdatesManager.runPatch(patchId: patchID)
 								})
+                                .disabled(isRunning)
 								.padding(.top, 40)
 							}
 						}
