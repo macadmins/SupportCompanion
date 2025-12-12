@@ -44,6 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - User info will now use OpenDirectory to gather user information instead of `finger` command.
 - A delay has been added to `InfoHelp` when hovering over the info icon to prevent accidental triggering of the help popup.
 - App update names line limit has been increased to `2` lines to prevent truncation of long app names.
+- Add support for a custom Company Portal URL (e.g. GCC High / sovereign cloud endpoints) and harden the Intune MDM detection logic so it correctly identifies Intune across all manage.microsoft.* domains while avoiding obvious false positives. Thanks @Actu4l-Human.
 ### Fixed
 - File watcher would not correctly detect changes on custom JSON cards if the file was replaced instead of modified. This has been fixed by using a different method to monitor file changes.
 - The pending updates badge on `Software Updates` was transparent in the main app.
