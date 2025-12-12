@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.4.0] - 2025-11-17
+## [2.4.0] - 2025-12-12
 ### Added
 - WiFi SSID information is now included in the device information
 - New option to hide tray menu icon. This allows for using the desktop information window without displaying the tray menu icon. Example configuration:
@@ -30,6 +30,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ```xml
 <key>JamfLogPollHours</key>
 <integer>46</integer>
+```
+- Logging will now be done in a log file located at `~/Library/Logs/SupportCompanion/SupportCompanion.log` in addition to os log. This allows for easier troubleshooting of issues with the app. The log file will be rotated when it reaches 5 MB in size. Debug logging can be enabled by setting the `LogLevel` to `Debug` in the configuration. Example configuration:
+```xml<key>LogLevel</key>
+<string>Debug</string>
 ```
 ### Changed
 - MDM info now uses multiple MDM profile names to be able to correctly display the enrollment time.

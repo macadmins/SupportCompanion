@@ -184,7 +184,7 @@ class Preferences: ObservableObject {
 	@AppStorage("JamfLogPollHours") var jamfLogPollHours: Int = 36
 
     // MARK: - Logging
-    @AppStorage("FileDebugLogging") var debugLogging: Bool = false
+    @AppStorage("DebugLogging") var debugLogging: Bool = false
     
     var mdm: String = "Unknown"
         
