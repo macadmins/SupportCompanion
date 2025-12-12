@@ -30,6 +30,8 @@ enum ExecutionService {
         let process = Process()
         process.executableURL = programURL
         process.arguments = [command] + arguments
+		
+		Logger.shared.logDebug("Executing command \(command) with arguments \(arguments))")
 
         let outputPipe = Pipe()
         let errorPipe = Pipe()
