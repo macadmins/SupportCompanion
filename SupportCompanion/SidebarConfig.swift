@@ -46,7 +46,7 @@ func generateSidebarItems(preferences: Preferences, stateManager: WebViewStateMa
             )
         )
     }
-    
+
     if !preferences.actions.isEmpty && preferences.menuShowSelfService {
         items.append(
             SidebarItem(
@@ -72,7 +72,7 @@ func generateSidebarItems(preferences: Preferences, stateManager: WebViewStateMa
             )
         }
     }
-    
+
     if !preferences.customCardPath.isEmpty && !preferences.customCardsMenuLabel.isEmpty {
         if FileManager.default.fileExists(atPath: preferences.customCardPath) {
             items.append(
@@ -84,13 +84,13 @@ func generateSidebarItems(preferences: Preferences, stateManager: WebViewStateMa
             )
         }
     }
-    
+
     // Add "Company Portal" with persistent WebViewState
     if preferences.menuShowCompanyPortal {
         if preferences.mode == Constants.modes.intune || FileManager.default.fileExists(atPath: Constants.AppPaths.companyPortal) {
             let companyPortalState = stateManager.getWebViewState(
                 for: "CompanyPortal",
-                url: URL(string: "https://portal.manage.microsoft.com/")!
+                url: URL(string: preferences.companyPortalUrl)!
             )
             items.append(
                 SidebarItem(
@@ -116,6 +116,6 @@ func generateSidebarItems(preferences: Preferences, stateManager: WebViewStateMa
             )
         )
     }
-    
+
     return items
 }

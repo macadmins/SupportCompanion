@@ -16,59 +16,61 @@ class Preferences: ObservableObject {
         case generic = "LastGenericNotificationTime"
         case appUpdate = "LastAppUpdateNotificationTime"
     }
-    
+
     // MARK: - Notifications
-    
+
     @AppStorage(NotificationType.softwareUpdate.rawValue) var lastSoftwareUpdateNotificationTime: String = ""
-    
+
     @AppStorage(NotificationType.rebootReminder.rawValue) var lastRebootReminderNotificationTime: String = ""
-    
+
     @AppStorage(NotificationType.generic.rawValue) var lastGenericNotificationTime: String = ""
-    
+
     @AppStorage(NotificationType.appUpdate.rawValue) var lastAppUpdateNotificationTime: String = ""
-    
+
     @AppStorage("NotificationTitle") var notificationTitle: String = "Support Companion"
-    
+
     @AppStorage("NotificationInterval") var notificationInterval: Int = 4
-    
+
     @AppStorage("NotifcationImage") var notificationImage: String = ""
-    
+
     @AppStorage("SoftwareUpdateNotificationButtonText") var softwareUpdateNotificationButtonText: String = Constants.Notifications.SoftwareUpdate.UpdateNotificationButtonText
-    
+
     @AppStorage("SoftwareUpdateNotificationCommand") var softwareUpdateNotificationCommand: String = "open \(Constants.Panels.softwareUpdates)"
-    
+
     @AppStorage("SoftwareUpdateNotificationMessage") var softwareUpdateNotificationMessage: String = Constants.Notifications.SoftwareUpdate.UpdateNotificationMessage
-    
+
     @AppStorage("AppUpdateNotificationMessage") var appUpdateNotificationMessage: String = Constants.Notifications.AppUpdate.UpdateNotificationMessage
-    
+
     @AppStorage("AppUpdateNotificationButtonText") var appUpdateNotificationButtonText: String = Constants.Notifications.AppUpdate.UpdateNotificationButtonText
-    
+
     @AppStorage("AppUpdateNotificationCommand") var appUpdateNotificationCommand: String = ""
 
     @AppStorage("RebootReminderDays") var rebootReminderDays: Int = 0
-        
+
     // MARK: - branding
-    
+
     @AppStorage("BrandName") var brandName: String = "Support Companion"
-    
+
     @AppStorage("BrandLogo") var brandLogo: String = ""
-    
+
     @AppStorage("BrandLogoLight") var brandLogoLight: String = ""
-    
+
     @AppStorage("AccentColor") var accentColor: String?
-    
+
     // MARK: - Menu
-    
+
     @AppStorage("MenuShowIdentity") var menuShowIdentity: Bool = true
 
     @AppStorage("MenuShowApps") var menuShowApps: Bool = true
 
     @AppStorage("MenuShowSelfService") var menuShowSelfService: Bool = true
 
+    @AppStorage("CompanyPortalUrl") var companyPortalUrl: String = ""
+
     @AppStorage("MenuShowCompanyPortal") var menuShowCompanyPortal: Bool = true
-    
+
     @AppStorage("MenuShowKnowledgeBase") var menuShowKnowledgeBase: Bool = true
-    
+
     @AppStorage("KnowledgeBaseUrl") var knowledgeBaseUrl: String = ""
 
     @AppStorage("ShowLogoInTrayMenu") var showLogoInTrayMenu: Bool = true
@@ -78,9 +80,9 @@ class Preferences: ObservableObject {
     @AppStorage("MarkdownMenuLabel") var markdownMenuLabel: String = ""
 
     @AppStorage("MarkdownMenuIcon") var markdownMenuIcon: String = ""
-    
+
     @AppStorage("CustomCardsMenuLabel") var customCardsMenuLabel: String = ""
-    
+
     @AppStorage("CustomCardsMenuIcon") var customCardsMenuIcon: String = ""
 
     @AppStorage("TrayMenuBrandingIcon") var trayMenuBrandingIcon: String = ""
@@ -88,42 +90,42 @@ class Preferences: ObservableObject {
     @AppStorage("TrayMenuShowIcon") var trayMenuShowIcon: Bool = true
     
     // MARK: - Actions
-    
+
     @AppStorage("SupportPageUrl") var supportPageURL: String = ""
-    
+
     @AppStorage("ChangePasswordMode") var changePasswordMode: String = ""
-    
+
     @AppStorage("ChangePasswordUrl") var changePasswordUrl: String = ""
-    
+
     @AppStorage("Mode") var mode: String = ""
-    
+
     @Published var actions: [Action] = []
-    
+
     @Published var hiddenActions: [String] = UserDefaults.standard.array(forKey: "HiddenActions") as? [String] ?? []
-    
+
     @Published var logFolders: [String] = UserDefaults.standard.array(forKey: "LogFolders") as? [String] ?? []
 
     @Published var excludedLogFolders: [String] = UserDefaults.standard.array(forKey: "ExcludedLogFolders") as? [String] ?? []
 
     @AppStorage("RequirePrivilegedActionAuthentication") var requirePrivilegedActionAuthentication: Bool = true
-    
+
     // MARK: - Desktop Info
-    
+
     @AppStorage("DesktopInfoBackgroundOpacity") var desktopInfoBackgroundOpacity: Double = 0.001
-    
+
     @AppStorage("DesktopInfoBackgroundFrosted") var desktopInfoBackgroundFrosted: Bool = false
-    
+
     @AppStorage("DesktopInfoWindowPosition") var desktopInfoWindowPosition: String = "LowerRight"
     @Published var currentWindowPosition: String = "LowerRight"
-    
+
     @AppStorage("ShowDesktopInfo") var showDesktopInfo: Bool = false
-    
+
     @AppStorage("DesktopInfoFontSize") var desktopInfoFontSize: Int = 14
-    
+
     @AppStorage("DesktopInfoLevel") var desktopInfoLevel: Int = 4
-    
+
     @Published var desktopInfoHideItems: [String] = UserDefaults.standard.array(forKey: "DesktopInfoHideItems") as? [String] ?? []
-    
+
     // MARK: - Home
     
     @AppStorage("CustomCardPath") var customCardPath: String = "" {
@@ -147,18 +149,18 @@ class Preferences: ObservableObject {
     @Published var customCardPathPublished: String = ""
     
     @Published var hiddenCards: [String] = UserDefaults.standard.array(forKey: "HiddenCards") as? [String] ?? []
-    
+
     private var cancellable: AnyCancellable?
-    
+
     private var cancellables = Set<AnyCancellable>()
     // Watcher for ~/Library/Preferences to detect external defaults writes
     private var prefsDirSource: DispatchSourceFileSystemObject?
     private var prefsDirFD: Int32 = -1
     
     // MARK: - Support info
-    
+
     @AppStorage("SupportEmail") var supportEmail: String = ""
-    
+
     @AppStorage("SupportPhone") var supportPhone: String = ""
 
     // MARK: - Elevate privileges
@@ -187,7 +189,7 @@ class Preferences: ObservableObject {
     @AppStorage("DebugLogging") var debugLogging: Bool = false
     
     var mdm: String = "Unknown"
-        
+
     init() {
         ensureDefaultsInitialized()
         startWatchingCustomCardPath()
@@ -307,18 +309,46 @@ class Preferences: ObservableObject {
         let selfServiceExists = fileManager.fileExists(atPath: Constants.AppPaths.selfService)
         let mscExists = fileManager.fileExists(atPath: Constants.AppPaths.MSC)
         let mdmUrl = await getMDMUrl()
-        
-        if mdmUrl != "Unknown" {
-            Logger.shared.logDebug("MDM URL detected: \(mdmUrl)")
-            if mdmUrl.contains("i.manage.microsoft.com") {
-                Logger.shared.logDebug("MDM URL contains i.manage.microsoft.com, setting mdm to Intune.")
-                mdm = "Intune"
-            } else if mdmUrl.contains("jamf") {
-                Logger.shared.logDebug("MDM URL contains jamf, setting mdm to Jamf.")
-                mdm = "Jamf"
-            }
-        }
-        
+
+	    if mdmUrl != "Unknown" {
+	        Logger.shared.logDebug("MDM URL detected: \(mdmUrl)")
+	
+	        // Try to parse the URL and inspect the host
+	        if let url = URL(string: mdmUrl),
+	           let host = url.host?.lowercased() {
+	
+	            // Detect Intune via manage.microsoft.* host
+	            let pattern = #"(^|\.)manage\.microsoft\.[a-z0-9-]{2,63}$"#
+	            if let regex = try? NSRegularExpression(pattern: pattern, options: []) {
+	                let range = NSRange(host.startIndex..<host.endIndex, in: host)
+	                if regex.firstMatch(in: host, options: [], range: range) != nil {
+	                    Logger.shared.logDebug("MDM host '\(host)' is a manage.microsoft.* endpoint, setting MDM to Intune.")
+	                    mdm = "Intune"
+	                    return
+	                }
+	            }
+	
+	            // Detect Jamf via host substring
+	            if host.contains("jamf") {
+	                Logger.shared.logDebug("MDM host '\(host)' contains 'jamf', setting MDM to Jamf.")
+	                mdm = "Jamf"
+	                return
+	            }
+	
+	        } else {
+	            // Fallback: work directly on the raw URL string if parsing fails
+	            let lower = mdmUrl.lowercased()
+	
+	            if lower.contains("i.manage.microsoft.com") {
+	                Logger.shared.logDebug("MDM URL contains i.manage.microsoft.com, setting MDM to Intune.")
+	                mdm = "Intune"
+	            } else if lower.contains("jamf") {
+	                Logger.shared.logDebug("MDM URL contains jamf, setting MDM to Jamf.")
+	                mdm = "Jamf"
+	            }
+	        }
+	    }
+
         if companyPortalExists && mscExists {
             Logger.shared.logDebug("Both Munki and Company Portal paths exist, defaulting to Munki mode.")
             mode = Constants.modes.munki
@@ -355,20 +385,20 @@ class Preferences: ObservableObject {
         UserDefaults.standard.set(logFolders, forKey: "LogFolders")
         Logger.shared.logDebug("Log folders saved to UserDefaults: \(logFolders)")
     }
-    
+
     private func loadHiddenCards() {
         // Fetch hidden cards asynchronously to avoid modifying `@Published` directly during a view update
         DispatchQueue.main.async { [weak self] in
             self?.hiddenCards = UserDefaults.standard.array(forKey: "HiddenCards") as? [String] ?? []
         }
     }
-    
+
     private func loadLogFolders() {
         DispatchQueue.main.async { [weak self] in
             self?.logFolders = UserDefaults.standard.array(forKey: "LogFolders") as? [String] ?? []
         }
     }
-    
+
     private func loadHiddenActions() {
         DispatchQueue.main.async { [weak self] in
             self?.hiddenActions = UserDefaults.standard.array(forKey: "HiddenActions") as? [String] ?? []
@@ -381,13 +411,13 @@ class Preferences: ObservableObject {
         }
     }
 
-    
+
     private func loadDesktopInfoHideItems() {
         DispatchQueue.main.async { [weak self] in
             self?.desktopInfoHideItems = UserDefaults.standard.array(forKey: "DesktopInfoHideItems") as? [String] ?? []
         }
     }
-    
+
     private func loadActions() {
         DispatchQueue.main.async { [weak self] in
             let actions = UserDefaults.standard.array(forKey: "Actions") as? [[String: Any]] ?? []
@@ -405,7 +435,7 @@ class Preferences: ObservableObject {
             self?.actions = newActions
         }
     }
-    
+
     struct DefaultValues {
         static let values: [String: Any] = [
             "LastSoftwareUpdateNotificationTime": "",
@@ -453,7 +483,7 @@ class Preferences: ObservableObject {
             }
         }
     }
-    
+
 
     func resetUserDefaults() {
         let bundleIdentifier = "com.github.macadmins.SupportCompanion"
@@ -482,11 +512,11 @@ class Preferences: ObservableObject {
             // Execute the write command
             executeShellCommand(command: writeCommand)
         }
-        
+
         Task {
             await detectModeAndSetLogFolders()
         }
-        
+
         Logger.shared.logDebug("Defaults have been reset using defaults write.")
     }
 
