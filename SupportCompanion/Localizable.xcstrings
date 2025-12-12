@@ -4425,6 +4425,40 @@
         }
       }
     },
+    "This list shows applications installed by %@." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diese Liste zeigt die von %@ installierten Apps an."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cette liste affiche les applications installées par %@."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この一覧には、%@ がインストールしたアプリケーションが表示されます。"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Denne listen viser apper som er installert av %@."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Den här listan visar applikationer installerade av %@."
+          }
+        }
+      }
+    },
     "Title.SaveLogs" : {
       "comment" : "Title for save logs dialog",
       "extractionState" : "extracted_with_value",

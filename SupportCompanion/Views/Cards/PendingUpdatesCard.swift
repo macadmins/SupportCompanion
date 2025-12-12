@@ -86,7 +86,8 @@ struct PendingUpdatesCard: View {
                     HStack(spacing: 8) {
                         // Keep this leading text flexible
                         Text(update.name)
-                            .lineLimit(1)
+                            .lineLimit(2)
+							.minimumScaleFactor(0.8)
                             .truncationMode(.tail)
 
                         Spacer()

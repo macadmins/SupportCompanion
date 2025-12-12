@@ -21,17 +21,23 @@ func getLastCheckIn() async throws -> String {
     
     let lines = output.split(whereSeparator: \.isNewline).map(String.init)
     guard let lastLine = lines.reversed().first(where: { !$0.trimmingCharacters(in: .whitespaces).isEmpty }) else {
+		Logger.shared.logDebug("No log entry found for Jamf check-ins")
         return "Unknown"
     }
     
     let parts = lastLine.split(separator: " ").map(String.init)
-    guard parts.count >= 2 else { return "Unknown" }
+	guard parts.count >= 2 else {
+		Logger.shared.logDebug("Unexpected log line format for Jamf check-ins: \(lastLine)")
+		return "Unknown"
+	}
     
     let tsCandidate = parts[0] + " " + parts[1]
     guard let tsDate = parseUnifiedLogTimestamp(tsCandidate) else {
+		Logger.shared.logDebug("Failed to parse timestamp from log line for Jamf check-ins: \(lastLine)")
         return "Unknown"
     }
     
+	Logger.shared.logDebug("Last Jamf check-in was on: \(tsDate)")
     return timeAgoString(since: tsDate)
 }
 
@@ -49,17 +55,23 @@ func getLastInventoryUpdate() async throws -> String {
     
     let lines = output.split(whereSeparator: \.isNewline).map(String.init)
     guard let lastLine = lines.reversed().first(where: { !$0.trimmingCharacters(in: .whitespaces).isEmpty }) else {
+		Logger.shared.logDebug("No log entry found for Jamf inventory update.")
         return "Unknown"
     }
     
     let parts = lastLine.split(separator: " ").map(String.init)
-    guard parts.count >= 2 else { return "Unknown" }
+	guard parts.count >= 2 else {
+		Logger.shared.logDebug("Unexpected output format from Jamf log: \(lastLine)")
+		return "Unknown"
+	}
     
     let tsCandidate = parts[0] + " " + parts[1]
     guard let tsDate = parseUnifiedLogTimestamp(tsCandidate) else {
+		Logger.shared.logDebug("Failed to parse timestamp from Jamf log entry: \(lastLine)")
         return "Unknown"
     }
     
+	Logger.shared.logDebug("Last Jamf inventory update was on \(tsDate)")
     return timeAgoString(since: tsDate)
 }
 
@@ -78,7 +90,7 @@ func getJamfUrl() async throws -> String {
 }
 
 func getJamfId() async throws -> String {
-    let args = ["recon"]
+    let args = ["recon", "-concurrent"]
     let output = try await ExecutionService.executeCommandPrivileged("/usr/local/bin/jamf", arguments: args)
     
     if let rangeStart = output.range(of: "<computer_id>"),
