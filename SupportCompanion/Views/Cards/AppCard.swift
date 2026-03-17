@@ -98,7 +98,11 @@ struct AppCard: View {
 						if card.isSelfServe {
 							ScButton(buttonText, action: {
 								if !card.action.isEmpty {
-									_ = try? await ExecutionService.executeShellCommand(card.action)
+									do {
+										_ = try await ExecutionService.executeShellCommand(card.action)
+									} catch {
+										Logger.shared.logError("App card action '\(card.action)' failed: \(error)")
+									}
 								}
 							})
 							.padding(.top, 40)

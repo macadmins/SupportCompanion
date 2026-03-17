@@ -231,7 +231,7 @@ func evaluateUpdate(policy: Policy, patch: Patch, now: Date = .init()) -> (neede
             let pv = normalizeVersionSemantic(policy.policyVersion ?? "")
             let pvRaw = policy.policyVersion ?? ""
             let patchNorm = normalizeVersionSemantic(patch.version)
-            print("\(patch.name) is available now, but the installed version (\(pvRaw)) [normalized: \(pv)] doesn't match \(patch.version) [normalized: \(patchNorm)].")
+            Logger.shared.logDebug("\(patch.name) is available now, but the installed version (\(pvRaw)) [normalized: \(pv)] doesn't match \(patch.version) [normalized: \(patchNorm)].")
             return (true, due(patch.deadlineDate))   // known mismatch
         default:
             return (false, .upToDate)               // match or nil → trust the date

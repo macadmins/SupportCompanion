@@ -24,9 +24,31 @@ class JamfInfoManager: ObservableObject {
 
     func updateJamfInfo() {
         Task {
-            let lastCheckIn = (try? await getLastCheckIn()) ?? "Unknown"
-            let lastInventory = (try? await getLastInventoryUpdate()) ?? "Unknown"
-            let url = (try? await getJamfUrl()) ?? "Unknown"
+            let lastCheckIn: String
+            let lastInventory: String
+            let url: String
+
+            do {
+                lastCheckIn = try await getLastCheckIn()
+            } catch {
+                Logger.shared.logError("Failed to fetch last check-in: \(error.localizedDescription)")
+                lastCheckIn = "Unknown"
+            }
+            
+            do {
+                lastInventory = try await getLastInventoryUpdate()
+            } catch {
+                Logger.shared.logError("Failed to fetch last inventory update: \(error.localizedDescription)")
+                lastInventory = "Unknown"
+            }
+
+            do {
+                url = try await getJamfUrl()
+            } catch {
+                Logger.shared.logError("Failed to fetch Jamf URL: \(error.localizedDescription)")
+                url = "Unknown"
+            }
+
             await MainActor.run {
                 self.jamfInfo = JamfInfo(
                     lastCheckIn: lastCheckIn,
@@ -43,9 +65,30 @@ class JamfInfoManager: ObservableObject {
         Logger.shared.logDebug("Starting jamf info monitoring")
         monitorTask = Task {
             while !Task.isCancelled {
-                let lastCheckIn = (try? await getLastCheckIn()) ?? "Unknown"
-                let lastInventory = (try? await getLastInventoryUpdate()) ?? "Unknown"
-                let url = (try? await getJamfUrl()) ?? "Unknown"
+                let lastCheckIn: String
+                let lastInventory: String
+                let url: String
+
+                do {
+                    lastCheckIn = try await getLastCheckIn()
+                } catch {
+                    Logger.shared.logError("Failed to fetch last check-in: \(error.localizedDescription)")
+                    lastCheckIn = "Unknown"
+                }
+
+                do {
+                    lastInventory = try await getLastInventoryUpdate()
+                } catch {
+                    Logger.shared.logError("Failed to fetch last inventory update: \(error.localizedDescription)")
+                    lastInventory = "Unknown"
+                }
+
+                do {
+                    url = try await getJamfUrl()
+                } catch {
+                    Logger.shared.logError("Failed to fetch Jamf URL: \(error.localizedDescription)")
+                    url = "Unknown"
+                }
 
                 await MainActor.run {
                     self.jamfInfo = JamfInfo (

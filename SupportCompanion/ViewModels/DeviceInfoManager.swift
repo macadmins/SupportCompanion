@@ -9,8 +9,7 @@ import Foundation
 import Combine
 
 class DeviceInfoManager: ObservableObject {
-    //private var timer: AnyCancellable?
-    private var timer: Timer?
+    private var monitorTask: Task<Void, Never>?
     
     static let shared = DeviceInfoManager(
         deviceInfo: DeviceInfo(
@@ -37,16 +36,21 @@ class DeviceInfoManager: ObservableObject {
     
     func startMonitoring() {
         Logger.shared.logDebug("Starting device info monitoring")
-        timer?.invalidate()
+        stopMonitoring()
         refresh()
-        timer = Timer.scheduledTimer(withTimeInterval: 300, repeats: true) { _ in
-            self.refresh()
+        monitorTask = Task {
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(300))
+                guard !Task.isCancelled else { break }
+                refresh()
+            }
         }
     }
-    
+
     func stopMonitoring() {
         Logger.shared.logDebug("Stopping device info monitoring")
-        timer?.invalidate()
+        monitorTask?.cancel()
+        monitorTask = nil
     }
     
     func refresh() {
@@ -70,7 +74,7 @@ class DeviceInfoManager: ObservableObject {
             guard let lastRebootDays = self.deviceInfo?.lastRestartDays else {
                 return
             }
-            if lastRebootDays >= AppStateManager.shared.preferences.rebootReminderDays && AppStateManager.shared.preferences.rebootReminderDays > 0 {
+            if lastRebootDays >= AppStateManager.shared.preferences.notifications.rebootReminderDays && AppStateManager.shared.preferences.notifications.rebootReminderDays > 0 {
                 let dayWord = lastRebootDays == 1 ? Constants.General.day : Constants.General.days
                 let message = String(format: Constants.Notifications.Reboot.RebootMessage, lastRebootDays, dayWord.lowercased())
 

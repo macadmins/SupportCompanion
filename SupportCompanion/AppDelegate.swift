@@ -110,7 +110,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             self?.showWindow()
         }
         
-        if appStateManager.preferences.showDesktopInfo {            
+        if appStateManager.preferences.desktopInfo.showDesktopInfo {            
             // Initialize transparent window
             transparentWindowController = TransparentWindowController(appState: appStateManager)
             transparentWindowController?.showWindow(nil)
@@ -350,11 +350,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     
     private func configureAppUpdateNotificationCommand(mode: String) {
 		if mode == Constants.modes.munki {
-            appStateManager.preferences.appUpdateNotificationCommand = "open \(Constants.AppPaths.MSCUpdates)"
+            appStateManager.preferences.notifications.appUpdateNotificationCommand = "open \(Constants.AppPaths.MSCUpdates)"
 		} else if mode == Constants.modes.intune {
-            appStateManager.preferences.appUpdateNotificationCommand = "open \(Constants.AppPaths.companyPortal)"
+            appStateManager.preferences.notifications.appUpdateNotificationCommand = "open \(Constants.AppPaths.companyPortal)"
 		} else if mode == Constants.modes.jamf {
-			appStateManager.preferences.appUpdateNotificationCommand = "open \(Constants.AppPaths.selfService)"
+			appStateManager.preferences.notifications.appUpdateNotificationCommand = "open \(Constants.AppPaths.selfService)"
 		}
      }
 }

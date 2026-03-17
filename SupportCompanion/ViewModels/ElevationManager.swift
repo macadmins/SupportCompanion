@@ -3,7 +3,7 @@ import Combine
 import SwiftUI
 
 class ElevationManager {
-    @State private var elevationReason = ""
+    private var elevationReason = ""
     private var appState: AppStateManager
     private var cancellable: AnyCancellable?
     private var timerPublisher: AnyPublisher<Date, Never>?
@@ -126,15 +126,15 @@ class ElevationManager {
                 return
             }
             Logger.shared.logDebug("Authentication successful. Privileges elevated.")
-            if self.appState.preferences.requireReasonForElevation {
-                if !self.appState.preferences.elevationWebhookURL.isEmpty {
+            if self.appState.preferences.elevation.requireReasonForElevation {
+                if !self.appState.preferences.elevation.elevationWebhookURL.isEmpty {
                     sendReasonToWebhook(reason: reason)
                 } else {
                     saveReasonToDisk(reason: reason)
                 }
             }
             // Start the timer
-            let duration = Double(self.appState.preferences.maxElevationTime * 60)
+            let duration = Double(self.appState.preferences.elevation.maxElevationTime * 60)
             self.appState.startDemotionTimer(duration: duration)
         }
     }

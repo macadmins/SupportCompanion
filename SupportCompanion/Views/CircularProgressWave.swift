@@ -62,9 +62,10 @@ struct CircularProgressWithWave: View {
     var size: CGFloat
     var waveHeight: CGFloat
     var gradient: Gradient = Gradient(colors: [.blue, .purple])
-    @Environment(\.colorScheme) var colorScheme // Access system light/dark mode
+    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
     @EnvironmentObject var appState: AppStateManager
-    @State private var isAnimating = false // Track animation state
+    @State private var isAnimating = false
 
     var body: some View {
         ZStack {
@@ -108,7 +109,7 @@ struct CircularProgressWithWave: View {
     }
 
     private func startAnimation() {
-        guard !isAnimating else { return } // Prevent duplicate animations
+        guard !isAnimating, !reduceMotion else { return }
         isAnimating = true
         withAnimation(Animation.linear(duration: 4).repeatForever(autoreverses: false)) {
             phase = 1

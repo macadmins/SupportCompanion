@@ -43,8 +43,8 @@ struct ContentView: View {
                 }
 
                 // Title Section
-                if !appState.preferences.brandName.isEmpty {
-                    Text(appState.preferences.brandName)
+                if !appState.preferences.branding.brandName.isEmpty {
+                    Text(appState.preferences.branding.brandName)
                         .font(.title)
                         .multilineTextAlignment(.center)
                         .padding(.top, 20) // Bring the title closer to the logo
@@ -148,8 +148,8 @@ struct ContentView: View {
     }
     
     private func loadLogoForCurrentColorScheme() {
-        let preferredLight = appState.preferences.brandLogoLight
-        let darkLogo = appState.preferences.brandLogo
+        let preferredLight = appState.preferences.branding.brandLogoLight
+        let darkLogo = appState.preferences.branding.brandLogo
         let lightLogo = preferredLight.isEmpty ? darkLogo : preferredLight
         let base64Logo = (colorScheme == .dark) ? darkLogo : lightLogo
 
@@ -284,8 +284,8 @@ private struct SidebarListView: View {
                 onIncomingURL(url)
             }
         }
-		.onChange(of: AppStateManager.shared.preferences.brandLogo) { _, _ in onBrandLogoChange() }
-		.onChange(of: AppStateManager.shared.preferences.brandLogoLight) { _, _ in onBrandLogoLightChange() }
+		.onChange(of: AppStateManager.shared.preferences.branding.brandLogo) { _, _ in onBrandLogoChange() }
+		.onChange(of: AppStateManager.shared.preferences.branding.brandLogoLight) { _, _ in onBrandLogoLightChange() }
     }
 
     @Environment(\.colorScheme) private var colorScheme
@@ -293,7 +293,7 @@ private struct SidebarListView: View {
 
 private extension ContentView {
     var accentNSColor: NSColor {
-        NSColor(hex: appState.preferences.accentColor ?? "") ?? NSColor.controlAccentColor
+        NSColor(hex: appState.preferences.branding.accentColor ?? "") ?? NSColor.controlAccentColor
     }
 }
 

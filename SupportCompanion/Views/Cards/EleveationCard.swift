@@ -34,7 +34,7 @@ struct ElevationCard: View {
                     
                     HStack {
                         ScButton(Constants.General.elevate, disabled: appState.userInfoManager.userInfo.isAdmin || appState.isDemotionActive) {
-                            if appState.preferences.requireReasonForElevation {
+                            if appState.preferences.elevation.requireReasonForElevation {
                                 showReasonInput = true // Show reason input modal
                             } else {
                                 elevationManager.handleElevation(reason: "")

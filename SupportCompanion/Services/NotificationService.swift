@@ -40,26 +40,26 @@ class NotificationService {
         command: String? = nil,
         notificationType: NotificationType
     ) {
-        guard appState.preferences.notificationInterval > 0 else {
+        guard appState.preferences.notifications.notificationInterval > 0 else {
             Logger.shared.logDebug("Notification interval set to 0, skipping notification")
             return
         }
         
-        let imagePath = appState.preferences.notificationImage.isEmpty ? nil : appState.preferences.notificationImage
+        let imagePath = appState.preferences.notifications.notificationImage.isEmpty ? nil : appState.preferences.notifications.notificationImage
 
         if notificationType != .generic {
             if let lastDate = AppStorageHelper.shared.getLastNotificationDate(for: notificationType),
-            Date().timeIntervalSince(lastDate) < TimeInterval(appState.preferences.notificationInterval * 3600) {
+            Date().timeIntervalSince(lastDate) < TimeInterval(appState.preferences.notifications.notificationInterval * 3600) {
                 Logger.shared.logDebug("Notification interval for \(notificationType) not reached, skipping notification")
                 return
             }
         }
 
         let content = UNMutableNotificationContent()
-        content.title = appState.preferences.notificationTitle
+        content.title = appState.preferences.notifications.notificationTitle
         content.body = message
         content.sound = .default
-        content.userInfo = ["Command": command]
+        content.userInfo = ["Command": command!]
         content.categoryIdentifier = "ACTIONABLE"
         
         if let imagePath = imagePath, let tempURL = prepareImageForNotification(imagePath: imagePath) {
@@ -197,13 +197,13 @@ class AppStorageHelper {
         let formattedDate = ISO8601DateFormatter().string(from: date)
         switch type {
         case .softwareUpdate:
-            appState.preferences.lastSoftwareUpdateNotificationTime = formattedDate
+            appState.preferences.notifications.lastSoftwareUpdateNotificationTime = formattedDate
         case .rebootReminder:
-            appState.preferences.lastRebootReminderNotificationTime = formattedDate
+            appState.preferences.notifications.lastRebootReminderNotificationTime = formattedDate
         case .generic:
-            appState.preferences.lastGenericNotificationTime = formattedDate
+            appState.preferences.notifications.lastGenericNotificationTime = formattedDate
         case .appUpdate:
-            appState.preferences.lastAppUpdateNotificationTime = formattedDate
+            appState.preferences.notifications.lastAppUpdateNotificationTime = formattedDate
         }
     }
 
@@ -211,13 +211,13 @@ class AppStorageHelper {
         let dateString: String
         switch type {
         case .softwareUpdate:
-            dateString = appState.preferences.lastSoftwareUpdateNotificationTime
+            dateString = appState.preferences.notifications.lastSoftwareUpdateNotificationTime
         case .rebootReminder:
-            dateString = appState.preferences.lastRebootReminderNotificationTime
+            dateString = appState.preferences.notifications.lastRebootReminderNotificationTime
         case .generic:
-            dateString = appState.preferences.lastGenericNotificationTime
+            dateString = appState.preferences.notifications.lastGenericNotificationTime
         case .appUpdate:
-            dateString = appState.preferences.lastAppUpdateNotificationTime
+            dateString = appState.preferences.notifications.lastAppUpdateNotificationTime
         }
         guard !dateString.isEmpty else { return nil }
         return ISO8601DateFormatter().date(from: dateString)

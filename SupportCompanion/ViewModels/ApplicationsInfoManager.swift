@@ -7,9 +7,8 @@
 
 import Foundation
 
-class ApplicationsInfoManager: ObservableObject {
+final class ApplicationsInfoManager: ObservableObject {
     private var monitorTask: Task<Void, Never>?
-    private var updateTimer: Timer?
     private let munkiApps = MunkiApps()
     private let intuneApps = IntuneApps()
     private let profilerApps = SystemProfilerApplications()
@@ -33,29 +32,21 @@ class ApplicationsInfoManager: ObservableObject {
         self.appState = appState
     }
 
-    /// Starts the timer to fetch installed applications periodically
+    /// Starts periodic fetching of installed applications
     func startMonitoring(interval: TimeInterval = 60.0) {
-        // Stop any ongoing monitoring tasks or timers
         stopMonitoring()
-        
-        // Start a task to fetch immediately based on the mode
         monitorTask = Task {
             await fetchAppsBasedOnMode()
-        }
-        
-        // Create a timer to periodically fetch applications
-        updateTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
-            Task { [weak self] in
-                guard let self = self else { return }
-                await self.fetchAppsBasedOnMode()
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(interval))
+                guard !Task.isCancelled else { break }
+                await fetchAppsBasedOnMode()
             }
         }
     }
 
-    /// Stops the timer and cancels any ongoing tasks
+    /// Cancels any ongoing monitoring task
     func stopMonitoring() {
-        updateTimer?.invalidate()
-        updateTimer = nil
         monitorTask?.cancel()
         monitorTask = nil
     }
@@ -125,40 +116,38 @@ class ApplicationsInfoManager: ObservableObject {
     }
     
     func getInstalledIntuneApps() async {
-        do {
-            let apps = await intuneApps.getInstalledAppsListFromLog()
-            let installedApps = apps.compactMap { app -> InstalledApp? in
-                guard
-                    let info = app["Info"] as? [String: Any],
-                    let name = info["AppName"] as? String
-                else {
-                    return nil
-                }
+        let apps = await intuneApps.getInstalledAppsListFromLog()
+        let installedApps = apps.compactMap { app -> InstalledApp? in
+            guard
+                let info = app["Info"] as? [String: Any],
+                let name = info["AppName"] as? String
+            else {
+                return nil
+            }
 
-                let version = info["Version"] as? String ?? ""
-                let type = info["AppType"] as? String ?? ""
-                let bundleId = info["BundleID"] as? String ?? ""
-                
-                return InstalledApp(
-                    id: UUID(),
-                    name: name,
-                    version: version,
-                    action: "",
-                    arch: "",
-                    isSelfServe: false,
-                    path: "",
-                    type: type,
-                    bundleId: bundleId,
-					iconUrl: "",
-					actionText: ""
-                )
-            }
+            let version = info["Version"] as? String ?? ""
+            let type = info["AppType"] as? String ?? ""
+            let bundleId = info["BundleID"] as? String ?? ""
             
-            let sortedApps = installedApps.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
-            
-            DispatchQueue.main.async {
-                self.appState.installedApplications = sortedApps
-            }
+            return InstalledApp(
+                id: UUID(),
+                name: name,
+                version: version,
+                action: "",
+                arch: "",
+                isSelfServe: false,
+                path: "",
+                type: type,
+                bundleId: bundleId,
+                iconUrl: "",
+                actionText: ""
+            )
+        }
+        
+        let sortedApps = installedApps.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+        
+        DispatchQueue.main.async {
+            self.appState.installedApplications = sortedApps
         }
     }
 	
@@ -168,7 +157,7 @@ class ApplicationsInfoManager: ObservableObject {
             let installedApps = apps.compactMap { (key: AnyHashable, value: Any) -> InstalledApp? in
                 guard let dict = value as? [String: Any] else { return nil }
                 guard let name = dict["name"] as? String,
-                      let version = dict["version"] as? String else {
+                    let version = dict["version"] as? String else {
                     return nil
                 }
                 let iconUrl = dict["iconUrl"] as? String ?? ""

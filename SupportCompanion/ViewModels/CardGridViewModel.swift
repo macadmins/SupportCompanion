@@ -6,8 +6,8 @@ class CardGridViewModel: ObservableObject {
     @Published var toastConfig: ToastConfig?
     private let appState: AppStateManager
     private let munkiApps = MunkiApps()
-    var installPercentageTimer: Timer?
-    var pendingAppsTimer: Timer?
+    private var installPercentageTimer: Timer?
+    private var pendingAppsTimer: Timer?
     private var fetchTask: Task<Void, Never>?
     private var isTaskRunning = false
     private var isPendingAppsTaskRunning = false
@@ -50,16 +50,15 @@ class CardGridViewModel: ObservableObject {
         }
     
     func createRestartIntuneAgentButton(fontSize: CGFloat? = nil) -> ScButton {
-        ScButton(Constants.Actions.restartIntuneAgent, fontSize: fontSize) {
-            ActionHelpers.restartIntuneAgent { result in
+        ScButton(Constants.Actions.restartIntuneAgent, fontSize: fontSize) { [weak self] in
+            ActionHelpers.restartIntuneAgent { [weak self] result in
                 ActionHelpers.handleResult(
                     operationName: "Restart Intune Agent",
                     result: result,
                     successMessage: "Intune agent was restarted successfully.",
-                    //errorMessage: "Failed to restart Intune agent",
-                    updateToast: { toast in
+                    updateToast: { [weak self] toast in
                         DispatchQueue.main.async {
-                            self.toastConfig = toast
+                            self?.toastConfig = toast
                         }
                     }
                 )
@@ -68,15 +67,16 @@ class CardGridViewModel: ObservableObject {
     }
     
     func createGatherLogsButton(fontSize: CGFloat? = nil) -> ScButton {
-        ScButton(Constants.Actions.gatherLogs, fontSize: fontSize) {
-            ActionHelpers.gatherLogs(preferences: self.appState.preferences) { result in
+        ScButton(Constants.Actions.gatherLogs, fontSize: fontSize) { [weak self] in
+            guard let self else { return }
+            ActionHelpers.gatherLogs(preferences: self.appState.preferences) { [weak self] result in
                 ActionHelpers.handleResult(
                     operationName: Constants.Actions.gatherLogs,
                     result: result,
                     successMessage: Constants.ToastMessages.SuccessMessages.gatherLogsSuccess,
-                    updateToast: { toast in
+                    updateToast: { [weak self] toast in
                         DispatchQueue.main.async {
-                            self.toastConfig = toast
+                            self?.toastConfig = toast
                         }
                     }
                 )
@@ -104,15 +104,16 @@ class CardGridViewModel: ObservableObject {
     }
     
     func createChangePasswordButton(fontSize: CGFloat? = nil) -> ScButton {
-        ScButton(Constants.Actions.changePassword, fontSize: fontSize) {
-            await ActionHelpers.openChangePassword(preferences: self.appState.preferences) { result in
+        ScButton(Constants.Actions.changePassword, fontSize: fontSize) { [weak self] in
+            guard let self else { return }
+            await ActionHelpers.openChangePassword(preferences: self.appState.preferences) { [weak self] result in
                 ActionHelpers.handleResult(
                     operationName: Constants.Actions.changePassword,
                     result: result,
                     successMessage: "",
-                    updateToast: { toast in
+                    updateToast: { [weak self] toast in
                         DispatchQueue.main.async {
-                            self.toastConfig = toast
+                            self?.toastConfig = toast
                         }
                     }
                 )
@@ -164,18 +165,17 @@ class CardGridViewModel: ObservableObject {
         let didWrite = pasteboard.setString(clipboardContent, forType: .string)
         
         if didWrite, let _ = pasteboard.string(forType: .string) {
-            DispatchQueue.main.async {
-                self.toastConfig = ToastConfig(
+            DispatchQueue.main.async { [weak self] in
+                self?.toastConfig = ToastConfig(
                     isShowing: true,
                     type: .complete(.green),
                     title: "Success!",
                     subTitle: "Device info copied to clipboard."
                 )
             }
-        }
-        else {
-            DispatchQueue.main.async {
-                self.toastConfig = ToastConfig(
+        } else {
+            DispatchQueue.main.async { [weak self] in
+                self?.toastConfig = ToastConfig(
                     isShowing: true,
                     type: .error(.red),
                     title: "Error!",
@@ -189,6 +189,8 @@ class CardGridViewModel: ObservableObject {
         Task {
             do {
                 _ = try await ExecutionService.executeCommand("open", with: [Constants.Panels.storage])
+            } catch {
+                Logger.shared.logError("Failed to open storage panel: \(error)")
             }
         }
     }
@@ -198,7 +200,14 @@ class CardGridViewModel: ObservableObject {
     }
     
     // MARK: - Preferences Management
-    
+
+    /// True when a management-mode MDM (Munki, Intune, or Jamf) is configured.
+    var hasManagementMode: Bool {
+        appState.preferences.mode == Constants.modes.munki ||
+        appState.preferences.mode == Constants.modes.intune ||
+        appState.preferences.mode == Constants.modes.jamf
+    }
+
     func isCardVisible(_ card: String) -> Bool {
         !appState.preferences.hiddenCards.contains(card)
     }

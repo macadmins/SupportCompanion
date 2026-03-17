@@ -34,6 +34,20 @@ extension Double {
         let divisor = pow(10.0, Double(places))
         return (self * divisor).rounded() / divisor
     }
+
+    /// Color for a storage usage percentage (0–100).
+    func storageColor(colorScheme: ColorScheme) -> Color {
+        if self < 50 { return .ScGreen }
+        if self < 80 { return colorScheme == .light ? .orangeLight : .orange }
+        return colorScheme == .light ? .redLight : .red
+    }
+
+    /// Color for a battery health percentage (0–100).
+    func batteryHealthColor(colorScheme: ColorScheme) -> Color {
+        if self <= 30 { return colorScheme == .light ? .redLight : .red }
+        if self < 80 { return colorScheme == .light ? .orangeLight : .orange }
+        return .ScGreen
+    }
 }
 
 extension View {
@@ -175,7 +189,7 @@ extension Theme {
                     .alternatingRows(
                         Color.primary.opacity(0.1),
                         Color.clear, 
-                        header: (Color(NSColor(hex: AppStateManager.shared.preferences.accentColor ?? "") ?? NSColor.controlAccentColor))
+                        header: (Color(NSColor(hex: AppStateManager.shared.preferences.branding.accentColor ?? "") ?? NSColor.controlAccentColor))
                     )
                 )
             }
