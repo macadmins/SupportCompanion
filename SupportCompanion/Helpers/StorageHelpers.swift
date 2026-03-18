@@ -80,17 +80,9 @@ class StorageMonitor {
                 try? await Task.sleep(nanoseconds: UInt64(interval * 1_000_000_000))
             }
         }
-        /*timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { _ in
-            let usagePercentage = getStorageUsagePercentage()
-            DispatchQueue.main.async {
-                self.updateHandler?(usagePercentage)
-            }
-        }*/
     }
 
     func stopMonitoring() {
-        //timer?.invalidate()
-        //timer = nil
         monitorTask?.cancel()
         monitorTask = nil
     }

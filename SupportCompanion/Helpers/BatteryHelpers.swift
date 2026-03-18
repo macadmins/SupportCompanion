@@ -31,14 +31,6 @@ func getBatteryHealthPercentage() -> Double? {
     return nil
 }
 
-/*func getBatteryTemperature() -> Double? {
-    if let temperature = getBatteryProperty(forKey: "Temperature") as? Int {
-        // Convert temperature from deciKelvins to Celsius
-        return Double(temperature) / 10.0 - 273.15
-    }
-    return nil
-}*/
-
 func getBatteryTemperature() -> Double? {
     guard let temperature = getBatteryProperty(forKey: "Temperature") as? Int else {
         return nil

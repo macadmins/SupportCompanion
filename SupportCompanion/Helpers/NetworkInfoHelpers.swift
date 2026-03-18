@@ -16,7 +16,6 @@ func getAllIPAddresses() -> [String] {
         while ptr != nil {
             defer { ptr = ptr?.pointee.ifa_next }
 
-            //let interface = ptr?.pointee
             guard let interface = ptr?.pointee else { 
                 Logger.shared.logError("Failed to get interface information")
                 return ipAddresses

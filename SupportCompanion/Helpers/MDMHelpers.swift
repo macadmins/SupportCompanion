@@ -9,9 +9,6 @@ import Foundation
 
 func getMDMEnrollmentTime() async -> String {
     let profileNames = ["MDM Profile", "Management Profile"]
-    /*let command = """
-    /usr/bin/profiles -P -v | grep -A 10 'Management Profile'
-    """*/
     let command = "/usr/bin/profiles -P -v | grep -A 10 '\(profileNames[0])' || /usr/bin/profiles -P -v | grep -A 10 '\(profileNames[1])'"
     
     do {

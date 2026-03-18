@@ -389,14 +389,6 @@ class Preferences: ObservableObject {
         Task { await detectModeAndSetLogFolders() }
         Logger.shared.logDebug("Defaults have been reset using defaults write.")
     }
-
-    /*func executeShellCommand(command: String) {
-        let process = Process()
-        process.launchPath = "/bin/zsh"
-        process.arguments = ["-c", command]
-        process.launch()
-        process.waitUntilExit()
-    }*/
 }
 
 extension NSNotification.Name {

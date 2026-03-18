@@ -21,10 +21,6 @@ struct DeviceInfo: Identifiable {
     var lastRestartDays: Int
     let model: String
     
-    /*static func == (lhs: DeviceInfo, rhs: DeviceInfo) -> Bool {
-        return lhs.id == rhs.id
-    }*/
-    
     func toKeyValuePairs() -> [(key: String, display: String, value: InfoValue, category: String)] {
         return [
             // Hardware Specifications

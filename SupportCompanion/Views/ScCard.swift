@@ -124,10 +124,6 @@ struct ScCard<Content: View>: View {
             Spacer()
         }
         .padding()
-        /*.background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(.ultraThinMaterial)
-        )*/
         .isGlass()
         .cornerRadius(10)
         .shadow(radius: 4)

@@ -83,7 +83,6 @@ final class Logger {
         guard fileLoggingEnabled else { return }
         let ts = dateFormatter.string(from: Date())
 
-        //let ts = ISO8601DateFormatter().string(from: Date())
         let line = "[\(ts)] [\(level)] \(message)\n"
 
         fileQueue.async {
