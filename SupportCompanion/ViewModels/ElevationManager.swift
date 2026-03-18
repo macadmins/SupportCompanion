@@ -2,6 +2,7 @@ import Foundation
 import Combine
 import SwiftUI
 
+@MainActor
 class ElevationManager {
     private var elevationReason = ""
     private var appState: AppStateManager
@@ -121,21 +122,23 @@ class ElevationManager {
         Logger.shared.logDebug("Handling elevation for reason: \(reason)")
         // Authenticate and elevate privileges
         self.elevatePrivileges { success in
-            guard success else {
-                Logger.shared.logDebug("Authentication failed. Unable to elevate privileges.")
-                return
-            }
-            Logger.shared.logDebug("Authentication successful. Privileges elevated.")
-            if self.appState.preferences.elevation.requireReasonForElevation {
-                if !self.appState.preferences.elevation.elevationWebhookURL.isEmpty {
-                    sendReasonToWebhook(reason: reason)
-                } else {
-                    saveReasonToDisk(reason: reason)
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                guard success else {
+                    Logger.shared.logDebug("Authentication failed. Unable to elevate privileges.")
+                    return
                 }
+                Logger.shared.logDebug("Authentication successful. Privileges elevated.")
+                if self.appState.preferences.elevation.requireReasonForElevation {
+                    if !self.appState.preferences.elevation.elevationWebhookURL.isEmpty {
+                        sendReasonToWebhook(reason: reason)
+                    } else {
+                        saveReasonToDisk(reason: reason)
+                    }
+                }
+                let duration = Double(self.appState.preferences.elevation.maxElevationTime * 60)
+                self.appState.startDemotionTimer(duration: duration)
             }
-            // Start the timer
-            let duration = Double(self.appState.preferences.elevation.maxElevationTime * 60)
-            self.appState.startDemotionTimer(duration: duration)
         }
     }
 

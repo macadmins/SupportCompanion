@@ -26,13 +26,10 @@ class PendingIntuneUpdatesManager: PendingUpdatesManager {
             : 0.0
 
         if newInstallPercentage != appState.installPercentage {
-            DispatchQueue.main.async { [weak self] in
-                guard let self else { return }
-                self.appState.installedAppsCount = installed
-                self.appState.pendingUpdatesCount = pending
-                self.appState.installPercentage = newInstallPercentage
-                Logger.shared.logDebug("Install percentage updated: \(self.appState.installPercentage)%")
-            }
+            appState.installedAppsCount = installed
+            appState.pendingUpdatesCount = pending
+            appState.installPercentage = newInstallPercentage
+            Logger.shared.logDebug("Install percentage updated: \(appState.installPercentage)%")
         } else {
             Logger.shared.logDebug("Install percentage unchanged: \(appState.installPercentage)%")
         }
@@ -42,23 +39,17 @@ class PendingIntuneUpdatesManager: PendingUpdatesManager {
 
     override func fetchPendingUpdatesList() async {
         let updates = await intuneApps.getPendingUpdatesListFromLog()
-        DispatchQueue.main.async { [weak self] in
-            guard let self else { return }
-            guard updates != self.appState.pendingIntuneUpdates else {
-                Logger.shared.logDebug("Pending updates list unchanged")
-                return
-            }
-            self.appState.pendingIntuneUpdates = updates
-            Logger.shared.logDebug("Updated pending updates list")
+        guard updates != appState.pendingIntuneUpdates else {
+            Logger.shared.logDebug("Pending updates list unchanged")
+            return
         }
+        appState.pendingIntuneUpdates = updates
+        Logger.shared.logDebug("Updated pending updates list")
     }
 
     override func fetchPendingUpdates() async {
         let updates = await intuneApps.getPendingUpdatesCountFromLog()
-        DispatchQueue.main.async { [weak self] in
-            guard let self else { return }
-            self.appState.pendingUpdatesCount = updates
-        }
+        appState.pendingUpdatesCount = updates
         if updates > 0 && !appState.preferences.hiddenCards.contains("PendingAppUpdates") {
             NotificationService(appState: appState).sendNotification(
                 message: appState.preferences.notifications.appUpdateNotificationMessage,

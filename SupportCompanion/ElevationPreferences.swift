@@ -6,6 +6,7 @@
 import Foundation
 import SwiftUI
 
+@MainActor
 class ElevationPreferences: ObservableObject {
     @AppStorage("EnableElevation") var enableElevation: Bool = false
     @AppStorage("ShowElevateTrayCard") var showElevateTrayCard: Bool = true

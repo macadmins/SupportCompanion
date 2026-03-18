@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct DeviceInfo: Identifiable, Equatable {
+struct DeviceInfo: Identifiable {
     let id: UUID
     let hostName: String
     let osVersion: String
@@ -21,9 +21,9 @@ struct DeviceInfo: Identifiable, Equatable {
     var lastRestartDays: Int
     let model: String
     
-    static func == (lhs: DeviceInfo, rhs: DeviceInfo) -> Bool {
+    /*static func == (lhs: DeviceInfo, rhs: DeviceInfo) -> Bool {
         return lhs.id == rhs.id
-    }
+    }*/
     
     func toKeyValuePairs() -> [(key: String, display: String, value: InfoValue, category: String)] {
         return [
@@ -79,7 +79,7 @@ struct DeviceInfo: Identifiable, Equatable {
                 category: Constants.DeviceInfo.Categories.systemInfo
             ),
             (
-                key: "lastRestartDays",
+                key: Constants.DeviceInfo.Keys.lastRestartDays,
                 display: Constants.DeviceInfo.Labels.lastRestart,
                 value: .int(lastRestartDays),
                 category: Constants.DeviceInfo.Categories.systemInfo
@@ -93,8 +93,8 @@ struct DeviceInfo: Identifiable, Equatable {
                 category: Constants.DeviceInfo.Categories.networkInfo
             ),
             (
-                key: "ssid",
-                display: "SSID:",
+                key: Constants.DeviceInfo.Keys.ssid,
+                display: Constants.DeviceInfo.Labels.ssid,
                 value: .string(ssid ?? "Unknown"),
                 category: Constants.DeviceInfo.Categories.networkInfo
             )

@@ -119,26 +119,22 @@ struct PendingUpdatesCard: View {
     }
     
     private func startFetching() {
-        DispatchQueue.main.async {
-            if appState.preferences.mode == Constants.modes.munki {
-                appState.pendingMunkiUpdatesManager.startFetchingList()
-            } else if appState.preferences.mode == Constants.modes.intune {
-                appState.pendingIntuneUpdatesManager.startFetchingList()
-            } else if appState.preferences.mode == Constants.modes.jamf {
-                appState.pendingJamfUpdatesManager.startFetchingList()
-            }
+        if appState.preferences.mode == Constants.modes.munki {
+            appState.pendingMunkiUpdatesManager.startFetchingList()
+        } else if appState.preferences.mode == Constants.modes.intune {
+            appState.pendingIntuneUpdatesManager.startFetchingList()
+        } else if appState.preferences.mode == Constants.modes.jamf {
+            appState.pendingJamfUpdatesManager.startFetchingList()
         }
     }
 
     private func stopFetching() {
-        DispatchQueue.main.async {
-            if appState.preferences.mode == Constants.modes.munki {
-                appState.pendingMunkiUpdatesManager.stopFetchingList()
-            } else if appState.preferences.mode == Constants.modes.intune {
-                appState.pendingIntuneUpdatesManager.stopFetchingList()
-            } else if appState.preferences.mode == Constants.modes.jamf {
-                appState.pendingJamfUpdatesManager.stopFetchingList()
-            }
+        if appState.preferences.mode == Constants.modes.munki {
+            appState.pendingMunkiUpdatesManager.stopFetchingList()
+        } else if appState.preferences.mode == Constants.modes.intune {
+            appState.pendingIntuneUpdatesManager.stopFetchingList()
+        } else if appState.preferences.mode == Constants.modes.jamf {
+            appState.pendingJamfUpdatesManager.stopFetchingList()
         }
     }
     

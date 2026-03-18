@@ -75,7 +75,7 @@ struct DeviceInfoSection: View {
 
             VStack(alignment: .leading, spacing: 5) {
                 ForEach(group.1, id: \.key) { item in
-                    if item.key != "lastRestartDays" {
+                    if item.key != Constants.DeviceInfo.Keys.lastRestartDays {
                         if item.key == Constants.DeviceInfo.Keys.lastRestart {
                             LastRestartRow(
                                 label: item.display,

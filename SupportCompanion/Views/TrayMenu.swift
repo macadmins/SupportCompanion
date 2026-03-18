@@ -179,14 +179,12 @@ struct ButtonSection: View {
     var body: some View {
         let visibleButtons = [
             ScButton(Constants.TrayMenu.openApp, fontSize: 12, action: {
-                DispatchQueue.main.async {
-                        appState.showWindowCallback?()
-                }
+                Task { @MainActor in appState.showWindowCallback?() }
             }),
             viewModel.isButtonVisible(Constants.Actions.HideStrings.changePassword) ? viewModel.createChangePasswordButton(fontSize: 12) : nil,
 			viewModel.isButtonVisible(Constants.Actions.HideStrings.getSupport) && !appState.preferences.supportPageURL.isEmpty ? ScButton(
 				Constants.Actions.getSupport, fontSize: 12)
-			{ ActionHelpers.openSupportPage(url: appState.preferences.supportPageURL) } : nil,
+			{ await ActionHelpers.openSupportPage(url: appState.preferences.supportPageURL) } : nil,
             (viewModel.hasManagementMode)
                 ? (viewModel.isButtonVisible(Constants.Actions.HideStrings.openManagementApp) ? viewModel.createOpenManagementAppButton(type: .default, fontSize: 12) : nil)
                 : nil,

@@ -101,9 +101,11 @@ enum ExecutionService {
         // Pass the escaped command directly to /bin/sh -c
         let arguments = ["-c", escapedCommand]
         
-        if isPrivileged! {
+        // check if privileged execution is requested and execute accordingly
+        if let isPrivileged, isPrivileged {
             return try await executeCommandPrivileged("/bin/sh", arguments: arguments)
         }
+        
         // Execute using the existing method
         return try await executeCommand("/bin/sh", with: arguments)
     }

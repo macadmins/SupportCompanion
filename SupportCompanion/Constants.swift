@@ -197,6 +197,7 @@ enum Constants {
             static let lastRestart = String(localized: "DeviceInfo.LastRestart", defaultValue: "Last Restart:", comment: "Label for last restart")
             static let ipAddress = String(localized: "DeviceInfo.IpAddress", defaultValue: "IP Address:", comment: "Label for IP address")
             static let serialNumber = String(localized: "DeviceInfo.SerialNumber", defaultValue: "Serial Number:", comment: "Label for serial number")
+            static let ssid = String(localized: "DeviceInfo.SSID", defaultValue: "SSID:", comment: "Label for SSID")
         }
         enum Categories {
             static let hardwareSpecs = String(localized: "DeviceInfo.HardwareSpecs", defaultValue: "Hardware Specifications", comment: "Category for hardware specs")
@@ -214,6 +215,8 @@ enum Constants {
             static let ipAddress = "IPAddress"
             static let model = "Model"
             static let serialNumber = "SerialNumber"
+            static let ssid = "SSID"
+            static let lastRestartDays = "LastRestartDays"
         }
     }
 	

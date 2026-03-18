@@ -47,7 +47,7 @@ struct CardGrid: View {
                         }
                     )
                     
-                    ForEach(getVisibleStacks(viewModel: viewModel), id: \.id) { stack in
+                    ForEach(viewModel.getVisibleStacks(viewModel: viewModel), id: \.id) { stack in
                         stack.view
                             .frame(maxWidth: .infinity)
                     }
@@ -111,53 +111,6 @@ struct CardGrid: View {
             }
         }
     }
-}
-
-func getVisibleStacks(viewModel: CardGridViewModel) -> [(id: String, view: AnyView)] {
-    var visibleStacks: [(id: String, view: AnyView)] = []
-    
-    // Conditional logic to arrange Battery and Storage/Device stacks
-    if viewModel.isCardVisible(Constants.Cards.storage) && viewModel.isCardVisible(Constants.Cards.deviceManagement) {
-        // Both Storage and Device Management are visible: Split columns
-        visibleStacks.append(
-            (id: "StorageDeviceManagement",
-             view: AnyView(
-                StorageDeviceManagementStack(viewModel: viewModel)
-                    .frame(maxWidth: .infinity)
-                    .gridCellColumns(1)
-            ))
-        )
-        
-        visibleStacks.append(
-            (id: "BatteryEvergreen",
-             view: AnyView(
-                BatteryEvergreenStack(viewModel: viewModel)
-                    .frame(maxWidth: .infinity)
-                    .gridCellColumns(1)
-            ))
-        )
-    } else {
-        // Otherwise, span the grid
-        visibleStacks.append(
-            (id: "BatteryEvergreen",
-             view: AnyView(
-                BatteryEvergreenStack(viewModel: viewModel)
-                    .frame(maxWidth: .infinity)
-                    .gridCellColumns(2)
-            ))
-        )
-        
-        visibleStacks.append(
-            (id: "StorageDeviceManagement",
-             view: AnyView(
-                StorageDeviceManagementStack(viewModel: viewModel)
-                    .frame(maxWidth: .infinity)
-                    .gridCellColumns(2)
-            ))
-        )
-    }
-
-    return visibleStacks
 }
 
 struct CardGridView_Previews: PreviewProvider {

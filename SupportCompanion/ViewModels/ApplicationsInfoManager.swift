@@ -7,6 +7,7 @@
 
 import Foundation
 
+@MainActor
 final class ApplicationsInfoManager: ObservableObject {
     private var monitorTask: Task<Void, Never>?
     private let munkiApps = MunkiApps()
@@ -109,12 +110,10 @@ final class ApplicationsInfoManager: ObservableObject {
             
             let sortedApps = installedApps.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
 
-            DispatchQueue.main.async {
-                self.appState.installedApplications = sortedApps
-            }
+            appState.installedApplications = sortedApps
         }
     }
-    
+
     func getInstalledIntuneApps() async {
         let apps = await intuneApps.getInstalledAppsListFromLog()
         let installedApps = apps.compactMap { app -> InstalledApp? in
@@ -145,13 +144,10 @@ final class ApplicationsInfoManager: ObservableObject {
         }
         
         let sortedApps = installedApps.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
-        
-        DispatchQueue.main.async {
-            self.appState.installedApplications = sortedApps
-        }
+        appState.installedApplications = sortedApps
     }
-	
-	func getInstalledJamfApps() async {
+
+    func getInstalledJamfApps() async {
         do {
             let apps = await getInstalledJamfAppsFromStore()
             let installedApps = apps.compactMap { (key: AnyHashable, value: Any) -> InstalledApp? in
@@ -181,13 +177,10 @@ final class ApplicationsInfoManager: ObservableObject {
             }
             
             let sortedApps = installedApps.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
-            
-            DispatchQueue.main.async {
-                self.appState.installedApplications = sortedApps
-            }
+            appState.installedApplications = sortedApps
         }
     }
-    
+
     func getInstalledProfilerApps() async {
         do {
             let apps = await profilerApps.getInstalledApps()
@@ -219,10 +212,7 @@ final class ApplicationsInfoManager: ObservableObject {
             }
             
             let sortedApps = installedApps.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
-
-            DispatchQueue.main.async {
-                self.appState.installedApplications = sortedApps
-            }
+            appState.installedApplications = sortedApps
         }
     }
 }

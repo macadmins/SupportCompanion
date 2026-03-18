@@ -9,8 +9,6 @@ import Foundation
 import Combine
 
 class PendingJamfUpdatesManager: PendingUpdatesManager {
-    private var parser = SSPlusParser()
-
     // Track running patch installs across views/navigation
     @Published private(set) var runningPatchIds: Set<Int> = []
 
@@ -19,6 +17,7 @@ class PendingJamfUpdatesManager: PendingUpdatesManager {
     override func getInstallPercentage() async {
         Logger.shared.logDebug("Getting Jamf install percentage")
         await refreshSelfService()
+        let parser = SSPlusParser()
         guard await parser.parse() else { return }
 
         let (_, updateCount, upToDateCount) = await computeUpdates(
@@ -32,13 +31,10 @@ class PendingJamfUpdatesManager: PendingUpdatesManager {
             : 0.0
 
         if newInstallPercentage != appState.installPercentage {
-            DispatchQueue.main.async { [weak self] in
-                guard let self else { return }
-                self.appState.installedAppsCount = upToDateCount
-                self.appState.pendingUpdatesCount = updateCount
-                self.appState.installPercentage = newInstallPercentage
-                Logger.shared.logDebug("Install percentage updated: \(self.appState.installPercentage)%")
-            }
+            appState.installedAppsCount = upToDateCount
+            appState.pendingUpdatesCount = updateCount
+            appState.installPercentage = newInstallPercentage
+            Logger.shared.logDebug("Install percentage updated: \(appState.installPercentage)%")
         } else {
             Logger.shared.logDebug("Install percentage unchanged: \(appState.installPercentage)%")
         }
@@ -57,6 +53,7 @@ class PendingJamfUpdatesManager: PendingUpdatesManager {
     func getPendingJamfUpdates() async {
         Logger.shared.logDebug("Getting Jamf pending updates")
         await refreshSelfService()
+        let parser = SSPlusParser()
         guard await parser.parse() else { return }
 
         let (pendingUpdates, _, _) = await computeUpdates(
@@ -64,12 +61,9 @@ class PendingJamfUpdatesManager: PendingUpdatesManager {
             patches: parser.patches,
             now: Date()
         )
-        DispatchQueue.main.async { [weak self] in
-            guard let self else { return }
-            self.appState.pendingJamfUpdates = pendingUpdates
-            if self.appState.pendingUpdatesCount != pendingUpdates.count {
-                self.appState.pendingUpdatesCount = pendingUpdates.count
-            }
+        appState.pendingJamfUpdates = pendingUpdates
+        if appState.pendingUpdatesCount != pendingUpdates.count {
+            appState.pendingUpdatesCount = pendingUpdates.count
         }
         if pendingUpdates.count > 0 && !appState.preferences.hiddenCards.contains("PendingAppUpdates") {
             NotificationService(appState: appState).sendNotification(
@@ -91,7 +85,7 @@ class PendingJamfUpdatesManager: PendingUpdatesManager {
             let checkIfRunning = try? await ExecutionService.executeCommand("/usr/bin/pgrep", with: checkProcessCmd)
             if checkIfRunning == nil {
                 _ = try? await ExecutionService.executeCommand("/usr/bin/open", with: cmd)
-                sleep(2)
+                try? await Task.sleep(for: .seconds(2))
                 _ = try? await ExecutionService.executeCommand("/usr/bin/pkill", with: quitCmd)
             }
         } else {
@@ -106,14 +100,8 @@ class PendingJamfUpdatesManager: PendingUpdatesManager {
     }
 
     func runPatch(patchId: Int, userId: String? = nil) async {
-        await MainActor.run {
-            self.runningPatchIds.insert(patchId)
-        }
-        defer {
-            Task { @MainActor in
-                self.runningPatchIds.remove(patchId)
-            }
-        }
+        runningPatchIds.insert(patchId)
+        defer { runningPatchIds.remove(patchId) }
 
         var args: [String] = ["asuser", "504", "/usr/local/bin/jamf", "patch", "-id", String(patchId), "-showSteps", "-selfServiceOnly"]
         if let userId = userId, !userId.isEmpty {

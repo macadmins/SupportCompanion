@@ -153,7 +153,7 @@ extension Color {
 }
 
 extension Theme {
-    static let sc = Theme.basic
+    @MainActor static var sc: Theme { Theme.basic
         .codeBlock { configuration in
             ScrollView(.horizontal) {
                 configuration.label
@@ -206,6 +206,7 @@ extension Theme {
                 .padding(.horizontal, 13)
                 .relativeLineSpacing(.em(0.25))
             }
+    }
 }
 
 extension View {

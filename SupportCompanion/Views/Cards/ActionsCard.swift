@@ -29,7 +29,7 @@ struct ActionsCard: View {
                         : nil,
 					viewModel.isButtonVisible(Constants.Actions.HideStrings.getSupport) && !appState.preferences.supportPageURL.isEmpty ? ScButton(
 						Constants.Actions.getSupport)
-					{ ActionHelpers.openSupportPage(url: appState.preferences.supportPageURL) } : nil,
+					{ await ActionHelpers.openSupportPage(url: appState.preferences.supportPageURL) } : nil,
                     viewModel.isButtonVisible(Constants.Actions.HideStrings.gatherLogs) ? viewModel.createGatherLogsButton() : nil,
                     viewModel.isButtonVisible(Constants.Actions.HideStrings.softwareUpdate) ? ScButton(
                         Constants.Actions.softwareUpdate,

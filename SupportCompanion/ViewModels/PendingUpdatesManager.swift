@@ -10,6 +10,7 @@ import Foundation
 /// Shared timer/task lifecycle for all pending-update managers.
 /// Subclasses override `fetchPendingUpdates()`, `fetchPendingUpdatesList()`, and
 /// `getInstallPercentage()` to provide MDM-specific data-fetching logic.
+@MainActor
 class PendingUpdatesManager {
     let appState: AppStateManager
     private var updateCheckTask: Task<Void, Never>?

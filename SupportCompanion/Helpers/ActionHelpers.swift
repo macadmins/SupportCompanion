@@ -48,48 +48,47 @@ struct ActionHelpers {
         successMessage: String,
         updateToast: @escaping (ToastConfig) -> Void
     ) {
-        DispatchQueue.main.async {
-            let toastConfig: ToastConfig
+        let toastConfig: ToastConfig
 
-            switch result {
-            case .success(let executionResult):
-                if executionResult.contains("No matching processes") {
-                    toastConfig = .init(
-                        isShowing: true,
-                        type: .error(.red),
-                        title: operationName,
-                        subTitle: "\(operationName) was not running."
-                    )
-                } else {
-                    toastConfig = .init(
-                        isShowing: true,
-                        type: .complete(.green),
-                        title: operationName,
-                        subTitle: successMessage
-                    )
-                }
-
-            case .failure(let error):
+        switch result {
+        case .success(let executionResult):
+            if executionResult.contains("No matching processes") {
                 toastConfig = .init(
                     isShowing: true,
                     type: .error(.red),
                     title: operationName,
-                    subTitle: error.localizedDescription
+                    subTitle: "\(operationName) was not running."
                 )
-
-            case .info(let info):
+            } else {
                 toastConfig = .init(
                     isShowing: true,
-                    type: .systemImage("info.circle.fill", .yellow),
+                    type: .complete(.green),
                     title: operationName,
-                    subTitle: info
+                    subTitle: successMessage
                 )
             }
 
-            updateToast(toastConfig)
+        case .failure(let error):
+            toastConfig = .init(
+                isShowing: true,
+                type: .error(.red),
+                title: operationName,
+                subTitle: error.localizedDescription
+            )
+
+        case .info(let info):
+            toastConfig = .init(
+                isShowing: true,
+                type: .systemImage("info.circle.fill", .yellow),
+                title: operationName,
+                subTitle: info
+            )
         }
+
+        updateToast(toastConfig)
     }
 
+    @MainActor
     static func getSystemUpdateStatus(sendNotification: Bool = false) async -> Result<(Int, [String]), Error> {
         let notificationService = NotificationService(appState: AppStateManager.shared)
         let appState = AppStateManager.shared
@@ -130,13 +129,9 @@ struct ActionHelpers {
                     "killall",
                     arguments: ["IntuneMdmAgent"]
                 )
-                DispatchQueue.main.async {
-                    completion(.success(executionResult))
-                }
+                completion(.success(executionResult))
             } catch {
-                DispatchQueue.main.async {
-                    completion(.failure(error))
-                }
+                completion(.failure(error))
             }
         }
     }
@@ -147,9 +142,9 @@ struct ActionHelpers {
             return
         }
 
-        if preferences.changePasswordMode == "url" {
+		if await preferences.changePasswordMode == "url" {
             await openURL(preferences.changePasswordUrl, completion: completion)
-        } else if preferences.changePasswordMode == "SSOExtension" {
+		} else if await preferences.changePasswordMode == "SSOExtension" {
             await handleSSOExtension(completion: completion)
         } else {
             openUserPanel()
@@ -184,7 +179,7 @@ struct ActionHelpers {
                 throw SSOError.invalidRealm
             }
 
-            let reachable = try await ping(host: realmName)
+            let reachable = await ping(host: realmName)
             if reachable {
                 _ = try await ExecutionService.executeCommand("/usr/bin/app-sso", with: ["-c", realmName])
                 Logger.shared.logDebug("Password change initiated for realm: \(realmName)")
@@ -199,25 +194,36 @@ struct ActionHelpers {
 
     private static func parseRealm(from json: String) -> String? {
         guard let data = json.data(using: .utf8),
-              let realms = try? JSONDecoder().decode([String].self, from: data) else {
+            let realms = try? JSONDecoder().decode([String].self, from: data) else {
             return nil
         }
         return realms.first
     }
 
-    private static func ping(host: String) async throws -> Bool {
-        let process = Process()
-        let pipe = Pipe()
-
-        process.executableURL = URL(fileURLWithPath: "/sbin/ping")
-        process.arguments = ["-c", "1", host]
-
-        process.standardOutput = pipe
-        process.standardError = pipe
-
-        try process.run()
-        process.waitUntilExit()
-
-        return process.terminationStatus == 0
+    private static func ping(host: String) async -> Bool {
+        await withCheckedContinuation { continuation in
+            let connection = NWConnection(
+                host: NWEndpoint.Host(host),
+                port: 443,
+                using: .tcp
+            )
+            connection.stateUpdateHandler = { state in
+                switch state {
+                case .ready:
+                    Logger.shared.logDebug("Ping successful to host: \(host)")
+                    connection.cancel()
+                    continuation.resume(returning: true)
+                case .failed(let error):
+                    Logger.shared.logError("Ping failed to host: \(host) with error: \(error)")
+                    connection.cancel()
+                    continuation.resume(returning: false)
+                case .cancelled:
+                    break
+                default:
+                    break
+                }
+            }
+            connection.start(queue: .global())
+        }
     }
 }

@@ -11,7 +11,7 @@ extension ActionHelpers {
 
         try? await Task.sleep(nanoseconds: 200_000_000) // 200ms delay
 
-        DispatchQueue.main.async {
+        Task { @MainActor in
             Logger.shared.logDebug("Preparing to reboot")
             completion(.info(""))
         }

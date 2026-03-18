@@ -9,6 +9,7 @@ import Foundation
 import UserNotifications
 import SwiftUI
 
+@MainActor
 class NotificationService {
     private let appState: AppStateManager
     
@@ -55,11 +56,12 @@ class NotificationService {
             }
         }
 
+        let notificationCommand = command?.isEmpty == false ? command : nil
         let content = UNMutableNotificationContent()
         content.title = appState.preferences.notifications.notificationTitle
         content.body = message
         content.sound = .default
-        content.userInfo = ["Command": command!]
+        content.userInfo = ["Command": notificationCommand as Any]
         content.categoryIdentifier = "ACTIONABLE"
         
         if let imagePath = imagePath, let tempURL = prepareImageForNotification(imagePath: imagePath) {
@@ -94,7 +96,9 @@ class NotificationService {
                 Logger.shared.logDebug("Failed to deliver notification: \(error.localizedDescription)")
             } else {
                 Logger.shared.logDebug("Notification sent: \(message)")
-                AppStorageHelper.shared.setLastNotificationDate(Date(), for: notificationType)
+                Task { @MainActor in
+                    AppStorageHelper.shared.setLastNotificationDate(Date(), for: notificationType)
+                }
             }
         }
     }
@@ -107,15 +111,17 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
         if response.actionIdentifier == "RUN_COMMAND",
-           let command = response.notification.request.content.userInfo["Command"] as? String {
+            let command = response.notification.request.content.userInfo["Command"] as? String {
             Logger.shared.logDebug("Notification button clicked, running command: \(command)")
             if command == "demote" {
-                AppStateManager.shared.stopDemotionTimer()
-                ElevationManager.shared.demotePrivileges { success in
-                    if success {
-                        Logger.shared.logDebug("Successfully demoted privileges")
-                    } else {
-                        Logger.shared.logError("Failed to demote privileges")
+                Task { @MainActor in
+                    AppStateManager.shared.stopDemotionTimer()
+                    ElevationManager.shared.demotePrivileges { success in
+                        if success {
+                            Logger.shared.logDebug("Successfully demoted privileges")
+                        } else {
+                            Logger.shared.logError("Failed to demote privileges")
+                        }
                     }
                 }
             } else {
@@ -133,44 +139,36 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
     }
 }
 
+@MainActor
 class BadgeManager {
     static let shared = BadgeManager()
     private(set) var badgeCount = 0
-    private let lock = NSLock()
 
     func incrementBadgeCount(count: Int) {
-        lock.lock()
         badgeCount = count
-        lock.unlock()
         updateBadge()
     }
 
     func currentBadgeCount() -> Int {
-        lock.lock()
-        let count = badgeCount
-        lock.unlock()
-        return count
+        return badgeCount
     }
 
     private func updateBadge() {
-        DispatchQueue.main.async {
-            if self.badgeCount > 0 {
-                let prefs = AppStateManager.shared.preferences
-                let hasPendingUpdates = !prefs.hiddenCards.contains("PendingAppUpdates") && AppStateManager.shared.pendingUpdatesCount > 0
-                let hasSoftwareUpdates = !prefs.hiddenActions.contains("SoftwareUpdates") && AppStateManager.shared.systemUpdateCache.count > 0
-                if hasPendingUpdates || hasSoftwareUpdates {
-                    NSApplication.shared.dockTile.showsApplicationBadge = true
-                    NSApplication.shared.dockTile.badgeLabel = nil
-                    NSApplication.shared.dockTile.badgeLabel = String(self.badgeCount)
-                } else {
-                    NSApplication.shared.dockTile.showsApplicationBadge = false
-                    NSApplication.shared.dockTile.badgeLabel = nil
-                }
-
-            } else {
+        if badgeCount > 0 {
+            let prefs = AppStateManager.shared.preferences
+            let hasPendingUpdates = !prefs.hiddenCards.contains("PendingAppUpdates") && AppStateManager.shared.pendingUpdatesCount > 0
+            let hasSoftwareUpdates = !prefs.hiddenActions.contains("SoftwareUpdates") && AppStateManager.shared.systemUpdateCache.count > 0
+            if hasPendingUpdates || hasSoftwareUpdates {
+                NSApplication.shared.dockTile.showsApplicationBadge = true
                 NSApplication.shared.dockTile.badgeLabel = nil
+                NSApplication.shared.dockTile.badgeLabel = String(badgeCount)
+            } else {
                 NSApplication.shared.dockTile.showsApplicationBadge = false
+                NSApplication.shared.dockTile.badgeLabel = nil
             }
+        } else {
+            NSApplication.shared.dockTile.badgeLabel = nil
+            NSApplication.shared.dockTile.showsApplicationBadge = false
         }
     }
 }
@@ -183,6 +181,7 @@ enum NotificationType: String {
 }
 
 
+@MainActor
 class AppStorageHelper {
     // Singleton instance
     static let shared = AppStorageHelper(appState: AppStateManager.shared)

@@ -7,7 +7,7 @@ import Foundation
 import AppKit
 
 extension ActionHelpers {
-    static func gatherLogs(preferences: Preferences, completion: @escaping (OperationResult) -> Void) {
+	@MainActor static func gatherLogs(preferences: Preferences, completion: @escaping (OperationResult) -> Void) {
         let command = buildZipCommand(for: preferences.logFolders, excluding: preferences.excludedLogFolders)
         Logger.shared.logDebug("Gathering logs with command: \(command)")
         Task {

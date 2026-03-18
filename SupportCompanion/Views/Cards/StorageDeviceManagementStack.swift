@@ -20,11 +20,11 @@ struct StorageDeviceManagementStack: View {
                 // Storage Card
                 if viewModel.isCardVisible(Constants.Cards.storage) {
                     ScCard(title: "\(Constants.CardTitle.storage)",
-                               titleImageName: "internaldrive.fill",
-                               buttonImageName: "macwindow.on.rectangle",
-                               buttonAction: { viewModel.openStoragePanel() },
-                               buttonHelpText: Constants.ToolTips.openStoragePanel,
-                               content:  {
+                            titleImageName: "internaldrive.fill",
+                            buttonImageName: "macwindow.on.rectangle",
+                            buttonAction: { viewModel.openStoragePanel() },
+                            buttonHelpText: Constants.ToolTips.openStoragePanel,
+                            content:  {
                         VStack(alignment: .leading, spacing: 5) {
                             CardData(
                                 info: appState.storageInfoManager.storageInfo.toKeyValuePairs(),

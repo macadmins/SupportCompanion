@@ -7,6 +7,7 @@
 
 import Foundation
 
+@MainActor
 class SystemUpdatesManager: ObservableObject {
     private let appState: AppStateManager
     private var previousUpdateCount: Int = 0
@@ -63,9 +64,6 @@ class SystemUpdatesManager: ObservableObject {
 
     /// Updates the cache in `AppStateManager`.
     private func updateCache(count: Int, updates: [String]) {
-        Task { @MainActor in
-            let newInfo = SystemUpdates(id: UUID(), count: count, updates: updates)
-            self.appState.systemUpdateCache = newInfo
-        }
+        appState.systemUpdateCache = SystemUpdates(id: UUID(), count: count, updates: updates)
     }
 }

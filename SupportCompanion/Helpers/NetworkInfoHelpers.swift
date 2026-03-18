@@ -40,62 +40,28 @@ func getAllIPAddresses() -> [String] {
     return ipAddresses
 }
 
-func getSSID() -> String? {
-    func runCommand(_ launchPath: String, _ arguments: [String], privileged: Bool = false) throws -> String {
-        let semaphore = DispatchSemaphore(value: 0)
-        var result: Result<String, Error> = .failure(NSError(domain: "ExecutionService", code: -1))
+func getSSID() async -> String? {
+    guard let wifi = CWWiFiClient.shared().interface() else { return "WiFi Off" }
+    guard wifi.powerOn() else { return "WiFi Off" }
 
-        let execute: () async throws -> String = {
-            if privileged {
-                return try await ExecutionService.executeCommandPrivileged(launchPath, arguments: arguments)
-            } else {
-                return try await ExecutionService.executeCommand(launchPath, with: arguments)
-            }
-        }
-
-        Task {
-            do {
-                let output = try await execute()
-                result = .success(output)
-            } catch {
-                result = .failure(error)
-            }
-            semaphore.signal()
-        }
-
-        semaphore.wait()
-
-        switch result {
-        case .success(let output):
-            return output
-        case .failure(let error):
-            throw error
-        }
-    }
+    _ = try? await ExecutionService.executeCommandPrivileged(
+        "/bin/sh", arguments: ["-c", "/usr/sbin/ipconfig setverbose 1"]
+    )
 
     do {
-        guard let wifi = CWWiFiClient.shared().interface() else { return "WiFi Off" }
-        guard wifi.powerOn() else { return "WiFi Off" }
-
-        do {
-            _ = try runCommand("/bin/sh", ["-c", "/usr/sbin/ipconfig setverbose 1"], privileged: true)
-        } catch {
-            _ = try? runCommand("/bin/sh", ["-c", "/usr/sbin/ipconfig setverbose 1"], privileged: true)
-        }
-
         let command = "/usr/sbin/ipconfig getsummary en0 | awk -F ' SSID : ' '/ SSID : / {print $2}'"
-        let ssid = try runCommand("/bin/sh", ["-c", command])
-
-        _ = try? runCommand("/bin/sh", ["-c", "/usr/sbin/ipconfig setverbose 0"], privileged: true)
-
+        let ssid = try await ExecutionService.executeCommand("/bin/sh", with: ["-c", command])
+        _ = try? await ExecutionService.executeCommandPrivileged(
+            "/bin/sh", arguments: ["-c", "/usr/sbin/ipconfig setverbose 0"]
+        )
         let trimmed = ssid.trimmingCharacters(in: .whitespacesAndNewlines)
-        if trimmed == "<redacted>" {
-            return nil
-        }
+        if trimmed == "<redacted>" { return nil }
         return trimmed.isEmpty ? nil : trimmed
     } catch {
         Logger.shared.logError("Failed to fetch SSID: \(error)")
-        _ = try? runCommand("/bin/sh", ["-c", "/usr/sbin/ipconfig setverbose 0"], privileged: true)
+        _ = try? await ExecutionService.executeCommandPrivileged(
+            "/bin/sh", arguments: ["-c", "/usr/sbin/ipconfig setverbose 0"]
+        )
         return nil
     }
 }
@@ -111,24 +77,14 @@ class IPAddressMonitor {
         let ssid: String?
     }
 
-    static func startMonitoring(onChange: @escaping (NetworkStatus) -> Void) {
+    static func startMonitoring(onChange: @escaping (NetworkStatus) async -> Void) {
         monitor.pathUpdateHandler = { path in
-            let currentIPs: [String]
-            let currentSSID: String?
-
-            if path.status == .satisfied {
-                currentIPs = getAllIPAddresses()
-                currentSSID = getSSID()
-            } else {
-                currentIPs = []
-                currentSSID = nil
-            }
-
-            if currentIPs.sorted() != lastIPs.sorted() {
-                lastIPs = currentIPs
-                DispatchQueue.main.async {
-                    onChange(NetworkStatus(ipAddresses: currentIPs, ssid: currentSSID))
-                }
+            let currentIPs = path.status == .satisfied ? getAllIPAddresses() : [String]()
+            guard currentIPs.sorted() != lastIPs.sorted() else { return }
+            lastIPs = currentIPs
+            Task {
+                let currentSSID = path.status == .satisfied ? await getSSID() : nil
+                await onChange(NetworkStatus(ipAddresses: currentIPs, ssid: currentSSID))
             }
         }
         monitor.start(queue: queue)

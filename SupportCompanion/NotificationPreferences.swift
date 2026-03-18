@@ -6,6 +6,7 @@
 import Foundation
 import SwiftUI
 
+@MainActor
 class NotificationPreferences: ObservableObject {
     // MARK: - Notification timestamps
     @AppStorage("LastSoftwareUpdateNotificationTime") var lastSoftwareUpdateNotificationTime: String = ""

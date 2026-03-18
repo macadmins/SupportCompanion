@@ -21,7 +21,7 @@ struct ContentView: View {
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
-        let sidebarItems: [SidebarItem] = generateSidebarItems(preferences: appState.preferences, stateManager: webViewStateManager)
+        let sidebarItems: [SidebarItem] = generateSidebarItems(preferences: appState.preferences, stateManager: webViewStateManager, pendingUpdatesCount: appState.pendingUpdatesCount)
         let accentColor = Color(accentNSColor)
         
         NavigationSplitView {
@@ -213,6 +213,16 @@ struct ContentView: View {
 
                     Text(item.label)
                         .frame(maxWidth: .infinity, alignment: .leading)
+
+                    if item.badge > 0 {
+                        Text("\(item.badge)")
+                            .font(.caption2.bold())
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(isSelected ? Color.white.opacity(0.25) : Color.red)
+                            .foregroundColor(.white)
+                            .clipShape(Capsule())
+                    }
                 }
                 .padding(.horizontal, 15)
                 .padding(.vertical, 15)

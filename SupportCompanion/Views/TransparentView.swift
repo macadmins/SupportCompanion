@@ -186,7 +186,7 @@ struct TransparentView: View {
     }
     
     private func deviceInfoRow(for item: (key: String, display: String, value: InfoValue)) -> some View {
-        if item.key == "lastRestartDays" {
+        if item.key == Constants.DeviceInfo.Keys.lastRestartDays {
             return AnyView(EmptyView())
         } else {
             if item.key == Constants.DeviceInfo.Keys.lastRestart {

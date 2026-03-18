@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 import Combine
 
+@MainActor
 class Preferences: ObservableObject {
 
     // MARK: - Domain sub-objects
@@ -58,7 +59,8 @@ class Preferences: ObservableObject {
                     Logger.shared.logDebug("Preferences: customCardPath didSet -> '\(customCardPath)'")
                     customCardPathPublished = customCardPath
                 } else {
-                    DispatchQueue.main.async { [newValue = customCardPath] in
+                    let newValue = customCardPath
+                    Task { @MainActor in
                         Logger.shared.logDebug("Preferences: customCardPath didSet (async) -> '\(newValue)'")
                         if self.customCardPathPublished != newValue {
                             self.customCardPathPublished = newValue
@@ -182,14 +184,13 @@ class Preferences: ObservableObject {
             } else {
                 latest = UserDefaults.standard.string(forKey: "CustomCardPath") ?? ""
             }
-            DispatchQueue.main.async {
-                if self.customCardPathPublished != latest {
-                    Logger.shared.logInfo("Prefs watcher: CustomCardPath -> '\(latest)'")
-                    if self.customCardPath != latest {
-                        self.customCardPath = latest
-                    }
-                    self.customCardPathPublished = latest
+            
+            if self.customCardPathPublished != latest {
+                Logger.shared.logInfo("Prefs watcher: CustomCardPath -> '\(latest)'")
+                if self.customCardPath != latest {
+                    self.customCardPath = latest
                 }
+                self.customCardPathPublished = latest
             }
         }
         src.resume()
@@ -280,35 +281,26 @@ class Preferences: ObservableObject {
     }
 
     private func loadHiddenCards() {
-        DispatchQueue.main.async { [weak self] in
-            self?.hiddenCards = UserDefaults.standard.array(forKey: "HiddenCards") as? [String] ?? []
-        }
+        self.hiddenCards = UserDefaults.standard.array(forKey: "HiddenCards") as? [String] ?? []
     }
 
     private func loadLogFolders() {
-        DispatchQueue.main.async { [weak self] in
-            self?.logFolders = UserDefaults.standard.array(forKey: "LogFolders") as? [String] ?? []
-        }
+        self.logFolders = UserDefaults.standard.array(forKey: "LogFolders") as? [String] ?? []
     }
 
     private func loadHiddenActions() {
-        DispatchQueue.main.async { [weak self] in
-            self?.hiddenActions = UserDefaults.standard.array(forKey: "HiddenActions") as? [String] ?? []
-        }
+        self.hiddenActions = UserDefaults.standard.array(forKey: "HiddenActions") as? [String] ?? []
     }
 
     private func loadExcludedLogFolders() {
-        DispatchQueue.main.async { [weak self] in
-            self?.excludedLogFolders = UserDefaults.standard.array(forKey: "ExcludedLogFolders") as? [String] ?? []
-        }
+        self.excludedLogFolders = UserDefaults.standard.array(forKey: "ExcludedLogFolders") as? [String] ?? []
     }
 
     private func loadActions() {
-        DispatchQueue.main.async { [weak self] in
-            let actions = UserDefaults.standard.array(forKey: "Actions") as? [[String: Any]] ?? []
-            let newActions = actions.compactMap { dict in
-                Action(
-                    id: UUID(),
+        let actions = UserDefaults.standard.array(forKey: "Actions") as? [[String: Any]] ?? []
+        let newActions = actions.compactMap { dict in
+            Action(
+                id: UUID(),
                     name: dict["Name"] as? String ?? "Unnamed",
                     command: dict["Command"] as? String ?? "",
                     icon: dict["Icon"] as? String,
@@ -317,9 +309,9 @@ class Preferences: ObservableObject {
                     buttonLabel: dict["ButtonLabel"] as? String ?? "Run"
                 )
             }
-            self?.actions = newActions
+            self.actions = newActions
         }
-    }
+    
 
     // MARK: - Defaults
 
@@ -370,7 +362,7 @@ class Preferences: ObservableObject {
         }
     }
 
-    func resetUserDefaults() {
+    func resetUserDefaults() async {
         let bundleIdentifier = "com.github.macadmins.SupportCompanion"
         let defaults = UserDefaults.standard
         defaults.removePersistentDomain(forName: bundleIdentifier)
@@ -390,20 +382,21 @@ class Preferences: ObservableObject {
                 Logger.shared.logError("Unsupported value type for key: \(key)")
                 continue
             }
-            executeShellCommand(command: writeCommand)
+            //executeShellCommand(command: writeCommand)
+            _ = try? await ExecutionService.executeShellCommand(writeCommand)
         }
 
         Task { await detectModeAndSetLogFolders() }
         Logger.shared.logDebug("Defaults have been reset using defaults write.")
     }
 
-    func executeShellCommand(command: String) {
+    /*func executeShellCommand(command: String) {
         let process = Process()
         process.launchPath = "/bin/zsh"
         process.arguments = ["-c", command]
         process.launch()
         process.waitUntilExit()
-    }
+    }*/
 }
 
 extension NSNotification.Name {

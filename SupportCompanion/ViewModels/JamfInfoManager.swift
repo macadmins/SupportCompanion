@@ -7,6 +7,7 @@
 
 import Foundation
 
+@MainActor
 class JamfInfoManager: ObservableObject {
 	private var monitorTask: Task<Void, Never>?
 	private let appStateManager: AppStateManager
@@ -49,14 +50,12 @@ class JamfInfoManager: ObservableObject {
                 url = "Unknown"
             }
 
-            await MainActor.run {
-                self.jamfInfo = JamfInfo(
-                    lastCheckIn: lastCheckIn,
-                    lastInventory: lastInventory,
-                    url: url,
-                    jamfID: appStateManager.jamfId
-                )
-            }
+            self.jamfInfo = JamfInfo(
+                lastCheckIn: lastCheckIn,
+                lastInventory: lastInventory,
+                url: url,
+                jamfID: appStateManager.jamfId
+            )
         }
     }
 
@@ -90,14 +89,12 @@ class JamfInfoManager: ObservableObject {
                     url = "Unknown"
                 }
 
-                await MainActor.run {
-                    self.jamfInfo = JamfInfo (
-                        lastCheckIn: lastCheckIn,
-                        lastInventory: lastInventory,
-                        url: url,
-                        jamfID: appStateManager.jamfId
-                    )
-                }
+                self.jamfInfo = JamfInfo(
+                    lastCheckIn: lastCheckIn,
+                    lastInventory: lastInventory,
+                    url: url,
+                    jamfID: appStateManager.jamfId
+                )
 
                 try? await Task.sleep(nanoseconds: UInt64(interval * 1_000_000_000))
             }

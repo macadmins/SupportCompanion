@@ -7,6 +7,7 @@
 
 import Foundation
 
+@MainActor
 class BatteryInfoManager: ObservableObject {
     private var monitorTask: Task<Void, Never>?
     
@@ -34,17 +35,15 @@ class BatteryInfoManager: ObservableObject {
     
     func updateBatteryInfo() {
         // Ensure all updates happen on the main thread
-        DispatchQueue.main.async {
-            self.batteryInfo = BatteryInfo(
-                id: UUID(),
-                designCapacity: getBatteryDesignCapacity() ?? 0,
-                maxCapacity: getBatteryMaxCapacity() ?? 0,
-                cycleCount: getBatteryCycleCount() ?? 0,
-                isCharging: isBatteryCharging(),
-                temperature: getBatteryTemperature() ?? 0,
-                timeToFull: getBatteryTimeRemaining()
-            )
-        }
+        self.batteryInfo = BatteryInfo(
+            id: UUID(),
+            designCapacity: getBatteryDesignCapacity() ?? 0,
+            maxCapacity: getBatteryMaxCapacity() ?? 0,
+            cycleCount: getBatteryCycleCount() ?? 0,
+            isCharging: isBatteryCharging(),
+            temperature: getBatteryTemperature() ?? 0,
+            timeToFull: getBatteryTimeRemaining()
+        )
     }
     
     /// Starts monitoring battery properties and updates the model.
@@ -53,20 +52,7 @@ class BatteryInfoManager: ObservableObject {
         Logger.shared.logDebug("Starting battery monitoring")
         monitorTask = Task {
             while !Task.isCancelled {
-                // Update the model on the main thread
-                await MainActor.run {
-                    self.batteryInfo = BatteryInfo(
-                        id: UUID(),
-                        designCapacity: getBatteryDesignCapacity() ?? 0,
-                        maxCapacity: getBatteryMaxCapacity() ?? 0,
-                        cycleCount: getBatteryCycleCount() ?? 0,
-                        isCharging: isBatteryCharging(),
-                        temperature: getBatteryTemperature() ?? 0,
-                        timeToFull: getBatteryTimeRemaining()
-                    )
-                }
-
-                // Wait for the specified interval before fetching data again
+                updateBatteryInfo()
                 try? await Task.sleep(nanoseconds: UInt64(interval * 1_000_000_000))
             }
         }

@@ -11,6 +11,7 @@ import UserNotifications
 import SwiftUI
 import Combine
 
+@MainActor
 class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     var popover: NSPopover!
     var statusItem: NSStatusItem?
@@ -160,7 +161,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         } else if let endTime = elevationManager.loadPersistedDemotionState() {
             let remainingTime = endTime.timeIntervalSinceNow
             elevationManager.startDemotionTimer(duration: remainingTime) { remainingTime in
-                DispatchQueue.main.async {
+                Task { @MainActor in
                     AppStateManager.shared.timeToDemote = remainingTime
                     AppStateManager.shared.isDemotionActive = remainingTime > 0
                 }
@@ -200,6 +201,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             .store(in: &cancellables)
     }
 
+    @MainActor
     class TrayMenuManager {
         static let shared = TrayMenuManager()
         let appStateManager = AppStateManager.shared

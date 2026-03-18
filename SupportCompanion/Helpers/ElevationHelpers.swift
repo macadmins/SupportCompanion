@@ -51,6 +51,7 @@ func authenticateWithPassword(completion: @escaping (Bool) -> Void, reason: Stri
     }
 }
 
+@MainActor
 func saveReasonToDisk(reason: String) {
     let fileManager = FileManager.default
     let appState = AppStateManager.shared
@@ -123,6 +124,7 @@ func saveReasonToDisk(reason: String) {
     }
 }
 
+@MainActor
 func sendReasonToWebhook(reason: String) {
     let dateFormatter = ISO8601DateFormatter()
     let appState = AppStateManager.shared
@@ -156,7 +158,7 @@ func sendReasonToWebhook(reason: String) {
 
     let task = URLSession.shared.dataTask(with: request) { data, response, error in
         if let error = error {
-            saveReasonToDisk(reason: reason)
+            Task { @MainActor in saveReasonToDisk(reason: reason) }
             Logger.shared.logError("Failed to send reason to webhook: \(error.localizedDescription)")
             return
         }
@@ -165,7 +167,7 @@ func sendReasonToWebhook(reason: String) {
             if response.statusCode == 200 || response.statusCode == 202 {
                 Logger.shared.logDebug("Reason sent to webhook successfully.")
             } else {
-                saveReasonToDisk(reason: reason)
+                Task { @MainActor in saveReasonToDisk(reason: reason) }
                 Logger.shared.logError("Failed to send reason to webhook. Status code: \(response.statusCode)")
             }
         }

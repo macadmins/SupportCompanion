@@ -7,6 +7,7 @@ import Foundation
 import SwiftUI
 import Combine
 
+@MainActor
 class DesktopInfoPreferences: ObservableObject {
     @AppStorage("DesktopInfoBackgroundOpacity") var desktopInfoBackgroundOpacity: Double = 0.001
     @AppStorage("DesktopInfoBackgroundFrosted") var desktopInfoBackgroundFrosted: Bool = false
