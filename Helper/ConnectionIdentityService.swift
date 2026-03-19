@@ -14,8 +14,9 @@ enum ConnectionIdentityService {
     // MARK: Constants
     #if DEBUG
     static private let requirementString: CFString = {
-        // Lenient requirement for development - just check bundle ID
-        return "identifier \"\(HelperConstants.bundleID)\"" as CFString
+        return """
+        identifier "\(HelperConstants.bundleID)" and anchor apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = \(HelperConstants.debugSubject)
+        """ as CFString
     }()
     #else
     static private let requirementString: CFString = {
