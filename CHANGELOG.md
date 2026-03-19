@@ -4,8 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.4.0] - 2025-12-12
+## [2.4.0] - 2026-03-19
 ### Added
+- Support for Background Security Improvements. If the pending update is a background security improvement, clicking the update will open the relevant pane in system settings.
 - WiFi SSID information is now included in the device information
 - New option to hide tray menu icon. This allows for using the desktop information window without displaying the tray menu icon. Example configuration:
 ```xml
@@ -13,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <false/>
 ```
 - Support for monitoring Jamf application patches. When in Jamf mode, the app will now monitor for pending application patches and display them in the tray menu as well as in the main app. The badge will also be displayed in the tray menu icon when there are pending application patches. Requires the use of Self Service+.
-    - Correctly monitoring application patches from Self Service+ requires that Self Service+ is configured for SSO. This is because the data in the app is lazy updated when the user starts and authenticates in Self Service+. To work around this, Support Companion will briefly launch Self Service+ in the background to update the patch data. An icon will appear in the dock while this is happening. This process should only take a few seconds.
+    - Correctly monitoring application patches from Self Service+ requires that Self Service+ is configured for SSO and that `Enable Self Service user login` is **not** checked in the Self Service configuration in Jamf Pro. This is because the data in the app is lazy updated when the user starts and authenticates in Self Service+. To work around this, Support Companion will briefly launch Self Service+ in the background to update the patch data. An icon will appear in the dock while this is happening. This process should only take a few seconds.
     - Can be turned off by setting `RefreshSelfService` to `false` in the configuration. Example configuration:
 ```xml
 <key>RefreshSelfService</key>
@@ -37,6 +38,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <true/>
 ```
 ### Changed
+- Pending updates count is now shown as a badge on the sidebar navigation item, making it visible without opening the updates view.
+- Accessibility labels added to icon-only buttons for improved VoiceOver support.
+- Significant internal code quality improvements: preferences split into focused sub-objects, helpers refactored into dedicated files, Timer-based polling migrated to Swift structured concurrency, and improved error handling with logging throughout.
 - MDM info now uses multiple MDM profile names to be able to correctly display the enrollment time.
 - The privileged helper tool has been migrated to `SMAppService` in place of `SMJobBless` since `SMJobBless` is deprecated in macOS 14 and later.
 - If `BrandName` is configured, it will now be displayed in the desktop information window as well as the header instead of "Device Information".
