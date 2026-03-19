@@ -27,24 +27,24 @@ struct CompactPatchProgressCard: View {
             }
         )
         .onAppear {
-            if appState.preferences.mode == Constants.modes.munki {
+            if appState.preferences.mode == Constants.Modes.munki {
                 appState.pendingMunkiUpdatesManager.startInstallPercentageTask()
             }
-            if appState.preferences.mode == Constants.modes.intune {
+            if appState.preferences.mode == Constants.Modes.intune {
                 appState.pendingIntuneUpdatesManager.startInstallPercentageTask()
             }
-            if appState.preferences.mode == Constants.modes.jamf {
+            if appState.preferences.mode == Constants.Modes.jamf {
                 appState.pendingJamfUpdatesManager.startInstallPercentageTask()
             }
         }
         .onDisappear() {
-            if appState.preferences.mode == Constants.modes.munki {
+            if appState.preferences.mode == Constants.Modes.munki {
                 appState.pendingMunkiUpdatesManager.stopInstallPercentageTask()
             }
-            if appState.preferences.mode == Constants.modes.intune {
+            if appState.preferences.mode == Constants.Modes.intune {
                 appState.pendingIntuneUpdatesManager.stopInstallPercentageTask()
             }
-            if appState.preferences.mode == Constants.modes.jamf {
+            if appState.preferences.mode == Constants.Modes.jamf {
                 appState.pendingJamfUpdatesManager.stopInstallPercentageTask()
             }
         }

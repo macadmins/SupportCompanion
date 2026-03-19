@@ -93,7 +93,6 @@ struct ContentView: View {
                     if let selectedItem = selectedItem {
                         selectedItem.destination
                             .id(selectedItem.id)
-                        //.ignoresSafeArea(edges: .all)
                     } else {
                         Text("Select an option") // Placeholder if nothing is selected
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -137,7 +136,7 @@ struct ContentView: View {
         case "selfservice":
             selectedItem = items.first(where: { $0.id == Constants.Navigation.selfService })
         case "companyportal":
-            selectedItem = items.first(where: { $0.id == "Company Portal" })
+            selectedItem = items.first(where: { $0.id == Constants.Navigation.companyPortal })
         case "knowledgebase":
             selectedItem = items.first(where: { $0.id == Constants.Navigation.knowledgeBase })
         case "markdown":
@@ -238,24 +237,6 @@ struct ContentView: View {
     }
 }
 
-private struct SidebarHighlight: View {
-    let isSelected: Bool
-    let color: Color
-    let namespace: Namespace.ID
-
-    var body: some View {
-        Group {
-            if isSelected {
-                Capsule()
-                    .fill(color)
-                    .matchedGeometryEffect(id: "sidebar-highlight", in: namespace)
-            } else {
-                Capsule().fill(Color.clear)
-            }
-        }
-    }
-}
-
 private struct SidebarListView: View {
     let items: [SidebarItem]
     let selectedItem: SidebarItem?
@@ -308,7 +289,6 @@ private extension ContentView {
 }
 
 struct SidebarItemStyle: ViewModifier {
-    //@State private var isHovered = false
     func body(content: Content) -> some View {
         content
             .font(.system(size: 16))
@@ -330,26 +310,3 @@ struct ContentView_Previews: PreviewProvider {
             .frame(width: 1500, height: 900)
     }
 }
-
-private extension View {
-    func onHoverEffect(_ item: SidebarItem) -> some View {
-        modifier(HoverEffectModifier(item: item))
-    }
-}
-
-struct HoverEffectModifier: ViewModifier {
-    @State private var isHovered = false
-    let item: SidebarItem
-
-    func body(content: Content) -> some View {
-        content
-            .background(
-                Capsule()
-                    .fill(isHovered ? Color.black.opacity(0.2) : Color.clear)
-            )
-            .onHover { hovering in
-                isHovered = hovering
-            }
-    }
-}
-

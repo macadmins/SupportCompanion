@@ -62,7 +62,7 @@ struct TrayMenuView: View {
                     if appState.preferences.elevation.enableElevation && appState.preferences.elevation.showElevateTrayCard {
                         CompactElevationCard()
                     }
-					if !appState.preferences.hiddenCards.contains(Constants.Cards.jamfInfo) && appState.preferences.mode == Constants.modes.jamf {
+					if !appState.preferences.hiddenCards.contains(Constants.Cards.jamfInfo) && appState.preferences.mode == Constants.Modes.jamf {
 						CompactJamfInfoCard()
 					}
                 }
@@ -197,7 +197,7 @@ struct ButtonSection: View {
             { [hasBackgroundSecurityImprovement = appState.systemUpdateCache.hasBackgroundSecurityImprovement] in
                 hasBackgroundSecurityImprovement ? ActionHelpers.openBackgroundSecurityImprovements() : ActionHelpers.openSystemUpdates()
             } : nil,
-            (appState.preferences.mode == Constants.modes.munki || appState.preferences.mode == Constants.modes.intune)
+            (appState.preferences.mode == Constants.Modes.munki || appState.preferences.mode == Constants.Modes.intune)
                 ? (viewModel.isButtonVisible(Constants.Actions.HideStrings.restartIntuneAgent) ? viewModel.createRestartIntuneAgentButton(fontSize: 12) : nil)
                 : nil
         ].compactMap { $0 } // Remove nil values

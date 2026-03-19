@@ -18,7 +18,7 @@ struct AppCard: View {
         self.card = card
 
         // Determine version
-        if AppStateManager.shared.preferences.mode == Constants.modes.intune,
+        if AppStateManager.shared.preferences.mode == Constants.Modes.intune,
            let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: card.bundleId) {
             let appInfoPlistPath = "\(appURL.path)/Contents/Info.plist"
             self.version = getAppVersion(plistPath: appInfoPlistPath) ?? "Unknown"
@@ -28,24 +28,24 @@ struct AppCard: View {
     }
 
     var titleImage: String {
-        if AppStateManager.shared.preferences.mode == Constants.modes.munki {
+        if AppStateManager.shared.preferences.mode == Constants.Modes.munki {
             let iconPath = "/Library/Managed Installs/icons/\(card.name).png"
             if FileManager.default.fileExists(atPath: iconPath) {
                 return iconPath
             } else {
                 return resolvedTitleImage
             }
-        } else if AppStateManager.shared.preferences.mode == Constants.modes.systemProfiler {
+        } else if AppStateManager.shared.preferences.mode == Constants.Modes.systemProfiler {
             let appInfoPlistPath = "\(card.path)/Contents/Info.plist"
             return getIconPath(plistPath: appInfoPlistPath, appPath: card.path) ?? resolvedTitleImage
-        } else if AppStateManager.shared.preferences.mode == Constants.modes.intune {
+        } else if AppStateManager.shared.preferences.mode == Constants.Modes.intune {
             if let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: card.bundleId) {
                 let appInfoPlistPath = "\(appURL.path)/Contents/Info.plist"
                 return getIconPath(plistPath: appInfoPlistPath, appPath: appURL.path) ?? resolvedTitleImage
             } else {
                 return resolvedTitleImage
             }
-        } else if AppStateManager.shared.preferences.mode == Constants.modes.jamf {
+        } else if AppStateManager.shared.preferences.mode == Constants.Modes.jamf {
             // For JAMF, the actual download is handled asynchronously; fall back to current state value
             return resolvedTitleImage
         }
@@ -53,7 +53,7 @@ struct AppCard: View {
     }
     
     private var buttonText: String {
-        if AppStateManager.shared.preferences.mode == Constants.modes.jamf {
+        if AppStateManager.shared.preferences.mode == Constants.Modes.jamf {
             return card.actionText ?? ""
         } else {
             return Constants.General.manage
@@ -69,7 +69,7 @@ struct AppCard: View {
                 VStack(alignment: .leading, spacing: 5) {
                     if !version.isEmpty {
                         HStack(alignment: .top) {
-                            Text("\(Constants.TabelHeaders.version):")
+                            Text("\(Constants.TableHeaders.version):")
                                 .bold()
                             Text(version)
                         }
@@ -107,7 +107,7 @@ struct AppCard: View {
 							})
 							.padding(.top, 40)
 						}
-						if AppStateManager.shared.preferences.mode == Constants.modes.jamf {
+						if AppStateManager.shared.preferences.mode == Constants.Modes.jamf {
 							if let pending = AppStateManager.shared.pendingJamfUpdates.first(where: { $0.policyName == card.name }),
 							   let patchID = pending.patchId {
                                 let isRunning = AppStateManager.shared.pendingJamfUpdatesManager.isRunning(patchId: patchID)
@@ -132,7 +132,7 @@ struct AppCard: View {
     
     @MainActor
     private func loadJamfIconIfNeeded() async {
-        guard AppStateManager.shared.preferences.mode == Constants.modes.jamf else { return }
+        guard AppStateManager.shared.preferences.mode == Constants.Modes.jamf else { return }
         guard let iconUrl = card.iconUrl, !iconUrl.isEmpty else { return }
         // Attempt to download icon asynchronously
         if let iconPath = try? await downloadAppIcon(forApp: card) {

@@ -13,7 +13,7 @@ class ElevationManager {
     static let shared = ElevationManager(appState: AppStateManager.shared)
 
     init(appState: AppStateManager) {
-        self.appState = AppStateManager.shared
+        self.appState = appState
     }
 
         func elevatePrivileges(completion: @escaping (Bool) -> Void) {

@@ -61,7 +61,6 @@ func isFileVaultEnabled() -> Bool {
 @MainActor
 class StorageMonitor {
     static let shared = StorageMonitor()
-    private var timer: Timer?
     private var updateHandler: ((Double) -> Void)?
     private var monitorTask: Task<Void, Never>?
 
@@ -74,9 +73,7 @@ class StorageMonitor {
         monitorTask = Task {
             while !Task.isCancelled {
                 let usagePercentage = getStorageUsagePercentage()
-                DispatchQueue.main.async {
-                    self.updateHandler?(usagePercentage)
-                }
+                self.updateHandler?(usagePercentage)
                 try? await Task.sleep(nanoseconds: UInt64(interval * 1_000_000_000))
             }
         }

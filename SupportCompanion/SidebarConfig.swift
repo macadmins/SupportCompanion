@@ -89,7 +89,7 @@ func generateSidebarItems(preferences: Preferences, stateManager: WebViewStateMa
 
     // Add "Company Portal" with persistent WebViewState
     if preferences.menuShowCompanyPortal {
-        if preferences.mode == Constants.modes.intune || FileManager.default.fileExists(atPath: Constants.AppPaths.companyPortal) {
+        if preferences.mode == Constants.Modes.intune || FileManager.default.fileExists(atPath: Constants.AppPaths.companyPortal) {
             let companyPortalState = stateManager.getWebViewState(
                 for: "CompanyPortal",
                 url: URL(string: preferences.companyPortalUrl)!

@@ -244,27 +244,27 @@ class Preferences: ObservableObject {
 
         if companyPortalExists && mscExists {
             Logger.shared.logDebug("Both Munki and Company Portal paths exist, defaulting to Munki mode.")
-            mode = Constants.modes.munki
+            mode = Constants.Modes.munki
             logFolders = ["/Library/Managed Installs/Logs", "/Library/Logs/Microsoft"]
         } else if companyPortalExists && mdm == "Intune" {
             Logger.shared.logDebug("Company Portal path exists, setting mode to Intune.")
-            mode = Constants.modes.intune
+            mode = Constants.Modes.intune
             logFolders = ["/Library/Logs/Microsoft"]
         } else if selfServiceExists && mscExists {
             Logger.shared.logDebug("Both Munki and Self Service paths exist, defaulting to Munki mode.")
-            mode = Constants.modes.munki
+            mode = Constants.Modes.munki
             logFolders = ["/Library/Managed Installs/Logs", "/var/log/jamf.log"]
         } else if selfServiceExists && mdm == "Jamf" {
             Logger.shared.logDebug("Self Service path exists, setting mode to Jamf.")
-            mode = Constants.modes.jamf
+            mode = Constants.Modes.jamf
             logFolders = ["/var/log/jamf.log"]
         } else if mscExists {
             Logger.shared.logDebug("MSC path exists, setting mode to Munki.")
-            mode = Constants.modes.munki
+            mode = Constants.Modes.munki
             logFolders = ["/Library/Managed Installs/Logs"]
         } else {
             Logger.shared.logDebug("No paths exist, defaulting mode to System Profiler.")
-            mode = Constants.modes.systemProfiler
+            mode = Constants.Modes.systemProfiler
             logFolders = []
         }
 
@@ -382,7 +382,6 @@ class Preferences: ObservableObject {
                 Logger.shared.logError("Unsupported value type for key: \(key)")
                 continue
             }
-            //executeShellCommand(command: writeCommand)
             _ = try? await ExecutionService.executeShellCommand(writeCommand)
         }
 

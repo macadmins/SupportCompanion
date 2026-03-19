@@ -17,7 +17,7 @@ class NotificationPreferences: ObservableObject {
     // MARK: - Notification content
     @AppStorage("NotificationTitle") var notificationTitle: String = "Support Companion"
     @AppStorage("NotificationInterval") var notificationInterval: Int = 4
-    @AppStorage("NotifcationImage") var notificationImage: String = ""
+    @AppStorage("NotificationImage") var notificationImage: String = ""
 
     // MARK: - Software update notification
     @AppStorage("SoftwareUpdateNotificationButtonText") var softwareUpdateNotificationButtonText: String = Constants.Notifications.SoftwareUpdate.UpdateNotificationButtonText

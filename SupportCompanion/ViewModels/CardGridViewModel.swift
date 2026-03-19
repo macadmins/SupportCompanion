@@ -125,7 +125,7 @@ class CardGridViewModel: ObservableObject {
         let appURL: String
 
         switch appState.preferences.mode {
-        case Constants.modes.munki:
+        case Constants.Modes.munki:
             if type == .update {
                 appName = "MSC Updates"
                 appURL = Constants.AppPaths.MSCUpdates
@@ -133,10 +133,10 @@ class CardGridViewModel: ObservableObject {
                 appName = "MSC"
                 appURL = Constants.AppPaths.MSC
             }
-        case Constants.modes.intune:
+        case Constants.Modes.intune:
             appName = "Company Portal"
             appURL = Constants.AppPaths.companyPortal
-		case Constants.modes.jamf:
+		case Constants.Modes.jamf:
 			appName = "Self Service"
 			appURL = Constants.AppPaths.selfService
         default:
@@ -193,9 +193,9 @@ class CardGridViewModel: ObservableObject {
 
     /// True when a management-mode MDM (Munki, Intune, or Jamf) is configured.
     var hasManagementMode: Bool {
-        appState.preferences.mode == Constants.modes.munki ||
-        appState.preferences.mode == Constants.modes.intune ||
-        appState.preferences.mode == Constants.modes.jamf
+        appState.preferences.mode == Constants.Modes.munki ||
+        appState.preferences.mode == Constants.Modes.intune ||
+        appState.preferences.mode == Constants.Modes.jamf
     }
 
     func isCardVisible(_ card: String) -> Bool {

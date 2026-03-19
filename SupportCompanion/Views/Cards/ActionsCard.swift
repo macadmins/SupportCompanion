@@ -24,7 +24,7 @@ struct ActionsCard: View {
                             onShowRebootModal(countdown, title, message)
                         }
                     ) : nil,
-                    (appState.preferences.mode == Constants.modes.munki || appState.preferences.mode == Constants.modes.intune)
+                    (appState.preferences.mode == Constants.Modes.munki || appState.preferences.mode == Constants.Modes.intune)
                         ? (viewModel.isButtonVisible(Constants.Actions.HideStrings.openManagementApp) ? viewModel.createOpenManagementAppButton(type: .default) : nil)
                         : nil,
 					viewModel.isButtonVisible(Constants.Actions.HideStrings.getSupport) && !appState.preferences.supportPageURL.isEmpty ? ScButton(
@@ -38,7 +38,7 @@ struct ActionsCard: View {
                     { [hasBackgroundSecurityImprovement = appState.systemUpdateCache.hasBackgroundSecurityImprovement] in
                         hasBackgroundSecurityImprovement ? ActionHelpers.openBackgroundSecurityImprovements() : ActionHelpers.openSystemUpdates()
                     } : nil,
-                    (appState.preferences.mode == Constants.modes.munki || appState.preferences.mode == Constants.modes.intune)
+                    (appState.preferences.mode == Constants.Modes.munki || appState.preferences.mode == Constants.Modes.intune)
                         ? (viewModel.isButtonVisible(Constants.Actions.HideStrings.restartIntuneAgent) ? viewModel.createRestartIntuneAgentButton() : nil)
                         : nil
                 ].compactMap { $0 } // Remove nil values

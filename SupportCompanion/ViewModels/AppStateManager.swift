@@ -51,13 +51,13 @@ class AppStateManager: ObservableObject {
     var showWindowCallback: (() -> Void)?
 
     func startBackgroundTasks() {
-        if preferences.mode == Constants.modes.munki {
+        if preferences.mode == Constants.Modes.munki {
             pendingMunkiUpdatesManager.startUpdateCheckTimer()
         }
-        if preferences.mode == Constants.modes.intune {
+        if preferences.mode == Constants.Modes.intune {
             pendingIntuneUpdatesManager.startUpdateCheckTimer()
         }
-        if preferences.mode == Constants.modes.jamf {
+        if preferences.mode == Constants.Modes.jamf {
             pendingJamfUpdatesManager.startUpdateCheckTimer()
 			if !preferences.hiddenCards.contains(Constants.Cards.jamfInfo) {
 				jamfInfoManager.startMonitoring()
@@ -74,7 +74,7 @@ class AppStateManager: ObservableObject {
         systemUpdatesManager.stopMonitoring()
         storageInfoManager.stopMonitoring()
         deviceInfoManager.stopMonitoring()
-        if !preferences.hiddenCards.contains(Constants.Cards.jamfInfo) && preferences.mode == Constants.modes.jamf {
+        if !preferences.hiddenCards.contains(Constants.Cards.jamfInfo) && preferences.mode == Constants.Modes.jamf {
             jamfInfoManager.stopMonitoring()
         }
     }

@@ -55,13 +55,13 @@ final class ApplicationsInfoManager: ObservableObject {
     /// Fetches installed applications based on the current mode
     func fetchAppsBasedOnMode() async {
         switch appState.preferences.mode {
-        case Constants.modes.munki:
+        case Constants.Modes.munki:
             await getInstalledMunkiApps()
-        case Constants.modes.intune:
+        case Constants.Modes.intune:
             await getInstalledIntuneApps()
-        case Constants.modes.systemProfiler:
+        case Constants.Modes.systemProfiler:
             await getInstalledProfilerApps()
-        case Constants.modes.jamf:
+        case Constants.Modes.jamf:
             await getInstalledJamfApps()
         default:
             await getInstalledMunkiApps()
