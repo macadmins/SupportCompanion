@@ -21,6 +21,7 @@ final class Logger {
     private var logFileURL: URL
     private var maxFileSizeBytes: Int = 5 * 1024 * 1024 // 5 MB
     private var maxRotatedFiles: Int = 5
+    private let dateFormatter = ISO8601DateFormatter()
 
     // File I/O isolation
     private let fileQueue = DispatchQueue(label: "com.github.macadmins.SupportCompanion.LoggerFileQueue")
@@ -80,8 +81,8 @@ final class Logger {
 
     private func writeToFile(level: String, message: String) {
         guard fileLoggingEnabled else { return }
+        let ts = dateFormatter.string(from: Date())
 
-        let ts = ISO8601DateFormatter().string(from: Date())
         let line = "[\(ts)] [\(level)] \(message)\n"
 
         fileQueue.async {

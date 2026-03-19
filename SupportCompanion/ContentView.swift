@@ -21,7 +21,7 @@ struct ContentView: View {
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
-        let sidebarItems: [SidebarItem] = generateSidebarItems(preferences: appState.preferences, stateManager: webViewStateManager)
+        let sidebarItems: [SidebarItem] = generateSidebarItems(preferences: appState.preferences, stateManager: webViewStateManager, pendingUpdatesCount: appState.pendingUpdatesCount)
         let accentColor = Color(accentNSColor)
         
         NavigationSplitView {
@@ -43,8 +43,8 @@ struct ContentView: View {
                 }
 
                 // Title Section
-                if !appState.preferences.brandName.isEmpty {
-                    Text(appState.preferences.brandName)
+                if !appState.preferences.branding.brandName.isEmpty {
+                    Text(appState.preferences.branding.brandName)
                         .font(.title)
                         .multilineTextAlignment(.center)
                         .padding(.top, 20) // Bring the title closer to the logo
@@ -93,7 +93,6 @@ struct ContentView: View {
                     if let selectedItem = selectedItem {
                         selectedItem.destination
                             .id(selectedItem.id)
-                        //.ignoresSafeArea(edges: .all)
                     } else {
                         Text("Select an option") // Placeholder if nothing is selected
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -137,7 +136,7 @@ struct ContentView: View {
         case "selfservice":
             selectedItem = items.first(where: { $0.id == Constants.Navigation.selfService })
         case "companyportal":
-            selectedItem = items.first(where: { $0.id == "Company Portal" })
+            selectedItem = items.first(where: { $0.id == Constants.Navigation.companyPortal })
         case "knowledgebase":
             selectedItem = items.first(where: { $0.id == Constants.Navigation.knowledgeBase })
         case "markdown":
@@ -148,8 +147,8 @@ struct ContentView: View {
     }
     
     private func loadLogoForCurrentColorScheme() {
-        let preferredLight = appState.preferences.brandLogoLight
-        let darkLogo = appState.preferences.brandLogo
+        let preferredLight = appState.preferences.branding.brandLogoLight
+        let darkLogo = appState.preferences.branding.brandLogo
         let lightLogo = preferredLight.isEmpty ? darkLogo : preferredLight
         let base64Logo = (colorScheme == .dark) ? darkLogo : lightLogo
 
@@ -213,6 +212,16 @@ struct ContentView: View {
 
                     Text(item.label)
                         .frame(maxWidth: .infinity, alignment: .leading)
+
+                    if item.badge > 0 {
+                        Text("\(item.badge)")
+                            .font(.caption2.bold())
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(isSelected ? Color.white.opacity(0.25) : Color.red)
+                            .foregroundColor(.white)
+                            .clipShape(Capsule())
+                    }
                 }
                 .padding(.horizontal, 15)
                 .padding(.vertical, 15)
@@ -223,24 +232,6 @@ struct ContentView: View {
             .onTapGesture(perform: onSelect)
             .onHover { hovering in
                 isHovered = hovering
-            }
-        }
-    }
-}
-
-private struct SidebarHighlight: View {
-    let isSelected: Bool
-    let color: Color
-    let namespace: Namespace.ID
-
-    var body: some View {
-        Group {
-            if isSelected {
-                Capsule()
-                    .fill(color)
-                    .matchedGeometryEffect(id: "sidebar-highlight", in: namespace)
-            } else {
-                Capsule().fill(Color.clear)
             }
         }
     }
@@ -284,8 +275,8 @@ private struct SidebarListView: View {
                 onIncomingURL(url)
             }
         }
-		.onChange(of: AppStateManager.shared.preferences.brandLogo) { _, _ in onBrandLogoChange() }
-		.onChange(of: AppStateManager.shared.preferences.brandLogoLight) { _, _ in onBrandLogoLightChange() }
+		.onChange(of: AppStateManager.shared.preferences.branding.brandLogo) { _, _ in onBrandLogoChange() }
+		.onChange(of: AppStateManager.shared.preferences.branding.brandLogoLight) { _, _ in onBrandLogoLightChange() }
     }
 
     @Environment(\.colorScheme) private var colorScheme
@@ -293,12 +284,11 @@ private struct SidebarListView: View {
 
 private extension ContentView {
     var accentNSColor: NSColor {
-        NSColor(hex: appState.preferences.accentColor ?? "") ?? NSColor.controlAccentColor
+        NSColor(hex: appState.preferences.branding.accentColor ?? "") ?? NSColor.controlAccentColor
     }
 }
 
 struct SidebarItemStyle: ViewModifier {
-    //@State private var isHovered = false
     func body(content: Content) -> some View {
         content
             .font(.system(size: 16))
@@ -320,26 +310,3 @@ struct ContentView_Previews: PreviewProvider {
             .frame(width: 1500, height: 900)
     }
 }
-
-private extension View {
-    func onHoverEffect(_ item: SidebarItem) -> some View {
-        modifier(HoverEffectModifier(item: item))
-    }
-}
-
-struct HoverEffectModifier: ViewModifier {
-    @State private var isHovered = false
-    let item: SidebarItem
-
-    func body(content: Content) -> some View {
-        content
-            .background(
-                Capsule()
-                    .fill(isHovered ? Color.black.opacity(0.2) : Color.clear)
-            )
-            .onHover { hovering in
-                isHovered = hovering
-            }
-    }
-}
-

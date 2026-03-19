@@ -34,23 +34,23 @@ struct ElevationCard: View {
                     
                     HStack {
                         ScButton(Constants.General.elevate, disabled: appState.userInfoManager.userInfo.isAdmin || appState.isDemotionActive) {
-                            if appState.preferences.requireReasonForElevation {
+                            if await appState.preferences.elevation.requireReasonForElevation {
                                 showReasonInput = true // Show reason input modal
                             } else {
-                                elevationManager.handleElevation(reason: "")
+								await elevationManager.handleElevation(reason: "")
                             }
                         }
                         .padding(.top)
                         
                         ScButton(Constants.General.demote, disabled: !appState.isDemotionActive) {
-                            appState.stopDemotionTimer()
-                            elevationManager.demotePrivileges(completion: { success in
-                                if success {
-                                    Logger.shared.logDebug("Successfully demoted privileges")
-                                } else {
-                                    Logger.shared.logError("Failed to demote privileges")
-                                }
-                            })
+							await appState.stopDemotionTimer()
+							await elevationManager.demotePrivileges(completion: { success in
+								if success {
+									Logger.shared.logDebug("Successfully demoted privileges")
+								} else {
+									Logger.shared.logError("Failed to demote privileges")
+								}
+							})
                         }
                         .padding(.top)
                     }

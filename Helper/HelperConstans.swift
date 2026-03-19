@@ -13,6 +13,6 @@ enum HelperConstants {
     static let helperPath = helpersFolder + domain
     
     static let bundleID = "com.github.macadmins.SupportCompanion"
-    static let debugSubject = "H92SB6Z7S4"
-    static let subject = "T4SK8ZXCXG"
+    static let debugSubject = "\"42EJ7ZYMPQ\""
+    static let subject = "\"T4SK8ZXCXG\""
 }

@@ -16,7 +16,7 @@ class SSOInfoHelpers {
         // Fetch Kerberos SSO info for the realm
         let kerberosSSOOutput = try await ExecutionService.executeCommand("/usr/bin/app-sso", with: ["-i", realmName])
         guard let kerberosSSOData = kerberosSSOOutput.data(using: .utf8),
-              let kerberosSSOInfo = try PropertyListSerialization.propertyList(from: kerberosSSOData, options: [], format: nil) as? [String: Any] else {
+            let kerberosSSOInfo = try PropertyListSerialization.propertyList(from: kerberosSSOData, options: [], format: nil) as? [String: Any] else {
             throw NSError(domain: "SSOHelper", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to parse Kerberos SSO plist"])
         }
 
@@ -50,7 +50,7 @@ class SSOInfoHelpers {
         // Extract device configuration
         let deviceConfigJSON = extractJSON(from: platformSSOOutput, pattern: deviceConfigPattern)
         guard let deviceConfigData = deviceConfigJSON?.data(using: .utf8),
-              let deviceConfig = try? JSONSerialization.jsonObject(with: deviceConfigData, options: []) as? [String: Any] else {
+            let deviceConfig = try? JSONSerialization.jsonObject(with: deviceConfigData, options: []) as? [String: Any] else {
             Logger.shared.logError("Device configuration parsing failed")
             throw NSError(domain: "SSOHelper", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to parse device configuration"])
         }
@@ -59,7 +59,7 @@ class SSOInfoHelpers {
         let userConfigJSON = extractJSON(from: platformSSOOutput, pattern: userConfigPattern)
         let userConfig: [String: Any]
         if let userConfigData = userConfigJSON?.data(using: .utf8),
-           let parsedUserConfig = try? JSONSerialization.jsonObject(with: userConfigData, options: []) as? [String: Any] {
+            let parsedUserConfig = try? JSONSerialization.jsonObject(with: userConfigData, options: []) as? [String: Any] {
             userConfig = parsedUserConfig
         } else {
             Logger.shared.logError("User configuration parsing failed. Using default values.")
@@ -105,7 +105,7 @@ class SSOInfoHelpers {
     // Helper to calculate days since a date
     private func daysSince(from dateString: String?) -> Int {
         guard let dateString = dateString,
-              let date = ISO8601DateFormatter().date(from: dateString) else {
+            let date = ISO8601DateFormatter().date(from: dateString) else {
             return -1
         }
         return Calendar.current.dateComponents([.day], from: date, to: Date()).day ?? -1
@@ -114,7 +114,7 @@ class SSOInfoHelpers {
     // Helper to calculate days until a date
     private func daysUntil(from dateString: String?) -> Int {
         guard let dateString = dateString,
-              let date = ISO8601DateFormatter().date(from: dateString) else {
+            let date = ISO8601DateFormatter().date(from: dateString) else {
             return -1
         }
         return Calendar.current.dateComponents([.day], from: Date(), to: date).day ?? -1
@@ -128,7 +128,7 @@ class SSOInfoHelpers {
         }
         let range = NSRange(text.startIndex..<text.endIndex, in: text)
         if let match = regex.firstMatch(in: text, options: [], range: range),
-           let jsonRange = Range(match.range(at: 1), in: text) {
+            let jsonRange = Range(match.range(at: 1), in: text) {
             return String(text[jsonRange])
         }
         return nil
@@ -144,7 +144,7 @@ class SSOInfoHelpers {
             // Extract device configuration
             let deviceConfigJSON = extractJSON(from: platformSSOOutput, pattern: deviceConfigPattern)
             guard let deviceConfigData = deviceConfigJSON?.data(using: .utf8),
-                  let _ = try? JSONSerialization.jsonObject(with: deviceConfigData, options: []) as? [String: Any] else {
+                let _ = try? JSONSerialization.jsonObject(with: deviceConfigData, options: []) as? [String: Any] else {
                 Logger.shared.logError("Device configuration parsing failed")
                 return false
             }
@@ -168,7 +168,7 @@ class SSOInfoHelpers {
             }
             
             if let realmArray = try? JSONDecoder().decode([String].self, from: realmData),
-               let realmName = realmArray.first {
+                let realmName = realmArray.first {
                 return realmName
             } else {
                 Logger.shared.logError("Failed to decode realm JSON")

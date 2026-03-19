@@ -7,6 +7,7 @@
 
 import Foundation
 
+@MainActor
 class JsonCardManager: ObservableObject {
     private var appState: AppStateManager
     private var fileWatcher: FileWatcher?
@@ -21,8 +22,10 @@ class JsonCardManager: ObservableObject {
         fileWatcher = nil
         Logger.shared.logDebug("JsonCardManager: watching file at \(resolved)")
         fileWatcher = FileWatcher(filePath: resolved) { [weak self] in
-            Logger.shared.logDebug("JsonCardManager: file change detected, reloading")
-            self?.loadFromFile(resolved)
+            Task { @MainActor [weak self] in
+                Logger.shared.logDebug("JsonCardManager: file change detected, reloading")
+                self?.loadFromFile(resolved)
+            }
         }
     }
     
@@ -37,9 +40,7 @@ class JsonCardManager: ObservableObject {
         do {
             let data = try Data(contentsOf: fileURL)
             let decodedCards = try JSONDecoder().decode([JsonCard].self, from: data)
-            DispatchQueue.main.async {
-                self.appState.JsonCards = decodedCards
-            }
+            appState.JsonCards = decodedCards
         } catch {
             Logger.shared.logError("Failed to load cards: \(error.localizedDescription)")
         }

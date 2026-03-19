@@ -24,17 +24,21 @@ struct ActionsCard: View {
                             onShowRebootModal(countdown, title, message)
                         }
                     ) : nil,
-                    (appState.preferences.mode == Constants.modes.munki || appState.preferences.mode == Constants.modes.intune)
+                    (appState.preferences.mode == Constants.Modes.munki || appState.preferences.mode == Constants.Modes.intune)
                         ? (viewModel.isButtonVisible(Constants.Actions.HideStrings.openManagementApp) ? viewModel.createOpenManagementAppButton(type: .default) : nil)
                         : nil,
-                    viewModel.isButtonVisible(Constants.Actions.HideStrings.getSupport) ? ScButton(Constants.Actions.getSupport) { ActionHelpers.openSupportPage(url: appState.preferences.supportPageURL) } : nil,
+					viewModel.isButtonVisible(Constants.Actions.HideStrings.getSupport) && !appState.preferences.supportPageURL.isEmpty ? ScButton(
+						Constants.Actions.getSupport)
+					{ await ActionHelpers.openSupportPage(url: appState.preferences.supportPageURL) } : nil,
                     viewModel.isButtonVisible(Constants.Actions.HideStrings.gatherLogs) ? viewModel.createGatherLogsButton() : nil,
                     viewModel.isButtonVisible(Constants.Actions.HideStrings.softwareUpdate) ? ScButton(
                         Constants.Actions.softwareUpdate,
                         badgeNumber: appState.systemUpdateCache.updates.count,
                         helpText: appState.systemUpdateCache.updates.joined(separator: "\n"))
-                    { ActionHelpers.openSystemUpdates() } : nil,
-                    (appState.preferences.mode == Constants.modes.munki || appState.preferences.mode == Constants.modes.intune)
+                    { [hasBackgroundSecurityImprovement = appState.systemUpdateCache.hasBackgroundSecurityImprovement] in
+                        hasBackgroundSecurityImprovement ? ActionHelpers.openBackgroundSecurityImprovements() : ActionHelpers.openSystemUpdates()
+                    } : nil,
+                    (appState.preferences.mode == Constants.Modes.munki || appState.preferences.mode == Constants.Modes.intune)
                         ? (viewModel.isButtonVisible(Constants.Actions.HideStrings.restartIntuneAgent) ? viewModel.createRestartIntuneAgentButton() : nil)
                         : nil
                 ].compactMap { $0 } // Remove nil values

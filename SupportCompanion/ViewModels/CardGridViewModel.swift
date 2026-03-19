@@ -2,12 +2,11 @@ import Foundation
 import Combine
 import SwiftUI
 
+@MainActor
 class CardGridViewModel: ObservableObject {
     @Published var toastConfig: ToastConfig?
     private let appState: AppStateManager
     private let munkiApps = MunkiApps()
-    var installPercentageTimer: Timer?
-    var pendingAppsTimer: Timer?
     private var fetchTask: Task<Void, Never>?
     private var isTaskRunning = false
     private var isPendingAppsTaskRunning = false
@@ -50,49 +49,46 @@ class CardGridViewModel: ObservableObject {
         }
     
     func createRestartIntuneAgentButton(fontSize: CGFloat? = nil) -> ScButton {
-        ScButton(Constants.Actions.restartIntuneAgent, fontSize: fontSize) {
-            ActionHelpers.restartIntuneAgent { result in
+        ScButton(Constants.Actions.restartIntuneAgent, fontSize: fontSize) { [weak self] in
+            ActionHelpers.restartIntuneAgent { [weak self] result in
                 ActionHelpers.handleResult(
                     operationName: "Restart Intune Agent",
                     result: result,
                     successMessage: "Intune agent was restarted successfully.",
-                    //errorMessage: "Failed to restart Intune agent",
-                    updateToast: { toast in
-                        DispatchQueue.main.async {
-                            self.toastConfig = toast
-                        }
+                    updateToast: { [weak self] toast in
+                        Task { @MainActor [weak self] in self?.toastConfig = toast }
                     }
                 )
             }
         }
     }
-    
+
     func createGatherLogsButton(fontSize: CGFloat? = nil) -> ScButton {
-        ScButton(Constants.Actions.gatherLogs, fontSize: fontSize) {
-            ActionHelpers.gatherLogs(preferences: self.appState.preferences) { result in
+        ScButton(Constants.Actions.gatherLogs, fontSize: fontSize) { [weak self] in
+            guard let self else { return }
+            let preferences = await self.appState.preferences
+            await ActionHelpers.gatherLogs(preferences: preferences) { [weak self] result in
                 ActionHelpers.handleResult(
                     operationName: Constants.Actions.gatherLogs,
                     result: result,
                     successMessage: Constants.ToastMessages.SuccessMessages.gatherLogsSuccess,
-                    updateToast: { toast in
-                        DispatchQueue.main.async {
-                            self.toastConfig = toast
-                        }
+                    updateToast: { [weak self] toast in
+                        Task { @MainActor [weak self] in self?.toastConfig = toast }
                     }
                 )
             }
         }
     }
-    
+
     func createRebootButton(
         onShowModal: @escaping (Int, String, String) -> Void
     ) -> ScButton {
         ScButton(Constants.Actions.reboot) {
             await ActionHelpers.reboot { result in
-                DispatchQueue.main.async {
+                Task { @MainActor in
                     switch result {
                     case .info(let message):
-                        onShowModal(Constants.RebootModal.countdown, Constants.RebootModal.title, message) // Trigger modal
+                        onShowModal(Constants.RebootModal.countdown, Constants.RebootModal.title, message)
                     case .failure(let error):
                         Logger.shared.logError("Reboot failed: \(error.localizedDescription)")
                     default:
@@ -104,22 +100,21 @@ class CardGridViewModel: ObservableObject {
     }
     
     func createChangePasswordButton(fontSize: CGFloat? = nil) -> ScButton {
-        ScButton(Constants.Actions.changePassword, fontSize: fontSize) {
-            await ActionHelpers.openChangePassword(preferences: self.appState.preferences) { result in
+        ScButton(Constants.Actions.changePassword, fontSize: fontSize) { [weak self] in
+            guard let self else { return }
+            await ActionHelpers.openChangePassword(preferences: self.appState.preferences) { [weak self] result in
                 ActionHelpers.handleResult(
                     operationName: Constants.Actions.changePassword,
                     result: result,
                     successMessage: "",
-                    updateToast: { toast in
-                        DispatchQueue.main.async {
-                            self.toastConfig = toast
-                        }
+                    updateToast: { [weak self] toast in
+                        Task { @MainActor [weak self] in self?.toastConfig = toast }
                     }
                 )
             }
         }
     }
-    
+
     enum ManagementAppURLType {
         case update
         case `default`
@@ -130,7 +125,7 @@ class CardGridViewModel: ObservableObject {
         let appURL: String
 
         switch appState.preferences.mode {
-        case Constants.modes.munki:
+        case Constants.Modes.munki:
             if type == .update {
                 appName = "MSC Updates"
                 appURL = Constants.AppPaths.MSCUpdates
@@ -138,10 +133,10 @@ class CardGridViewModel: ObservableObject {
                 appName = "MSC"
                 appURL = Constants.AppPaths.MSC
             }
-        case Constants.modes.intune:
+        case Constants.Modes.intune:
             appName = "Company Portal"
             appURL = Constants.AppPaths.companyPortal
-		case Constants.modes.jamf:
+		case Constants.Modes.jamf:
 			appName = "Self Service"
 			appURL = Constants.AppPaths.selfService
         default:
@@ -164,24 +159,19 @@ class CardGridViewModel: ObservableObject {
         let didWrite = pasteboard.setString(clipboardContent, forType: .string)
         
         if didWrite, let _ = pasteboard.string(forType: .string) {
-            DispatchQueue.main.async {
-                self.toastConfig = ToastConfig(
-                    isShowing: true,
-                    type: .complete(.green),
-                    title: "Success!",
-                    subTitle: "Device info copied to clipboard."
-                )
-            }
-        }
-        else {
-            DispatchQueue.main.async {
-                self.toastConfig = ToastConfig(
-                    isShowing: true,
-                    type: .error(.red),
-                    title: "Error!",
-                    subTitle: "Failed to copy device info."
-                )
-            }
+            toastConfig = ToastConfig(
+                isShowing: true,
+                type: .complete(.green),
+                title: "Success!",
+                subTitle: "Device info copied to clipboard."
+            )
+        } else {
+            toastConfig = ToastConfig(
+                isShowing: true,
+                type: .error(.red),
+                title: "Error!",
+                subTitle: "Failed to copy device info."
+            )
         }
     }
     
@@ -189,6 +179,8 @@ class CardGridViewModel: ObservableObject {
         Task {
             do {
                 _ = try await ExecutionService.executeCommand("open", with: [Constants.Panels.storage])
+            } catch {
+                Logger.shared.logError("Failed to open storage panel: \(error)")
             }
         }
     }
@@ -198,7 +190,14 @@ class CardGridViewModel: ObservableObject {
     }
     
     // MARK: - Preferences Management
-    
+
+    /// True when a management-mode MDM (Munki, Intune, or Jamf) is configured.
+    var hasManagementMode: Bool {
+        appState.preferences.mode == Constants.Modes.munki ||
+        appState.preferences.mode == Constants.Modes.intune ||
+        appState.preferences.mode == Constants.Modes.jamf
+    }
+
     func isCardVisible(_ card: String) -> Bool {
         !appState.preferences.hiddenCards.contains(card)
     }
@@ -210,9 +209,9 @@ class CardGridViewModel: ObservableObject {
 	
 	@Published var isUpdating = false
 
-	func runJamfUpdate(forId: String) async {
-		await MainActor.run { self.isUpdating = true }
-		defer { Task { await MainActor.run { self.isUpdating = false } } }
+    func runJamfUpdate(forId: String) async {
+        isUpdating = true
+        defer { isUpdating = false }
 
 		// Kick off the update; ideally obtain a process handle or PID
 		do {
@@ -247,4 +246,51 @@ class CardGridViewModel: ObservableObject {
 			try? await Task.sleep(for: .seconds(0.5))
 		}
 	}
+
+    func getVisibleStacks(viewModel: CardGridViewModel) -> [(id: String, view: AnyView)] {
+        var visibleStacks: [(id: String, view: AnyView)] = []
+        
+        // Conditional logic to arrange Battery and Storage/Device stacks
+        if viewModel.isCardVisible(Constants.Cards.storage) && viewModel.isCardVisible(Constants.Cards.deviceManagement) {
+            // Both Storage and Device Management are visible: Split columns
+            visibleStacks.append(
+                (id: "StorageDeviceManagement",
+                    view: AnyView(
+                    StorageDeviceManagementStack(viewModel: viewModel)
+                        .frame(maxWidth: .infinity)
+                        .gridCellColumns(1)
+                ))
+            )
+            
+            visibleStacks.append(
+                (id: "BatteryEvergreen",
+                    view: AnyView(
+                    BatteryEvergreenStack(viewModel: viewModel)
+                        .frame(maxWidth: .infinity)
+                        .gridCellColumns(1)
+                ))
+            )
+        } else {
+            // Otherwise, span the grid
+            visibleStacks.append(
+                (id: "BatteryEvergreen",
+                    view: AnyView(
+                    BatteryEvergreenStack(viewModel: viewModel)
+                        .frame(maxWidth: .infinity)
+                        .gridCellColumns(2)
+                ))
+            )
+            
+            visibleStacks.append(
+                (id: "StorageDeviceManagement",
+                    view: AnyView(
+                    StorageDeviceManagementStack(viewModel: viewModel)
+                        .frame(maxWidth: .infinity)
+                        .gridCellColumns(2)
+                ))
+            )
+        }
+
+        return visibleStacks
+    }
 }

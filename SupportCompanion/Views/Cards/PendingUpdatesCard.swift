@@ -39,21 +39,21 @@ struct PendingUpdatesCard: View {
     
     private var headerView: some View {
         HStack {
-            Text(Constants.TabelHeaders.name)
+            Text(Constants.TableHeaders.name)
                 .font(.subheadline)
                 .bold()
                 .frame(maxWidth: .infinity, alignment: .leading)
-            Text(Constants.TabelHeaders.version)
+            Text(Constants.TableHeaders.version)
                 .font(.subheadline)
                 .bold()
                 .frame(maxWidth: .infinity, alignment: .trailing)
-            if appState.preferences.mode == Constants.modes.intune {
+            if appState.preferences.mode == Constants.Modes.intune {
                 Text("")
                     .font(.subheadline)
                     .bold()
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
-			if appState.preferences.mode == Constants.modes.jamf {
+			if appState.preferences.mode == Constants.Modes.jamf {
 				Text("Due by")
 					.font(.subheadline)
 					.bold()
@@ -67,11 +67,11 @@ struct PendingUpdatesCard: View {
     
     @ViewBuilder
     private var pendingUpdatesList: some View {
-        if appState.preferences.mode == Constants.modes.munki {
+        if appState.preferences.mode == Constants.Modes.munki {
             updateList(items: appState.pendingMunkiUpdates)
-        } else if appState.preferences.mode == Constants.modes.intune {
+        } else if appState.preferences.mode == Constants.Modes.intune {
             updateList(items: appState.pendingIntuneUpdates)
-		} else if appState.preferences.mode == Constants.modes.jamf {
+		} else if appState.preferences.mode == Constants.Modes.jamf {
 			updateList(items: appState.pendingJamfUpdates)
 		}
     }
@@ -119,26 +119,22 @@ struct PendingUpdatesCard: View {
     }
     
     private func startFetching() {
-        DispatchQueue.main.async {
-            if appState.preferences.mode == Constants.modes.munki {
-                appState.pendingMunkiUpdatesManager.startFetchingList()
-            } else if appState.preferences.mode == Constants.modes.intune {
-                appState.pendingIntuneUpdatesManager.startFetchingList()
-            } else if appState.preferences.mode == Constants.modes.jamf {
-                appState.pendingJamfUpdatesManager.startFetchingList()
-            }
+        if appState.preferences.mode == Constants.Modes.munki {
+            appState.pendingMunkiUpdatesManager.startFetchingList()
+        } else if appState.preferences.mode == Constants.Modes.intune {
+            appState.pendingIntuneUpdatesManager.startFetchingList()
+        } else if appState.preferences.mode == Constants.Modes.jamf {
+            appState.pendingJamfUpdatesManager.startFetchingList()
         }
     }
 
     private func stopFetching() {
-        DispatchQueue.main.async {
-            if appState.preferences.mode == Constants.modes.munki {
-                appState.pendingMunkiUpdatesManager.stopFetchingList()
-            } else if appState.preferences.mode == Constants.modes.intune {
-                appState.pendingIntuneUpdatesManager.stopFetchingList()
-            } else if appState.preferences.mode == Constants.modes.jamf {
-                appState.pendingJamfUpdatesManager.stopFetchingList()
-            }
+        if appState.preferences.mode == Constants.Modes.munki {
+            appState.pendingMunkiUpdatesManager.stopFetchingList()
+        } else if appState.preferences.mode == Constants.Modes.intune {
+            appState.pendingIntuneUpdatesManager.stopFetchingList()
+        } else if appState.preferences.mode == Constants.Modes.jamf {
+            appState.pendingJamfUpdatesManager.stopFetchingList()
         }
     }
     

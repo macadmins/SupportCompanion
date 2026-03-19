@@ -9,6 +9,7 @@ import Foundation
 import Combine
 import SwiftUI
 
+@MainActor
 class AppStateManager: ObservableObject {
     static let shared = AppStateManager()
     lazy var systemUpdatesManager = SystemUpdatesManager(appState: self)
@@ -35,7 +36,7 @@ class AppStateManager: ObservableObject {
     @Published var pendingIntuneUpdates: [PendingIntuneUpdate] = []
     @Published var pendingJamfUpdates: [PendingJamfUpdate] = []
     @Published var installedApplications: [InstalledApp] = []
-    @Published var systemUpdateCache: SystemUpdates = SystemUpdates(id: UUID(), count: 0, updates: [])
+    @Published var systemUpdateCache: SystemUpdates = SystemUpdates(id: UUID(), count: 0, updates: [], hasBackgroundSecurityImprovement: false)
     @Published var windowIsVisible: Bool = false
     @Published var storageUsageColor: Color = Color(NSColor.controlAccentColor)
     @Published var JsonCards: [JsonCard] = []
@@ -50,13 +51,13 @@ class AppStateManager: ObservableObject {
     var showWindowCallback: (() -> Void)?
 
     func startBackgroundTasks() {
-        if preferences.mode == Constants.modes.munki {
+        if preferences.mode == Constants.Modes.munki {
             pendingMunkiUpdatesManager.startUpdateCheckTimer()
         }
-        if preferences.mode == Constants.modes.intune {
+        if preferences.mode == Constants.Modes.intune {
             pendingIntuneUpdatesManager.startUpdateCheckTimer()
         }
-        if preferences.mode == Constants.modes.jamf {
+        if preferences.mode == Constants.Modes.jamf {
             pendingJamfUpdatesManager.startUpdateCheckTimer()
 			if !preferences.hiddenCards.contains(Constants.Cards.jamfInfo) {
 				jamfInfoManager.startMonitoring()
@@ -73,7 +74,7 @@ class AppStateManager: ObservableObject {
         systemUpdatesManager.stopMonitoring()
         storageInfoManager.stopMonitoring()
         deviceInfoManager.stopMonitoring()
-        if !preferences.hiddenCards.contains(Constants.Cards.jamfInfo) && preferences.mode == Constants.modes.jamf {
+        if !preferences.hiddenCards.contains(Constants.Cards.jamfInfo) && preferences.mode == Constants.Modes.jamf {
             jamfInfoManager.stopMonitoring()
         }
     }
@@ -128,18 +129,16 @@ class AppStateManager: ObservableObject {
 			.appendingPathComponent("Library/Preferences/\(domain).plist")
 		let path = prefsURL.path
 		defaultsWatcher = FileWatcher(filePath: path) { [weak self] in
-			guard let self = self else { return }
-			// Read directly from the plist to bypass UserDefaults caching
-			if let dict = NSDictionary(contentsOf: prefsURL) as? [String: Any],
-			   let latest = dict["CustomCardPath"] as? String {
-				DispatchQueue.main.async {
-					if self.preferences.customCardPathPublished != latest {
-						Logger.shared.logInfo("Prefs plist changed -> CustomCardPath='\(latest)'")
-						if self.preferences.customCardPath != latest {
-							self.preferences.customCardPath = latest
-						}
-						self.preferences.customCardPathPublished = latest
+			Task { @MainActor [weak self] in
+				guard let self else { return }
+				if let dict = NSDictionary(contentsOf: prefsURL) as? [String: Any],
+				   let latest = dict["CustomCardPath"] as? String,
+				   self.preferences.customCardPathPublished != latest {
+					Logger.shared.logInfo("Prefs plist changed -> CustomCardPath='\(latest)'")
+					if self.preferences.customCardPath != latest {
+						self.preferences.customCardPath = latest
 					}
+					self.preferences.customCardPathPublished = latest
 				}
 			}
 		}
@@ -179,8 +178,8 @@ class AppStateManager: ObservableObject {
 
     func startDemotionTimer(duration: TimeInterval) {
         elevationManager.startDemotionTimer(duration: duration) { [weak self] remainingTime in
-            DispatchQueue.main.async {
-                guard let self = self else { return }
+            Task { @MainActor [weak self] in
+                guard let self else { return }
                 self.timeToDemote = remainingTime
                 self.isDemotionActive = remainingTime > 0
             }
@@ -206,17 +205,17 @@ class AppStateManager: ObservableObject {
         jsonCardManager?.loadFromFile(preferences.customCardPath)
     }
     
-    @MainActor
     func refreshAll() {
         isRefreshing = true
-        Task {
+        Task { @MainActor [weak self] in
+            guard let self = self else { return }
             await withTaskGroup(of: Void.self) { group in
-                group.addTask { self.deviceInfoManager.refresh() }
-                group.addTask { self.storageInfoManager.refresh() }
-                group.addTask { self.mdmInfoManager.refresh() }
-                group.addTask { self.systemUpdatesManager.refresh() }
-                group.addTask { self.batteryInfoManager.refresh() }
-                group.addTask { self.userInfoManager.refresh() }
+                group.addTask { @MainActor in await self.deviceInfoManager.refresh() }
+                group.addTask { @MainActor in self.storageInfoManager.refresh() }
+                group.addTask { @MainActor in self.mdmInfoManager.refresh() }
+                group.addTask { @MainActor in self.systemUpdatesManager.refresh() }
+                group.addTask { @MainActor in self.batteryInfoManager.refresh() }
+                group.addTask { @MainActor in self.userInfoManager.refresh() }
             }
             self.isRefreshing = false
         }

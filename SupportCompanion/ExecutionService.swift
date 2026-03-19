@@ -61,20 +61,25 @@ enum ExecutionService {
         let tempURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("process_output.json")
         // Create the file if it doesn't exist
         FileManager.default.createFile(atPath: tempURL.path, contents: nil, attributes: nil)
-        
+
         let process = Process()
         process.executableURL = URL(fileURLWithPath: command)
         process.arguments = arguments
         process.standardOutput = try FileHandle(forWritingTo: tempURL)
 
+        let errorPipe = Pipe()
+        process.standardError = errorPipe
+
         try process.run()
         process.waitUntilExit()
 
         if process.terminationStatus != 0 {
+            let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
+            let errorOutput = String(data: errorData, encoding: .utf8) ?? "Unknown error"
             throw NSError(
                 domain: "ExecutionServiceError",
                 code: Int(process.terminationStatus),
-                userInfo: [NSLocalizedDescriptionKey: "Command failed with status \(process.terminationStatus)"]
+                userInfo: [NSLocalizedDescriptionKey: "Command '\(command)' failed with status \(process.terminationStatus): \(errorOutput)"]
             )
         }
 
@@ -96,9 +101,11 @@ enum ExecutionService {
         // Pass the escaped command directly to /bin/sh -c
         let arguments = ["-c", escapedCommand]
         
-        if isPrivileged! {
+        // check if privileged execution is requested and execute accordingly
+        if let isPrivileged, isPrivileged {
             return try await executeCommandPrivileged("/bin/sh", arguments: arguments)
         }
+        
         // Execute using the existing method
         return try await executeCommand("/bin/sh", with: arguments)
     }

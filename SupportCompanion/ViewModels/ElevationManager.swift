@@ -2,8 +2,9 @@ import Foundation
 import Combine
 import SwiftUI
 
+@MainActor
 class ElevationManager {
-    @State private var elevationReason = ""
+    private var elevationReason = ""
     private var appState: AppStateManager
     private var cancellable: AnyCancellable?
     private var timerPublisher: AnyPublisher<Date, Never>?
@@ -12,7 +13,7 @@ class ElevationManager {
     static let shared = ElevationManager(appState: AppStateManager.shared)
 
     init(appState: AppStateManager) {
-        self.appState = AppStateManager.shared
+        self.appState = appState
     }
 
         func elevatePrivileges(completion: @escaping (Bool) -> Void) {
@@ -121,21 +122,23 @@ class ElevationManager {
         Logger.shared.logDebug("Handling elevation for reason: \(reason)")
         // Authenticate and elevate privileges
         self.elevatePrivileges { success in
-            guard success else {
-                Logger.shared.logDebug("Authentication failed. Unable to elevate privileges.")
-                return
-            }
-            Logger.shared.logDebug("Authentication successful. Privileges elevated.")
-            if self.appState.preferences.requireReasonForElevation {
-                if !self.appState.preferences.elevationWebhookURL.isEmpty {
-                    sendReasonToWebhook(reason: reason)
-                } else {
-                    saveReasonToDisk(reason: reason)
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                guard success else {
+                    Logger.shared.logDebug("Authentication failed. Unable to elevate privileges.")
+                    return
                 }
+                Logger.shared.logDebug("Authentication successful. Privileges elevated.")
+                if self.appState.preferences.elevation.requireReasonForElevation {
+                    if !self.appState.preferences.elevation.elevationWebhookURL.isEmpty {
+                        sendReasonToWebhook(reason: reason)
+                    } else {
+                        saveReasonToDisk(reason: reason)
+                    }
+                }
+                let duration = Double(self.appState.preferences.elevation.maxElevationTime * 60)
+                self.appState.startDemotionTimer(duration: duration)
             }
-            // Start the timer
-            let duration = Double(self.appState.preferences.maxElevationTime * 60)
-            self.appState.startDemotionTimer(duration: duration)
         }
     }
 

@@ -22,7 +22,6 @@ struct SelfService: View {
                     }
                 }
                 .padding(.horizontal, 20)
-                //.padding(.top, 20)
                 .id(appState.preferences.actions)
             }
             .onAppear {
@@ -36,7 +35,6 @@ struct SelfService: View {
 
     struct SelfServiceCard: View {
         let action: Action
-        //@State private var isRunning: Bool = false
 
         var body: some View {
             ScCard(
@@ -53,19 +51,14 @@ struct SelfService: View {
                         
                         Spacer() // Push the button to the bottom
                         
-                        /*if isRunning {
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle())
-                                .padding()
-                                .frame(maxWidth: .infinity, alignment: .center)
-                        } else {*/
                             ScButton(action.buttonLabel ?? "Run", maxWidth: 150) {
-                                //isRunning = true
-                                //defer { isRunning = false }
-                                _ = try? await ExecutionService.executeShellCommand(action.command, isPrivileged: action.isPrivileged)
+                                do {
+                                    _ = try await ExecutionService.executeShellCommand(action.command, isPrivileged: action.isPrivileged)
+                                } catch {
+                                    Logger.shared.logError("Self Service action '\(action.command)' failed: \(error)")
+                                }
                             }
                             .frame(maxWidth: .infinity, alignment: .bottom)
-                        //}
                     }
                     .frame(maxHeight: .infinity) // Ensure the VStack takes full available height
                     .padding(.horizontal)

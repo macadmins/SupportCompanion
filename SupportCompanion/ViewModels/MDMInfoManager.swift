@@ -7,6 +7,7 @@
 
 import Foundation
 
+@MainActor
 class MdmInfoManager: ObservableObject {
     static let shared = MdmInfoManager(
         mdmInfo: MdmInfo(
@@ -29,15 +30,13 @@ class MdmInfoManager: ObservableObject {
     
     func updateMdmInfo() {
         Task {
-            let mdmDetails = await getMDMStatus()
-            DispatchQueue.main.async {
-                self.mdmInfo = MdmInfo(
-                    id: UUID(),
-                    abm: mdmDetails["ABM"] ?? "",
-                    enrolled: mdmDetails["Enrolled"] ?? "",
-                    enrolledDate: mdmDetails["EnrollmentDate"] ?? ""
-                )
-            }
+        let mdmDetails = await getMDMStatus()
+            self.mdmInfo = MdmInfo(
+                id: UUID(),
+                abm: mdmDetails["ABM"] ?? "",
+                enrolled: mdmDetails["Enrolled"] ?? "",
+                enrolledDate: mdmDetails["EnrollmentDate"] ?? ""
+            )
         }
     }
 }

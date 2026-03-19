@@ -7,6 +7,7 @@
 
 import Foundation
 
+@MainActor
 class UserInfoManager: ObservableObject {
     static let shared = UserInfoManager(
         userInfo: UserInfo(
@@ -33,9 +34,7 @@ class UserInfoManager: ObservableObject {
     func updateUserInfo() {
         Task {
             let userDetails = try await helper.fetchUserInfo()
-            DispatchQueue.main.async {
-                self.userInfo = userDetails
-            }
+            self.userInfo = userDetails
         }
     }
 }

@@ -51,6 +51,7 @@ func authenticateWithPassword(completion: @escaping (Bool) -> Void, reason: Stri
     }
 }
 
+@MainActor
 func saveReasonToDisk(reason: String) {
     let fileManager = FileManager.default
     let appState = AppStateManager.shared
@@ -91,7 +92,7 @@ func saveReasonToDisk(reason: String) {
         "user": NSUserName(),
         "host": Host.current().localizedName ?? "Unknown",
         "serial": appState.deviceInfoManager.deviceInfo?.serialNumber ?? "Unknown",
-        "severity": appState.preferences.elevationSeverity
+        "severity": appState.preferences.elevation.elevationSeverity
     ]
 
     var existingEntries: [[String: Any]] = []
@@ -123,54 +124,54 @@ func saveReasonToDisk(reason: String) {
     }
 }
 
+@MainActor
 func sendReasonToWebhook(reason: String) {
     let dateFormatter = ISO8601DateFormatter()
     let appState = AppStateManager.shared
 
-    // Define the webhook URL
-    let webhookURL = URL(string: appState.preferences.elevationWebhookURL)!
-    
-    // Create a dictionary with the reason
+    guard let webhookURL = URL(string: appState.preferences.elevation.elevationWebhookURL),
+          !appState.preferences.elevation.elevationWebhookURL.isEmpty else {
+        Logger.shared.logError("Invalid or empty webhook URL.")
+        saveReasonToDisk(reason: reason)
+        return
+    }
+
     let payload: [String: Any] = [
-        "reason": reason, 
+        "reason": reason,
         "date": dateFormatter.string(from: Date()),
         "user": NSUserName(),
         "host": Host.current().localizedName ?? "Unknown",
         "serial": appState.deviceInfoManager.deviceInfo?.serialNumber ?? "Unknown",
-        "severity":appState.preferences.elevationSeverity
+        "severity": appState.preferences.elevation.elevationSeverity
     ]
-    
-    // Serialize the dictionary to JSON
+
     guard let jsonData = try? JSONSerialization.data(withJSONObject: payload) else {
-        print("Failed to serialize JSON.")
+        Logger.shared.logError("Failed to serialize elevation webhook payload.")
+        saveReasonToDisk(reason: reason)
         return
     }
-    
-    // Create a POST request
+
     var request = URLRequest(url: webhookURL)
     request.httpMethod = "POST"
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
     request.httpBody = jsonData
-    
-    // Create a URLSession task
+
     let task = URLSession.shared.dataTask(with: request) { data, response, error in
         if let error = error {
-            saveReasonToDisk(reason: reason)
+            Task { @MainActor in saveReasonToDisk(reason: reason) }
             Logger.shared.logError("Failed to send reason to webhook: \(error.localizedDescription)")
             return
         }
-        
+
         if let response = response as? HTTPURLResponse {
             if response.statusCode == 200 || response.statusCode == 202 {
-                print("Reason sent to webhook successfully.")
+                Logger.shared.logDebug("Reason sent to webhook successfully.")
             } else {
-                // Fallback to save to disk if webhook fails
-                saveReasonToDisk(reason: reason)
+                Task { @MainActor in saveReasonToDisk(reason: reason) }
                 Logger.shared.logError("Failed to send reason to webhook. Status code: \(response.statusCode)")
             }
         }
     }
-    
-    // Start the task
+
     task.resume()
 }

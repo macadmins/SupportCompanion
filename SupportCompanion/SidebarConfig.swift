@@ -8,7 +8,8 @@
 import Foundation
 import SwiftUI
 
-func generateSidebarItems(preferences: Preferences, stateManager: WebViewStateManager) -> [SidebarItem] {
+@MainActor
+func generateSidebarItems(preferences: Preferences, stateManager: WebViewStateManager, pendingUpdatesCount: Int = 0) -> [SidebarItem] {
     var items: [SidebarItem] = [
         SidebarItem(
             label: Constants.Navigation.home,
@@ -42,7 +43,8 @@ func generateSidebarItems(preferences: Preferences, stateManager: WebViewStateMa
                 systemImage: "app.fill",
                 destination: AnyView(
                     Applications()
-                )
+                ),
+                badge: pendingUpdatesCount
             )
         )
     }
@@ -87,7 +89,7 @@ func generateSidebarItems(preferences: Preferences, stateManager: WebViewStateMa
 
     // Add "Company Portal" with persistent WebViewState
     if preferences.menuShowCompanyPortal {
-        if preferences.mode == Constants.modes.intune || FileManager.default.fileExists(atPath: Constants.AppPaths.companyPortal) {
+        if preferences.mode == Constants.Modes.intune || FileManager.default.fileExists(atPath: Constants.AppPaths.companyPortal) {
             let companyPortalState = stateManager.getWebViewState(
                 for: "CompanyPortal",
                 url: URL(string: preferences.companyPortalUrl)!

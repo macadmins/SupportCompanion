@@ -27,7 +27,7 @@ struct CompactElevationCard: View {
                     
                     HStack {
                         Button(action: {
-                            if appState.preferences.requireReasonForElevation {
+                            if appState.preferences.elevation.requireReasonForElevation {
                                 ReasonInputManager.shared.presentAsWindow(
                                     isPresented: $showReasonInput,
                                     onElevate: { reason in
@@ -42,7 +42,7 @@ struct CompactElevationCard: View {
                                 ButtonTitle(title: Constants.General.elevate, fontSize: 12, isLoading: false)
                             }
                             .padding(8)
-                            .background(Color(NSColor(hex: appState.preferences.accentColor ?? "") ?? NSColor.controlAccentColor))
+                            .background(Color(NSColor(hex: appState.preferences.branding.accentColor ?? "") ?? NSColor.controlAccentColor))
                             .foregroundColor(.white)
                             .cornerRadius(8)
                         }
@@ -63,7 +63,7 @@ struct CompactElevationCard: View {
                                 ButtonTitle(title: Constants.General.demote, fontSize: 12, isLoading: false)
                             }
                             .padding(8)
-                            .background(Color(NSColor(hex: appState.preferences.accentColor ?? "") ?? NSColor.controlAccentColor))
+                            .background(Color(NSColor(hex: appState.preferences.branding.accentColor ?? "") ?? NSColor.controlAccentColor))
                             .foregroundColor(.white)
                             .cornerRadius(8)
                         }

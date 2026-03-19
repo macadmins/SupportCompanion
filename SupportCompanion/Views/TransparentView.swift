@@ -13,12 +13,12 @@ struct TransparentView: View {
     @EnvironmentObject var appState: AppStateManager
     @State private var contentHeight: CGFloat = 0
     var combinedPreferences: String {
-        "\(appState.preferences.desktopInfoLevel)-\(appState.preferences.desktopInfoHideItems.joined(separator: ","))"
+        "\(appState.preferences.desktopInfo.desktopInfoLevel)-\(appState.preferences.desktopInfo.desktopInfoHideItems.joined(separator: ","))"
     }
     
     var body: some View {
         ZStack {
-            if appState.preferences.desktopInfoBackgroundFrosted {
+            if appState.preferences.desktopInfo.desktopInfoBackgroundFrosted {
                 BlurEffectView(
                     material: .fullScreenUI,
                     blendingMode: .behindWindow
@@ -28,15 +28,15 @@ struct TransparentView: View {
             }
             
             RoundedRectangle(cornerRadius: 15)
-            .fill(Color.black.opacity(appState.preferences.desktopInfoBackgroundOpacity))
+            .fill(Color.black.opacity(appState.preferences.desktopInfo.desktopInfoBackgroundOpacity))
             .shadow(radius: 10) // Shadow for depth
             .clipShape(RoundedRectangle(cornerRadius: 15))
             .isGlass()
 
             VStack(alignment: .leading) {
                 // Title for the Info View
-                if !appState.preferences.desktopInfoHideItems.contains("Category") {
-                    let trimmedBrand = appState.preferences.brandName.trimmingCharacters(in: .whitespacesAndNewlines)
+                if !appState.preferences.desktopInfo.desktopInfoHideItems.contains("Category") {
+                    let trimmedBrand = appState.preferences.branding.brandName.trimmingCharacters(in: .whitespacesAndNewlines)
                     let useBrand = !trimmedBrand.isEmpty && trimmedBrand.caseInsensitiveCompare("Support Companion") != .orderedSame
                     Text(useBrand ? trimmedBrand : Constants.CardTitle.deviceInfo)
                         .font(.title2)
@@ -51,13 +51,13 @@ struct TransparentView: View {
                     SectionHeaderTransparent(
                         title: group.0, 
                         addHeader: shouldShowGategory(), 
-                        fontSize: CGFloat(appState.preferences.desktopInfoFontSize)
+                        fontSize: CGFloat(appState.preferences.desktopInfo.desktopInfoFontSize)
                     ) // Section title (e.g., "Hardware Specifications")
                     VStack(alignment: .leading) {
-                        ForEach(group.1.filter { !appState.preferences.desktopInfoHideItems.contains($0.key) }, id: \.key) { item in
+                        ForEach(group.1.filter { !appState.preferences.desktopInfo.desktopInfoHideItems.contains($0.key) }, id: \.key) { item in
                             deviceInfoRow(for: item)
                         }
-                        .id(appState.preferences.desktopInfoHideItems)
+                        .id(appState.preferences.desktopInfo.desktopInfoHideItems)
                     }
 
                     // Add a divider only if it's not the last group
@@ -69,7 +69,7 @@ struct TransparentView: View {
                     }
                 }
 
-                if appState.preferences.desktopInfoLevel > 3 && !appState.preferences.desktopInfoHideItems.contains("Storage"){
+                if appState.preferences.desktopInfo.desktopInfoLevel > 3 && !appState.preferences.desktopInfo.desktopInfoHideItems.contains("Storage"){
                     // Storage Section
                     shouldShowDivider()
                         .background(Color.white.opacity(0.2))
@@ -79,12 +79,12 @@ struct TransparentView: View {
                     SectionHeaderTransparent(
                         title: Constants.CardTitle.storage, 
                         addHeader: shouldShowGategory(), 
-                        fontSize: CGFloat(appState.preferences.desktopInfoFontSize)
+                        fontSize: CGFloat(appState.preferences.desktopInfo.desktopInfoFontSize)
                     )
                     storageInfoSection()
                 }
                 
-                if appState.preferences.desktopInfoLevel > 4 && !appState.preferences.desktopInfoHideItems.contains("Support"){
+                if appState.preferences.desktopInfo.desktopInfoLevel > 4 && !appState.preferences.desktopInfo.desktopInfoHideItems.contains("Support"){
                     shouldShowDivider()
                         .background(Color.white.opacity(0.2))
                         .shadow(radius: 2)
@@ -93,7 +93,7 @@ struct TransparentView: View {
                     SectionHeaderTransparent(
                         title: Constants.Support.Titles.support, 
                         addHeader: shouldShowGategory(), 
-                        fontSize: CGFloat(appState.preferences.desktopInfoFontSize)
+                        fontSize: CGFloat(appState.preferences.desktopInfo.desktopInfoFontSize)
                     )
                     supportInfoSection()
                 }
@@ -114,17 +114,17 @@ struct TransparentView: View {
     }
 
     private func shouldShowDivider() -> some View {
-        !appState.preferences.desktopInfoHideItems.contains("Divider")
+        !appState.preferences.desktopInfo.desktopInfoHideItems.contains("Divider")
             ? AnyView(Divider())
             : AnyView(EmptyView())
     }
     
     private func shouldShowGategory() -> Bool {
-        !appState.preferences.desktopInfoHideItems.contains("Category")
+        !appState.preferences.desktopInfo.desktopInfoHideItems.contains("Category")
     }
     
     private func localizedHideCheck(_ standardKey: String) -> Bool {
-        let hideItems = appState.preferences.desktopInfoHideItems
+        let hideItems = appState.preferences.desktopInfo.desktopInfoHideItems
 
         // Map the user-provided keys to localized values
         let localizedKeys = hideItems.compactMap { key in
@@ -148,7 +148,7 @@ struct TransparentView: View {
         groupedDeviceInfo()
             .compactMap { section in
                 let isIncludedByLevel: Bool
-                switch appState.preferences.desktopInfoLevel {
+                switch appState.preferences.desktopInfo.desktopInfoLevel {
                 case 1:
                     isIncludedByLevel = section.key == Constants.DeviceInfo.Categories.hardwareSpecs
                 case 2:
@@ -186,7 +186,7 @@ struct TransparentView: View {
     }
     
     private func deviceInfoRow(for item: (key: String, display: String, value: InfoValue)) -> some View {
-        if item.key == "lastRestartDays" {
+        if item.key == Constants.DeviceInfo.Keys.lastRestartDays {
             return AnyView(EmptyView())
         } else {
             if item.key == Constants.DeviceInfo.Keys.lastRestart {
@@ -194,7 +194,7 @@ struct TransparentView: View {
                     LastRestartRowTransparent(
                         label: item.display,
                         value: item.value.rawValue as? Int ?? 0,
-                        fontSize: CGFloat(appState.preferences.desktopInfoFontSize)
+                        fontSize: CGFloat(appState.preferences.desktopInfo.desktopInfoFontSize)
                     )
                 )
             } else {
@@ -202,7 +202,7 @@ struct TransparentView: View {
                     DeviceInfoRowTransparent(
                         label: item.display,
                         value: item.value.displayValue,
-                        fontSize: CGFloat(appState.preferences.desktopInfoFontSize)
+                        fontSize: CGFloat(appState.preferences.desktopInfo.desktopInfoFontSize)
                     )
                     .id(item.value.displayValue)
                 )
@@ -213,61 +213,61 @@ struct TransparentView: View {
     private func storageInfoSection() -> some View {
         VStack(alignment: .leading) {
             ForEach(appState.storageInfoManager.storageInfo.toKeyValuePairs(), id: \.key) { item in
-                if appState.preferences.desktopInfoHideItems.count > 0 {
-                    if appState.preferences.desktopInfoHideItems.contains(item.key) {
+                if appState.preferences.desktopInfo.desktopInfoHideItems.count > 0 {
+                    if appState.preferences.desktopInfo.desktopInfoHideItems.contains(item.key) {
                         EmptyView()
                     }
                 }
                 if item.key == "FileVault" {
-                    if !appState.preferences.desktopInfoHideItems.contains(Constants.Storage.Keys.fileVault) {
+                    if !appState.preferences.desktopInfo.desktopInfoHideItems.contains(Constants.Storage.Keys.fileVault) {
                         StorageInfoRowTransparent(
                             label: item.display,
                             value: item.value.displayValue,
-                            fontSize: CGFloat(appState.preferences.desktopInfoFontSize)
+                            fontSize: CGFloat(appState.preferences.desktopInfo.desktopInfoFontSize)
                         )
                     }
                     usageInfoRowTransparent(
                         value: appState.storageInfoManager.storageInfo.usage,
-                        fontSize: CGFloat(appState.preferences.desktopInfoFontSize)
+                        fontSize: CGFloat(appState.preferences.desktopInfo.desktopInfoFontSize)
                     )
                 } else {
                     StorageInfoRowTransparent(
                         label: item.display,
                         value: item.value.displayValue,
-                        fontSize: CGFloat(appState.preferences.desktopInfoFontSize)
+                        fontSize: CGFloat(appState.preferences.desktopInfo.desktopInfoFontSize)
                     )
                 }
             }
-            .id(appState.preferences.desktopInfoHideItems)
+            .id(appState.preferences.desktopInfo.desktopInfoHideItems)
         }
     }
     
     private func supportInfoSection() -> some View {
         VStack(alignment: .leading) {
-            if !appState.preferences.desktopInfoHideItems.contains(Constants.Support.Keys.phone) {
+            if !appState.preferences.desktopInfo.desktopInfoHideItems.contains(Constants.Support.Keys.phone) {
                 HStack {
                     Text(Constants.Support.Labels.phone)
-                        .font(.system(size: CGFloat(appState.preferences.desktopInfoFontSize)))
+                        .font(.system(size: CGFloat(appState.preferences.desktopInfo.desktopInfoFontSize)))
                         .bold()
                     Spacer()
                     Text(appState.preferences.supportPhone)
-                        .font(.system(size: CGFloat(appState.preferences.desktopInfoFontSize)))
+                        .font(.system(size: CGFloat(appState.preferences.desktopInfo.desktopInfoFontSize)))
                         .shadow(radius: 2)
                 }
             }
-            if !appState.preferences.desktopInfoHideItems.contains(Constants.Support.Keys.email) {
+            if !appState.preferences.desktopInfo.desktopInfoHideItems.contains(Constants.Support.Keys.email) {
                 HStack {
                     Text(Constants.Support.Labels.email)
-                        .font(.system(size: CGFloat(appState.preferences.desktopInfoFontSize)))
+                        .font(.system(size: CGFloat(appState.preferences.desktopInfo.desktopInfoFontSize)))
                         .bold()
                     Spacer()
                     Text(appState.preferences.supportEmail)
-                        .font(.system(size: CGFloat(appState.preferences.desktopInfoFontSize)))
+                        .font(.system(size: CGFloat(appState.preferences.desktopInfo.desktopInfoFontSize)))
                         .shadow(radius: 2)
                 }
             }
         }
-        .id(appState.preferences.desktopInfoHideItems)
+        .id(appState.preferences.desktopInfo.desktopInfoHideItems)
     }
 }
 

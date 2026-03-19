@@ -10,7 +10,6 @@
 		F60FAB742CE8D40A00ECAC53 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = F60FAB732CE8D40A00ECAC53 /* AlertToast */; };
 		F60FAB872CEA108A00ECAC53 /* SidebarConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60FAB862CEA108A00ECAC53 /* SidebarConfig.swift */; };
 		F627CBCB2E0AF1DF00164680 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = F627CBCA2E0AF1DF00164680 /* AppIcon.icon */; };
-		F64927372CF9EA8D00C34D90 /* com.github.macadmins.SupportCompanion.helper in CopyFiles */ = {isa = PBXBuildFile; fileRef = F6F8AE7D2CE345A8009B0A1F /* com.github.macadmins.SupportCompanion.helper */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		F6575A992D117108007DBC83 /* ExecutionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6F8AE9C2CE34E54009B0A1F /* ExecutionService.swift */; };
 		F6575A9A2D117114007DBC83 /* HelperRemoteProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6F8AE9E2CE34E72009B0A1F /* HelperRemoteProvider.swift */; };
 		F6575A9D2D117141007DBC83 /* SupportCompanionErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6F8AE952CE34B81009B0A1F /* SupportCompanionErrors.swift */; };
@@ -21,6 +20,15 @@
 		F6A4E0F72CEC9DFC002B4D74 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A4E0F62CEC9DFC002B4D74 /* Constants.swift */; };
 		F6A4E0F82CEC9DFC002B4D74 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A4E0F62CEC9DFC002B4D74 /* Constants.swift */; };
 		F6A4E0FA2CEC9FFB002B4D74 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = F6A4E0F92CEC9FFB002B4D74 /* Localizable.xcstrings */; };
+		F6CB698E2F69570000CCD8DF /* com.github.macadmins.SupportCompanion.helper in CopyFiles */ = {isa = PBXBuildFile; fileRef = F6F8AE7D2CE345A8009B0A1F /* com.github.macadmins.SupportCompanion.helper */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		F6CB6D412F6964B600CCD8DF /* DesktopInfoPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6CB6D3E2F6964B600CCD8DF /* DesktopInfoPreferences.swift */; };
+		F6CB6D422F6964B600CCD8DF /* ElevationPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6CB6D3F2F6964B600CCD8DF /* ElevationPreferences.swift */; };
+		F6CB6D432F6964B600CCD8DF /* NotificationPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6CB6D402F6964B600CCD8DF /* NotificationPreferences.swift */; };
+		F6CB6D442F6964B600CCD8DF /* BrandingPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6CB6D3D2F6964B600CCD8DF /* BrandingPreferences.swift */; };
+		F6CB6D452F6964CE00CCD8DF /* NotificationPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6CB6D402F6964B600CCD8DF /* NotificationPreferences.swift */; };
+		F6CB6D462F6964CE00CCD8DF /* ElevationPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6CB6D3F2F6964B600CCD8DF /* ElevationPreferences.swift */; };
+		F6CB6D472F6964CE00CCD8DF /* BrandingPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6CB6D3D2F6964B600CCD8DF /* BrandingPreferences.swift */; };
+		F6CB6D482F6964CE00CCD8DF /* DesktopInfoPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6CB6D3E2F6964B600CCD8DF /* DesktopInfoPreferences.swift */; };
 		F6E4D1D52CE4CE1E003EB8C0 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6E4D1D42CE4CE1E003EB8C0 /* Preferences.swift */; };
 		F6E4D26F2CE65D12003EB8C0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6E4D26E2CE65D12003EB8C0 /* AppDelegate.swift */; };
 		F6F3BEBD2CE1E7BA0036ADB9 /* SupportCompanion.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6F3BEBC2CE1E7BA0036ADB9 /* SupportCompanion.swift */; };
@@ -39,7 +47,7 @@
 			dstPath = Contents/Library/LaunchDaemons;
 			dstSubfolderSpec = 1;
 			files = (
-				F64927372CF9EA8D00C34D90 /* com.github.macadmins.SupportCompanion.helper in CopyFiles */,
+				F6CB698E2F69570000CCD8DF /* com.github.macadmins.SupportCompanion.helper in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -82,6 +90,10 @@
 		F69455982CF6076100B887F8 /* build.zsh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = build.zsh; sourceTree = "<group>"; };
 		F6A4E0F62CEC9DFC002B4D74 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		F6A4E0F92CEC9FFB002B4D74 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		F6CB6D3D2F6964B600CCD8DF /* BrandingPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandingPreferences.swift; sourceTree = "<group>"; };
+		F6CB6D3E2F6964B600CCD8DF /* DesktopInfoPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesktopInfoPreferences.swift; sourceTree = "<group>"; };
+		F6CB6D3F2F6964B600CCD8DF /* ElevationPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElevationPreferences.swift; sourceTree = "<group>"; };
+		F6CB6D402F6964B600CCD8DF /* NotificationPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPreferences.swift; sourceTree = "<group>"; };
 		F6E4D1D42CE4CE1E003EB8C0 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		F6E4D26E2CE65D12003EB8C0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F6F3BEB92CE1E7BA0036ADB9 /* SupportCompanion.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SupportCompanion.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -156,9 +168,11 @@
 			membershipExceptions = (
 				BatteryHelpers.swift,
 				DeviceInfoHelpers.swift,
+				HardwareInfoHelpers.swift,
 				IOKit.swift,
 				Logger.swift,
 				MDMHelpers.swift,
+				NetworkInfoHelpers.swift,
 				SSOInfoHelpers.swift,
 				StorageHelpers.swift,
 				UserHelpers.swift,
@@ -207,6 +221,7 @@
 				PendingIntuneUpdatesManager.swift,
 				PendingJamfUpdatesManager.swift,
 				PendingMunkiUpdatesManager.swift,
+				PendingUpdatesManager.swift,
 				ReasonInputManager.swift,
 				SSOInfoManager.swift,
 				StorageInfoManager.swift,
@@ -310,6 +325,10 @@
 		F6F3BEBB2CE1E7BA0036ADB9 /* SupportCompanion */ = {
 			isa = PBXGroup;
 			children = (
+				F6CB6D3D2F6964B600CCD8DF /* BrandingPreferences.swift */,
+				F6CB6D3E2F6964B600CCD8DF /* DesktopInfoPreferences.swift */,
+				F6CB6D3F2F6964B600CCD8DF /* ElevationPreferences.swift */,
+				F6CB6D402F6964B600CCD8DF /* NotificationPreferences.swift */,
 				F694558E2CF6050C00B887F8 /* pkgbuild */,
 				F69455882CF603A600B887F8 /* Scripts */,
 				F69455822CF5A6D300B887F8 /* Protocols */,
@@ -508,6 +527,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F6CB6D452F6964CE00CCD8DF /* NotificationPreferences.swift in Sources */,
+				F6CB6D462F6964CE00CCD8DF /* ElevationPreferences.swift in Sources */,
+				F6CB6D472F6964CE00CCD8DF /* BrandingPreferences.swift in Sources */,
+				F6CB6D482F6964CE00CCD8DF /* DesktopInfoPreferences.swift in Sources */,
 				F6890EEC2CFF330D00244985 /* Preferences.swift in Sources */,
 				F6575A9D2D117141007DBC83 /* SupportCompanionErrors.swift in Sources */,
 				F6575A992D117108007DBC83 /* ExecutionService.swift in Sources */,
@@ -527,6 +550,10 @@
 				F6E4D26F2CE65D12003EB8C0 /* AppDelegate.swift in Sources */,
 				F6F8AE962CE34B81009B0A1F /* SupportCompanionErrors.swift in Sources */,
 				F6F8AE9D2CE34E54009B0A1F /* ExecutionService.swift in Sources */,
+				F6CB6D412F6964B600CCD8DF /* DesktopInfoPreferences.swift in Sources */,
+				F6CB6D422F6964B600CCD8DF /* ElevationPreferences.swift in Sources */,
+				F6CB6D432F6964B600CCD8DF /* NotificationPreferences.swift in Sources */,
+				F6CB6D442F6964B600CCD8DF /* BrandingPreferences.swift in Sources */,
 				F6E4D1D52CE4CE1E003EB8C0 /* Preferences.swift in Sources */,
 				F6A4E0F82CEC9DFC002B4D74 /* Constants.swift in Sources */,
 			);
@@ -550,7 +577,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=macosx*]" = H92SB6Z7S4;
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = 42EJ7ZYMPQ;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.github.macadmins.SupportCompanion.CLI;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -566,7 +593,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=macosx*]" = H92SB6Z7S4;
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = 42EJ7ZYMPQ;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.github.macadmins.SupportCompanion.CLI;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -714,7 +741,7 @@
 				CURRENT_PROJECT_VERSION = 1.0;
 				DEVELOPMENT_ASSET_PATHS = "\"SupportCompanion/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=macosx*]" = H92SB6Z7S4;
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = 42EJ7ZYMPQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/SupportCompanion/Info.plist";
@@ -734,7 +761,7 @@
 				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TEAM_ID = H92SB6Z7S4;
+				TEAM_ID = 42EJ7ZYMPQ;
 			};
 			name = Debug;
 		};
@@ -752,7 +779,7 @@
 				CURRENT_PROJECT_VERSION = 1.0;
 				DEVELOPMENT_ASSET_PATHS = "\"SupportCompanion/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=macosx*]" = H92SB6Z7S4;
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = 42EJ7ZYMPQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/SupportCompanion/Info.plist";
@@ -784,7 +811,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=macosx*]" = H92SB6Z7S4;
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = 42EJ7ZYMPQ;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/Helper/Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
@@ -803,7 +830,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.0;
-				TEAM_ID = H92SB6Z7S4;
+				TEAM_ID = 42EJ7ZYMPQ;
 			};
 			name = Debug;
 		};
@@ -815,7 +842,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=macosx*]" = H92SB6Z7S4;
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = 42EJ7ZYMPQ;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/Helper/Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 14.0;

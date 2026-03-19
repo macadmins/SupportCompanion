@@ -7,6 +7,7 @@
 
 import Foundation
 
+@MainActor
 class SSOInfoManager: ObservableObject {
     static let shared = SSOInfoManager(
         kerberosSSO: KerberosSSO(
@@ -67,9 +68,7 @@ class SSOInfoManager: ObservableObject {
     private func updateKerberosSSO() async {
         do {
             let kerberosDetails = try await helper.fetchKerberosSSO()
-            DispatchQueue.main.async {
-                self.kerberosSSO = kerberosDetails
-            }
+            self.kerberosSSO = kerberosDetails
         } catch {
             Logger.shared.logError("Failed to update Kerberos SSO Info: \(error.localizedDescription)")
         }
@@ -78,9 +77,7 @@ class SSOInfoManager: ObservableObject {
     private func updatePlatformSSO() async {
         do {
             let platformDetails = try await helper.fetchPlatformSSO()
-            DispatchQueue.main.async {
-                self.platformSSO = platformDetails
-            }
+            self.platformSSO = platformDetails
         } catch {
             Logger.shared.logError("Failed to update Platform SSO Info: \(error.localizedDescription)")
         }

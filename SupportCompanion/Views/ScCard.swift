@@ -90,13 +90,10 @@ struct ScCard<Content: View>: View {
                             await buttonAction()
                         }
                     }) {
-                        //Image(systemName: buttonImageName)
-                        //    .font(.system(size: 16))
-                        //    .foregroundColor(Color(NSColor(hex: appState.preferences.accentColor ?? "") ?? NSColor.controlAccentColor))
-						InfoHelp(text: buttonHelpText ?? "", icon: buttonImageName, color: Color(NSColor(hex: appState.preferences.accentColor ?? "") ?? NSColor.controlAccentColor))
+                        InfoHelp(text: buttonHelpText ?? "", icon: buttonImageName, color: Color(NSColor(hex: appState.preferences.branding.accentColor ?? "") ?? NSColor.controlAccentColor))
                     }
                     .buttonStyle(PlainButtonStyle())
-                    //.help(buttonHelpText ?? "")
+                    .accessibilityLabel(buttonHelpText ?? buttonImageName)
                 }
             }
             .padding()
@@ -127,10 +124,6 @@ struct ScCard<Content: View>: View {
             Spacer()
         }
         .padding()
-        /*.background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(.ultraThinMaterial)
-        )*/
         .isGlass()
         .cornerRadius(10)
         .shadow(radius: 4)

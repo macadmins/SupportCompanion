@@ -23,7 +23,7 @@ enum Constants {
         }
     }
     
-    enum modes {
+    enum Modes {
         static let munki = "Munki"
         static let intune = "Intune"
         static let systemProfiler = "SystemProfiler"
@@ -70,6 +70,7 @@ enum Constants {
         static let storage = "x-apple.systempreferences:com.apple.settings.Storage"
         static let softwareUpdates = "x-apple.systempreferences:com.apple.preferences.softwareupdate"
         static let users = "x-apple.systempreferences:com.apple.preferences.users"
+        static let backgroundSecurityImprovements = "x-apple.systempreferences:com.apple.SecurityImprovements-Settings.extension"
     }
     
     enum ToolTips {
@@ -90,7 +91,7 @@ enum Constants {
         }
 
         enum Elevation {
-            static let ElevationStartedMessage = String(localized: "Notification.ElevationStarted", defaultValue: "Privliged session started. You will be demoted in", comment: "Notification message when an elevation is started")
+            static let ElevationStartedMessage = String(localized: "Notification.ElevationStarted", defaultValue: "Privileged session started. You will be demoted in", comment: "Notification message when an elevation is started")
             static let ElevationHalfwayMessage = String(localized: "Notification.ElevationHalfway", defaultValue: "Your elevated privileges will be demoted in", comment: "Notification message when half the time has passed")
             static let ElevationDemotedMessage = String(localized: "Notification.ElevationDemoted", defaultValue: "Your elevated privileges have been demoted.", comment: "Notification message when the elevation is demoted")
         }
@@ -184,6 +185,7 @@ enum Constants {
         static let identity = String(localized: "Nav.Identity", defaultValue: "Identity", comment: "Label for identity navigation")
         static let apps = String(localized: "Nav.Apps", defaultValue: "Apps", comment: "Label for apps navigation")
         static let selfService = String(localized: "Nav.SelfService", defaultValue: "Self Service", comment: "Label for self service navigation")
+        static let companyPortal = String(localized: "Nav.CompanyPortal", defaultValue: "Company Portal", comment: "Label for company portal navigation")
     }
     
     enum DeviceInfo {
@@ -197,6 +199,7 @@ enum Constants {
             static let lastRestart = String(localized: "DeviceInfo.LastRestart", defaultValue: "Last Restart:", comment: "Label for last restart")
             static let ipAddress = String(localized: "DeviceInfo.IpAddress", defaultValue: "IP Address:", comment: "Label for IP address")
             static let serialNumber = String(localized: "DeviceInfo.SerialNumber", defaultValue: "Serial Number:", comment: "Label for serial number")
+            static let ssid = String(localized: "DeviceInfo.SSID", defaultValue: "SSID:", comment: "Label for SSID")
         }
         enum Categories {
             static let hardwareSpecs = String(localized: "DeviceInfo.HardwareSpecs", defaultValue: "Hardware Specifications", comment: "Category for hardware specs")
@@ -214,6 +217,8 @@ enum Constants {
             static let ipAddress = "IPAddress"
             static let model = "Model"
             static let serialNumber = "SerialNumber"
+            static let ssid = "SSID"
+            static let lastRestartDays = "LastRestartDays"
         }
     }
 	
@@ -335,9 +340,9 @@ enum Constants {
         }
     }
     
-    enum TabelHeaders {
-        static let name = String(localized: "TabelHeaders.Name", defaultValue: "Name", comment: "Header for the name column")
-        static let version = String(localized: "TabelHeaders.Version", defaultValue: "Version", comment: "Header for the version column")
-        static let action = String(localized: "TabelHeaders.Action", defaultValue: "Action", comment: "Header for the action column")
+    enum TableHeaders {
+        static let name = String(localized: "TableHeaders.Name", defaultValue: "Name", comment: "Header for the name column")
+        static let version = String(localized: "TableHeaders.Version", defaultValue: "Version", comment: "Header for the version column")
+        static let action = String(localized: "TableHeaders.Action", defaultValue: "Action", comment: "Header for the action column")
     }
 }

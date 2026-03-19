@@ -26,7 +26,7 @@ struct Identity: View {
                     if !appState.ssoInfoManager.platformSSO.loginType.isEmpty {
                         PSSOCard()
                     }
-                    if appState.preferences.enableElevation {
+                    if appState.preferences.elevation.enableElevation {
                         ElevationCard()
                     }
                 }

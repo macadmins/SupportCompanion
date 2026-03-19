@@ -7,6 +7,7 @@
 
 import Foundation
 
+@MainActor
 func getLastCheckIn() async throws -> String {
     let predicate = #"process == "jamf" AND eventMessage CONTAINS "recurring check-in""#
     let args = [
@@ -41,6 +42,7 @@ func getLastCheckIn() async throws -> String {
     return timeAgoString(since: tsDate)
 }
 
+@MainActor
 func getLastInventoryUpdate() async throws -> String {
     let predicate = #"process == "jamf" AND eventMessage CONTAINS "Submitting data""#
     let args: [String] = [

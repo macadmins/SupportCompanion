@@ -11,6 +11,7 @@ import UserNotifications
 import SwiftUI
 import Combine
 
+@MainActor
 class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     var popover: NSPopover!
     var statusItem: NSStatusItem?
@@ -110,7 +111,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             self?.showWindow()
         }
         
-        if appStateManager.preferences.showDesktopInfo {            
+        if appStateManager.preferences.desktopInfo.showDesktopInfo {            
             // Initialize transparent window
             transparentWindowController = TransparentWindowController(appState: appStateManager)
             transparentWindowController?.showWindow(nil)
@@ -128,8 +129,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         appStateManager.startBackgroundTasks()
         appStateManager.refreshAll()
         checkAndHandleDemotionOnLaunch()
-		if !appStateManager.preferences.hiddenCards.contains(Constants.Cards.jamfInfo) && appStateManager.preferences.mode == Constants.modes.jamf {
-			//fetchAndStoreJamfId()
+		if !appStateManager.preferences.hiddenCards.contains(Constants.Cards.jamfInfo) && appStateManager.preferences.mode == Constants.Modes.jamf {
 			Task {
 				let id: String
 				do {
@@ -160,7 +160,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         } else if let endTime = elevationManager.loadPersistedDemotionState() {
             let remainingTime = endTime.timeIntervalSinceNow
             elevationManager.startDemotionTimer(duration: remainingTime) { remainingTime in
-                DispatchQueue.main.async {
+                Task { @MainActor in
                     AppStateManager.shared.timeToDemote = remainingTime
                     AppStateManager.shared.isDemotionActive = remainingTime > 0
                 }
@@ -190,8 +190,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             appStateManager.preferences.$hiddenCards
         )
         .map { pendingUpdatesCount, systemUpdateCache, hiddenActions, hiddenCards in
-            let hasPendingUpdates = !hiddenCards.contains("PendingAppUpdates") && pendingUpdatesCount > 0
-            let hasSoftwareUpdates = !hiddenActions.contains("SoftwareUpdates") && systemUpdateCache.count > 0
+            let hasPendingUpdates = !hiddenCards.contains(Constants.Cards.pendingAppUpdates) && pendingUpdatesCount > 0
+            let hasSoftwareUpdates = !hiddenActions.contains(Constants.Actions.HideStrings.softwareUpdate) && systemUpdateCache.count > 0
             return hasPendingUpdates || hasSoftwareUpdates
         }
             .sink { hasUpdates in
@@ -200,6 +200,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             .store(in: &cancellables)
     }
 
+    @MainActor
     class TrayMenuManager {
         static let shared = TrayMenuManager()
         let appStateManager = AppStateManager.shared
@@ -219,7 +220,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
             showLogo = loadLogo(base64Logo: base64Logo)
             if showLogo {
-                baseIcon = NSImage(data: Data(base64Encoded: base64Logo)!)
+                guard let data = Data(base64Encoded: base64Logo) else {
+                    Logger.shared.logError("Error: Failed to decode base64 logo for tray icon")
+                    return
+                }
+                baseIcon = NSImage(data: data)
             } else {
                 baseIcon = NSImage(named: iconName)
             }
@@ -349,12 +354,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     }
     
     private func configureAppUpdateNotificationCommand(mode: String) {
-		if mode == Constants.modes.munki {
-            appStateManager.preferences.appUpdateNotificationCommand = "open \(Constants.AppPaths.MSCUpdates)"
-		} else if mode == Constants.modes.intune {
-            appStateManager.preferences.appUpdateNotificationCommand = "open \(Constants.AppPaths.companyPortal)"
-		} else if mode == Constants.modes.jamf {
-			appStateManager.preferences.appUpdateNotificationCommand = "open \(Constants.AppPaths.selfService)"
+		if mode == Constants.Modes.munki {
+            appStateManager.preferences.notifications.appUpdateNotificationCommand = "open \(Constants.AppPaths.MSCUpdates)"
+		} else if mode == Constants.Modes.intune {
+            appStateManager.preferences.notifications.appUpdateNotificationCommand = "open \(Constants.AppPaths.companyPortal)"
+		} else if mode == Constants.Modes.jamf {
+			appStateManager.preferences.notifications.appUpdateNotificationCommand = "open \(Constants.AppPaths.selfService)"
 		}
      }
 }

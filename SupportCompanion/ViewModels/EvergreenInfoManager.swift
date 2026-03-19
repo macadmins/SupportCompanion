@@ -7,6 +7,7 @@
 
 import Foundation
 
+@MainActor
 class EvergreenInfoManager: ObservableObject {
     private var evergreenHelper = EvergreenHelpers()
     private var appState: AppStateManager
@@ -23,8 +24,6 @@ class EvergreenInfoManager: ObservableObject {
     
     func updateEvergreenInfo() async {
         let catalogs = await evergreenHelper.getCatalogs()
-        DispatchQueue.main.async {
-            self.appState.catalogs = Array(Set(catalogs))
-        }
+        appState.catalogs = Array(Set(catalogs))
     }
 }

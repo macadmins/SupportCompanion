@@ -31,7 +31,7 @@ struct BatteryEvergreenStack: View {
                 .fixedSize(horizontal: false, vertical: false)
                 }
                 
-                if viewModel.isCardVisible(Constants.Cards.evergreen) && appState.preferences.mode == Constants.modes.munki {
+                if viewModel.isCardVisible(Constants.Cards.evergreen) && appState.preferences.mode == Constants.Modes.munki {
                     ScCard(title: "\(Constants.CardTitle.evergreen)", titleImageName: "leaf.fill", content: {
                         VStack(alignment: .leading) {
                             Text("Rings")
@@ -55,7 +55,7 @@ struct BatteryEvergreenStack: View {
                     .fixedSize(horizontal: false, vertical: false)
                 }
 				
-				if viewModel.isCardVisible(Constants.Cards.jamfInfo) && appState.preferences.mode == Constants.modes.jamf {
+				if viewModel.isCardVisible(Constants.Cards.jamfInfo) && appState.preferences.mode == Constants.Modes.jamf {
 					ScCard(title: Constants.CardTitle.jamfInfo, titleImageName: "server.rack", content: {
 						VStack(alignment: .leading, spacing: 5) {
 							CardData(info: appState.jamfInfoManager.jamfInfo.toKeyValuePairs())

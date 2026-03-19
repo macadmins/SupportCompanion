@@ -9,6 +9,7 @@ import Foundation
 import UserNotifications
 import SwiftUI
 
+@MainActor
 class NotificationService {
     private let appState: AppStateManager
     
@@ -40,26 +41,27 @@ class NotificationService {
         command: String? = nil,
         notificationType: NotificationType
     ) {
-        guard appState.preferences.notificationInterval > 0 else {
+        guard appState.preferences.notifications.notificationInterval > 0 else {
             Logger.shared.logDebug("Notification interval set to 0, skipping notification")
             return
         }
         
-        let imagePath = appState.preferences.notificationImage.isEmpty ? nil : appState.preferences.notificationImage
+        let imagePath = appState.preferences.notifications.notificationImage.isEmpty ? nil : appState.preferences.notifications.notificationImage
 
         if notificationType != .generic {
             if let lastDate = AppStorageHelper.shared.getLastNotificationDate(for: notificationType),
-            Date().timeIntervalSince(lastDate) < TimeInterval(appState.preferences.notificationInterval * 3600) {
+            Date().timeIntervalSince(lastDate) < TimeInterval(appState.preferences.notifications.notificationInterval * 3600) {
                 Logger.shared.logDebug("Notification interval for \(notificationType) not reached, skipping notification")
                 return
             }
         }
 
+        let notificationCommand = command?.isEmpty == false ? command : nil
         let content = UNMutableNotificationContent()
-        content.title = appState.preferences.notificationTitle
+        content.title = appState.preferences.notifications.notificationTitle
         content.body = message
         content.sound = .default
-        content.userInfo = ["Command": command]
+        content.userInfo = ["Command": notificationCommand as Any]
         content.categoryIdentifier = "ACTIONABLE"
         
         if let imagePath = imagePath, let tempURL = prepareImageForNotification(imagePath: imagePath) {
@@ -94,7 +96,9 @@ class NotificationService {
                 Logger.shared.logDebug("Failed to deliver notification: \(error.localizedDescription)")
             } else {
                 Logger.shared.logDebug("Notification sent: \(message)")
-                AppStorageHelper.shared.setLastNotificationDate(Date(), for: notificationType)
+                Task { @MainActor in
+                    AppStorageHelper.shared.setLastNotificationDate(Date(), for: notificationType)
+                }
             }
         }
     }
@@ -107,15 +111,17 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
         if response.actionIdentifier == "RUN_COMMAND",
-           let command = response.notification.request.content.userInfo["Command"] as? String {
+            let command = response.notification.request.content.userInfo["Command"] as? String {
             Logger.shared.logDebug("Notification button clicked, running command: \(command)")
             if command == "demote" {
-                AppStateManager.shared.stopDemotionTimer()
-                ElevationManager.shared.demotePrivileges { success in
-                    if success {
-                        Logger.shared.logDebug("Successfully demoted privileges")
-                    } else {
-                        Logger.shared.logError("Failed to demote privileges")
+                Task { @MainActor in
+                    AppStateManager.shared.stopDemotionTimer()
+                    ElevationManager.shared.demotePrivileges { success in
+                        if success {
+                            Logger.shared.logDebug("Successfully demoted privileges")
+                        } else {
+                            Logger.shared.logError("Failed to demote privileges")
+                        }
                     }
                 }
             } else {
@@ -133,44 +139,36 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
     }
 }
 
+@MainActor
 class BadgeManager {
     static let shared = BadgeManager()
     private(set) var badgeCount = 0
-    private let lock = NSLock()
 
     func incrementBadgeCount(count: Int) {
-        lock.lock()
         badgeCount = count
-        lock.unlock()
         updateBadge()
     }
 
     func currentBadgeCount() -> Int {
-        lock.lock()
-        let count = badgeCount
-        lock.unlock()
-        return count
+        return badgeCount
     }
 
     private func updateBadge() {
-        DispatchQueue.main.async {
-            if self.badgeCount > 0 {
-                let prefs = AppStateManager.shared.preferences
-                let hasPendingUpdates = !prefs.hiddenCards.contains("PendingAppUpdates") && AppStateManager.shared.pendingUpdatesCount > 0
-                let hasSoftwareUpdates = !prefs.hiddenActions.contains("SoftwareUpdates") && AppStateManager.shared.systemUpdateCache.count > 0
-                if hasPendingUpdates || hasSoftwareUpdates {
-                    NSApplication.shared.dockTile.showsApplicationBadge = true
-                    NSApplication.shared.dockTile.badgeLabel = nil
-                    NSApplication.shared.dockTile.badgeLabel = String(self.badgeCount)
-                } else {
-                    NSApplication.shared.dockTile.showsApplicationBadge = false
-                    NSApplication.shared.dockTile.badgeLabel = nil
-                }
-
-            } else {
+        if badgeCount > 0 {
+            let prefs = AppStateManager.shared.preferences
+            let hasPendingUpdates = !prefs.hiddenCards.contains("PendingAppUpdates") && AppStateManager.shared.pendingUpdatesCount > 0
+            let hasSoftwareUpdates = !prefs.hiddenActions.contains("SoftwareUpdates") && AppStateManager.shared.systemUpdateCache.count > 0
+            if hasPendingUpdates || hasSoftwareUpdates {
+                NSApplication.shared.dockTile.showsApplicationBadge = true
                 NSApplication.shared.dockTile.badgeLabel = nil
+                NSApplication.shared.dockTile.badgeLabel = String(badgeCount)
+            } else {
                 NSApplication.shared.dockTile.showsApplicationBadge = false
+                NSApplication.shared.dockTile.badgeLabel = nil
             }
+        } else {
+            NSApplication.shared.dockTile.badgeLabel = nil
+            NSApplication.shared.dockTile.showsApplicationBadge = false
         }
     }
 }
@@ -183,6 +181,7 @@ enum NotificationType: String {
 }
 
 
+@MainActor
 class AppStorageHelper {
     // Singleton instance
     static let shared = AppStorageHelper(appState: AppStateManager.shared)
@@ -197,13 +196,13 @@ class AppStorageHelper {
         let formattedDate = ISO8601DateFormatter().string(from: date)
         switch type {
         case .softwareUpdate:
-            appState.preferences.lastSoftwareUpdateNotificationTime = formattedDate
+            appState.preferences.notifications.lastSoftwareUpdateNotificationTime = formattedDate
         case .rebootReminder:
-            appState.preferences.lastRebootReminderNotificationTime = formattedDate
+            appState.preferences.notifications.lastRebootReminderNotificationTime = formattedDate
         case .generic:
-            appState.preferences.lastGenericNotificationTime = formattedDate
+            appState.preferences.notifications.lastGenericNotificationTime = formattedDate
         case .appUpdate:
-            appState.preferences.lastAppUpdateNotificationTime = formattedDate
+            appState.preferences.notifications.lastAppUpdateNotificationTime = formattedDate
         }
     }
 
@@ -211,13 +210,13 @@ class AppStorageHelper {
         let dateString: String
         switch type {
         case .softwareUpdate:
-            dateString = appState.preferences.lastSoftwareUpdateNotificationTime
+            dateString = appState.preferences.notifications.lastSoftwareUpdateNotificationTime
         case .rebootReminder:
-            dateString = appState.preferences.lastRebootReminderNotificationTime
+            dateString = appState.preferences.notifications.lastRebootReminderNotificationTime
         case .generic:
-            dateString = appState.preferences.lastGenericNotificationTime
+            dateString = appState.preferences.notifications.lastGenericNotificationTime
         case .appUpdate:
-            dateString = appState.preferences.lastAppUpdateNotificationTime
+            dateString = appState.preferences.notifications.lastAppUpdateNotificationTime
         }
         guard !dateString.isEmpty else { return nil }
         return ISO8601DateFormatter().date(from: dateString)

@@ -12,7 +12,8 @@ struct SidebarItem: Identifiable, Hashable, Equatable {
     let label: String
     let systemImage: String
     let destination: AnyView
-    
+    var badge: Int = 0
+
     var id: String { label }
     
     func hash(into hasher: inout Hasher) {

@@ -30,7 +30,9 @@ struct CardData: View {
                 VStack(alignment: .leading, spacing: 5) {
                     // Display the key-value pair with formatting based on the key
                     defaultContent(for: key, display: display, value: value)
-                    
+                        .accessibilityElement(children: .combine)
+                        .accessibilityLabel("\(display) \(value.displayValue)")
+
                     // Insert custom content for specific labels
                     customContent(key, value)
                 }

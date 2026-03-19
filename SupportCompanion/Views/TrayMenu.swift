@@ -8,14 +8,6 @@
 import Foundation
 import SwiftUI
 
-func checkModes() -> Bool {
-    if AppStateManager.shared.preferences.mode == Constants.modes.intune || 
-    AppStateManager.shared.preferences.mode == Constants.modes.jamf || 
-    AppStateManager.shared.preferences.mode == Constants.modes.munki {
-        return true
-    }
-    return false
-}
 struct TrayMenuView: View {
     @EnvironmentObject var appState: AppStateManager
     @ObservedObject var viewModel: CardGridViewModel
@@ -44,8 +36,8 @@ struct TrayMenuView: View {
                 }
 
             // Title Section
-            if !appState.preferences.brandName.isEmpty {
-                Text(appState.preferences.brandName)
+            if !appState.preferences.branding.brandName.isEmpty {
+                Text(appState.preferences.branding.brandName)
                     .font(.headline)
             }
             //Spacer()
@@ -62,15 +54,15 @@ struct TrayMenuView: View {
                     if !appState.preferences.hiddenCards.contains(Constants.Cards.storage) {
                         CompactStorageCard()
                     }
-                    if checkModes() {
+                    if viewModel.hasManagementMode {
                         if !appState.preferences.hiddenCards.contains(Constants.Cards.appPatchProgress) {
                             CompactPatchProgressCard()
                         }
                     }
-                    if appState.preferences.enableElevation && appState.preferences.showElevateTrayCard {
+                    if appState.preferences.elevation.enableElevation && appState.preferences.elevation.showElevateTrayCard {
                         CompactElevationCard()
                     }
-					if !appState.preferences.hiddenCards.contains(Constants.Cards.jamfInfo) && appState.preferences.mode == Constants.modes.jamf {
+					if !appState.preferences.hiddenCards.contains(Constants.Cards.jamfInfo) && appState.preferences.mode == Constants.Modes.jamf {
 						CompactJamfInfoCard()
 					}
                 }
@@ -141,7 +133,7 @@ struct TrayMenuView: View {
         if !appState.preferences.hiddenCards.contains(Constants.Cards.battery) { count += 1 }
         if !appState.preferences.hiddenCards.contains(Constants.Cards.deviceInfo) { count += 1 }
         if !appState.preferences.hiddenCards.contains(Constants.Cards.storage) { count += 1 }
-        if checkModes() {
+        if viewModel.hasManagementMode {
             if !appState.preferences.hiddenCards.contains(Constants.Cards.appPatchProgress) {
                 count += 1
             }
@@ -157,7 +149,7 @@ struct TrayMenuView: View {
             AppStateManager.shared.preferences.menuShowApps,
             AppStateManager.shared.preferences.menuShowSelfService,
             viewModel.isButtonVisible(Constants.Actions.HideStrings.changePassword),
-            checkModes(),
+            viewModel.hasManagementMode,
             viewModel.isButtonVisible(Constants.Actions.HideStrings.getSupport),
             viewModel.isButtonVisible(Constants.Actions.HideStrings.gatherLogs),
             viewModel.isButtonVisible(Constants.Actions.HideStrings.softwareUpdate),
@@ -171,7 +163,7 @@ struct TrayMenuView: View {
             showLogo = false
             return
         }
-        let base64Logo = colorScheme == .dark ? appState.preferences.brandLogo : appState.preferences.brandLogoLight.isEmpty ? appState.preferences.brandLogo : appState.preferences.brandLogoLight
+        let base64Logo = colorScheme == .dark ? appState.preferences.branding.brandLogo : appState.preferences.branding.brandLogoLight.isEmpty ? appState.preferences.branding.brandLogo : appState.preferences.branding.brandLogoLight
         showLogo = loadLogo(base64Logo: base64Logo)
         if showLogo {
             brandLogo = base64ToImage(base64Logo)
@@ -187,13 +179,13 @@ struct ButtonSection: View {
     var body: some View {
         let visibleButtons = [
             ScButton(Constants.TrayMenu.openApp, fontSize: 12, action: {
-                DispatchQueue.main.async {
-                        appState.showWindowCallback?()
-                }
+                Task { @MainActor in appState.showWindowCallback?() }
             }),
             viewModel.isButtonVisible(Constants.Actions.HideStrings.changePassword) ? viewModel.createChangePasswordButton(fontSize: 12) : nil,
-            viewModel.isButtonVisible(Constants.Actions.HideStrings.getSupport) ? ScButton(Constants.Actions.getSupport, fontSize: 12) { ActionHelpers.openSupportPage(url: appState.preferences.supportPageURL) } : nil,
-            (checkModes())
+			viewModel.isButtonVisible(Constants.Actions.HideStrings.getSupport) && !appState.preferences.supportPageURL.isEmpty ? ScButton(
+				Constants.Actions.getSupport, fontSize: 12)
+			{ await ActionHelpers.openSupportPage(url: appState.preferences.supportPageURL) } : nil,
+            (viewModel.hasManagementMode)
                 ? (viewModel.isButtonVisible(Constants.Actions.HideStrings.openManagementApp) ? viewModel.createOpenManagementAppButton(type: .default, fontSize: 12) : nil)
                 : nil,
             viewModel.isButtonVisible(Constants.Actions.HideStrings.gatherLogs) ? viewModel.createGatherLogsButton(fontSize: 12) : nil,
@@ -202,8 +194,10 @@ struct ButtonSection: View {
                 badgeNumber: appState.systemUpdateCache.updates.count,
                 helpText: appState.systemUpdateCache.updates.joined(separator: "\n"),
                 fontSize: 12)
-            { ActionHelpers.openSystemUpdates() } : nil,
-            (appState.preferences.mode == Constants.modes.munki || appState.preferences.mode == Constants.modes.intune)
+            { [hasBackgroundSecurityImprovement = appState.systemUpdateCache.hasBackgroundSecurityImprovement] in
+                hasBackgroundSecurityImprovement ? ActionHelpers.openBackgroundSecurityImprovements() : ActionHelpers.openSystemUpdates()
+            } : nil,
+            (appState.preferences.mode == Constants.Modes.munki || appState.preferences.mode == Constants.Modes.intune)
                 ? (viewModel.isButtonVisible(Constants.Actions.HideStrings.restartIntuneAgent) ? viewModel.createRestartIntuneAgentButton(fontSize: 12) : nil)
                 : nil
         ].compactMap { $0 } // Remove nil values

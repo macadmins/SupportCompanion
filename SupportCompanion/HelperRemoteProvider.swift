@@ -7,6 +7,7 @@
 
 import Foundation
 import ServiceManagement
+import Security
 
 // MARK: - HelperRemoteProvider
 
