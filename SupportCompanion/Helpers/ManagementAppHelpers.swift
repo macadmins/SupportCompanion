@@ -17,6 +17,17 @@ extension ActionHelpers {
         }
     }
 
+    static func openBackgroundSecurityImprovements() {
+        Task {
+            do {
+                Logger.shared.logDebug("Opening background security improvements")
+                try await _ = ExecutionService.executeCommand("open", with: [Constants.Panels.backgroundSecurityImprovements])
+            } catch {
+                Logger.shared.logError("Failed to open background security improvements: \(error)")
+            }
+        }
+    }
+
     static func openManagementApp(appURL: String) {
         Task {
             do {

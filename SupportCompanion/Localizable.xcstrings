@@ -7,6 +7,16 @@
     "%" : {
 
     },
+    "%@ %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ %2$@"
+          }
+        }
+      }
+    },
     "%@:" : {
 
     },
@@ -1733,6 +1743,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Serienummer:"
+          }
+        }
+      }
+    },
+    "DeviceInfo.SSID" : {
+      "comment" : "Label for SSID",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "SSID:"
           }
         }
       }

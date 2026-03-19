@@ -36,7 +36,7 @@ class AppStateManager: ObservableObject {
     @Published var pendingIntuneUpdates: [PendingIntuneUpdate] = []
     @Published var pendingJamfUpdates: [PendingJamfUpdate] = []
     @Published var installedApplications: [InstalledApp] = []
-    @Published var systemUpdateCache: SystemUpdates = SystemUpdates(id: UUID(), count: 0, updates: [])
+    @Published var systemUpdateCache: SystemUpdates = SystemUpdates(id: UUID(), count: 0, updates: [], hasBackgroundSecurityImprovement: false)
     @Published var windowIsVisible: Bool = false
     @Published var storageUsageColor: Color = Color(NSColor.controlAccentColor)
     @Published var JsonCards: [JsonCard] = []

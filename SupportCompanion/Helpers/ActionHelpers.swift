@@ -89,7 +89,7 @@ struct ActionHelpers {
     }
 
     @MainActor
-    static func getSystemUpdateStatus(sendNotification: Bool = false) async -> Result<(Int, [String]), Error> {
+    static func getSystemUpdateStatus(sendNotification: Bool = false) async -> Result<(Int, [String], Bool), Error> {
         let notificationService = NotificationService(appState: AppStateManager.shared)
         let appState = AppStateManager.shared
 
@@ -99,11 +99,15 @@ struct ActionHelpers {
 
             var updateCount = 0
             var updates: [String] = []
+            var isBackgroundSecurityImprovement: Bool = false
 
             for line in lines {
                 if line.contains("*") {
                     updateCount += 1
                     updates.append(String(line))
+                }
+                if line.contains("Background Security Improvement") {
+                    isBackgroundSecurityImprovement = true
                 }
             }
 
@@ -116,7 +120,7 @@ struct ActionHelpers {
                 )
             }
 
-            return .success((updateCount, updates))
+            return .success((updateCount, updates, isBackgroundSecurityImprovement))
         } catch {
             return .failure(error)
         }

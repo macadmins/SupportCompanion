@@ -70,6 +70,7 @@ enum Constants {
         static let storage = "x-apple.systempreferences:com.apple.settings.Storage"
         static let softwareUpdates = "x-apple.systempreferences:com.apple.preferences.softwareupdate"
         static let users = "x-apple.systempreferences:com.apple.preferences.users"
+        static let backgroundSecurityImprovements = "x-apple.systempreferences:com.apple.SecurityImprovements-Settings.extension"
     }
     
     enum ToolTips {

@@ -35,7 +35,9 @@ struct ActionsCard: View {
                         Constants.Actions.softwareUpdate,
                         badgeNumber: appState.systemUpdateCache.updates.count,
                         helpText: appState.systemUpdateCache.updates.joined(separator: "\n"))
-                    { ActionHelpers.openSystemUpdates() } : nil,
+                    { [hasBackgroundSecurityImprovement = appState.systemUpdateCache.hasBackgroundSecurityImprovement] in
+                        hasBackgroundSecurityImprovement ? ActionHelpers.openBackgroundSecurityImprovements() : ActionHelpers.openSystemUpdates()
+                    } : nil,
                     (appState.preferences.mode == Constants.modes.munki || appState.preferences.mode == Constants.modes.intune)
                         ? (viewModel.isButtonVisible(Constants.Actions.HideStrings.restartIntuneAgent) ? viewModel.createRestartIntuneAgentButton() : nil)
                         : nil

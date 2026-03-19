@@ -23,8 +23,8 @@ class SystemUpdatesManager: ObservableObject {
             do {
                 let result = await ActionHelpers.getSystemUpdateStatus()
                 switch result {
-                case .success(let (count, updates)):
-                    updateCache(count: count, updates: updates)
+                case .success(let (count, updates, hasBackgroundSecurityImprovement)):
+                    updateCache(count: count, updates: updates, hasBackgroundSecurityImprovement: hasBackgroundSecurityImprovement)
                 case .failure(let error):
                     Logger.shared.logError("Failed to refresh system updates: \(error.localizedDescription)")
                 }
@@ -41,10 +41,10 @@ class SystemUpdatesManager: ObservableObject {
                 do {
                     let result = await ActionHelpers.getSystemUpdateStatus(sendNotification: !appState.preferences.hiddenActions.contains("SoftwareUpdates"))
                     switch result {
-                    case .success(let (count, updates)):
+                    case .success(let (count, updates, hasBackgroundSecurityImprovement)):
                         if count != self.previousUpdateCount {
                             self.previousUpdateCount = count
-                            updateCache(count: count, updates: updates)
+                            updateCache(count: count, updates: updates, hasBackgroundSecurityImprovement: hasBackgroundSecurityImprovement)
                         }
                     case .failure(let error):
                         Logger.shared.logError("Monitoring failed to get system updates: \(error.localizedDescription)")
@@ -63,7 +63,7 @@ class SystemUpdatesManager: ObservableObject {
     }
 
     /// Updates the cache in `AppStateManager`.
-    private func updateCache(count: Int, updates: [String]) {
-        appState.systemUpdateCache = SystemUpdates(id: UUID(), count: count, updates: updates)
+    private func updateCache(count: Int, updates: [String], hasBackgroundSecurityImprovement: Bool) {
+        appState.systemUpdateCache = SystemUpdates(id: UUID(), count: count, updates: updates, hasBackgroundSecurityImprovement: hasBackgroundSecurityImprovement)
     }
 }
