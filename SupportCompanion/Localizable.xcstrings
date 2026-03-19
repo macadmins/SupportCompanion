@@ -3598,7 +3598,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Privliged session started. You will be demoted in"
+            "value" : "Privileged session started. You will be demoted in"
           }
         },
         "fr" : {
