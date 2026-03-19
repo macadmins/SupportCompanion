@@ -66,7 +66,7 @@ func getSSID() async -> String? {
 }
 
 class IPAddressMonitor {
-    private static let monitor = NWPathMonitor()
+    private static var monitor = NWPathMonitor()
     private static let queue = DispatchQueue.global(qos: .background)
     private static var lastUpdateTime: Date?
     private static var lastIPs: [String] = []
@@ -77,6 +77,7 @@ class IPAddressMonitor {
     }
 
     static func startMonitoring(onChange: @escaping (NetworkStatus) async -> Void) {
+        monitor = NWPathMonitor()
         monitor.pathUpdateHandler = { path in
             let currentIPs = path.status == .satisfied ? getAllIPAddresses() : [String]()
             guard currentIPs.sorted() != lastIPs.sorted() else { return }
