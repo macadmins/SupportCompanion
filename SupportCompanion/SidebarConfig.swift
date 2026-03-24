@@ -89,10 +89,11 @@ func generateSidebarItems(preferences: Preferences, stateManager: WebViewStateMa
 
     // Add "Company Portal" with persistent WebViewState
     if preferences.menuShowCompanyPortal {
-        if preferences.mode == Constants.Modes.intune || FileManager.default.fileExists(atPath: Constants.AppPaths.companyPortal) {
+        if preferences.mode == Constants.Modes.intune || FileManager.default.fileExists(atPath: Constants.AppPaths.companyPortal),
+           let companyPortalURL = URL(string: preferences.companyPortalUrl), !preferences.companyPortalUrl.isEmpty {
             let companyPortalState = stateManager.getWebViewState(
                 for: "CompanyPortal",
-                url: URL(string: preferences.companyPortalUrl)!
+                url: companyPortalURL
             )
             items.append(
                 SidebarItem(
@@ -105,10 +106,11 @@ func generateSidebarItems(preferences: Preferences, stateManager: WebViewStateMa
     }
 
     // Add "Knowledge Base" with persistent WebViewState
-    if preferences.menuShowKnowledgeBase && !preferences.knowledgeBaseUrl.isEmpty {
+    if preferences.menuShowKnowledgeBase,
+       let knowledgeBaseURL = URL(string: preferences.knowledgeBaseUrl), !preferences.knowledgeBaseUrl.isEmpty {
         let knowledgeBaseState = stateManager.getWebViewState(
             for: "KnowledgeBase",
-            url: URL(string: preferences.knowledgeBaseUrl)!
+            url: knowledgeBaseURL
         )
         items.append(
             SidebarItem(
