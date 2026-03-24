@@ -18,7 +18,7 @@ func getLastCheckIn() async throws -> String {
     ]
     
     let output: String
-    output = try await ExecutionService.executeCommand("/usr/bin/log", with: args)
+    output = try await ExecutionService.executeCommandPrivileged("/usr/bin/log", arguments: args)
     
     let lines = output.split(whereSeparator: \.isNewline).map(String.init)
     guard let lastLine = lines.reversed().first(where: { !$0.trimmingCharacters(in: .whitespaces).isEmpty }) else {
@@ -53,7 +53,7 @@ func getLastInventoryUpdate() async throws -> String {
     ]
     
     let output: String
-    output = try await ExecutionService.executeCommand("/usr/bin/log", with: args)
+    output = try await ExecutionService.executeCommandPrivileged("/usr/bin/log", arguments: args)
     
     let lines = output.split(whereSeparator: \.isNewline).map(String.init)
     guard let lastLine = lines.reversed().first(where: { !$0.trimmingCharacters(in: .whitespaces).isEmpty }) else {
