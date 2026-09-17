@@ -53,12 +53,12 @@ struct PendingUpdatesCard: View {
                     .bold()
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
-			if appState.preferences.mode == Constants.Modes.jamf {
-				Text("Due by")
-					.font(.subheadline)
-					.bold()
-					.frame(maxWidth: .infinity, alignment: .trailing)
-			}
+            if appState.preferences.mode == Constants.Modes.jamf {
+                Text("Due by")
+                    .font(.subheadline)
+                    .bold()
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+            }
         }
         .padding(.vertical, 5)
         .padding(.horizontal)
@@ -71,9 +71,9 @@ struct PendingUpdatesCard: View {
             updateList(items: appState.pendingMunkiUpdates)
         } else if appState.preferences.mode == Constants.Modes.intune {
             updateList(items: appState.pendingIntuneUpdates)
-		} else if appState.preferences.mode == Constants.Modes.jamf {
-			updateList(items: appState.pendingJamfUpdates)
-		}
+        } else if appState.preferences.mode == Constants.Modes.jamf {
+            updateList(items: appState.pendingJamfUpdates)
+        }
     }
     
     private func updateList<T: Identifiable>(items: [T]) -> some View where T: PendingUpdate {
@@ -87,7 +87,7 @@ struct PendingUpdatesCard: View {
                         // Keep this leading text flexible
                         Text(update.name)
                             .lineLimit(2)
-							.minimumScaleFactor(0.8)
+                            .minimumScaleFactor(0.8)
                             .truncationMode(.tail)
 
                         Spacer()
@@ -96,14 +96,14 @@ struct PendingUpdatesCard: View {
                         Text(update.version)
                             .foregroundColor(colorScheme == .dark ? .gray : .grayLight)
                             .lineLimit(1)
-							.frame(maxWidth: .infinity, alignment: .trailing)
+                            .frame(maxWidth: .infinity, alignment: .trailing)
 
                         if let jamfUpdate = update as? PendingJamfUpdate {
                             if let patchDue = jamfUpdate.dueBy {
                                 Text(patchDue)
-									.foregroundColor(colorScheme == .dark ? .gray : .grayLight)
-									.lineLimit(1)
-									.frame(maxWidth: .infinity, alignment: .trailing)
+                                    .foregroundColor(colorScheme == .dark ? .gray : .grayLight)
+                                    .lineLimit(1)
+                                    .frame(maxWidth: .infinity, alignment: .trailing)
                             }
                         }
                     }

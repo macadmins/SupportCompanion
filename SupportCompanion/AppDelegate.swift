@@ -134,21 +134,21 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         appStateManager.startBackgroundTasks()
         appStateManager.refreshAll()
         checkAndHandleDemotionOnLaunch()
-		if !appStateManager.preferences.hiddenCards.contains(Constants.Cards.jamfInfo) && appStateManager.preferences.mode == Constants.Modes.jamf {
-			Task {
-				let id: String
-				do {
-					id = try await getJamfId()
-				} catch {
-					Logger.shared.logError("getJamfId failed: \(error.localizedDescription)")
-					id = "Unknown"
-				}
-				await MainActor.run {
-					AppStateManager.shared.jamfId = id
-					AppStateManager.shared.jamfInfoManager.refresh()
-				}
-			}
-		}
+        if !appStateManager.preferences.hiddenCards.contains(Constants.Cards.jamfInfo) && appStateManager.preferences.mode == Constants.Modes.jamf {
+            Task {
+                let id: String
+                do {
+                    id = try await getJamfId()
+                } catch {
+                    Logger.shared.logError("getJamfId failed: \(error.localizedDescription)")
+                    id = "Unknown"
+                }
+                await MainActor.run {
+                    AppStateManager.shared.jamfId = id
+                    AppStateManager.shared.jamfInfoManager.refresh()
+                }
+            }
+        }
     }
 
     private func checkAndHandleDemotionOnLaunch() {
@@ -419,13 +419,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     }
     
     private func configureAppUpdateNotificationCommand(mode: String) {
-		if mode == Constants.Modes.munki {
+        if mode == Constants.Modes.munki {
             appStateManager.preferences.notifications.appUpdateNotificationCommand = "open \(Constants.AppPaths.MSCUpdates)"
-		} else if mode == Constants.Modes.intune {
+        } else if mode == Constants.Modes.intune {
             appStateManager.preferences.notifications.appUpdateNotificationCommand = "open \(Constants.AppPaths.companyPortal)"
-		} else if mode == Constants.Modes.jamf {
-			appStateManager.preferences.notifications.appUpdateNotificationCommand = "open \(Constants.AppPaths.selfService)"
-		}
+        } else if mode == Constants.Modes.jamf {
+            appStateManager.preferences.notifications.appUpdateNotificationCommand = "open \(Constants.AppPaths.selfService)"
+        }
      }
 }
 

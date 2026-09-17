@@ -22,23 +22,23 @@ func getLastCheckIn() async throws -> String {
     
     let lines = output.split(whereSeparator: \.isNewline).map(String.init)
     guard let lastLine = lines.reversed().first(where: { !$0.trimmingCharacters(in: .whitespaces).isEmpty }) else {
-		Logger.shared.logDebug("No log entry found for Jamf check-ins")
+        Logger.shared.logDebug("No log entry found for Jamf check-ins")
         return "Unknown"
     }
     
     let parts = lastLine.split(separator: " ").map(String.init)
-	guard parts.count >= 2 else {
-		Logger.shared.logDebug("Unexpected log line format for Jamf check-ins: \(lastLine)")
-		return "Unknown"
-	}
-    
-    let tsCandidate = parts[0] + " " + parts[1]
-    guard let tsDate = parseUnifiedLogTimestamp(tsCandidate) else {
-		Logger.shared.logDebug("Failed to parse timestamp from log line for Jamf check-ins: \(lastLine)")
+    guard parts.count >= 2 else {
+        Logger.shared.logDebug("Unexpected log line format for Jamf check-ins: \(lastLine)")
         return "Unknown"
     }
     
-	Logger.shared.logDebug("Last Jamf check-in was on: \(tsDate)")
+    let tsCandidate = parts[0] + " " + parts[1]
+    guard let tsDate = parseUnifiedLogTimestamp(tsCandidate) else {
+        Logger.shared.logDebug("Failed to parse timestamp from log line for Jamf check-ins: \(lastLine)")
+        return "Unknown"
+    }
+    
+    Logger.shared.logDebug("Last Jamf check-in was on: \(tsDate)")
     return timeAgoString(since: tsDate)
 }
 
@@ -48,7 +48,7 @@ func getLastInventoryUpdate() async throws -> String {
     let args: [String] = [
         "show",
         "--predicate", predicate,
-		"--last", "\(AppStateManager.shared.preferences.jamfLogPollHours)h",
+        "--last", "\(AppStateManager.shared.preferences.jamfLogPollHours)h",
         "--style", "syslog"
     ]
     
@@ -57,23 +57,23 @@ func getLastInventoryUpdate() async throws -> String {
     
     let lines = output.split(whereSeparator: \.isNewline).map(String.init)
     guard let lastLine = lines.reversed().first(where: { !$0.trimmingCharacters(in: .whitespaces).isEmpty }) else {
-		Logger.shared.logDebug("No log entry found for Jamf inventory update.")
+        Logger.shared.logDebug("No log entry found for Jamf inventory update.")
         return "Unknown"
     }
     
     let parts = lastLine.split(separator: " ").map(String.init)
-	guard parts.count >= 2 else {
-		Logger.shared.logDebug("Unexpected output format from Jamf log: \(lastLine)")
-		return "Unknown"
-	}
-    
-    let tsCandidate = parts[0] + " " + parts[1]
-    guard let tsDate = parseUnifiedLogTimestamp(tsCandidate) else {
-		Logger.shared.logDebug("Failed to parse timestamp from Jamf log entry: \(lastLine)")
+    guard parts.count >= 2 else {
+        Logger.shared.logDebug("Unexpected output format from Jamf log: \(lastLine)")
         return "Unknown"
     }
     
-	Logger.shared.logDebug("Last Jamf inventory update was on \(tsDate)")
+    let tsCandidate = parts[0] + " " + parts[1]
+    guard let tsDate = parseUnifiedLogTimestamp(tsCandidate) else {
+        Logger.shared.logDebug("Failed to parse timestamp from Jamf log entry: \(lastLine)")
+        return "Unknown"
+    }
+    
+    Logger.shared.logDebug("Last Jamf inventory update was on \(tsDate)")
     return timeAgoString(since: tsDate)
 }
 
@@ -139,11 +139,11 @@ private func parseUnifiedLogTimestamp(_ s: String) -> Date? {
 private func timeAgoString(since date: Date, now: Date = Date()) -> String {
     let seconds = Int(now.timeIntervalSince(date))
     if seconds < 0 {
-		return Constants.General.justNow
+        return Constants.General.justNow
     }
     if seconds < 60 {
         if seconds == 1 {
-			return "1 \(Constants.General.second) \(Constants.General.ago)"
+            return "1 \(Constants.General.second) \(Constants.General.ago)"
         }
         return "\(seconds) \(Constants.General.seconds) \(Constants.General.ago)"
     }

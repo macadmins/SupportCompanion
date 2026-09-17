@@ -62,9 +62,9 @@ struct TrayMenuView: View {
                     if appState.preferences.elevation.enableElevation && appState.preferences.elevation.showElevateTrayCard {
                         CompactElevationCard()
                     }
-					if !appState.preferences.hiddenCards.contains(Constants.Cards.jamfInfo) && appState.preferences.mode == Constants.Modes.jamf {
-						CompactJamfInfoCard()
-					}
+                    if !appState.preferences.hiddenCards.contains(Constants.Cards.jamfInfo) && appState.preferences.mode == Constants.Modes.jamf {
+                        CompactJamfInfoCard()
+                    }
                 }
                 
                 Divider()
@@ -182,9 +182,9 @@ struct ButtonSection: View {
                 Task { @MainActor in appState.showWindowCallback?() }
             }),
             viewModel.isButtonVisible(Constants.Actions.HideStrings.changePassword) ? viewModel.createChangePasswordButton(fontSize: 12) : nil,
-			viewModel.isButtonVisible(Constants.Actions.HideStrings.getSupport) && !appState.preferences.supportPageURL.isEmpty ? ScButton(
-				Constants.Actions.getSupport, fontSize: 12)
-			{ await ActionHelpers.openSupportPage(url: appState.preferences.supportPageURL) } : nil,
+            viewModel.isButtonVisible(Constants.Actions.HideStrings.getSupport) && !appState.preferences.supportPageURL.isEmpty ? ScButton(
+                Constants.Actions.getSupport, fontSize: 12)
+            { await ActionHelpers.openSupportPage(url: appState.preferences.supportPageURL) } : nil,
             (viewModel.hasManagementMode)
                 ? (viewModel.isButtonVisible(Constants.Actions.HideStrings.openManagementApp) ? viewModel.createOpenManagementAppButton(type: .default, fontSize: 12) : nil)
                 : nil,

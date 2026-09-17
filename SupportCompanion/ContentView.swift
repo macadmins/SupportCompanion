@@ -197,11 +197,11 @@ struct ContentView: View {
                     Capsule()
                         .fill(accentColor)
                         .matchedGeometryEffect(id: "sidebar-highlight", in: namespace)
-						.frame(height: 50)
+                        .frame(height: 50)
                 } else if isHovered {
                     Capsule()
                         .fill(Color.primary.opacity(0.08))
-						.frame(height: 50)
+                        .frame(height: 50)
                 }
 
                 // Row content
@@ -262,8 +262,8 @@ private struct SidebarListView: View {
                         namespace: namespace,
                         onSelect: { onSelect(item) }
                     )
-					.padding(.horizontal, 8)
-					.padding(.vertical, 5)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 5)
                     .zIndex(selectedItem == item ? 1 : 0)
                 }
             }
@@ -276,8 +276,8 @@ private struct SidebarListView: View {
                 onIncomingURL(url)
             }
         }
-		.onChange(of: AppStateManager.shared.preferences.branding.brandLogo) { _, _ in onBrandLogoChange() }
-		.onChange(of: AppStateManager.shared.preferences.branding.brandLogoLight) { _, _ in onBrandLogoLightChange() }
+        .onChange(of: AppStateManager.shared.preferences.branding.brandLogo) { _, _ in onBrandLogoChange() }
+        .onChange(of: AppStateManager.shared.preferences.branding.brandLogoLight) { _, _ in onBrandLogoLightChange() }
     }
 
     @Environment(\.colorScheme) private var colorScheme

@@ -48,10 +48,10 @@ final class Logger {
     func configure(subsystem: String, category: String) {
         logger = OSLog(subsystem: subsystem, category: category)
     }
-	
-	func setFileDebugLogging(_ enabled: Bool) {
-		fileQueue.sync { self.debugEnabled = enabled }
-	}
+    
+    func setFileDebugLogging(_ enabled: Bool) {
+        fileQueue.sync { self.debugEnabled = enabled }
+    }
 
     // MARK: - Public logging API
 

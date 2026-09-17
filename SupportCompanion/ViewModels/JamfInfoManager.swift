@@ -9,8 +9,8 @@ import Foundation
 
 @MainActor
 class JamfInfoManager: ObservableObject {
-	private var monitorTask: Task<Void, Never>?
-	private let appStateManager: AppStateManager
+    private var monitorTask: Task<Void, Never>?
+    private let appStateManager: AppStateManager
 
     @Published var jamfInfo: JamfInfo
 

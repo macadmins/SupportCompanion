@@ -167,7 +167,7 @@ struct LastRestartRow: View {
                     .foregroundColor(color)
                 //Image(systemName: "clock.fill")
                 //    .foregroundColor(color)
-				InfoHelp(text: Constants.ToolTips.deviceLastRebooted, icon: "clock.fill", color: color)
+                InfoHelp(text: Constants.ToolTips.deviceLastRebooted, icon: "clock.fill", color: color)
             }
             .font(.system(size: 14))
             //.help(Constants.ToolTips.deviceLastRebooted)

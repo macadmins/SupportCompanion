@@ -27,9 +27,9 @@ struct ActionsCard: View {
                     (appState.preferences.mode == Constants.Modes.munki || appState.preferences.mode == Constants.Modes.intune)
                         ? (viewModel.isButtonVisible(Constants.Actions.HideStrings.openManagementApp) ? viewModel.createOpenManagementAppButton(type: .default) : nil)
                         : nil,
-					viewModel.isButtonVisible(Constants.Actions.HideStrings.getSupport) && !appState.preferences.supportPageURL.isEmpty ? ScButton(
-						Constants.Actions.getSupport)
-					{ await ActionHelpers.openSupportPage(url: appState.preferences.supportPageURL) } : nil,
+                    viewModel.isButtonVisible(Constants.Actions.HideStrings.getSupport) && !appState.preferences.supportPageURL.isEmpty ? ScButton(
+                        Constants.Actions.getSupport)
+                    { await ActionHelpers.openSupportPage(url: appState.preferences.supportPageURL) } : nil,
                     viewModel.isButtonVisible(Constants.Actions.HideStrings.gatherLogs) ? viewModel.createGatherLogsButton() : nil,
                     viewModel.isButtonVisible(Constants.Actions.HideStrings.softwareUpdate) ? ScButton(
                         Constants.Actions.softwareUpdate,

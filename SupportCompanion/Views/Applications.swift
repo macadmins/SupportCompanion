@@ -43,13 +43,13 @@ struct Applications: View {
                     .ignoresSafeArea() // Ensure it covers the entire screen
                 } else {
                     ScrollView {
-						let mode = appState.preferences.mode
-						if mode != "SystemProfiler" {
-							Text("This list shows applications installed by \(mode).")
-								.font(.caption)
-								.foregroundColor(.secondary)
-								.padding(.bottom, 10)
-						}
+                        let mode = appState.preferences.mode
+                        if mode != "SystemProfiler" {
+                            Text("This list shows applications installed by \(mode).")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .padding(.bottom, 10)
+                        }
                         LazyVGrid(
                             columns: columns,
                             alignment: .leading
@@ -59,7 +59,7 @@ struct Applications: View {
                                     .fixedSize(horizontal: false, vertical: false) // Allow vertical expansion
                             }
                         }
-						.padding(.bottom, 5)
+                        .padding(.bottom, 5)
                     }
                 }
             }

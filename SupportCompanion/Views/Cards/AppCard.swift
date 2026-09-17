@@ -93,33 +93,33 @@ struct AppCard: View {
                         }
                         .font(.system(size: 14))
                     }
-					
-					HStack {
-						if card.isSelfServe {
-							ScButton(buttonText, action: {
-								if !card.action.isEmpty {
-									do {
-										_ = try await ExecutionService.executeShellCommand(card.action)
-									} catch {
-										Logger.shared.logError("App card action '\(card.action)' failed: \(error)")
-									}
-								}
-							})
-							.padding(.top, 40)
-						}
-						if AppStateManager.shared.preferences.mode == Constants.Modes.jamf {
-							if let pending = AppStateManager.shared.pendingJamfUpdates.first(where: { $0.policyName == card.name }),
-							   let patchID = pending.patchId {
+                    
+                    HStack {
+                        if card.isSelfServe {
+                            ScButton(buttonText, action: {
+                                if !card.action.isEmpty {
+                                    do {
+                                        _ = try await ExecutionService.executeShellCommand(card.action)
+                                    } catch {
+                                        Logger.shared.logError("App card action '\(card.action)' failed: \(error)")
+                                    }
+                                }
+                            })
+                            .padding(.top, 40)
+                        }
+                        if AppStateManager.shared.preferences.mode == Constants.Modes.jamf {
+                            if let pending = AppStateManager.shared.pendingJamfUpdates.first(where: { $0.policyName == card.name }),
+                               let patchID = pending.patchId {
                                 let isRunning = AppStateManager.shared.pendingJamfUpdatesManager.isRunning(patchId: patchID)
-								ScButton(isRunning ? "Updating…" : "Update", action: {
+                                ScButton(isRunning ? "Updating…" : "Update", action: {
                                     await AppStateManager.shared.pendingJamfUpdatesManager.runPatch(patchId: patchID)
-								})
+                                })
                                 .disabled(isRunning)
-								.padding(.top, 40)
-							}
-						}
-					}
-					.frame(maxWidth: .infinity, alignment: .center)
+                                .padding(.top, 40)
+                            }
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .center)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal)

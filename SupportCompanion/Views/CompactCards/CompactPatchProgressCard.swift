@@ -16,7 +16,7 @@ struct CompactPatchProgressCard: View {
                         value: appState.installPercentage,
                         total: 100,
                         label: {
-							Text("\(String(format: "%1d", Int(appState.installPercentage/100*100)))% Patched")
+                            Text("\(String(format: "%1d", Int(appState.installPercentage/100*100)))% Patched")
                                 .font(.system(size: 12))
                         }
                     )

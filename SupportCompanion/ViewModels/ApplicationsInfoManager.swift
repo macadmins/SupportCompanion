@@ -25,8 +25,8 @@ final class ApplicationsInfoManager: ObservableObject {
         path: "",
         type: "",
         bundleId: "",
-		iconUrl: "",
-		actionText: ""
+        iconUrl: "",
+        actionText: ""
     )
 
     init(appState: AppStateManager) {
@@ -103,8 +103,8 @@ final class ApplicationsInfoManager: ObservableObject {
                     path: "",
                     type: "",
                     bundleId: "",
-					iconUrl: "",
-					actionText: ""
+                    iconUrl: "",
+                    actionText: ""
                 )
             }
             
@@ -171,8 +171,8 @@ final class ApplicationsInfoManager: ObservableObject {
                     path: "",
                     type: "",
                     bundleId: "",
-					iconUrl: iconUrl,
-					actionText: actionText
+                    iconUrl: iconUrl,
+                    actionText: actionText
                 )
             }
             
@@ -206,8 +206,8 @@ final class ApplicationsInfoManager: ObservableObject {
                     path: app["path"] as? String ?? "",
                     type: "",
                     bundleId: "",
-					iconUrl: "",
-					actionText: ""
+                    iconUrl: "",
+                    actionText: ""
                 )
             }
             

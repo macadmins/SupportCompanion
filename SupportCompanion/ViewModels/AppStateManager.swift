@@ -59,9 +59,9 @@ class AppStateManager: ObservableObject {
         }
         if preferences.mode == Constants.Modes.jamf {
             pendingJamfUpdatesManager.startUpdateCheckTimer()
-			if !preferences.hiddenCards.contains(Constants.Cards.jamfInfo) {
-				jamfInfoManager.startMonitoring()
-			}
+            if !preferences.hiddenCards.contains(Constants.Cards.jamfInfo) {
+                jamfInfoManager.startMonitoring()
+            }
         }
         systemUpdatesManager.startMonitoring()
         storageInfoManager.startMonitoring()
@@ -109,72 +109,72 @@ class AppStateManager: ObservableObject {
 
         setupCardManager()
 
-		wirePreferencesObservers()
+        wirePreferencesObservers()
 
-		// If the Preferences instance is ever replaced, rewire observers
-		$preferences
-			.receive(on: RunLoop.main)
-			.sink { [weak self] _ in
-				self?.wirePreferencesObservers()
-			}
-			.store(in: &cancellables)
+        // If the Preferences instance is ever replaced, rewire observers
+        $preferences
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.wirePreferencesObservers()
+            }
+            .store(in: &cancellables)
 
-		// Also watch the preferences plist so external `defaults write` changes are picked up live
-		setupDefaultsWatcher()
-	}
+        // Also watch the preferences plist so external `defaults write` changes are picked up live
+        setupDefaultsWatcher()
+    }
 
-	private func setupDefaultsWatcher() {
-		let domain = "com.github.macadmins.SupportCompanion"
-		let prefsURL = FileManager.default.homeDirectoryForCurrentUser
-			.appendingPathComponent("Library/Preferences/\(domain).plist")
-		let path = prefsURL.path
-		defaultsWatcher = FileWatcher(filePath: path) { [weak self] in
-			Task { @MainActor [weak self] in
-				guard let self else { return }
-				if let dict = NSDictionary(contentsOf: prefsURL) as? [String: Any],
-				   let latest = dict["CustomCardPath"] as? String,
-				   self.preferences.customCardPathPublished != latest {
-					Logger.shared.logInfo("Prefs plist changed -> CustomCardPath='\(latest)'")
-					if self.preferences.customCardPath != latest {
-						self.preferences.customCardPath = latest
-					}
-					self.preferences.customCardPathPublished = latest
-				}
-			}
-		}
-	}
+    private func setupDefaultsWatcher() {
+        let domain = "com.github.macadmins.SupportCompanion"
+        let prefsURL = FileManager.default.homeDirectoryForCurrentUser
+            .appendingPathComponent("Library/Preferences/\(domain).plist")
+        let path = prefsURL.path
+        defaultsWatcher = FileWatcher(filePath: path) { [weak self] in
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                if let dict = NSDictionary(contentsOf: prefsURL) as? [String: Any],
+                   let latest = dict["CustomCardPath"] as? String,
+                   self.preferences.customCardPathPublished != latest {
+                    Logger.shared.logInfo("Prefs plist changed -> CustomCardPath='\(latest)'")
+                    if self.preferences.customCardPath != latest {
+                        self.preferences.customCardPath = latest
+                    }
+                    self.preferences.customCardPathPublished = latest
+                }
+            }
+        }
+    }
 
-	private func wirePreferencesObservers() {
-		// Cancel any previous subscription tied to the old preferences instance
-		customPathCancellable?.cancel()
+    private func wirePreferencesObservers() {
+        // Cancel any previous subscription tied to the old preferences instance
+        customPathCancellable?.cancel()
 
-		customPathCancellable = preferences.$customCardPathPublished
-			.map { $0.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines) }
-			.removeDuplicates { (lhs: String, rhs: String) -> Bool in
-				lhs == rhs
-			}
-			.receive(on: RunLoop.main)
-			.sink { [weak self] (trimmed: String) in
-				guard let self = self else { return }
-				Logger.shared.logDebug("CustomCardPath changed -> '\(trimmed)'")
+        customPathCancellable = preferences.$customCardPathPublished
+            .map { $0.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines) }
+            .removeDuplicates { (lhs: String, rhs: String) -> Bool in
+                lhs == rhs
+            }
+            .receive(on: RunLoop.main)
+            .sink { [weak self] (trimmed: String) in
+                guard let self = self else { return }
+                Logger.shared.logDebug("CustomCardPath changed -> '\(trimmed)'")
 
-				// If path is empty, tear down any existing manager and clear cards
-				guard !trimmed.isEmpty else {
-					self.jsonCardManager?.stopWatching()
-					self.jsonCardManager = nil
-					self.JsonCards.removeAll()
-					return
-				}
+                // If path is empty, tear down any existing manager and clear cards
+                guard !trimmed.isEmpty else {
+                    self.jsonCardManager?.stopWatching()
+                    self.jsonCardManager = nil
+                    self.JsonCards.removeAll()
+                    return
+                }
 
-				// Ensure a manager exists, stop any current watcher, then load and start watching the new path
-				if self.jsonCardManager == nil {
-					self.jsonCardManager = JsonCardManager(appState: self)
-				}
-				self.jsonCardManager?.stopWatching()
-				self.jsonCardManager?.loadFromFile(trimmed)
-				self.jsonCardManager?.watchFile(trimmed)
-			}
-	}
+                // Ensure a manager exists, stop any current watcher, then load and start watching the new path
+                if self.jsonCardManager == nil {
+                    self.jsonCardManager = JsonCardManager(appState: self)
+                }
+                self.jsonCardManager?.stopWatching()
+                self.jsonCardManager?.loadFromFile(trimmed)
+                self.jsonCardManager?.watchFile(trimmed)
+            }
+    }
 
     func startDemotionTimer(duration: TimeInterval) {
         elevationManager.startDemotionTimer(duration: duration) { [weak self] remainingTime in

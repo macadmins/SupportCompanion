@@ -146,9 +146,9 @@ struct ActionHelpers {
             return
         }
 
-		if await preferences.changePasswordMode == "url" {
+        if await preferences.changePasswordMode == "url" {
             await openURL(preferences.changePasswordUrl, completion: completion)
-		} else if await preferences.changePasswordMode == "SSOExtension" {
+        } else if await preferences.changePasswordMode == "SSOExtension" {
             await handleSSOExtension(completion: completion)
         } else {
             openUserPanel()

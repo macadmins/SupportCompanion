@@ -136,9 +136,9 @@ class CardGridViewModel: ObservableObject {
         case Constants.Modes.intune:
             appName = "Company Portal"
             appURL = Constants.AppPaths.companyPortal
-		case Constants.Modes.jamf:
-			appName = "Self Service"
-			appURL = Constants.AppPaths.selfService
+        case Constants.Modes.jamf:
+            appName = "Self Service"
+            appURL = Constants.AppPaths.selfService
         default:
             appName = "Unknown App"
             appURL = ""
@@ -206,46 +206,46 @@ class CardGridViewModel: ObservableObject {
     func isButtonVisible(_ button: String) -> Bool {
         !appState.preferences.hiddenActions.contains(button)
     }
-	
-	@Published var isUpdating = false
+    
+    @Published var isUpdating = false
 
     func runJamfUpdate(forId: String) async {
         isUpdating = true
         defer { isUpdating = false }
 
-		// Kick off the update; ideally obtain a process handle or PID
-		do {
-			_ = try await ExecutionService.executeCommandPrivileged(
-				"/usr/local/bin/jamf",
-				arguments: ["patch", "-id", forId]
-			)
-		} catch {
-			// Log and bail
-			Logger.shared.logError("jamf patch launch failed: \(error)")
-			return
-		}
+        // Kick off the update; ideally obtain a process handle or PID
+        do {
+            _ = try await ExecutionService.executeCommandPrivileged(
+                "/usr/local/bin/jamf",
+                arguments: ["patch", "-id", forId]
+            )
+        } catch {
+            // Log and bail
+            Logger.shared.logError("jamf patch launch failed: \(error)")
+            return
+        }
 
-		// Poll conservatively with delay; add timeout
-		let pattern = "jamf patch -id \(forId)"
-		let deadline = Date().addingTimeInterval(600) // 10 min timeout
+        // Poll conservatively with delay; add timeout
+        let pattern = "jamf patch -id \(forId)"
+        let deadline = Date().addingTimeInterval(600) // 10 min timeout
 
-		while Date() < deadline && !Task.isCancelled {
-			do {
-				let result = try await ExecutionService.executeCommand(
-					"/usr/bin/pgrep",
-					with: ["-lf", pattern]
-				)
-				if result.isEmpty {
-					break // process no longer running
-				}
-			} catch {
-				// If pgrep errors, consider breaking or retrying a few times
-				Logger.shared.logError("pgrep error: \(error)")
-			}
+        while Date() < deadline && !Task.isCancelled {
+            do {
+                let result = try await ExecutionService.executeCommand(
+                    "/usr/bin/pgrep",
+                    with: ["-lf", pattern]
+                )
+                if result.isEmpty {
+                    break // process no longer running
+                }
+            } catch {
+                // If pgrep errors, consider breaking or retrying a few times
+                Logger.shared.logError("pgrep error: \(error)")
+            }
 
-			try? await Task.sleep(for: .seconds(0.5))
-		}
-	}
+            try? await Task.sleep(for: .seconds(0.5))
+        }
+    }
 
     func getVisibleStacks(viewModel: CardGridViewModel) -> [(id: String, view: AnyView)] {
         var visibleStacks: [(id: String, view: AnyView)] = []
