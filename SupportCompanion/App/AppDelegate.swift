@@ -92,7 +92,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        if !AppDelegate.shouldExit && appStateManager.preferences.trayMenuShowIcon { 
+        // Unit tests are hosted in the app; don't start the menu bar item, timers, or notifications for them
+        guard ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil else { return }
+
+        if !AppDelegate.shouldExit && appStateManager.preferences.trayMenuShowIcon {
             setupTrayMenu()
         }
 
