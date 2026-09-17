@@ -27,64 +27,22 @@ enum ExecutionService {
     }
     
     static func executeCommand(_ command: String, with arguments: [String] = []) async throws -> String {
-        let process = Process()
-        process.executableURL = programURL
-        process.arguments = [command] + arguments
-		
-		Logger.shared.logDebug("Executing command \(command) with arguments \(arguments))")
+        Logger.shared.logDebug("Executing command \(command) with arguments \(arguments))")
 
-        let outputPipe = Pipe()
-        let errorPipe = Pipe()
-        process.standardOutput = outputPipe
-        process.standardError = errorPipe
+        let result = try await runProcess(executableURL: programURL, arguments: [command] + arguments)
 
-        try process.run()
-        process.waitUntilExit()
-    
-        if process.terminationStatus != 0 {
-            let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
-            let errorOutput = String(data: errorData, encoding: .utf8) ?? "Unknown error"
+        if result.status != 0 {
+            let errorOutput = String(data: result.error, encoding: .utf8) ?? "Unknown error"
             throw NSError(
                 domain: "ExecutionServiceError",
-                code: Int(process.terminationStatus),
+                code: Int(result.status),
                 userInfo: [
-                    NSLocalizedDescriptionKey: "Command '\(command)' failed with status \(process.terminationStatus): \(errorOutput)"
+                    NSLocalizedDescriptionKey: "Command '\(command)' failed with status \(result.status): \(errorOutput)"
                 ]
             )
         }
 
-        let outputData = outputPipe.fileHandleForReading.readDataToEndOfFile()
-        return String(data: outputData, encoding: .utf8) ?? ""
-    }
-    
-    static func executeCommandToFile(_ command: String, with arguments: [String] = []) async throws -> String {
-        let tempURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("process_output.json")
-        // Create the file if it doesn't exist
-        FileManager.default.createFile(atPath: tempURL.path, contents: nil, attributes: nil)
-
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: command)
-        process.arguments = arguments
-        process.standardOutput = try FileHandle(forWritingTo: tempURL)
-
-        let errorPipe = Pipe()
-        process.standardError = errorPipe
-
-        try process.run()
-        process.waitUntilExit()
-
-        if process.terminationStatus != 0 {
-            let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
-            let errorOutput = String(data: errorData, encoding: .utf8) ?? "Unknown error"
-            throw NSError(
-                domain: "ExecutionServiceError",
-                code: Int(process.terminationStatus),
-                userInfo: [NSLocalizedDescriptionKey: "Command '\(command)' failed with status \(process.terminationStatus): \(errorOutput)"]
-            )
-        }
-
-        let data = try Data(contentsOf: tempURL)
-        return String(data: data, encoding: .utf8) ?? ""
+        return String(data: result.output, encoding: .utf8) ?? ""
     }
     
     static func executeShellCommand(_ rawCommand: String, isPrivileged: Bool? = false) async throws -> String {
@@ -95,11 +53,9 @@ enum ExecutionService {
             ])
         }
 
-        // Escape single quotes within the command
-        let escapedCommand = rawCommand.replacingOccurrences(of: "'", with: "'\\''")
-
-        // Pass the escaped command directly to /bin/sh -c
-        let arguments = ["-c", escapedCommand]
+        // The command is passed to /bin/sh as a single argument, so it must not be escaped.
+        // Escaping quotes here would corrupt any command that contains them.
+        let arguments = ["-c", rawCommand]
         
         // check if privileged execution is requested and execute accordingly
         if let isPrivileged, isPrivileged {
@@ -108,5 +64,55 @@ enum ExecutionService {
         
         // Execute using the existing method
         return try await executeCommand("/bin/sh", with: arguments)
+    }
+
+    // MARK: Process running
+
+    private final class DataBox: @unchecked Sendable {
+        var data = Data()
+    }
+
+    /// Runs a process and collects its output.
+    ///
+    /// The pipes are drained while the process runs. Waiting for exit before reading deadlocks as soon
+    /// as a command writes more than the pipe buffer (~64KB): the child blocks on write and never exits.
+    /// The blocking work happens on a GCD thread rather than the Swift concurrency thread pool.
+    private static func runProcess(executableURL: URL, arguments: [String]) async throws -> (status: Int32, output: Data, error: Data) {
+        try await withCheckedThrowingContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                let process = Process()
+                process.executableURL = executableURL
+                process.arguments = arguments
+                let outputPipe = Pipe()
+                let errorPipe = Pipe()
+                process.standardOutput = outputPipe
+                process.standardError = errorPipe
+
+                do {
+                    try process.run()
+                } catch {
+                    continuation.resume(throwing: error)
+                    return
+                }
+
+                let output = DataBox()
+                let errorOutput = DataBox()
+                let group = DispatchGroup()
+                group.enter()
+                DispatchQueue.global(qos: .userInitiated).async {
+                    output.data = outputPipe.fileHandleForReading.readDataToEndOfFile()
+                    group.leave()
+                }
+                group.enter()
+                DispatchQueue.global(qos: .userInitiated).async {
+                    errorOutput.data = errorPipe.fileHandleForReading.readDataToEndOfFile()
+                    group.leave()
+                }
+                group.wait()
+                process.waitUntilExit()
+
+                continuation.resume(returning: (process.terminationStatus, output.data, errorOutput.data))
+            }
+        }
     }
 }

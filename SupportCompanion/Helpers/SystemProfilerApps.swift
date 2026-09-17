@@ -16,7 +16,7 @@ class SystemProfilerApplications {
         
         // Run the command to fetch installed apps in JSON format
         do {
-            appsJson = try await ExecutionService.executeCommandToFile("/usr/sbin/system_profiler", with: ["SPApplicationsDataType", "-json"])
+            appsJson = try await ExecutionService.executeCommand("/usr/sbin/system_profiler", with: ["SPApplicationsDataType", "-json"])
         } catch {
             Logger.shared.logError("Failed to get installed apps: \(error.localizedDescription)")
         }
