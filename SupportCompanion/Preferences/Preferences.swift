@@ -264,6 +264,10 @@ class Preferences {
                     Logger.shared.logDebug("MDM host '\(host)' contains 'jamf', setting MDM to Jamf.")
                     mdm = "Jamf"
                 }
+                if mdm == "Unknown", let fleetHost = FleetDeviceIdentity.serverURL()?.host?.lowercased(), host == fleetHost {
+                    Logger.shared.logDebug("MDM host '\(host)' is the Fleet server, setting MDM to Fleet.")
+                    mdm = "Fleet"
+                }
             } else {
                 let lower = mdmUrl.lowercased()
                 if lower.contains("i.manage.microsoft.com") {
@@ -276,7 +280,13 @@ class Preferences {
             }
         }
 
-        if companyPortalExists && mscExists {
+        let orbitInstalled = FleetDeviceIdentity.isOrbitInstalled
+
+        if orbitInstalled && mdm == "Fleet" {
+            Logger.shared.logDebug("Fleet is the MDM and orbit is installed, setting mode to Fleet.")
+            mode = Constants.Modes.fleet
+            logFolders = [FleetDeviceIdentity.logFolder]
+        } else if companyPortalExists && mscExists {
             Logger.shared.logDebug("Both Munki and Company Portal paths exist, defaulting to Munki mode.")
             mode = Constants.Modes.munki
             logFolders = ["/Library/Managed Installs/Logs", "/Library/Logs/Microsoft"]
@@ -296,6 +306,10 @@ class Preferences {
             Logger.shared.logDebug("MSC path exists, setting mode to Munki.")
             mode = Constants.Modes.munki
             logFolders = ["/Library/Managed Installs/Logs"]
+        } else if orbitInstalled {
+            Logger.shared.logDebug("Fleet orbit is installed, setting mode to Fleet.")
+            mode = Constants.Modes.fleet
+            logFolders = [FleetDeviceIdentity.logFolder]
         } else {
             Logger.shared.logDebug("No paths exist, defaulting mode to System Profiler.")
             mode = Constants.Modes.systemProfiler

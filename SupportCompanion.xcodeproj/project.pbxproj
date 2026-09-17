@@ -230,6 +230,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				ExecutionService.swift,
+				Fleet/FleetDeviceIdentity.swift,
 				HelperRemoteProvider.swift,
 			);
 			target = F6890EE12CFF308F00244985 /* SupportCompanionCLI */;

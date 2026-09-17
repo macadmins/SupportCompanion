@@ -28,6 +28,7 @@ enum Constants {
         static let intune = "Intune"
         static let systemProfiler = "SystemProfiler"
         static let jamf = "Jamf"
+        static let fleet = "Fleet"
     }
     
     enum TrayMenu {
