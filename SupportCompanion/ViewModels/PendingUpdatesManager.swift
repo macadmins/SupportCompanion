@@ -33,6 +33,18 @@ class PendingUpdatesManager {
     /// Compute and publish the install-percentage value.
     func getInstallPercentage() async {}
 
+    /// The pending updates last fetched by `fetchPendingUpdatesList()`.
+    var pendingUpdates: [any PendingUpdate] { [] }
+
+    /// Title of an extra column in the pending updates list, or nil for none.
+    var pendingUpdatesDetailColumnTitle: String? { nil }
+
+    /// The app users open to manage software, used by "Open …" buttons and update notifications.
+    /// `forUpdates` selects the updates view where the app has a separate one.
+    func managementApp(forUpdates: Bool) -> (name: String, path: String) {
+        ("Unknown App", "")
+    }
+
     // MARK: - Shared timer / task management
 
     final func startUpdateCheckTimer() {

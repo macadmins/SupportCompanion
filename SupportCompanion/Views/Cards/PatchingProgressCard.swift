@@ -27,38 +27,14 @@ struct PatchingProgressCard: View {
                 })
             }
             .onAppear {
-                if appState.preferences.mode == Constants.Modes.munki {
-                    appState.pendingMunkiUpdatesManager.startInstallPercentageTask()
-                }
-                if appState.preferences.mode == Constants.Modes.intune {
-                    appState.pendingIntuneUpdatesManager.startInstallPercentageTask()
-                }
-                if appState.preferences.mode == Constants.Modes.jamf {
-                    appState.pendingJamfUpdatesManager.startInstallPercentageTask()
-                }
+                appState.activeUpdatesManager?.startInstallPercentageTask()
             }
             .onDisappear {
-                if appState.preferences.mode == Constants.Modes.munki {
-                    appState.pendingMunkiUpdatesManager.stopInstallPercentageTask()
-                }
-                if appState.preferences.mode == Constants.Modes.intune {
-                    appState.pendingIntuneUpdatesManager.stopInstallPercentageTask()
-                }
-                if appState.preferences.mode == Constants.Modes.jamf {
-                    appState.pendingJamfUpdatesManager.stopInstallPercentageTask()
-                }
+                appState.activeUpdatesManager?.stopInstallPercentageTask()
             }
             .onChange(of: appState.windowIsVisible) { oldValue, newValue in
                 if !newValue {
-                    if appState.preferences.mode == Constants.Modes.munki {
-                        appState.pendingMunkiUpdatesManager.stopInstallPercentageTask()
-                    }
-                    if appState.preferences.mode == Constants.Modes.intune {
-                        appState.pendingIntuneUpdatesManager.stopInstallPercentageTask()
-                    }
-                    if appState.preferences.mode == Constants.Modes.jamf {
-                        appState.pendingJamfUpdatesManager.stopInstallPercentageTask()
-                    }
+                    appState.activeUpdatesManager?.stopInstallPercentageTask()
                 }
             }
         }

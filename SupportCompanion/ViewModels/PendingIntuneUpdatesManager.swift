@@ -35,6 +35,16 @@ class PendingIntuneUpdatesManager: PendingUpdatesManager {
         }
     }
 
+    // MARK: - Presentation
+
+    override var pendingUpdates: [any PendingUpdate] { appState.pendingIntuneUpdates }
+
+    override var pendingUpdatesDetailColumnTitle: String? { "" }
+
+    override func managementApp(forUpdates: Bool) -> (name: String, path: String) {
+        ("Company Portal", Constants.AppPaths.companyPortal)
+    }
+
     // MARK: - Pending Updates
 
     override func fetchPendingUpdatesList() async {

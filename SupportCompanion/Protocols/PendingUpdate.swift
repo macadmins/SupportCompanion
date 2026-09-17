@@ -7,9 +7,15 @@
 
 import Foundation
 
-protocol PendingUpdate: Identifiable {
+protocol PendingUpdate: Identifiable where ID == UUID {
     var name: String { get }
     var version: String { get }
+    /// Shown in an extra column when the manager defines `pendingUpdatesDetailColumnTitle`.
+    var dueBy: String? { get }
+}
+
+extension PendingUpdate {
+    var dueBy: String? { nil }
 }
 
 extension PendingMunkiUpdate: PendingUpdate {}

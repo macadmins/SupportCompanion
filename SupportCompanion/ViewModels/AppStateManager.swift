@@ -50,18 +50,21 @@ class AppStateManager: ObservableObject {
     private var defaultsWatcher: FileWatcher?
     var showWindowCallback: (() -> Void)?
 
+    /// The pending-updates manager for the configured mode, or nil when the mode has none (System Profiler).
+    /// Views and background tasks should go through this rather than checking the mode themselves.
+    var activeUpdatesManager: PendingUpdatesManager? {
+        switch preferences.mode {
+        case Constants.Modes.munki: return pendingMunkiUpdatesManager
+        case Constants.Modes.intune: return pendingIntuneUpdatesManager
+        case Constants.Modes.jamf: return pendingJamfUpdatesManager
+        default: return nil
+        }
+    }
+
     func startBackgroundTasks() {
-        if preferences.mode == Constants.Modes.munki {
-            pendingMunkiUpdatesManager.startUpdateCheckTimer()
-        }
-        if preferences.mode == Constants.Modes.intune {
-            pendingIntuneUpdatesManager.startUpdateCheckTimer()
-        }
-        if preferences.mode == Constants.Modes.jamf {
-            pendingJamfUpdatesManager.startUpdateCheckTimer()
-            if !preferences.hiddenCards.contains(Constants.Cards.jamfInfo) {
-                jamfInfoManager.startMonitoring()
-            }
+        activeUpdatesManager?.startUpdateCheckTimer()
+        if preferences.mode == Constants.Modes.jamf && !preferences.hiddenCards.contains(Constants.Cards.jamfInfo) {
+            jamfInfoManager.startMonitoring()
         }
         systemUpdatesManager.startMonitoring()
         storageInfoManager.startMonitoring()
@@ -69,8 +72,10 @@ class AppStateManager: ObservableObject {
     }
 
     func stopBackgroundTasks() {
-        pendingMunkiUpdatesManager.stopUpdateCheckTimer()
-        pendingIntuneUpdatesManager.stopUpdateCheckTimer()
+        // Stop every manager, not just the active one, in case the mode changed while running
+        for manager in [pendingMunkiUpdatesManager, pendingIntuneUpdatesManager, pendingJamfUpdatesManager] as [PendingUpdatesManager] {
+            manager.stopUpdateCheckTimer()
+        }
         systemUpdatesManager.stopMonitoring()
         storageInfoManager.stopMonitoring()
         deviceInfoManager.stopMonitoring()

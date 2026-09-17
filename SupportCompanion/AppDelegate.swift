@@ -110,7 +110,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         )
         popover.delegate = self
 
-        configureAppUpdateNotificationCommand(mode: appStateManager.preferences.mode)
+        configureAppUpdateNotificationCommand()
 
         appStateManager.showWindowCallback = { [weak self] in
             self?.showWindow()
@@ -418,14 +418,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         NSApplication.shared.terminate(nil)
     }
     
-    private func configureAppUpdateNotificationCommand(mode: String) {
-        if mode == Constants.Modes.munki {
-            appStateManager.preferences.notifications.appUpdateNotificationCommand = "open \(Constants.AppPaths.MSCUpdates)"
-        } else if mode == Constants.Modes.intune {
-            appStateManager.preferences.notifications.appUpdateNotificationCommand = "open \(Constants.AppPaths.companyPortal)"
-        } else if mode == Constants.Modes.jamf {
-            appStateManager.preferences.notifications.appUpdateNotificationCommand = "open \(Constants.AppPaths.selfService)"
-        }
-     }
+    private func configureAppUpdateNotificationCommand() {
+        guard let manager = appStateManager.activeUpdatesManager else { return }
+        appStateManager.preferences.notifications.appUpdateNotificationCommand = "open \(manager.managementApp(forUpdates: true).path)"
+    }
 }
 

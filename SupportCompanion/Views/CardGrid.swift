@@ -31,7 +31,7 @@ struct CardGrid: View {
                     DeviceInformationCard(viewModel: viewModel)
                     
                     // Patching progress card
-                    if appState.preferences.mode == Constants.Modes.munki || appState.preferences.mode == Constants.Modes.intune || appState.preferences.mode == Constants.Modes.jamf {
+                    if appState.activeUpdatesManager != nil {
                         PatchingProgressCard(viewModel: viewModel)
                         PendingUpdatesCard(viewModel: viewModel)
                     }

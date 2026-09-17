@@ -40,6 +40,16 @@ class PendingJamfUpdatesManager: PendingUpdatesManager {
         }
     }
 
+    // MARK: - Presentation
+
+    override var pendingUpdates: [any PendingUpdate] { appState.pendingJamfUpdates }
+
+    override var pendingUpdatesDetailColumnTitle: String? { "Due by" }
+
+    override func managementApp(forUpdates: Bool) -> (name: String, path: String) {
+        ("Self Service", Constants.AppPaths.selfService)
+    }
+
     // MARK: - Pending Updates
 
     override func fetchPendingUpdates() async {

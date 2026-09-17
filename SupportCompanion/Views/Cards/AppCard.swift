@@ -8,56 +8,21 @@
 import Foundation
 import SwiftUI
 
+// Mode-specific details (version, icon, button label) are resolved by ApplicationsInfoManager when the
+// list is built, so this view only displays them.
 struct AppCard: View {
     let card: InstalledApp
-    let version: String
     
     @State private var resolvedTitleImage: String = "app.gift.fill"
 
-    init(card: InstalledApp) {
-        self.card = card
-
-        // Determine version
-        if AppStateManager.shared.preferences.mode == Constants.Modes.intune,
-           let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: card.bundleId) {
-            let appInfoPlistPath = "\(appURL.path)/Contents/Info.plist"
-            self.version = getAppVersion(plistPath: appInfoPlistPath) ?? "Unknown"
-        } else {
-            self.version = card.version
-        }
-    }
+    private var version: String { card.version }
 
     var titleImage: String {
-        if AppStateManager.shared.preferences.mode == Constants.Modes.munki {
-            let iconPath = "/Library/Managed Installs/icons/\(card.name).png"
-            if FileManager.default.fileExists(atPath: iconPath) {
-                return iconPath
-            } else {
-                return resolvedTitleImage
-            }
-        } else if AppStateManager.shared.preferences.mode == Constants.Modes.systemProfiler {
-            let appInfoPlistPath = "\(card.path)/Contents/Info.plist"
-            return getIconPath(plistPath: appInfoPlistPath, appPath: card.path) ?? resolvedTitleImage
-        } else if AppStateManager.shared.preferences.mode == Constants.Modes.intune {
-            if let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: card.bundleId) {
-                let appInfoPlistPath = "\(appURL.path)/Contents/Info.plist"
-                return getIconPath(plistPath: appInfoPlistPath, appPath: appURL.path) ?? resolvedTitleImage
-            } else {
-                return resolvedTitleImage
-            }
-        } else if AppStateManager.shared.preferences.mode == Constants.Modes.jamf {
-            // For JAMF, the actual download is handled asynchronously; fall back to current state value
-            return resolvedTitleImage
-        }
-        return resolvedTitleImage
+        card.iconPath ?? resolvedTitleImage
     }
     
     private var buttonText: String {
-        if AppStateManager.shared.preferences.mode == Constants.Modes.jamf {
-            return card.actionText ?? ""
-        } else {
-            return Constants.General.manage
-        }
+        card.actionText ?? ""
     }
 
     var body: some View {
@@ -126,14 +91,13 @@ struct AppCard: View {
             }
         )
         .task {
-            await loadJamfIconIfNeeded()
+            await loadRemoteIconIfNeeded()
         }
     }
     
     @MainActor
-    private func loadJamfIconIfNeeded() async {
-        guard AppStateManager.shared.preferences.mode == Constants.Modes.jamf else { return }
-        guard let iconUrl = card.iconUrl, !iconUrl.isEmpty else { return }
+    private func loadRemoteIconIfNeeded() async {
+        guard card.iconPath == nil, let iconUrl = card.iconUrl, !iconUrl.isEmpty else { return }
         // Attempt to download icon asynchronously
         if let iconPath = try? await downloadAppIcon(forApp: card) {
             resolvedTitleImage = iconPath

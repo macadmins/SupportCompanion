@@ -121,28 +121,7 @@ class CardGridViewModel: ObservableObject {
     }
     
     func createOpenManagementAppButton(type: ManagementAppURLType, fontSize: CGFloat? = nil) -> ScButton {
-        let appName: String
-        let appURL: String
-
-        switch appState.preferences.mode {
-        case Constants.Modes.munki:
-            if type == .update {
-                appName = "MSC Updates"
-                appURL = Constants.AppPaths.MSCUpdates
-            } else {
-                appName = "MSC"
-                appURL = Constants.AppPaths.MSC
-            }
-        case Constants.Modes.intune:
-            appName = "Company Portal"
-            appURL = Constants.AppPaths.companyPortal
-        case Constants.Modes.jamf:
-            appName = "Self Service"
-            appURL = Constants.AppPaths.selfService
-        default:
-            appName = "Unknown App"
-            appURL = ""
-        }
+        let (appName, appURL) = appState.activeUpdatesManager?.managementApp(forUpdates: type == .update) ?? ("Unknown App", "")
 
         return ScButton("\(Constants.Actions.openManagementApp) \(appName)", fontSize: fontSize) {
             ActionHelpers.openManagementApp(appURL: appURL)
@@ -191,11 +170,9 @@ class CardGridViewModel: ObservableObject {
     
     // MARK: - Preferences Management
 
-    /// True when a management-mode MDM (Munki, Intune, or Jamf) is configured.
+    /// True when the configured mode has a pending-updates manager (Munki, Intune, or Jamf).
     var hasManagementMode: Bool {
-        appState.preferences.mode == Constants.Modes.munki ||
-        appState.preferences.mode == Constants.Modes.intune ||
-        appState.preferences.mode == Constants.Modes.jamf
+        appState.activeUpdatesManager != nil
     }
 
     func isCardVisible(_ card: String) -> Bool {
