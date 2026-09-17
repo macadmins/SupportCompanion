@@ -37,9 +37,9 @@ func generateSidebarItems(preferences: Preferences, stateManager: WebViewStateMa
             SidebarItem(
                 label: Constants.Navigation.apps,
                 systemImage: "app.fill",
-                destination: AnyView(
-                    Applications()
-                ),
+                destination: preferences.mode == Constants.Modes.fleet
+                    ? AnyView(FleetAppsView())
+                    : AnyView(Applications()),
                 badge: pendingUpdatesCount
             )
         )

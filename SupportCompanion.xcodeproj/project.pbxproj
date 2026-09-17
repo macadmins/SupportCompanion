@@ -199,6 +199,7 @@
 				DeviceInfoManager.swift,
 				ElevationManager.swift,
 				EvergreenInfoManager.swift,
+				FleetSoftwareManager.swift,
 				IdentityViewModel.swift,
 				JamfInfoManager.swift,
 				JsonCardManager.swift,

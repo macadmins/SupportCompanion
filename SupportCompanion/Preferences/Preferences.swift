@@ -132,6 +132,12 @@ class Preferences {
         set { DefaultsStore.set(newValue, forKey: "HiddenCards") }
     }
 
+    // MARK: - Fleet
+
+    var fleetNotifyInstallResults: Bool {
+        DefaultsStore.value(forKey: "FleetNotifyInstallResults", default: true)
+    }
+
     // MARK: - Support info
 
     var supportEmail: String {

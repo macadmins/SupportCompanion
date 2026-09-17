@@ -20,6 +20,13 @@ class AppStateManager {
     @ObservationIgnored lazy var pendingJamfUpdatesManager = PendingJamfUpdatesManager(appState: self)
     @ObservationIgnored lazy var evergreenInfoManager = EvergreenInfoManager(appState: self)
     @ObservationIgnored lazy var elevationManager = ElevationManager(appState: self)
+    @ObservationIgnored lazy var fleetSoftwareManager: FleetSoftwareManager = {
+        let manager = FleetSoftwareManager()
+        manager.onActionFinished = { [weak self] title, action, succeeded in
+            self?.notifyFleetActionFinished(title, action: action, succeeded: succeeded)
+        }
+        return manager
+    }()
     @ObservationIgnored var jsonCardManager: JsonCardManager?
     var isRefreshing: Bool = false
     var jamfId: String = ""
@@ -162,5 +169,22 @@ class AppStateManager {
             }
             self.isRefreshing = false
         }
+    }
+
+    private func notifyFleetActionFinished(_ title: FleetSoftwareTitle, action: FleetSoftwareTitle.Action, succeeded: Bool) {
+        guard preferences.fleetNotifyInstallResults else { return }
+        let format: String
+        switch (action, succeeded) {
+        case (.install, true): format = Constants.Fleet.installedNotification
+        case (.update, true): format = Constants.Fleet.updatedNotification
+        case (.reinstall, true): format = Constants.Fleet.reinstalledNotification
+        case (.uninstall, true): format = Constants.Fleet.uninstalledNotification
+        case (.uninstall, false): format = Constants.Fleet.uninstallFailedNotification
+        case (_, false): format = Constants.Fleet.installFailedNotification
+        }
+        NotificationService(appState: self).sendNotification(
+            message: String(format: format, title.title),
+            notificationType: .generic
+        )
     }
 }

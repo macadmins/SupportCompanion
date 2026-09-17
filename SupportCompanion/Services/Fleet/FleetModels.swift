@@ -69,6 +69,7 @@ struct FleetSoftwareTitle: Decodable, Identifiable, Equatable, Sendable {
     enum Action: Equatable, Sendable {
         case install
         case update
+        case reinstall
         case uninstall
     }
 
@@ -98,9 +99,9 @@ struct FleetSoftwareTitle: Decodable, Identifiable, Equatable, Sendable {
         status == .installed || installedVersion != nil
     }
 
+    /// Whether the installed version is older than Fleet's, including while the update is being installed.
     var isUpdateAvailable: Bool {
-        guard status != .pendingInstall,
-              let installedVersion, let availableVersion else { return false }
+        guard let installedVersion, let availableVersion else { return false }
         return FleetVersion.isOlder(installedVersion, than: availableVersion)
     }
 
@@ -115,6 +116,20 @@ struct FleetSoftwareTitle: Decodable, Identifiable, Equatable, Sendable {
     /// Fleet generates uninstall scripts for packages; App Store apps can't be uninstalled from self-service.
     var canUninstall: Bool {
         isInstalled && softwarePackage != nil && softwarePackage?.hasUninstallScript != false
+    }
+
+    /// Installing the same version again, as Fleet's self-service page offers for installed titles.
+    var canReinstall: Bool {
+        isInstalled && !isUpdateAvailable && installer != nil
+    }
+
+    /// Whether the title is one of the keys in a preference: its id as a string, or its display name or
+    /// name in any case.
+    func matches(_ key: String) -> Bool {
+        let key = key.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !key.isEmpty else { return false }
+        if key == String(id) { return true }
+        return [displayName, name].contains { $0.map { $0.caseInsensitiveCompare(key) == .orderedSame } ?? false }
     }
 
     /// The main action offered for this title, or nil while an action is pending.

@@ -47,7 +47,20 @@ enum FleetError: Error, Equatable, LocalizedError {
     }
 }
 
-actor FleetClient {
+/// The Fleet calls the software catalog needs, so managers can be tested with a fake.
+protocol FleetSoftwareAPI: Sendable {
+    /// Why Fleet can't be used on this Mac, or nil when it can.
+    nonisolated var configurationProblem: String? { get }
+    func selfServiceSoftware() async throws -> [FleetSoftwareTitle]
+    func selfServiceCategories() async throws -> [FleetSoftwareCategory]
+    func install(titleID: Int) async throws
+    func uninstall(titleID: Int) async throws
+    func installResult(installUUID: String) async throws -> FleetInstallResult?
+    func uninstallResult(executionID: String) async throws -> FleetScriptResult
+    func refetch() async throws
+}
+
+actor FleetClient: FleetSoftwareAPI {
     static let shared = FleetClient()
 
     /// Name of the cookie Fleet sets after Fleet Desktop SSO.
@@ -134,12 +147,12 @@ actor FleetClient {
     }
 
     func installResult(installUUID: String) async throws -> FleetInstallResult? {
-        let response: FleetInstallResultsResponse = try await get("software/install/\(installUUID)/results")
+        let response: FleetInstallResultsResponse = try await get("software/install/\(try pathSegment(installUUID))/results")
         return response.results
     }
 
     func uninstallResult(executionID: String) async throws -> FleetScriptResult {
-        try await get("software/uninstall/\(executionID)/results")
+        try await get("software/uninstall/\(try pathSegment(executionID))/results")
     }
 
     func icon(titleID: Int) async throws -> Data {
@@ -252,6 +265,14 @@ actor FleetClient {
             registerFailure("\(method) \(path) failed: \((error as NSError).localizedDescription)")
             throw FleetError.network((error as NSError).localizedDescription)
         }
+    }
+
+    /// Ids from Fleet's responses go into request paths, so they must not contain URL syntax.
+    private func pathSegment(_ id: String) throws -> String {
+        guard FleetDeviceIdentity.isValidToken(id) else {
+            throw FleetError.decoding("Invalid id from Fleet")
+        }
+        return id
     }
 
     // MARK: - Token and backoff
