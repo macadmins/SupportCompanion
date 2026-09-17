@@ -251,7 +251,9 @@ class Preferences {
         if mdmUrl != "Unknown" {
             Logger.shared.logDebug("MDM URL detected: \(mdmUrl)")
 
-            if let url = URL(string: mdmUrl), let host = url.host?.lowercased() {
+            // getMDMUrl() returns the URL without its scheme, and a URL without a scheme has no host
+            let mdmURLString = mdmUrl.contains("://") ? mdmUrl : "https://\(mdmUrl)"
+            if let url = URL(string: mdmURLString), let host = url.host?.lowercased() {
                 let pattern = #"(^|\.)manage\.microsoft\.[a-z0-9-]{2,63}$"#
                 if let regex = try? NSRegularExpression(pattern: pattern, options: []) {
                     let range = NSRange(host.startIndex..<host.endIndex, in: host)
