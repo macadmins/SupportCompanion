@@ -86,26 +86,43 @@ final class FleetIconCatalog {
     /// Reads `SOFTWARE_NAME_TO_ICON_MAP` and the PNG imports it refers to from Fleet's icons/index.ts.
     static func parseIndex(_ source: String) -> [String: String] {
         var pngByVariable: [String: String] = [:]
-        let importPattern = /^import\s+(\w+)\s+from\s+"\.\/png\/([A-Za-z0-9._@+\-]+\.png)";/
-        let entryPattern = /^\s*(?:"([^"]+)"|([A-Za-z0-9_]+))\s*:\s*(\w+)\s*,?\s*$/
+        // NSRegularExpression rather than regex literals, which older Xcode versions only accept with a
+        // compiler flag in Swift 5 mode
+        guard let importPattern = try? NSRegularExpression(
+                  pattern: #"^import\s+(\w+)\s+from\s+"\./png/([A-Za-z0-9._@+\-]+\.png)";$"#),
+              let entryPattern = try? NSRegularExpression(
+                  pattern: #"^\s*(?:"([^"]+)"|([A-Za-z0-9_]+))\s*:\s*(\w+)\s*,?\s*$"#) else {
+            return [:]
+        }
 
         var files: [String: String] = [:]
         var inMap = false
-        for line in source.split(separator: "\n", omittingEmptySubsequences: false) {
-            if let match = line.wholeMatch(of: importPattern) {
-                pngByVariable[String(match.1)] = String(match.2)
+        for line in source.split(separator: "\n", omittingEmptySubsequences: false).map(String.init) {
+            if let groups = captures(of: importPattern, in: line) {
+                if let variable = groups[0], let file = groups[1] {
+                    pngByVariable[variable] = file
+                }
             } else if line.hasPrefix("export const SOFTWARE_NAME_TO_ICON_MAP") {
                 inMap = true
             } else if inMap {
                 if line.hasPrefix("}") { break }
-                if let match = line.wholeMatch(of: entryPattern),
-                   let file = pngByVariable[String(match.3)] {
-                    let key = String(match.1 ?? match.2 ?? "").trimmingCharacters(in: .whitespaces).lowercased()
+                if let groups = captures(of: entryPattern, in: line),
+                   let variable = groups[2], let file = pngByVariable[variable] {
+                    let key = (groups[0] ?? groups[1] ?? "").trimmingCharacters(in: .whitespaces).lowercased()
                     if !key.isEmpty { files[key] = file }
                 }
             }
         }
         return files
+    }
+
+    /// The capture groups of a match covering the whole line, or nil if the line doesn't match.
+    private static func captures(of pattern: NSRegularExpression, in line: String) -> [String?]? {
+        let range = NSRange(line.startIndex..., in: line)
+        guard let match = pattern.firstMatch(in: line, range: range), match.range == range else { return nil }
+        return (1..<match.numberOfRanges).map { index in
+            Range(match.range(at: index), in: line).map { String(line[$0]) }
+        }
     }
 
     // MARK: - Index
