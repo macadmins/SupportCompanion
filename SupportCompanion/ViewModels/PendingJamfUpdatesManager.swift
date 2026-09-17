@@ -44,7 +44,8 @@ class PendingJamfUpdatesManager: PendingUpdatesManager {
 
     override var pendingUpdates: [any PendingUpdate] { appState.pendingJamfUpdates }
 
-    override var pendingUpdatesDetailColumnTitle: String? { "Due by" }
+    // Text(String) isn't localized automatically, so resolve the "Due by" translation here
+    override var pendingUpdatesDetailColumnTitle: String? { String(localized: "Due by") }
 
     override func managementApp(forUpdates: Bool) -> (name: String, path: String) {
         ("Self Service", Constants.AppPaths.selfService)
