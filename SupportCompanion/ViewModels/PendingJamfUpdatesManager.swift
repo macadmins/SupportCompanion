@@ -103,7 +103,8 @@ class PendingJamfUpdatesManager: PendingUpdatesManager {
         runningPatchIds.insert(patchId)
         defer { runningPatchIds.remove(patchId) }
 
-        var args: [String] = ["asuser", "504", "/usr/local/bin/jamf", "patch", "-id", String(patchId), "-showSteps", "-selfServiceOnly"]
+        // The app runs as the logged-in user, so its UID is the user to run the patch as
+        var args: [String] = ["asuser", String(getuid()), "/usr/local/bin/jamf", "patch", "-id", String(patchId), "-showSteps", "-selfServiceOnly"]
         if let userId = userId, !userId.isEmpty {
             args += ["-user", userId]
         }
