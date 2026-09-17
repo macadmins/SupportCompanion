@@ -258,13 +258,11 @@ class Preferences {
                     if regex.firstMatch(in: host, options: [], range: range) != nil {
                         Logger.shared.logDebug("MDM host '\(host)' is a manage.microsoft.* endpoint, setting MDM to Intune.")
                         mdm = "Intune"
-                        return
                     }
                 }
-                if host.contains("jamf") {
+                if mdm == "Unknown" && host.contains("jamf") {
                     Logger.shared.logDebug("MDM host '\(host)' contains 'jamf', setting MDM to Jamf.")
                     mdm = "Jamf"
-                    return
                 }
             } else {
                 let lower = mdmUrl.lowercased()
