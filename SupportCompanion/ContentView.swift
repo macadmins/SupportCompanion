@@ -14,6 +14,7 @@ struct ContentView: View {
     @EnvironmentObject var preferences: Preferences
     @EnvironmentObject var appState: AppStateManager
     @StateObject private var webViewStateManager = WebViewStateManager()
+    @StateObject private var cardGridViewModel = CardGridViewModel(appState: AppStateManager.shared)
     @State private var brandLogo: Image? = nil
     @State private var showLogo: Bool = false
     @State private var isShowingPopup = false
@@ -21,7 +22,7 @@ struct ContentView: View {
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
-        let sidebarItems: [SidebarItem] = generateSidebarItems(preferences: appState.preferences, stateManager: webViewStateManager, pendingUpdatesCount: appState.pendingUpdatesCount)
+        let sidebarItems: [SidebarItem] = generateSidebarItems(preferences: appState.preferences, stateManager: webViewStateManager, cardGridViewModel: cardGridViewModel, pendingUpdatesCount: appState.pendingUpdatesCount)
         let accentColor = Color(accentNSColor)
         
         NavigationSplitView {

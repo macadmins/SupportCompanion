@@ -23,9 +23,9 @@ class WebViewState: NSObject, ObservableObject, WKNavigationDelegate {
         let webView = WKWebView()
         webView.navigationDelegate = self
         observeProgress(for: webView)
-        DispatchQueue.main.async { [weak webView] in
+        DispatchQueue.main.async { [weak webView, url = self.url] in
             guard let webView = webView else { return }
-            webView.load(URLRequest(url: self.url))
+            webView.load(URLRequest(url: url))
         }
         webViewInstance = webView
         return webView
@@ -41,7 +41,17 @@ class WebViewState: NSObject, ObservableObject, WKNavigationDelegate {
         webView.addObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress), options: .new, context: nil)
     }
     
+    /// Aborts any in-flight load when the view disappears. The KVO observer and
+    /// navigation delegate are deliberately left in place: this instance is cached by
+    /// WebViewStateManager and reused when the user navigates back, and tearing the
+    /// observer down here would make deinit remove it a second time.
+    func stopLoading() {
+        webViewInstance?.stopLoading()
+    }
+
     deinit {
+        webViewInstance?.stopLoading()
+        webViewInstance?.navigationDelegate = nil
         webViewInstance?.removeObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress))
     }
     

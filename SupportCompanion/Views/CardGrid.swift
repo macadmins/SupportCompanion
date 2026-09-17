@@ -81,7 +81,7 @@ struct CardGrid: View {
             }
         }
         .onAppear {
-            if !appState.preferences.hiddenCards.contains(Constants.CardTitle.evergreen) {
+            if !appState.preferences.hiddenCards.contains(Constants.CardTitle.evergreen) && appState.preferences.mode == Constants.Modes.munki {
                 appState.evergreenInfoManager.refresh()
             }
             if !appState.preferences.hiddenCards.contains(Constants.CardTitle.battery) {
