@@ -4,7 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [3.0.0] - 2026-09-17
+### Breaking changes
+- **Privileged settings are only read when set by an administrator.** `IsPrivileged` on `Actions`, `RequirePrivilegedActionAuthentication`, and the elevation settings (`EnableElevation`, `MaxElevationTime`, `RequireResonForElevation`, `ReasonMinLength`, `ElevationWebhookUrl`, `ElevationSeverity`) are now only honored when they come from a configuration profile or `/Library/Preferences`. Before, a standard user could set them in their own preferences with `defaults write` and gain root through the helper or add themselves to the admin group. Actions defined in the user's own preferences still run, but never with privileges, and `RequirePrivilegedActionAuthentication` defaults to `true` unless an administrator sets it. **If you deploy these settings with `defaults write` as the user, move them to a configuration profile or `/Library/Preferences`.**
+- **Fleet mode is selected automatically** on Macs with Fleet's agent (orbit) installed when no other mode matches. Before, these Macs used System Profiler mode. Set `Mode` explicitly to keep a different mode.
+- **The privileged helper is installed with `SMAppService`** instead of `SMJobBless`, which is deprecated in macOS 14 and later.
+- **Existing helper installs:** the helper is only installed when it's missing, so Macs upgrading from an earlier version keep their old helper until it's reinstalled. Commands run through the old helper can still hang on large output until then.
+
 ### Added
 - **Fleet mode.** Support Companion now integrates with [Fleet](https://fleetdm.com), using the Fleet device API with the device's own token, so no API keys are needed. Fleet mode is used when Fleet's agent (orbit) is installed, when the MDM server is the Fleet server, or when `Mode` is set to `Fleet`. The Fleet server URL is read from fleetd's configuration profile or orbit's LaunchDaemon. It can be overridden with `FleetUrl`, which is only honored when set by a configuration profile or in `/Library/Preferences`, since the device token is sent to that server. Example configuration:
 ```xml
@@ -78,23 +84,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <false/>
 ```
 - Failing compliance checks count toward the tray menu icon's badge and the Dock badge, and are shown as a badge on the Home sidebar item.
-
-Notes for Fleet mode:
-- Requires Fleet's agent (orbit) on the device. Features follow what the Fleet server supports; the Fleet flag for skipped patch-when-closed installs (`skipped_install`) is newer than Fleet 4.91, and older servers are handled through the install output instead.
-- Fleet Desktop single sign-on isn't supported yet. It hasn't shipped in a Fleet release.
-
-### Changed
-- Clicking a notification about apps now opens the relevant page in Support Companion, handled by the running app.
-- The Dock badge updates as soon as the number of pending items changes, and no longer counts items whose card or button is hidden.
-- The small buttons in tray menu cards (Elevate, Demote) now share one button component.
-
-### Fixed
-- The MDM enrollment date is now found by the MDM payload instead of the profile name, so it works for MDMs other than Jamf and Intune instead of failing.
-- Mode detection now compares the MDM server's host correctly. The MDM URL is read without its scheme, so the host comparison never ran before.
-- A notification without a button could remove the button from earlier notifications still in Notification Center.
-
-## [2.4.0] - 2026-03-19
-### Added
 - Support for Background Security Improvements. If the pending update is a background security improvement, clicking the update will open the relevant pane in system settings.
 - WiFi SSID information is now included in the device information
 - New option to hide tray menu icon. This allows for using the desktop information window without displaying the tray menu icon. Example configuration:
@@ -109,7 +98,7 @@ Notes for Fleet mode:
 <key>RefreshSelfService</key>
 <false/>
 ```
-- A new default card for Jamf mode that displays the last time the device checked in, the last inventorury time and the MDM enrollment time as well as the ID of the device in Jamf. This card is only displayed when in Jamf mode and can be hidden using the `HiddenCards` configuration.
+- A new default card for Jamf mode that displays the last time the device checked in, the last inventory time and the MDM enrollment time as well as the ID of the device in Jamf. This card is only displayed when in Jamf mode and can be hidden using the `HiddenCards` configuration.
 ```xml
 <key>HiddenCards</key>
 <array>
@@ -121,28 +110,50 @@ Notes for Fleet mode:
 <key>JamfLogPollHours</key>
 <integer>46</integer>
 ```
-- Logging will now be done in a log file located at `~/Library/Logs/SupportCompanion/SupportCompanion.log` in addition to os log. This allows for easier troubleshooting of issues with the app. The log file will be rotated when it reaches 5 MB in size. Debug logging can be enabled by setting the `LogLevel` to `Debug` in the configuration. Example configuration:
+- Logging will now be done in a log file located at `~/Library/Logs/SupportCompanion/SupportCompanion.log` in addition to os log. This allows for easier troubleshooting of issues with the app. The log file will be rotated when it reaches 5 MB in size. Debug logging can be enabled by setting `DebugLogging` to `true` in the configuration. Example configuration:
 ```xml
 <key>DebugLogging</key>
 <true/>
 ```
+
 ### Changed
 - Pending updates count is now shown as a badge on the sidebar navigation item, making it visible without opening the updates view.
 - Accessibility labels added to icon-only buttons for improved VoiceOver support.
 - Significant internal code quality improvements: preferences split into focused sub-objects, helpers refactored into dedicated files, Timer-based polling migrated to Swift structured concurrency, and improved error handling with logging throughout.
-- MDM info now uses multiple MDM profile names to be able to correctly display the enrollment time.
-- The privileged helper tool has been migrated to `SMAppService` in place of `SMJobBless` since `SMJobBless` is deprecated in macOS 14 and later.
 - If `BrandName` is configured, it will now be displayed in the desktop information window as well as the header instead of "Device Information".
 - A new localized message will be displayed in the applications view stating that the apps are installed by the `mode`. This is to clarify the view only displays apps installed by the MDM and not all apps installed on the device.
 - User info will now use OpenDirectory to gather user information instead of `finger` command.
 - A delay has been added to `InfoHelp` when hovering over the info icon to prevent accidental triggering of the help popup.
 - App update names line limit has been increased to `2` lines to prevent truncation of long app names.
 - Add support for a custom Company Portal URL (e.g. GCC High / sovereign cloud endpoints) and harden the Intune MDM detection logic so it correctly identifies Intune across all manage.microsoft.* domains while avoiding obvious false positives. Thanks @Actu4l-Human.
+- Clicking a notification about apps now opens the relevant page in Support Companion, handled by the running app.
+- The Dock badge updates as soon as the number of pending items changes, and no longer counts items whose card or button is hidden.
+- Much lower resource use on the Home page: the patch progress wave is drawn with Core Animation. With Home open, memory use went from about 140 MB to about 55 MB, and CPU use from 30–40% to about 0%. Reduce Motion still stops the animation.
+- Views only update when the data they show changes, and preference changes from a configuration profile or `defaults write` show up right away.
+- The battery card's Time to Full shows Fully Charged, Not Charging or Calculating… instead of N/A while on external power. The temperature row is hidden when no reading is available, and copied device info uses the system's temperature unit.
+- The tray menu popover closes when clicking outside it, pressing Escape, or opening the main window.
+
 ### Fixed
 - File watcher would not correctly detect changes on custom JSON cards if the file was replaced instead of modified. This has been fixed by using a different method to monitor file changes.
 - The pending updates badge on `Software Updates` was transparent in the main app.
 - `FileVault` did not hide the item on the desktop information window when configured to be hidden.
+- The MDM enrollment date is now found by the MDM payload instead of the profile name, so it works for MDMs other than Jamf and Intune instead of failing.
+- Mode detection now compares the MDM server's host correctly. The MDM URL is read without its scheme, so the host comparison never ran before.
+- A notification without a button could remove the button from earlier notifications still in Notification Center.
+- On macOS 27 the tray menu popover closed a few seconds after opening, for example in Jamf mode while Self Service+ was refreshed in the background.
+- On macOS 27 the battery card showed 0% health and 0.0 °C.
+- Commands that print a lot of output, such as gathering logs over a long period, could hang.
+- Commands and actions containing single quotes didn't run correctly.
+- Jamf patches ran as the user with UID 504 instead of the logged-in user.
+- Mode detection stopped before choosing a mode when the MDM server was Intune or Jamf, so the mode was never set on those Macs.
+- On non-English systems, hiding the Battery or Evergreen card with `HiddenCards` didn't stop their background refresh.
+- The "Updating…" label for Jamf patches didn't update.
+- Web views could be created twice for the same tab, and monitoring (for example battery) kept running after the main window was closed.
+- Swedish and French restart countdown translations.
 
+### Notes for Fleet mode
+- Requires Fleet's agent (orbit) on the device. Features follow what the Fleet server supports; the Fleet flag for skipped patch-when-closed installs (`skipped_install`) is newer than Fleet 4.91, and older servers are handled through the install output instead.
+- Fleet Desktop single sign-on isn't supported yet. It hasn't shipped in a Fleet release.
 
 ## [2.3.1] - 2025-10-06
 ### Changed
