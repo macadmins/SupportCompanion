@@ -75,7 +75,7 @@ class PendingJamfUpdatesManager: PendingUpdatesManager {
         if appState.pendingUpdatesCount != pendingUpdates.count {
             appState.pendingUpdatesCount = pendingUpdates.count
         }
-        if pendingUpdates.count > 0 && !appState.preferences.hiddenCards.contains("PendingAppUpdates") {
+        if pendingUpdates.count > 0 && !appState.preferences.hiddenCards.contains(Constants.Cards.pendingAppUpdates) {
             NotificationService(appState: appState).sendNotification(
                 message: appState.preferences.notifications.appUpdateNotificationMessage,
                 buttonText: appState.preferences.notifications.appUpdateNotificationButtonText,

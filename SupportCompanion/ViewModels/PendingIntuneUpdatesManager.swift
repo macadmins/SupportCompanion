@@ -60,7 +60,7 @@ class PendingIntuneUpdatesManager: PendingUpdatesManager {
     override func fetchPendingUpdates() async {
         let updates = await intuneApps.getPendingUpdatesCountFromLog()
         appState.pendingUpdatesCount = updates
-        if updates > 0 && !appState.preferences.hiddenCards.contains("PendingAppUpdates") {
+        if updates > 0 && !appState.preferences.hiddenCards.contains(Constants.Cards.pendingAppUpdates) {
             NotificationService(appState: appState).sendNotification(
                 message: appState.preferences.notifications.appUpdateNotificationMessage,
                 buttonText: appState.preferences.notifications.appUpdateNotificationButtonText,

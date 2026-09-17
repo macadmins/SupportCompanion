@@ -81,10 +81,10 @@ struct CardGrid: View {
             }
         }
         .onAppear {
-            if !appState.preferences.hiddenCards.contains(Constants.CardTitle.evergreen) && appState.preferences.mode == Constants.Modes.munki {
+            if !appState.preferences.hiddenCards.contains(Constants.Cards.evergreen) && appState.preferences.mode == Constants.Modes.munki {
                 appState.evergreenInfoManager.refresh()
             }
-            if !appState.preferences.hiddenCards.contains(Constants.CardTitle.battery) {
+            if !appState.preferences.hiddenCards.contains(Constants.Cards.battery) {
                 appState.batteryInfoManager.startMonitoring()
             }
             if !appState.preferences.hiddenCards.contains(Constants.Cards.jamfInfo) && appState.preferences.mode == Constants.Modes.jamf {
@@ -92,7 +92,7 @@ struct CardGrid: View {
             }
         }
         .onDisappear {
-            if !appState.preferences.hiddenCards.contains(Constants.CardTitle.battery) {
+            if !appState.preferences.hiddenCards.contains(Constants.Cards.battery) {
                 appState.batteryInfoManager.stopMonitoring()
             }
         }
