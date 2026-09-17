@@ -173,6 +173,7 @@
 				Logger.swift,
 				MDMHelpers.swift,
 				NetworkInfoHelpers.swift,
+				ProcessRunner.swift,
 				SSOInfoHelpers.swift,
 				StorageHelpers.swift,
 				TrustedPreferences.swift,
@@ -202,6 +203,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Logger.swift,
+				ProcessRunner.swift,
 			);
 			target = F6F8AE7C2CE345A8009B0A1F /* com.github.macadmins.SupportCompanion.helper */;
 		};
