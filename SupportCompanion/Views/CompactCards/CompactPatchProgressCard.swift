@@ -2,7 +2,7 @@ import Foundation
 import SwiftUI
 
 struct CompactPatchProgressCard: View {
-    @EnvironmentObject var appState: AppStateManager
+    @Environment(AppStateManager.self) var appState
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
@@ -16,7 +16,7 @@ struct CompactPatchProgressCard: View {
                         value: appState.installPercentage,
                         total: 100,
                         label: {
-							Text("\(String(format: "%1d", Int(appState.installPercentage/100*100)))% Patched")
+                            Text("\(String(format: "%1d", Int(appState.installPercentage/100*100)))% Patched")
                                 .font(.system(size: 12))
                         }
                     )
@@ -27,26 +27,10 @@ struct CompactPatchProgressCard: View {
             }
         )
         .onAppear {
-            if appState.preferences.mode == Constants.Modes.munki {
-                appState.pendingMunkiUpdatesManager.startInstallPercentageTask()
-            }
-            if appState.preferences.mode == Constants.Modes.intune {
-                appState.pendingIntuneUpdatesManager.startInstallPercentageTask()
-            }
-            if appState.preferences.mode == Constants.Modes.jamf {
-                appState.pendingJamfUpdatesManager.startInstallPercentageTask()
-            }
+            appState.activeUpdatesManager?.startInstallPercentageTask()
         }
         .onDisappear() {
-            if appState.preferences.mode == Constants.Modes.munki {
-                appState.pendingMunkiUpdatesManager.stopInstallPercentageTask()
-            }
-            if appState.preferences.mode == Constants.Modes.intune {
-                appState.pendingIntuneUpdatesManager.stopInstallPercentageTask()
-            }
-            if appState.preferences.mode == Constants.Modes.jamf {
-                appState.pendingJamfUpdatesManager.stopInstallPercentageTask()
-            }
+            appState.activeUpdatesManager?.stopInstallPercentageTask()
         }
     }
 }

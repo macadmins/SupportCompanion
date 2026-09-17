@@ -6,11 +6,13 @@
 //
 
 import Foundation
+import Observation
 import Combine
 import SwiftUI
 
 @MainActor
-class StorageInfoManager: ObservableObject {
+@Observable
+class StorageInfoManager {
     static let shared = StorageInfoManager(
         storageInfo: StorageInfo(
             id: UUID(),
@@ -20,7 +22,7 @@ class StorageInfoManager: ObservableObject {
         )
     )
     
-    @Published var storageInfo: StorageInfo
+    var storageInfo: StorageInfo
 
     init(storageInfo: StorageInfo) {
         self.storageInfo = storageInfo

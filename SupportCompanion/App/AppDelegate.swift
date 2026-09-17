@@ -23,7 +23,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     static var urlLaunch = false
     static var shouldExit = false
     private var notificationDelegate: NotificationDelegate?
-    private var cancellables: Set<AnyCancellable> = []
+    private var trayIconObservation: ObservationToken?
+    private var popoverEventMonitors: [Any] = []
+    private var popoverKeyWindowObserver: NSObjectProtocol?
     private var trayManager: TrayMenuManager { TrayMenuManager.shared }
 
     @AppStorage("isDarkMode") private var isDarkMode: Bool = false
@@ -95,17 +97,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         }
 
         popover = NSPopover()
-        popover.behavior = .transient // Closes when clicking outside
+        // Not .transient: that closes the popover whenever the app resigns active, which
+        // happens when the Jamf install percentage refresh force-quits Self Service+ (macOS 27).
+        // Outside clicks and Escape are handled by installPopoverEventMonitors() instead.
+        popover.behavior = .applicationDefined
         popover.contentSize = NSSize(width: 500, height: 500)
         popover.contentViewController = NSHostingController(
             rootView: TrayMenuView(
                 viewModel: CardGridViewModel(appState: AppStateManager.shared)
             )
-            .environmentObject(AppStateManager.shared)
+            .environment(AppStateManager.shared)
         )
         popover.delegate = self
 
-        configureAppUpdateNotificationCommand(mode: appStateManager.preferences.mode)
+        configureAppUpdateNotificationCommand()
 
         appStateManager.showWindowCallback = { [weak self] in
             self?.showWindow()
@@ -129,21 +134,21 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         appStateManager.startBackgroundTasks()
         appStateManager.refreshAll()
         checkAndHandleDemotionOnLaunch()
-		if !appStateManager.preferences.hiddenCards.contains(Constants.Cards.jamfInfo) && appStateManager.preferences.mode == Constants.Modes.jamf {
-			Task {
-				let id: String
-				do {
-					id = try await getJamfId()
-				} catch {
-					Logger.shared.logError("getJamfId failed: \(error.localizedDescription)")
-					id = "Unknown"
-				}
-				await MainActor.run {
-					AppStateManager.shared.jamfId = id
-					AppStateManager.shared.jamfInfoManager.refresh()
-				}
-			}
-		}
+        if !appStateManager.preferences.hiddenCards.contains(Constants.Cards.jamfInfo) && appStateManager.preferences.mode == Constants.Modes.jamf {
+            Task {
+                let id: String
+                do {
+                    id = try await getJamfId()
+                } catch {
+                    Logger.shared.logError("getJamfId failed: \(error.localizedDescription)")
+                    id = "Unknown"
+                }
+                await MainActor.run {
+                    AppStateManager.shared.jamfId = id
+                    AppStateManager.shared.jamfInfoManager.refresh()
+                }
+            }
+        }
     }
 
     private func checkAndHandleDemotionOnLaunch() {
@@ -183,21 +188,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     }
 
     func setupTrayMenuIconBinding() {
-        Publishers.CombineLatest4(
-            appStateManager.$pendingUpdatesCount,
-            appStateManager.$systemUpdateCache,
-            appStateManager.preferences.$hiddenActions,
-            appStateManager.preferences.$hiddenCards
-        )
-        .map { pendingUpdatesCount, systemUpdateCache, hiddenActions, hiddenCards in
-            let hasPendingUpdates = !hiddenCards.contains(Constants.Cards.pendingAppUpdates) && pendingUpdatesCount > 0
-            let hasSoftwareUpdates = !hiddenActions.contains(Constants.Actions.HideStrings.softwareUpdate) && systemUpdateCache.count > 0
+        let hasUpdates = { [unowned self] () -> Bool in
+            let appState = self.appStateManager
+            let hasPendingUpdates = !appState.preferences.hiddenCards.contains(Constants.Cards.pendingAppUpdates) && appState.pendingUpdatesCount > 0
+            let hasSoftwareUpdates = !appState.preferences.hiddenActions.contains(Constants.Actions.HideStrings.softwareUpdate) && appState.systemUpdateCache.count > 0
             return hasPendingUpdates || hasSoftwareUpdates
         }
-            .sink { hasUpdates in
-                TrayMenuManager.shared.updateTrayIcon(hasUpdates: hasUpdates)
-            }
-            .store(in: &cancellables)
+        TrayMenuManager.shared.updateTrayIcon(hasUpdates: hasUpdates())
+        trayIconObservation = observeChanges(of: hasUpdates) { hasUpdates in
+            TrayMenuManager.shared.updateTrayIcon(hasUpdates: hasUpdates)
+        }
     }
 
     @MainActor
@@ -289,7 +289,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
                 rootView: TrayMenuView(
                     viewModel: CardGridViewModel(appState: AppStateManager.shared)
                 )
-                .environmentObject(AppStateManager.shared)
+                .environment(AppStateManager.shared)
             )
             
             // Anchor the popover to the status item's button
@@ -300,12 +300,72 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
                 popoverWindow.makeKeyAndOrderFront(nil)
                 NSApp.activate(ignoringOtherApps: true)
             }
+
+            installPopoverEventMonitors()
+        }
+    }
+
+    private func installPopoverEventMonitors() {
+        removePopoverEventMonitors()
+
+        // Another of this app's windows taking focus, e.g. the main window opened from the popover
+        popoverKeyWindowObserver = NotificationCenter.default.addObserver(forName: NSWindow.didBecomeKeyNotification, object: nil, queue: .main) { [weak self] notification in
+            MainActor.assumeIsolated {
+                guard let self, let window = notification.object as? NSWindow else { return }
+                if window !== self.popover.contentViewController?.view.window {
+                    self.closePopover()
+                }
+            }
+        }
+
+        // Clicks in other apps
+        if let globalMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown, .otherMouseDown], handler: { [weak self] _ in
+            Task { @MainActor in self?.closePopover() }
+        }) {
+            popoverEventMonitors.append(globalMonitor)
+        }
+
+        // Clicks in this app's other windows, and Escape
+        if let localMonitor = NSEvent.addLocalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown, .otherMouseDown, .keyDown], handler: { [weak self] event in
+            guard let self else { return event }
+            if event.type == .keyDown {
+                if event.keyCode == 53 { // Escape
+                    self.closePopover()
+                    return nil
+                }
+                return event
+            }
+            let popoverWindow = self.popover.contentViewController?.view.window
+            let statusItemWindow = self.trayManager.getStatusItem().button?.window
+            // Clicks on the status item are left to togglePopover
+            if event.window !== popoverWindow && event.window !== statusItemWindow {
+                self.closePopover()
+            }
+            return event
+        }) {
+            popoverEventMonitors.append(localMonitor)
+        }
+    }
+
+    private func removePopoverEventMonitors() {
+        popoverEventMonitors.forEach { NSEvent.removeMonitor($0) }
+        popoverEventMonitors.removeAll()
+        if let popoverKeyWindowObserver {
+            NotificationCenter.default.removeObserver(popoverKeyWindowObserver)
+            self.popoverKeyWindowObserver = nil
+        }
+    }
+
+    private func closePopover() {
+        if popover.isShown {
+            popover.performClose(nil)
         }
     }
 
     func popoverDidClose(_ notification: Notification) {
         Logger.shared.logDebug("Popover closed, cleaning up...")
-        
+        removePopoverEventMonitors()
+
         // Cleanup logic: release the popover or its content
         popover.contentViewController = nil
     }
@@ -314,8 +374,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         if windowController == nil {
             NSApp.setActivationPolicy(.regular)
             let contentView = ContentView()
-                .environmentObject(AppStateManager.shared)
-                .environmentObject(AppStateManager.shared.preferences)
+                .environment(AppStateManager.shared)
+                .environment(AppStateManager.shared.preferences)
                 .frame(minWidth: 1100, minHeight: 650)
 
             let hostingController = NSHostingController(rootView: contentView)
@@ -353,14 +413,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         NSApplication.shared.terminate(nil)
     }
     
-    private func configureAppUpdateNotificationCommand(mode: String) {
-		if mode == Constants.Modes.munki {
-            appStateManager.preferences.notifications.appUpdateNotificationCommand = "open \(Constants.AppPaths.MSCUpdates)"
-		} else if mode == Constants.Modes.intune {
-            appStateManager.preferences.notifications.appUpdateNotificationCommand = "open \(Constants.AppPaths.companyPortal)"
-		} else if mode == Constants.Modes.jamf {
-			appStateManager.preferences.notifications.appUpdateNotificationCommand = "open \(Constants.AppPaths.selfService)"
-		}
-     }
+    private func configureAppUpdateNotificationCommand() {
+        guard let manager = appStateManager.activeUpdatesManager else { return }
+        appStateManager.preferences.notifications.appUpdateNotificationCommand = "open \(manager.managementApp(forUpdates: true).path)"
+    }
 }
 

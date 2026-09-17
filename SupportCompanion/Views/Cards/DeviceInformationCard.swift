@@ -9,8 +9,8 @@ import Foundation
 import SwiftUI
 
 struct DeviceInformationCard: View {
-    @ObservedObject var viewModel: CardGridViewModel
-    @EnvironmentObject var appState: AppStateManager
+    var viewModel: CardGridViewModel
+    @Environment(AppStateManager.self) var appState
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
@@ -167,7 +167,7 @@ struct LastRestartRow: View {
                     .foregroundColor(color)
                 //Image(systemName: "clock.fill")
                 //    .foregroundColor(color)
-				InfoHelp(text: Constants.ToolTips.deviceLastRebooted, icon: "clock.fill", color: color)
+                InfoHelp(text: Constants.ToolTips.deviceLastRebooted, icon: "clock.fill", color: color)
             }
             .font(.system(size: 14))
             //.help(Constants.ToolTips.deviceLastRebooted)

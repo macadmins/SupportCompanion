@@ -91,6 +91,11 @@ extension AppDelegate: NSWindowDelegate {
         }
         Logger.shared.logDebug("Main window is closing.")
         AppStateManager.shared.windowIsVisible = false
+        // Explicitly remove the hosting controller before releasing the window controller.
+        // This ensures SwiftUI's onDisappear fires on all visible views (stopping battery/apps
+        // monitoring) and that @State-owned objects are torn down via proper view lifecycle
+        // rather than relying solely on the dealloc chain.
+        windowController?.window?.contentViewController = nil
         windowController = nil
         NSApp.setActivationPolicy(.accessory)
     }

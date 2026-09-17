@@ -35,6 +35,16 @@ class PendingIntuneUpdatesManager: PendingUpdatesManager {
         }
     }
 
+    // MARK: - Presentation
+
+    override var pendingUpdates: [any PendingUpdate] { appState.pendingIntuneUpdates }
+
+    override var pendingUpdatesDetailColumnTitle: String? { "" }
+
+    override func managementApp(forUpdates: Bool) -> (name: String, path: String) {
+        ("Company Portal", Constants.AppPaths.companyPortal)
+    }
+
     // MARK: - Pending Updates
 
     override func fetchPendingUpdatesList() async {
@@ -50,7 +60,7 @@ class PendingIntuneUpdatesManager: PendingUpdatesManager {
     override func fetchPendingUpdates() async {
         let updates = await intuneApps.getPendingUpdatesCountFromLog()
         appState.pendingUpdatesCount = updates
-        if updates > 0 && !appState.preferences.hiddenCards.contains("PendingAppUpdates") {
+        if updates > 0 && !appState.preferences.hiddenCards.contains(Constants.Cards.pendingAppUpdates) {
             NotificationService(appState: appState).sendNotification(
                 message: appState.preferences.notifications.appUpdateNotificationMessage,
                 buttonText: appState.preferences.notifications.appUpdateNotificationButtonText,

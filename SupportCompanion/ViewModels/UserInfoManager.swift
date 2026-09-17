@@ -6,9 +6,11 @@
 //
 
 import Foundation
+import Observation
 
 @MainActor
-class UserInfoManager: ObservableObject {
+@Observable
+class UserInfoManager {
     static let shared = UserInfoManager(
         userInfo: UserInfo(
             login: "",
@@ -19,7 +21,7 @@ class UserInfoManager: ObservableObject {
         )
     )
     
-    @Published var userInfo: UserInfo
+    var userInfo: UserInfo
     
     private let helper = UserInfoHelper()
     

@@ -1,9 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "" : {
-
-    },
     "%" : {
 
     },
@@ -394,6 +391,18 @@
         }
       }
     },
+    "Battery.Calculating" : {
+      "comment" : "Time to full value while macOS is still estimating the charge time",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Calculating…"
+          }
+        }
+      }
+    },
     "Battery.Charging" : {
       "comment" : "Label for the battery charging status",
       "extractionState" : "extracted_with_value",
@@ -474,6 +483,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cykler:"
+          }
+        }
+      }
+    },
+    "Battery.FullyCharged" : {
+      "comment" : "Time to full value when the battery is full on external power",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Fully Charged"
           }
         }
       }
@@ -2478,10 +2499,40 @@
       "comment" : "Just Now",
       "extractionState" : "extracted_with_value",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gerade eben"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "new",
             "value" : "Just Now"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "À l’instant"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "たった今"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Akkurat nå"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nyss"
           }
         }
       }
@@ -3186,6 +3237,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Applikationer"
+          }
+        }
+      }
+    },
+    "Nav.CompanyPortal" : {
+      "comment" : "Label for company portal navigation",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Company Portal"
           }
         }
       }
@@ -4102,7 +4165,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Redémarrage dans %lld  secondes…"
+            "value" : "Redémarrage dans %lld secondes…"
           }
         },
         "ja" : {
@@ -4120,7 +4183,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Startar om inom %lld seconds..."
+            "value" : "Startar om inom %lld sekunder…"
           }
         }
       }
@@ -4347,7 +4410,7 @@
     },
     "TabelHeaders.Action" : {
       "comment" : "Header for the action column",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4383,7 +4446,7 @@
     },
     "TabelHeaders.Name" : {
       "comment" : "Header for the name column",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -4419,7 +4482,7 @@
     },
     "TabelHeaders.Version" : {
       "comment" : "Header for the version column",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -4443,6 +4506,102 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Version"
+          }
+        }
+      }
+    },
+    "TableHeaders.Action" : {
+      "comment" : "Header for the action column",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktion"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Action"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アクション"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Handling"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Åtgärd"
+          }
+        }
+      }
+    },
+    "TableHeaders.Name" : {
+      "comment" : "Header for the name column",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Name"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nom"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "名前"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navn"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Namn"
+          }
+        }
+      }
+    },
+    "TableHeaders.Version" : {
+      "comment" : "Header for the version column",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Version"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バージョン"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Versjon"
           }
         }
       }
@@ -4740,6 +4899,12 @@
             "state" : "translated",
             "value" : "タイプ:"
           }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Typ:"
+          }
         }
       }
     },
@@ -4877,6 +5042,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "シェル:"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skall:"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skal:"
           }
         }
       }

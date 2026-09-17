@@ -14,10 +14,10 @@ struct PendingJamfUpdate: Identifiable, Equatable {
     let needsUpdate: Bool
     let label: UpdateLabel
     let details: String
-	let showInfoIcon: Bool
-	let dueBy: String?
-	let patchId: Int?
-	let policyName: String?
+    let showInfoIcon: Bool
+    let dueBy: String?
+    let patchId: Int?
+    let policyName: String?
 
     static func == (lhs: PendingJamfUpdate, rhs: PendingJamfUpdate) -> Bool {
         return lhs.id == rhs.id
@@ -30,12 +30,12 @@ struct Policy {
     let policyVersion: String?
     let installedOrUpdated: Date?
     let installStatus: Int?
-	let iconUrl: String?
-	let postInstallText: String?
+    let iconUrl: String?
+    let postInstallText: String?
 }
 
 struct Patch {
-	let id: Int
+    let id: Int
     let name: String
     let version: String
     let availableDate: Date?

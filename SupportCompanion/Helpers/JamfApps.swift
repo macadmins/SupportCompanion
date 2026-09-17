@@ -25,10 +25,10 @@ extension Date {
 }
 
 extension String {
-	var normalizedAppName: String {
-		trimmingCharacters(in: .whitespacesAndNewlines)
-			.replacingOccurrences(of: #"\s+"#, with: " ", options: .regularExpression)
-	}
+    var normalizedAppName: String {
+        trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: #"\s+"#, with: " ", options: .regularExpression)
+    }
 }
 
 // MARK: - Tiny XML parser (sax-style)
@@ -44,14 +44,14 @@ final class SSPlusParser: NSObject, XMLParserDelegate {
     private var currentText = ""
 
     func parse() async -> Bool {
-		let path = (Constants.Paths.jamfSelfServiceData as NSString).expandingTildeInPath
-		guard let data = FileManager.default.contents(atPath: path) else {
-			Logger.shared.logError("Failure to read storedata file")
-			return false
-		}
-		policies.removeAll()
-		patches.removeAll()
-		let p = XMLParser(data: data)
+        let path = (Constants.Paths.jamfSelfServiceData as NSString).expandingTildeInPath
+        guard let data = FileManager.default.contents(atPath: path) else {
+            Logger.shared.logError("Failure to read storedata file")
+            return false
+        }
+        policies.removeAll()
+        patches.removeAll()
+        let p = XMLParser(data: data)
         p.delegate = self
         return p.parse()
     }
@@ -96,37 +96,37 @@ final class SSPlusParser: NSObject, XMLParserDelegate {
 
         switch t {
         case "SSPOLICY":
-			let name = (currentAttributes["name"] ?? "").normalizedAppName
+            let name = (currentAttributes["name"] ?? "").normalizedAppName
             // Extract "#### Version: X" from serverdescription (defensive)
             let desc = currentAttributes["serverdescription"] ?? ""
             let policyVersion = SSPlusParser.extractVersionFromPolicyDescription(desc)
 
             let installedDate = Date.fromCoreDataEpochSeconds(currentAttributes["installedorupdateddate"] ?? "")
             let installStatus = Int(currentAttributes["installstatus"] ?? "")
-			let iconUrl = currentAttributes["iconurl"] ?? ""
+            let iconUrl = currentAttributes["iconurl"] ?? ""
             let id = Int(currentAttributes["id"] ?? "") ?? 0
-			let postInstallText = currentAttributes["postinstalltext"] ?? ""
+            let postInstallText = currentAttributes["postinstalltext"] ?? ""
             // store policy info
             policies.append(Policy(id: id,
                                    name: name,
                                    policyVersion: policyVersion,
                                    installedOrUpdated: installedDate,
-								   installStatus: installStatus,
-								   iconUrl: iconUrl,
-								   postInstallText: postInstallText))
+                                   installStatus: installStatus,
+                                   iconUrl: iconUrl,
+                                   postInstallText: postInstallText))
 
         case "SSPATCH":
-			let name = (currentAttributes["name"] ?? "").normalizedAppName
+            let name = (currentAttributes["name"] ?? "").normalizedAppName
             guard let version = currentAttributes["version"], !version.isEmpty else { return }
-			
-			let id = Int(currentAttributes["id"] ?? "") ?? 0
+            
+            let id = Int(currentAttributes["id"] ?? "") ?? 0
             let available = Date.fromCoreDataEpochSeconds(currentAttributes["availabledate"] ?? "")
             let deadline = Date.fromCoreDataEpochSeconds(currentAttributes["deadline"] ?? "")
             let button = currentAttributes["buttontext"]
             let installStatus = Int(currentAttributes["installstatus"] ?? "")
-			
-			patches.append(Patch(id: id,
-								 name: name,
+            
+            patches.append(Patch(id: id,
+                                 name: name,
                                  version: version,
                                  availableDate: available,
                                  deadlineDate: deadline,
@@ -252,7 +252,7 @@ func evaluateUpdate(policy: Policy, patch: Patch, now: Date = .init()) -> (neede
 
 func computeUpdates(policies: [Policy],
                     patches: [Patch],
-					now: Date = Date()) async -> ([PendingJamfUpdate], Int, Int) {
+                    now: Date = Date()) async -> ([PendingJamfUpdate], Int, Int) {
 
     // MARK: - Non-hardcoded fuzzy name matching helpers
     func canonicalTokens(_ s: String) -> [String] {
@@ -297,15 +297,15 @@ func computeUpdates(policies: [Policy],
         return best?.policy
     }
 
-	// Keep one policy per name: the newest (by installedOrUpdated date)
-	let policiesByName: [String: Policy] = Dictionary(grouping: policies, by: { $0.name })
-		.compactMapValues { group in
-			group.sorted {
-				let s0 = $0.installStatus ?? 0, s1 = $1.installStatus ?? 0
-				if s0 != s1 { return s0 > s1 }
-				return ($0.installedOrUpdated ?? .distantPast) > ($1.installedOrUpdated ?? .distantPast)
-			}.first
-		}
+    // Keep one policy per name: the newest (by installedOrUpdated date)
+    let policiesByName: [String: Policy] = Dictionary(grouping: policies, by: { $0.name })
+        .compactMapValues { group in
+            group.sorted {
+                let s0 = $0.installStatus ?? 0, s1 = $1.installStatus ?? 0
+                if s0 != s1 { return s0 > s1 }
+                return ($0.installedOrUpdated ?? .distantPast) > ($1.installedOrUpdated ?? .distantPast)
+            }.first
+        }
     var results: [PendingJamfUpdate] = []
     var matchedPolicyNames = Set<String>()
     var updateCount = 0
@@ -327,20 +327,20 @@ func computeUpdates(policies: [Policy],
                       "lastInstall=\(policy.installedOrUpdated?.description ?? "nil"), " +
                       "policyVersion=\(policy.policyVersion ?? "nil"), " +
                       "patchVersion=\(patch.version)"
-		if needed {
-			results.append(PendingJamfUpdate(
-				id: UUID(),
-				name: patch.name,
-				version: patch.version,
-				needsUpdate: needed,
-				label: label,
-				details: details,
-				showInfoIcon: !details.isEmpty,
-				dueBy: patch.deadlineDate.map { DateFormatter.shortDayMonth.string(from: $0) },
-				patchId: patch.id,
-				policyName: policy.name
-			))
-		}
+        if needed {
+            results.append(PendingJamfUpdate(
+                id: UUID(),
+                name: patch.name,
+                version: patch.version,
+                needsUpdate: needed,
+                label: label,
+                details: details,
+                showInfoIcon: !details.isEmpty,
+                dueBy: patch.deadlineDate.map { DateFormatter.shortDayMonth.string(from: $0) },
+                patchId: patch.id,
+                policyName: policy.name
+            ))
+        }
 
         // Count how many updates we have versus how many apps are up to date
         if needed {
@@ -372,7 +372,7 @@ func computeUpdates(policies: [Policy],
 }
 
 func getInstalledJamfAppsFromStore() async -> [String: Any] {
-	let path = (Constants.Paths.jamfSelfServiceData as NSString).expandingTildeInPath
+    let path = (Constants.Paths.jamfSelfServiceData as NSString).expandingTildeInPath
     guard let _ = FileManager.default.contents(atPath: path) else {
         Logger.shared.logError("Failure to read storedata file")
         return [:]
@@ -385,7 +385,7 @@ func getInstalledJamfAppsFromStore() async -> [String: Any] {
         return [:]
     }
     for policy in parser.policies {
-		if policy.installStatus == 4 {
+        if policy.installStatus == 4 {
             // verify the app exists in /Applications or ~/Applications
             let appPath1 = "/Applications/\(policy.name).app"
             let appPath2 = ("~/Applications/\(policy.name).app" as NSString).expandingTildeInPath
@@ -396,23 +396,23 @@ func getInstalledJamfAppsFromStore() async -> [String: Any] {
             var policyVersion = policy.policyVersion
             if (policyVersion ?? "").isEmpty {
                 let plistPath = FileManager.default.fileExists(atPath: appPath1) ? "\(appPath1)/Contents/Info.plist" : "\(appPath2)/Contents/Info.plist"
-				policyVersion = getAppVersion(plistPath: plistPath)
-			}
-			// store app info
-			apps[policy.name] = [
+                policyVersion = getAppVersion(plistPath: plistPath)
+            }
+            // store app info
+            apps[policy.name] = [
                 "id": policy.id,
-				"name": policy.name,
-				"version": policyVersion ?? "",
-				"iconUrl": policy.iconUrl ?? "",
-				"postInstallText": policy.postInstallText ?? ""
-			]
-		}
+                "name": policy.name,
+                "version": policyVersion ?? "",
+                "iconUrl": policy.iconUrl ?? "",
+                "postInstallText": policy.postInstallText ?? ""
+            ]
+        }
     }
     return apps
 }
 
 func downloadAppIcon(forApp: InstalledApp) async -> String {
-	guard let url = URL(string: forApp.iconUrl ?? "") else { return "" }
+    guard let url = URL(string: forApp.iconUrl ?? "") else { return "" }
 
     // first try to load from cache
     let fileManager = FileManager.default

@@ -5,17 +5,20 @@
 //  Created by Tobias Almén on 2024-11-22.
 //
 
+import AppKit
 import Foundation
+import Observation
 
 @MainActor
-final class ApplicationsInfoManager: ObservableObject {
-    private var monitorTask: Task<Void, Never>?
+@Observable
+final class ApplicationsInfoManager {
+    @ObservationIgnored private var monitorTask: Task<Void, Never>?
     private let munkiApps = MunkiApps()
     private let intuneApps = IntuneApps()
     private let profilerApps = SystemProfilerApplications()
     private var appState: AppStateManager
 
-    @Published var applicationInfo: InstalledApp = InstalledApp(
+    var applicationInfo: InstalledApp = InstalledApp(
         id: UUID(),
         name: "",
         version: "",
@@ -25,8 +28,8 @@ final class ApplicationsInfoManager: ObservableObject {
         path: "",
         type: "",
         bundleId: "",
-		iconUrl: "",
-		actionText: ""
+        iconUrl: "",
+        actionText: ""
     )
 
     init(appState: AppStateManager) {
@@ -93,6 +96,7 @@ final class ApplicationsInfoManager: ObservableObject {
                     command = "open munki://detail-\(commandName)"
                 }
 
+                let munkiIconPath = "/Library/Managed Installs/icons/\(name).png"
                 return InstalledApp(
                     id: UUID(),
                     name: name,
@@ -103,8 +107,9 @@ final class ApplicationsInfoManager: ObservableObject {
                     path: "",
                     type: "",
                     bundleId: "",
-					iconUrl: "",
-					actionText: ""
+                    iconUrl: "",
+                    actionText: Constants.General.manage,
+                    iconPath: FileManager.default.fileExists(atPath: munkiIconPath) ? munkiIconPath : nil
                 )
             }
             
@@ -124,9 +129,17 @@ final class ApplicationsInfoManager: ObservableObject {
                 return nil
             }
 
-            let version = info["Version"] as? String ?? ""
+            var version = info["Version"] as? String ?? ""
             let type = info["AppType"] as? String ?? ""
             let bundleId = info["BundleID"] as? String ?? ""
+
+            // Prefer the installed bundle's version and icon over what the log reports
+            var iconPath: String?
+            if let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleId) {
+                let appInfoPlistPath = "\(appURL.path)/Contents/Info.plist"
+                version = getAppVersion(plistPath: appInfoPlistPath) ?? "Unknown"
+                iconPath = getIconPath(plistPath: appInfoPlistPath, appPath: appURL.path)
+            }
             
             return InstalledApp(
                 id: UUID(),
@@ -139,7 +152,8 @@ final class ApplicationsInfoManager: ObservableObject {
                 type: type,
                 bundleId: bundleId,
                 iconUrl: "",
-                actionText: ""
+                actionText: "",
+                iconPath: iconPath
             )
         }
         
@@ -171,8 +185,8 @@ final class ApplicationsInfoManager: ObservableObject {
                     path: "",
                     type: "",
                     bundleId: "",
-					iconUrl: iconUrl,
-					actionText: actionText
+                    iconUrl: iconUrl,
+                    actionText: actionText
                 )
             }
             
@@ -195,6 +209,7 @@ final class ApplicationsInfoManager: ObservableObject {
                 ]
 
                 let arch = archMap[app["arch_kind"] as? String ?? ""] ?? "Unknown"
+                let path = app["path"] as? String ?? ""
                 
                 return InstalledApp(
                     id: UUID(),
@@ -203,11 +218,12 @@ final class ApplicationsInfoManager: ObservableObject {
                     action: "",
                     arch: arch,
                     isSelfServe: false,
-                    path: app["path"] as? String ?? "",
+                    path: path,
                     type: "",
                     bundleId: "",
-					iconUrl: "",
-					actionText: ""
+                    iconUrl: "",
+                    actionText: "",
+                    iconPath: getIconPath(plistPath: "\(path)/Contents/Info.plist", appPath: path)
                 )
             }
             

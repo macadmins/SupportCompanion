@@ -1,5 +1,5 @@
 //
-//  HelperConstans.swift
+//  HelperConstants.swift
 //  SupportCompanion
 //
 //  Created by Tobias Almén on 2024-11-12.

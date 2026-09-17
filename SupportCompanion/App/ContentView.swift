@@ -11,9 +11,10 @@ import Combine
 struct ContentView: View {
     @State private var selectedItem: SidebarItem?
     @Namespace private var animationNamespace
-    @EnvironmentObject var preferences: Preferences
-    @EnvironmentObject var appState: AppStateManager
-    @StateObject private var webViewStateManager = WebViewStateManager()
+    @Environment(Preferences.self) var preferences
+    @Environment(AppStateManager.self) var appState
+    @State private var webViewStateManager = WebViewStateManager()
+    @State private var cardGridViewModel = CardGridViewModel(appState: AppStateManager.shared)
     @State private var brandLogo: Image? = nil
     @State private var showLogo: Bool = false
     @State private var isShowingPopup = false
@@ -21,7 +22,7 @@ struct ContentView: View {
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
-        let sidebarItems: [SidebarItem] = generateSidebarItems(preferences: appState.preferences, stateManager: webViewStateManager, pendingUpdatesCount: appState.pendingUpdatesCount)
+        let sidebarItems: [SidebarItem] = generateSidebarItems(preferences: appState.preferences, stateManager: webViewStateManager, cardGridViewModel: cardGridViewModel, pendingUpdatesCount: appState.pendingUpdatesCount)
         let accentColor = Color(accentNSColor)
         
         NavigationSplitView {
@@ -159,7 +160,7 @@ struct ContentView: View {
     }
 
     struct ToolbarSupportButton: View {
-        @EnvironmentObject var appState: AppStateManager
+        @Environment(AppStateManager.self) var appState
         @Binding var isShowingPopup: Bool
         
         var body: some View {
@@ -196,11 +197,11 @@ struct ContentView: View {
                     Capsule()
                         .fill(accentColor)
                         .matchedGeometryEffect(id: "sidebar-highlight", in: namespace)
-						.frame(height: 50)
+                        .frame(height: 50)
                 } else if isHovered {
                     Capsule()
                         .fill(Color.primary.opacity(0.08))
-						.frame(height: 50)
+                        .frame(height: 50)
                 }
 
                 // Row content
@@ -261,8 +262,8 @@ private struct SidebarListView: View {
                         namespace: namespace,
                         onSelect: { onSelect(item) }
                     )
-					.padding(.horizontal, 8)
-					.padding(.vertical, 5)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 5)
                     .zIndex(selectedItem == item ? 1 : 0)
                 }
             }
@@ -275,8 +276,8 @@ private struct SidebarListView: View {
                 onIncomingURL(url)
             }
         }
-		.onChange(of: AppStateManager.shared.preferences.branding.brandLogo) { _, _ in onBrandLogoChange() }
-		.onChange(of: AppStateManager.shared.preferences.branding.brandLogoLight) { _, _ in onBrandLogoLightChange() }
+        .onChange(of: AppStateManager.shared.preferences.branding.brandLogo) { _, _ in onBrandLogoChange() }
+        .onChange(of: AppStateManager.shared.preferences.branding.brandLogoLight) { _, _ in onBrandLogoLightChange() }
     }
 
     @Environment(\.colorScheme) private var colorScheme
@@ -302,11 +303,11 @@ struct SidebarItemStyle: ViewModifier {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
-            .environmentObject(AppStateManager.shared.preferences)
-            .environmentObject(DeviceInfoManager.shared)
-            .environmentObject(StorageInfoManager.shared)
-            .environmentObject(MdmInfoManager.shared)
-            .environmentObject(BatteryInfoManager.shared)
+            .environment(AppStateManager.shared.preferences)
+            .environment(DeviceInfoManager.shared)
+            .environment(StorageInfoManager.shared)
+            .environment(MdmInfoManager.shared)
+            .environment(BatteryInfoManager.shared)
             .frame(width: 1500, height: 900)
     }
 }

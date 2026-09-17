@@ -17,6 +17,8 @@ struct InstalledApp: Identifiable {
     let path: String
     let type: String
     let bundleId: String
-	let iconUrl: String?
-	let actionText: String?
+    let iconUrl: String?
+    let actionText: String?
+    /// Local icon file resolved when the list is built. Nil falls back to the default symbol, or to downloading `iconUrl`.
+    var iconPath: String? = nil
 }

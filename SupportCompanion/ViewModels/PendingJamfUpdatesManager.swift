@@ -9,8 +9,6 @@ import Foundation
 import Combine
 
 class PendingJamfUpdatesManager: PendingUpdatesManager {
-    // Track running patch installs across views/navigation
-    @Published private(set) var runningPatchIds: Set<Int> = []
 
     // MARK: - Install Percentage
 
@@ -40,6 +38,17 @@ class PendingJamfUpdatesManager: PendingUpdatesManager {
         }
     }
 
+    // MARK: - Presentation
+
+    override var pendingUpdates: [any PendingUpdate] { appState.pendingJamfUpdates }
+
+    // Text(String) isn't localized automatically, so resolve the "Due by" translation here
+    override var pendingUpdatesDetailColumnTitle: String? { String(localized: "Due by") }
+
+    override func managementApp(forUpdates: Bool) -> (name: String, path: String) {
+        ("Self Service", Constants.AppPaths.selfService)
+    }
+
     // MARK: - Pending Updates
 
     override func fetchPendingUpdates() async {
@@ -65,7 +74,7 @@ class PendingJamfUpdatesManager: PendingUpdatesManager {
         if appState.pendingUpdatesCount != pendingUpdates.count {
             appState.pendingUpdatesCount = pendingUpdates.count
         }
-        if pendingUpdates.count > 0 && !appState.preferences.hiddenCards.contains("PendingAppUpdates") {
+        if pendingUpdates.count > 0 && !appState.preferences.hiddenCards.contains(Constants.Cards.pendingAppUpdates) {
             NotificationService(appState: appState).sendNotification(
                 message: appState.preferences.notifications.appUpdateNotificationMessage,
                 buttonText: appState.preferences.notifications.appUpdateNotificationButtonText,
@@ -96,14 +105,15 @@ class PendingJamfUpdatesManager: PendingUpdatesManager {
     // MARK: - Running state and execution
 
     func isRunning(patchId: Int) -> Bool {
-        runningPatchIds.contains(patchId)
+        runningUpdateIds.contains(patchId)
     }
 
     func runPatch(patchId: Int, userId: String? = nil) async {
-        runningPatchIds.insert(patchId)
-        defer { runningPatchIds.remove(patchId) }
+        markRunning(patchId)
+        defer { markFinished(patchId) }
 
-        var args: [String] = ["asuser", "504", "/usr/local/bin/jamf", "patch", "-id", String(patchId), "-showSteps", "-selfServiceOnly"]
+        // The app runs as the logged-in user, so its UID is the user to run the patch as
+        var args: [String] = ["asuser", String(getuid()), "/usr/local/bin/jamf", "patch", "-id", String(patchId), "-showSteps", "-selfServiceOnly"]
         if let userId = userId, !userId.isEmpty {
             args += ["-user", userId]
         }

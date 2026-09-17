@@ -65,7 +65,7 @@ extension HelperRemoteProvider {
     /// Install the Helper in the privileged helper tools folder and register the daemon using SMAppService
     private static func installHelperModern() throws {
         do {
-			let service = SMAppService.daemon(plistName: HelperConstants.domain)
+            let service = SMAppService.daemon(plistName: HelperConstants.domain)
             try service.register()
         } catch {
             Logger.shared.logError("SMAppService register failed: \(error.localizedDescription)")
@@ -74,7 +74,7 @@ extension HelperRemoteProvider {
     }
 
     private static func installHelper() throws {
-		try installHelperModern()
+        try installHelperModern()
     }
 }
 

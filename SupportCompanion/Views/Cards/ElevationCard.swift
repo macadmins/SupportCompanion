@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 struct ElevationCard: View {
-    @EnvironmentObject var appState: AppStateManager
+    @Environment(AppStateManager.self) var appState
     @State private var showReasonInput = false
     @State private var elevationReason = ""
 
@@ -37,20 +37,20 @@ struct ElevationCard: View {
                             if await appState.preferences.elevation.requireReasonForElevation {
                                 showReasonInput = true // Show reason input modal
                             } else {
-								await elevationManager.handleElevation(reason: "")
+                                await elevationManager.handleElevation(reason: "")
                             }
                         }
                         .padding(.top)
                         
                         ScButton(Constants.General.demote, disabled: !appState.isDemotionActive) {
-							await appState.stopDemotionTimer()
-							await elevationManager.demotePrivileges(completion: { success in
-								if success {
-									Logger.shared.logDebug("Successfully demoted privileges")
-								} else {
-									Logger.shared.logError("Failed to demote privileges")
-								}
-							})
+                            await appState.stopDemotionTimer()
+                            await elevationManager.demotePrivileges(completion: { success in
+                                if success {
+                                    Logger.shared.logDebug("Successfully demoted privileges")
+                                } else {
+                                    Logger.shared.logError("Failed to demote privileges")
+                                }
+                            })
                         }
                         .padding(.top)
                     }

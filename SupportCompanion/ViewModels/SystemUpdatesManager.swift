@@ -6,12 +6,14 @@
 //
 
 import Foundation
+import Observation
 
 @MainActor
-class SystemUpdatesManager: ObservableObject {
+@Observable
+class SystemUpdatesManager {
     private let appState: AppStateManager
     private var previousUpdateCount: Int = 0
-    private var monitorTask: Task<Void, Never>? // Track the monitoring task
+    @ObservationIgnored private var monitorTask: Task<Void, Never>? // Track the monitoring task
 
     init(appState: AppStateManager) {
         self.appState = appState
@@ -39,7 +41,7 @@ class SystemUpdatesManager: ObservableObject {
         monitorTask = Task {
             while !Task.isCancelled {
                 do {
-                    let result = await ActionHelpers.getSystemUpdateStatus(sendNotification: !appState.preferences.hiddenActions.contains("SoftwareUpdates"))
+                    let result = await ActionHelpers.getSystemUpdateStatus(sendNotification: !appState.preferences.hiddenActions.contains(Constants.Actions.HideStrings.softwareUpdate))
                     switch result {
                     case .success(let (count, updates, hasBackgroundSecurityImprovement)):
                         if count != self.previousUpdateCount {

@@ -16,8 +16,7 @@ struct ScButton: View, Hashable {
     let disabled: Bool?
     var maxWidth: CGFloat? // New parameter for button width
     let fontSize: CGFloat?
-    @EnvironmentObject var preferences: Preferences
-    @EnvironmentObject var appState: AppStateManager
+    @Environment(AppStateManager.self) var appState
     @State private var isHovered = false
     @State private var showBadge = false
     @State private var isLoading = false
@@ -81,22 +80,22 @@ struct ScButton: View, Hashable {
             }
             .buttonStyle(PlainButtonStyle())
             .disabled(disabled ?? false || isLoading)
-			.buttonStyle(PlainButtonStyle())
-			.disabled(disabled ?? false || isLoading)
-			.overlay(alignment: .topTrailing) {
-				if let badgeNumber = badgeNumber, badgeNumber > 0 {
-					Text("\(badgeNumber)")
-						.font(.caption.weight(.bold))
-						.foregroundColor(.white)
-						.padding(8)
-						.background(Circle().fill(Color(red: 1, green: 0, blue: 0)))
-						.clipShape(Circle())
-						.offset(x: 10, y: -10)
-						.opacity(showBadge ? 1 : 0)
-						.scaleEffect(showBadge ? 1 : 0.5)
-						.animation(.easeInOut(duration: 0.3), value: showBadge)
-				}
-			}
+            .buttonStyle(PlainButtonStyle())
+            .disabled(disabled ?? false || isLoading)
+            .overlay(alignment: .topTrailing) {
+                if let badgeNumber = badgeNumber, badgeNumber > 0 {
+                    Text("\(badgeNumber)")
+                        .font(.caption.weight(.bold))
+                        .foregroundColor(.white)
+                        .padding(8)
+                        .background(Circle().fill(Color(red: 1, green: 0, blue: 0)))
+                        .clipShape(Circle())
+                        .offset(x: 10, y: -10)
+                        .opacity(showBadge ? 1 : 0)
+                        .scaleEffect(showBadge ? 1 : 0.5)
+                        .animation(.easeInOut(duration: 0.3), value: showBadge)
+                }
+            }
         }
         .scaleEffect(isHovered ? 1.1 : 1.0) // Apply hover effect to the whole stack
         .shadow(color: .black.opacity(isHovered ? 0.3 : 0), radius: isHovered ? 10 : 0, x: 0, y: 5)

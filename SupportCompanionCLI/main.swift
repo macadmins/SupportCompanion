@@ -110,9 +110,9 @@ struct SupportCompanionCLI {
 
         do {
             try process.run()
-            process.waitUntilExit()
-
+            // Read before waiting: output larger than the pipe buffer (e.g. base64 logos) would otherwise deadlock
             let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            process.waitUntilExit()
             if let output = String(data: data, encoding: .utf8), !output.isEmpty {
                 print(output)
             } else {

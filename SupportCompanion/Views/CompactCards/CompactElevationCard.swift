@@ -2,7 +2,7 @@ import Foundation
 import SwiftUI
 
 struct CompactElevationCard: View {
-    @EnvironmentObject var appState: AppStateManager
+    @Environment(AppStateManager.self) var appState
     @State private var showReasonInput = false
 
     var body: some View {

@@ -10,7 +10,7 @@ import SwiftUI
 
 
 struct TransparentView: View {
-    @EnvironmentObject var appState: AppStateManager
+    @Environment(AppStateManager.self) var appState
     @State private var contentHeight: CGFloat = 0
     var combinedPreferences: String {
         "\(appState.preferences.desktopInfo.desktopInfoLevel)-\(appState.preferences.desktopInfo.desktopInfoHideItems.joined(separator: ","))"

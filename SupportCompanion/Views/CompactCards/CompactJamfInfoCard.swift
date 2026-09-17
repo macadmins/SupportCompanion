@@ -9,16 +9,16 @@ import Foundation
 import SwiftUI
 
 struct CompactJamfInfoCard: View {
-	@EnvironmentObject var appState: AppStateManager
+    @Environment(AppStateManager.self) var appState
 
-	var body: some View {
-		ScCardCompact(
-			title: "Jamf",
-			titleImageName: "server.rack",
-			imageSize: (13, 13),
-			content: {
-				CardData(info: appState.jamfInfoManager.jamfInfo.toKeyValuePairs(), fontSize: 12)
-			}
-		)
-	}
+    var body: some View {
+        ScCardCompact(
+            title: "Jamf",
+            titleImageName: "server.rack",
+            imageSize: (13, 13),
+            content: {
+                CardData(info: appState.jamfInfoManager.jamfInfo.toKeyValuePairs(), fontSize: 12)
+            }
+        )
+    }
 }

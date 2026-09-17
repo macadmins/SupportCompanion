@@ -10,8 +10,8 @@ import SwiftUI
 import AlertToast
 
 struct CardGrid: View {
-    @ObservedObject var viewModel: CardGridViewModel
-    @EnvironmentObject var appState: AppStateManager
+    var viewModel: CardGridViewModel
+    @Environment(AppStateManager.self) var appState
     @State private var showRebootModal = false
     @State private var modalCountdown = Constants.RebootModal.countdown
     @State private var modalTitle = Constants.RebootModal.title
@@ -31,10 +31,10 @@ struct CardGrid: View {
                     DeviceInformationCard(viewModel: viewModel)
                     
                     // Patching progress card
-					if appState.preferences.mode == Constants.Modes.munki || appState.preferences.mode == Constants.Modes.intune || appState.preferences.mode == Constants.Modes.jamf {
+                    if appState.activeUpdatesManager != nil {
                         PatchingProgressCard(viewModel: viewModel)
                         PendingUpdatesCard(viewModel: viewModel)
-					}
+                    }
                     
                     // Actions Card
                     ActionsCard(
@@ -81,18 +81,18 @@ struct CardGrid: View {
             }
         }
         .onAppear {
-            if !appState.preferences.hiddenCards.contains(Constants.CardTitle.evergreen) {
+            if !appState.preferences.hiddenCards.contains(Constants.Cards.evergreen) && appState.preferences.mode == Constants.Modes.munki {
                 appState.evergreenInfoManager.refresh()
             }
-            if !appState.preferences.hiddenCards.contains(Constants.CardTitle.battery) {
+            if !appState.preferences.hiddenCards.contains(Constants.Cards.battery) {
                 appState.batteryInfoManager.startMonitoring()
             }
-			if !appState.preferences.hiddenCards.contains(Constants.Cards.jamfInfo) && appState.preferences.mode == Constants.Modes.jamf {
-				appState.jamfInfoManager.refresh()
-			}
+            if !appState.preferences.hiddenCards.contains(Constants.Cards.jamfInfo) && appState.preferences.mode == Constants.Modes.jamf {
+                appState.jamfInfoManager.refresh()
+            }
         }
         .onDisappear {
-            if !appState.preferences.hiddenCards.contains(Constants.CardTitle.battery) {
+            if !appState.preferences.hiddenCards.contains(Constants.Cards.battery) {
                 appState.batteryInfoManager.stopMonitoring()
             }
         }
@@ -116,7 +116,7 @@ struct CardGrid: View {
 struct CardGridView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
-        .environmentObject(AppStateManager.shared)
+        .environment(AppStateManager.shared)
         .frame(width: 1500, height: 100)
     }
 }

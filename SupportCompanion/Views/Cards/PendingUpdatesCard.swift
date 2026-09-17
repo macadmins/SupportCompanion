@@ -9,8 +9,8 @@ import Foundation
 import SwiftUI
 
 struct PendingUpdatesCard: View {
-    @ObservedObject var viewModel: CardGridViewModel
-    @EnvironmentObject var appState: AppStateManager
+    var viewModel: CardGridViewModel
+    @Environment(AppStateManager.self) var appState
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
@@ -47,47 +47,43 @@ struct PendingUpdatesCard: View {
                 .font(.subheadline)
                 .bold()
                 .frame(maxWidth: .infinity, alignment: .trailing)
-            if appState.preferences.mode == Constants.Modes.intune {
-                Text("")
+            if let detailTitle = appState.activeUpdatesManager?.pendingUpdatesDetailColumnTitle {
+                Text(detailTitle)
                     .font(.subheadline)
                     .bold()
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
-			if appState.preferences.mode == Constants.Modes.jamf {
-				Text("Due by")
-					.font(.subheadline)
-					.bold()
-					.frame(maxWidth: .infinity, alignment: .trailing)
-			}
         }
         .padding(.vertical, 5)
         .padding(.horizontal)
         .background(Color.clear)
     }
     
-    @ViewBuilder
     private var pendingUpdatesList: some View {
-        if appState.preferences.mode == Constants.Modes.munki {
-            updateList(items: appState.pendingMunkiUpdates)
-        } else if appState.preferences.mode == Constants.Modes.intune {
-            updateList(items: appState.pendingIntuneUpdates)
-		} else if appState.preferences.mode == Constants.Modes.jamf {
-			updateList(items: appState.pendingJamfUpdates)
-		}
+        updateList(items: appState.activeUpdatesManager?.pendingUpdates ?? [])
     }
     
-    private func updateList<T: Identifiable>(items: [T]) -> some View where T: PendingUpdate {
-        List {
-            if items.isEmpty {
+    /// Concrete row type: ForEach with a key path over `any PendingUpdate` crashes the Swift compiler.
+    private struct Row: Identifiable {
+        let id: UUID
+        let name: String
+        let version: String
+        let dueBy: String?
+    }
+
+    private func updateList(items: [any PendingUpdate]) -> some View {
+        let rows = items.map { Row(id: $0.id, name: $0.name, version: $0.version, dueBy: $0.dueBy) }
+        return List {
+            if rows.isEmpty {
                 Text("No pending updates")
                     .frame(maxWidth: .infinity, alignment: .leading)
             } else {
-                ForEach(items, id: \.id) { update in
+                ForEach(rows) { update in
                     HStack(spacing: 8) {
                         // Keep this leading text flexible
                         Text(update.name)
                             .lineLimit(2)
-							.minimumScaleFactor(0.8)
+                            .minimumScaleFactor(0.8)
                             .truncationMode(.tail)
 
                         Spacer()
@@ -96,15 +92,13 @@ struct PendingUpdatesCard: View {
                         Text(update.version)
                             .foregroundColor(colorScheme == .dark ? .gray : .grayLight)
                             .lineLimit(1)
-							.frame(maxWidth: .infinity, alignment: .trailing)
+                            .frame(maxWidth: .infinity, alignment: .trailing)
 
-                        if let jamfUpdate = update as? PendingJamfUpdate {
-                            if let patchDue = jamfUpdate.dueBy {
-                                Text(patchDue)
-									.foregroundColor(colorScheme == .dark ? .gray : .grayLight)
-									.lineLimit(1)
-									.frame(maxWidth: .infinity, alignment: .trailing)
-                            }
+                        if let dueBy = update.dueBy {
+                            Text(dueBy)
+                                .foregroundColor(colorScheme == .dark ? .gray : .grayLight)
+                                .lineLimit(1)
+                                .frame(maxWidth: .infinity, alignment: .trailing)
                         }
                     }
                     .padding(.vertical, 6)
@@ -119,23 +113,11 @@ struct PendingUpdatesCard: View {
     }
     
     private func startFetching() {
-        if appState.preferences.mode == Constants.Modes.munki {
-            appState.pendingMunkiUpdatesManager.startFetchingList()
-        } else if appState.preferences.mode == Constants.Modes.intune {
-            appState.pendingIntuneUpdatesManager.startFetchingList()
-        } else if appState.preferences.mode == Constants.Modes.jamf {
-            appState.pendingJamfUpdatesManager.startFetchingList()
-        }
+        appState.activeUpdatesManager?.startFetchingList()
     }
 
     private func stopFetching() {
-        if appState.preferences.mode == Constants.Modes.munki {
-            appState.pendingMunkiUpdatesManager.stopFetchingList()
-        } else if appState.preferences.mode == Constants.Modes.intune {
-            appState.pendingIntuneUpdatesManager.stopFetchingList()
-        } else if appState.preferences.mode == Constants.Modes.jamf {
-            appState.pendingJamfUpdatesManager.stopFetchingList()
-        }
+        appState.activeUpdatesManager?.stopFetchingList()
     }
     
     private func handleVisibilityChange(_ newValue: Bool) {

@@ -27,7 +27,7 @@ enum Constants {
         static let munki = "Munki"
         static let intune = "Intune"
         static let systemProfiler = "SystemProfiler"
-		static let jamf = "Jamf"
+        static let jamf = "Jamf"
     }
     
     enum TrayMenu {
@@ -50,20 +50,20 @@ enum Constants {
         static let close = String(localized: "General.Close", defaultValue: "Close", comment: "Close")
         static let elevate = String(localized: "General.Elevate", defaultValue: "Elevate", comment: "Elevate")
         static let demote: String = String(localized: "General.Demote", defaultValue: "Demote", comment: "Demote")
-		static let ago: String = String(localized: "General.Ago", defaultValue: "Ago", comment: "Ago")
-		static let justNow: String = String(localized: "General.JustNow", defaultValue: "Just Now", comment: "Just Now")
+        static let ago: String = String(localized: "General.Ago", defaultValue: "Ago", comment: "Ago")
+        static let justNow: String = String(localized: "General.JustNow", defaultValue: "Just Now", comment: "Just Now")
     }
     
     enum AppPaths {
         static let companyPortal = "/Applications/Company Portal.app"
         static let MSC = "/Applications/Managed Software Center.app"
         static let MSCUpdates = "munki://updates.html"
-		static let selfService = "/Applications/Self Service+.app"
+        static let selfService = "/Applications/Self Service+.app"
     }
     
     enum Paths {
         static let tempArchivePath = "/tmp/supportcompanion_logs.zip"
-		static let jamfSelfServiceData = "~/Library/Application Support/osx-self-service.Self-Service.resources/CocoaAppCD.storedata"
+        static let jamfSelfServiceData = "~/Library/Application Support/osx-self-service.Self-Service.resources/CocoaAppCD.storedata"
     }
     
     enum Panels {
@@ -120,7 +120,7 @@ enum Constants {
         static let appPatchProgress = "ApplicationInstallProgress"
         static let battery = "Battery"
         static let pendingAppUpdates = "PendingAppUpdates"
-		static let jamfInfo = "Jamf"
+        static let jamfInfo = "Jamf"
     }
     
     enum CardTitle {
@@ -137,7 +137,7 @@ enum Constants {
         static let pendingUpdates = String(localized: "Card.PendingUpdatesTitle", defaultValue: "Pending Updates", comment: "Title for pending updates card")
         static let installedApps = String(localized: "Card.InstalledAppsTitle", defaultValue: "Installed Applications", comment: "Title for installed apps card")
         static let privileges = String(localized: "Card.PrivilegesTitle", defaultValue: "Privileges", comment: "Title for privileges card")
-		static let jamfInfo = "Jamf"
+        static let jamfInfo = "Jamf"
     }
     
     enum RebootModal {
@@ -221,22 +221,22 @@ enum Constants {
             static let lastRestartDays = "LastRestartDays"
         }
     }
-	
-	enum JamfInfo {
-		enum Labels {
-			static let lastCheckin = String(localized: "JamfInfo.LastCheckin", defaultValue: "Check-In:", comment: "Label for the last check-in date")
-			static let lastInventory = String(localized: "JamfInfo.LastInventory", defaultValue: "Inventory:", comment: "Label for the last update date")
-			static let url = String(localized: "JamfInfo.URL", defaultValue: "URL:", comment: "Label for the URL")
-			static let id = String(localized: "JamfInfo.ID", defaultValue: "ID:", comment: "Label for the ID")
-		}
-		
-		enum Keys {
-			static let lastCheckin = "JamfLastCheckin"
-			static let lastInventory = "JamfLastInventory"
-			static let url = "JamfUrl"
-			static let id = "JamfId"
-		}
-	}
+    
+    enum JamfInfo {
+        enum Labels {
+            static let lastCheckin = String(localized: "JamfInfo.LastCheckin", defaultValue: "Check-In:", comment: "Label for the last check-in date")
+            static let lastInventory = String(localized: "JamfInfo.LastInventory", defaultValue: "Inventory:", comment: "Label for the last update date")
+            static let url = String(localized: "JamfInfo.URL", defaultValue: "URL:", comment: "Label for the URL")
+            static let id = String(localized: "JamfInfo.ID", defaultValue: "ID:", comment: "Label for the ID")
+        }
+        
+        enum Keys {
+            static let lastCheckin = "JamfLastCheckin"
+            static let lastInventory = "JamfLastInventory"
+            static let url = "JamfUrl"
+            static let id = "JamfId"
+        }
+    }
     
     enum KerberosSSO {
         enum Labels {
@@ -286,6 +286,8 @@ enum Constants {
             static let timeToFull = String(localized: "Battery.TimeToFull", defaultValue: "Time to Full:", comment: "Label for the battery time to full")
             static let charging = String(localized: "Battery.Charging", defaultValue: "Charging", comment: "Label for the battery charging status")
             static let notCharging = String(localized: "Battery.NotCharging", defaultValue: "Not Charging", comment: "Label for the battery charging status")
+            static let fullyCharged = String(localized: "Battery.FullyCharged", defaultValue: "Fully Charged", comment: "Time to full value when the battery is full on external power")
+            static let calculating = String(localized: "Battery.Calculating", defaultValue: "Calculating…", comment: "Time to full value while macOS is still estimating the charge time")
             static let usage = String(localized: "Battery.Usage", defaultValue: "Usage:", comment: "Label for the battery usage")
         }
         

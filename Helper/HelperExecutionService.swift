@@ -42,27 +42,6 @@ enum ExecutionService {
     }
     
     static func executeCommand(_ command: String, with arguments: [String] = []) async throws -> String {
-        let process = Process()
-        process.executableURL = programURL
-        process.arguments = [command] + arguments
-
-        let outputPipe = Pipe()
-        let errorPipe = Pipe()
-        process.standardOutput = outputPipe
-        process.standardError = errorPipe
-
-        try process.run()
-        process.waitUntilExit()
-
-        // Capture and check for errors
-        if process.terminationStatus != 0 {
-            let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
-            let errorOutput = String(data: errorData, encoding: .utf8) ?? "Unknown error"
-            throw NSError(domain: "ExecutionServiceError", code: Int(process.terminationStatus), userInfo: [NSLocalizedDescriptionKey: errorOutput])
-        }
-
-        // Capture and return the output
-        let outputData = outputPipe.fileHandleForReading.readDataToEndOfFile()
-        return String(data: outputData, encoding: .utf8) ?? ""
+        try await ProcessRunner.runCommand(command, with: arguments)
     }
 }

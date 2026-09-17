@@ -1,15 +1,17 @@
 import Foundation
+import Observation
 import Combine
 import SwiftUI
 
 @MainActor
-class CardGridViewModel: ObservableObject {
-    @Published var toastConfig: ToastConfig?
+@Observable
+class CardGridViewModel {
+    var toastConfig: ToastConfig?
     private let appState: AppStateManager
     private let munkiApps = MunkiApps()
-    private var fetchTask: Task<Void, Never>?
-    private var isTaskRunning = false
-    private var isPendingAppsTaskRunning = false
+    @ObservationIgnored private var fetchTask: Task<Void, Never>?
+    @ObservationIgnored private var isTaskRunning = false
+    @ObservationIgnored private var isPendingAppsTaskRunning = false
     
     init(appState: AppStateManager) {
         self.appState = appState
@@ -40,7 +42,9 @@ class CardGridViewModel: ObservableObject {
                 ("--------------------- Battery ---------------------", ""),
                 ("Health:", "\(healthPercentage)%"),
                 ("Cycle Count:", appState.batteryInfoManager.batteryInfo.cycleCount),
-                ("Temperature:", "\((String(format: "%.1f", appState.batteryInfoManager.batteryInfo.temperature)))°C"),
+                ("Temperature:", appState.batteryInfoManager.batteryInfo.temperature.map {
+                    String(format: "%.1f%@", $0, Locale.current.measurementSystem == .metric ? "°C" : "°F")
+                } ?? "N/A"),
                 ("--------------------- Storage ---------------------", ""),
                 ("Used:", "\(appState.storageInfoManager.storageInfo.usage)%"),
                 ("FileVault:", appState.storageInfoManager.storageInfo.fileVault ? "Enabled" : "Disabled"),
@@ -121,28 +125,7 @@ class CardGridViewModel: ObservableObject {
     }
     
     func createOpenManagementAppButton(type: ManagementAppURLType, fontSize: CGFloat? = nil) -> ScButton {
-        let appName: String
-        let appURL: String
-
-        switch appState.preferences.mode {
-        case Constants.Modes.munki:
-            if type == .update {
-                appName = "MSC Updates"
-                appURL = Constants.AppPaths.MSCUpdates
-            } else {
-                appName = "MSC"
-                appURL = Constants.AppPaths.MSC
-            }
-        case Constants.Modes.intune:
-            appName = "Company Portal"
-            appURL = Constants.AppPaths.companyPortal
-		case Constants.Modes.jamf:
-			appName = "Self Service"
-			appURL = Constants.AppPaths.selfService
-        default:
-            appName = "Unknown App"
-            appURL = ""
-        }
+        let (appName, appURL) = appState.activeUpdatesManager?.managementApp(forUpdates: type == .update) ?? ("Unknown App", "")
 
         return ScButton("\(Constants.Actions.openManagementApp) \(appName)", fontSize: fontSize) {
             ActionHelpers.openManagementApp(appURL: appURL)
@@ -191,11 +174,9 @@ class CardGridViewModel: ObservableObject {
     
     // MARK: - Preferences Management
 
-    /// True when a management-mode MDM (Munki, Intune, or Jamf) is configured.
+    /// True when the configured mode has a pending-updates manager (Munki, Intune, or Jamf).
     var hasManagementMode: Bool {
-        appState.preferences.mode == Constants.Modes.munki ||
-        appState.preferences.mode == Constants.Modes.intune ||
-        appState.preferences.mode == Constants.Modes.jamf
+        appState.activeUpdatesManager != nil
     }
 
     func isCardVisible(_ card: String) -> Bool {
@@ -206,46 +187,46 @@ class CardGridViewModel: ObservableObject {
     func isButtonVisible(_ button: String) -> Bool {
         !appState.preferences.hiddenActions.contains(button)
     }
-	
-	@Published var isUpdating = false
+    
+    var isUpdating = false
 
     func runJamfUpdate(forId: String) async {
         isUpdating = true
         defer { isUpdating = false }
 
-		// Kick off the update; ideally obtain a process handle or PID
-		do {
-			_ = try await ExecutionService.executeCommandPrivileged(
-				"/usr/local/bin/jamf",
-				arguments: ["patch", "-id", forId]
-			)
-		} catch {
-			// Log and bail
-			Logger.shared.logError("jamf patch launch failed: \(error)")
-			return
-		}
+        // Kick off the update; ideally obtain a process handle or PID
+        do {
+            _ = try await ExecutionService.executeCommandPrivileged(
+                "/usr/local/bin/jamf",
+                arguments: ["patch", "-id", forId]
+            )
+        } catch {
+            // Log and bail
+            Logger.shared.logError("jamf patch launch failed: \(error)")
+            return
+        }
 
-		// Poll conservatively with delay; add timeout
-		let pattern = "jamf patch -id \(forId)"
-		let deadline = Date().addingTimeInterval(600) // 10 min timeout
+        // Poll conservatively with delay; add timeout
+        let pattern = "jamf patch -id \(forId)"
+        let deadline = Date().addingTimeInterval(600) // 10 min timeout
 
-		while Date() < deadline && !Task.isCancelled {
-			do {
-				let result = try await ExecutionService.executeCommand(
-					"/usr/bin/pgrep",
-					with: ["-lf", pattern]
-				)
-				if result.isEmpty {
-					break // process no longer running
-				}
-			} catch {
-				// If pgrep errors, consider breaking or retrying a few times
-				Logger.shared.logError("pgrep error: \(error)")
-			}
+        while Date() < deadline && !Task.isCancelled {
+            do {
+                let result = try await ExecutionService.executeCommand(
+                    "/usr/bin/pgrep",
+                    with: ["-lf", pattern]
+                )
+                if result.isEmpty {
+                    break // process no longer running
+                }
+            } catch {
+                // If pgrep errors, consider breaking or retrying a few times
+                Logger.shared.logError("pgrep error: \(error)")
+            }
 
-			try? await Task.sleep(for: .seconds(0.5))
-		}
-	}
+            try? await Task.sleep(for: .seconds(0.5))
+        }
+    }
 
     func getVisibleStacks(viewModel: CardGridViewModel) -> [(id: String, view: AnyView)] {
         var visibleStacks: [(id: String, view: AnyView)] = []

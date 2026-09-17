@@ -6,11 +6,13 @@
 //
 
 import Foundation
+import Observation
 
 @MainActor
-class JsonCardManager: ObservableObject {
+@Observable
+class JsonCardManager {
     private var appState: AppStateManager
-    private var fileWatcher: FileWatcher?
+    @ObservationIgnored private var fileWatcher: FileWatcher?
     
     init(appState: AppStateManager) {
         self.appState = appState

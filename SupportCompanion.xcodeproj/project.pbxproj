@@ -8,36 +8,18 @@
 
 /* Begin PBXBuildFile section */
 		F60FAB742CE8D40A00ECAC53 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = F60FAB732CE8D40A00ECAC53 /* AlertToast */; };
-		F60FAB872CEA108A00ECAC53 /* SidebarConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60FAB862CEA108A00ECAC53 /* SidebarConfig.swift */; };
 		F627CBCB2E0AF1DF00164680 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = F627CBCA2E0AF1DF00164680 /* AppIcon.icon */; };
-		F6575A992D117108007DBC83 /* ExecutionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6F8AE9C2CE34E54009B0A1F /* ExecutionService.swift */; };
-		F6575A9A2D117114007DBC83 /* HelperRemoteProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6F8AE9E2CE34E72009B0A1F /* HelperRemoteProvider.swift */; };
 		F6575A9D2D117141007DBC83 /* SupportCompanionErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6F8AE952CE34B81009B0A1F /* SupportCompanionErrors.swift */; };
 		F6575AA72D11827D007DBC83 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = F6575AA62D11827D007DBC83 /* MarkdownUI */; };
 		F6890EEB2CFF326D00244985 /* SupportCompanionCLI in CopyFiles */ = {isa = PBXBuildFile; fileRef = F6890EE22CFF308F00244985 /* SupportCompanionCLI */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		F6890EEC2CFF330D00244985 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6E4D1D42CE4CE1E003EB8C0 /* Preferences.swift */; };
 		F6890EED2CFF331400244985 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A4E0F62CEC9DFC002B4D74 /* Constants.swift */; };
 		F6A4E0F72CEC9DFC002B4D74 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A4E0F62CEC9DFC002B4D74 /* Constants.swift */; };
 		F6A4E0F82CEC9DFC002B4D74 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A4E0F62CEC9DFC002B4D74 /* Constants.swift */; };
 		F6A4E0FA2CEC9FFB002B4D74 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = F6A4E0F92CEC9FFB002B4D74 /* Localizable.xcstrings */; };
 		F6CB698E2F69570000CCD8DF /* com.github.macadmins.SupportCompanion.helper in CopyFiles */ = {isa = PBXBuildFile; fileRef = F6F8AE7D2CE345A8009B0A1F /* com.github.macadmins.SupportCompanion.helper */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		F6CB6D412F6964B600CCD8DF /* DesktopInfoPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6CB6D3E2F6964B600CCD8DF /* DesktopInfoPreferences.swift */; };
-		F6CB6D422F6964B600CCD8DF /* ElevationPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6CB6D3F2F6964B600CCD8DF /* ElevationPreferences.swift */; };
-		F6CB6D432F6964B600CCD8DF /* NotificationPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6CB6D402F6964B600CCD8DF /* NotificationPreferences.swift */; };
-		F6CB6D442F6964B600CCD8DF /* BrandingPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6CB6D3D2F6964B600CCD8DF /* BrandingPreferences.swift */; };
-		F6CB6D452F6964CE00CCD8DF /* NotificationPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6CB6D402F6964B600CCD8DF /* NotificationPreferences.swift */; };
-		F6CB6D462F6964CE00CCD8DF /* ElevationPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6CB6D3F2F6964B600CCD8DF /* ElevationPreferences.swift */; };
-		F6CB6D472F6964CE00CCD8DF /* BrandingPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6CB6D3D2F6964B600CCD8DF /* BrandingPreferences.swift */; };
-		F6CB6D482F6964CE00CCD8DF /* DesktopInfoPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6CB6D3E2F6964B600CCD8DF /* DesktopInfoPreferences.swift */; };
-		F6E4D1D52CE4CE1E003EB8C0 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6E4D1D42CE4CE1E003EB8C0 /* Preferences.swift */; };
-		F6E4D26F2CE65D12003EB8C0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6E4D26E2CE65D12003EB8C0 /* AppDelegate.swift */; };
-		F6F3BEBD2CE1E7BA0036ADB9 /* SupportCompanion.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6F3BEBC2CE1E7BA0036ADB9 /* SupportCompanion.swift */; };
-		F6F3BEBF2CE1E7BA0036ADB9 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6F3BEBE2CE1E7BA0036ADB9 /* ContentView.swift */; };
 		F6F3BEC12CE1E7BB0036ADB9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F6F3BEC02CE1E7BB0036ADB9 /* Assets.xcassets */; };
 		F6F8AE962CE34B81009B0A1F /* SupportCompanionErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6F8AE952CE34B81009B0A1F /* SupportCompanionErrors.swift */; };
 		F6F8AE972CE34B81009B0A1F /* SupportCompanionErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6F8AE952CE34B81009B0A1F /* SupportCompanionErrors.swift */; };
-		F6F8AE9D2CE34E54009B0A1F /* ExecutionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6F8AE9C2CE34E54009B0A1F /* ExecutionService.swift */; };
-		F6F8AE9F2CE34E72009B0A1F /* HelperRemoteProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6F8AE9E2CE34E72009B0A1F /* HelperRemoteProvider.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -82,7 +64,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		F60FAB862CEA108A00ECAC53 /* SidebarConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarConfig.swift; sourceTree = "<group>"; };
 		F627CBCA2E0AF1DF00164680 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		F649273D2CF9FFD600C34D90 /* CHANGELOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = "<group>"; };
 		F64928192CFA02AD00C34D90 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -90,23 +71,13 @@
 		F69455982CF6076100B887F8 /* build.zsh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = build.zsh; sourceTree = "<group>"; };
 		F6A4E0F62CEC9DFC002B4D74 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		F6A4E0F92CEC9FFB002B4D74 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
-		F6CB6D3D2F6964B600CCD8DF /* BrandingPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandingPreferences.swift; sourceTree = "<group>"; };
-		F6CB6D3E2F6964B600CCD8DF /* DesktopInfoPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesktopInfoPreferences.swift; sourceTree = "<group>"; };
-		F6CB6D3F2F6964B600CCD8DF /* ElevationPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElevationPreferences.swift; sourceTree = "<group>"; };
-		F6CB6D402F6964B600CCD8DF /* NotificationPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPreferences.swift; sourceTree = "<group>"; };
-		F6E4D1D42CE4CE1E003EB8C0 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
-		F6E4D26E2CE65D12003EB8C0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F6F3BEB92CE1E7BA0036ADB9 /* SupportCompanion.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SupportCompanion.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		F6F3BEBC2CE1E7BA0036ADB9 /* SupportCompanion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportCompanion.swift; sourceTree = "<group>"; };
-		F6F3BEBE2CE1E7BA0036ADB9 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		F6F3BEC02CE1E7BB0036ADB9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F6F3BEC32CE1E7BB0036ADB9 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		F6F3BEC52CE1E7BB0036ADB9 /* SupportCompanion.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SupportCompanion.entitlements; sourceTree = "<group>"; };
 		F6F8AE772CE342AF009B0A1F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F6F8AE7D2CE345A8009B0A1F /* com.github.macadmins.SupportCompanion.helper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = com.github.macadmins.SupportCompanion.helper; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6F8AE952CE34B81009B0A1F /* SupportCompanionErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportCompanionErrors.swift; sourceTree = "<group>"; };
-		F6F8AE9C2CE34E54009B0A1F /* ExecutionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExecutionService.swift; sourceTree = "<group>"; };
-		F6F8AE9E2CE34E72009B0A1F /* HelperRemoteProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperRemoteProvider.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -146,7 +117,7 @@
 		F6575A9C2D117133007DBC83 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				HelperConstans.swift,
+				HelperConstants.swift,
 				HelperProtocol.swift,
 				"OSStatus+Extensions.swift",
 				RemoteApplicationProtocol.swift,
@@ -173,8 +144,10 @@
 				Logger.swift,
 				MDMHelpers.swift,
 				NetworkInfoHelpers.swift,
+				ProcessRunner.swift,
 				SSOInfoHelpers.swift,
 				StorageHelpers.swift,
+				TrustedPreferences.swift,
 				UserHelpers.swift,
 			);
 			target = F6890EE12CFF308F00244985 /* SupportCompanionCLI */;
@@ -201,6 +174,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Logger.swift,
+				ProcessRunner.swift,
 			);
 			target = F6F8AE7C2CE345A8009B0A1F /* com.github.macadmins.SupportCompanion.helper */;
 		};
@@ -233,12 +207,32 @@
 		F6A4E0E82CEBD7F8002B4D74 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				HelperConstans.swift,
+				HelperConstants.swift,
 				HelperProtocol.swift,
 				"OSStatus+Extensions.swift",
 				RemoteApplicationProtocol.swift,
 			);
 			target = F6F3BEB82CE1E7BA0036ADB9 /* SupportCompanion */;
+		};
+		F6CCE02D305BD27400007CDE /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				BrandingPreferences.swift,
+				DefaultsStore.swift,
+				DesktopInfoPreferences.swift,
+				ElevationPreferences.swift,
+				NotificationPreferences.swift,
+				Preferences.swift,
+			);
+			target = F6890EE12CFF308F00244985 /* SupportCompanionCLI */;
+		};
+		F6CCE02E305BD2AB00007CDE /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				ExecutionService.swift,
+				HelperRemoteProvider.swift,
+			);
+			target = F6890EE12CFF308F00244985 /* SupportCompanionCLI */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -251,7 +245,9 @@
 		F69455822CF5A6D300B887F8 /* Protocols */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Protocols; sourceTree = "<group>"; };
 		F69455882CF603A600B887F8 /* Scripts */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Scripts; sourceTree = "<group>"; };
 		F694558E2CF6050C00B887F8 /* pkgbuild */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (F69455C82CF7521A00B887F8 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = pkgbuild; sourceTree = "<group>"; };
-		F6A4E0F32CEC752C002B4D74 /* Services */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Services; sourceTree = "<group>"; };
+		F6A4E0F32CEC752C002B4D74 /* Services */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (F6CCE02E305BD2AB00007CDE /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Services; sourceTree = "<group>"; };
+		F6CCE02C305BD26200007CDE /* Preferences */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (F6CCE02D305BD27400007CDE /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Preferences; sourceTree = "<group>"; };
+		F6CCE02F305BD2B500007CDE /* App */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = App; sourceTree = "<group>"; };
 		F6E4D2032CE5DF67003EB8C0 /* Extensions */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Extensions; sourceTree = "<group>"; };
 		F6E4D2662CE64E62003EB8C0 /* Controllers */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Controllers; sourceTree = "<group>"; };
 		F6E4D26B2CE6576B003EB8C0 /* Helpers */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (F6A4E0E32CEBD770002B4D74 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, F6890EF12CFF333C00244985 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Helpers; sourceTree = "<group>"; };
@@ -325,10 +321,8 @@
 		F6F3BEBB2CE1E7BA0036ADB9 /* SupportCompanion */ = {
 			isa = PBXGroup;
 			children = (
-				F6CB6D3D2F6964B600CCD8DF /* BrandingPreferences.swift */,
-				F6CB6D3E2F6964B600CCD8DF /* DesktopInfoPreferences.swift */,
-				F6CB6D3F2F6964B600CCD8DF /* ElevationPreferences.swift */,
-				F6CB6D402F6964B600CCD8DF /* NotificationPreferences.swift */,
+				F6CCE02F305BD2B500007CDE /* App */,
+				F6CCE02C305BD26200007CDE /* Preferences */,
 				F694558E2CF6050C00B887F8 /* pkgbuild */,
 				F69455882CF603A600B887F8 /* Scripts */,
 				F69455822CF5A6D300B887F8 /* Protocols */,
@@ -342,18 +336,11 @@
 				F6E72E642CE3DEC300D78336 /* Models */,
 				F635873C2CE2094400AC5F98 /* Views */,
 				F6EB39E72CE1EE2800517FCD /* ViewModels */,
-				F6F3BEBC2CE1E7BA0036ADB9 /* SupportCompanion.swift */,
-				F6F3BEBE2CE1E7BA0036ADB9 /* ContentView.swift */,
 				F6F3BEC02CE1E7BB0036ADB9 /* Assets.xcassets */,
 				F6F3BEC52CE1E7BB0036ADB9 /* SupportCompanion.entitlements */,
 				F6F3BEC22CE1E7BB0036ADB9 /* Preview Content */,
 				F6F8AE772CE342AF009B0A1F /* Info.plist */,
 				F6F8AE952CE34B81009B0A1F /* SupportCompanionErrors.swift */,
-				F6F8AE9C2CE34E54009B0A1F /* ExecutionService.swift */,
-				F6F8AE9E2CE34E72009B0A1F /* HelperRemoteProvider.swift */,
-				F6E4D1D42CE4CE1E003EB8C0 /* Preferences.swift */,
-				F6E4D26E2CE65D12003EB8C0 /* AppDelegate.swift */,
-				F60FAB862CEA108A00ECAC53 /* SidebarConfig.swift */,
 				F6A4E0F62CEC9DFC002B4D74 /* Constants.swift */,
 				F6A4E0F92CEC9FFB002B4D74 /* Localizable.xcstrings */,
 				F64927222CF9AA0400C34D90 /* LaunchAgent */,
@@ -416,6 +403,8 @@
 				F69455882CF603A600B887F8 /* Scripts */,
 				F694558E2CF6050C00B887F8 /* pkgbuild */,
 				F6A4E0F32CEC752C002B4D74 /* Services */,
+				F6CCE02C305BD26200007CDE /* Preferences */,
+				F6CCE02F305BD2B500007CDE /* App */,
 				F6E4D2032CE5DF67003EB8C0 /* Extensions */,
 				F6E4D2662CE64E62003EB8C0 /* Controllers */,
 				F6E4D26B2CE6576B003EB8C0 /* Helpers */,
@@ -527,14 +516,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F6CB6D452F6964CE00CCD8DF /* NotificationPreferences.swift in Sources */,
-				F6CB6D462F6964CE00CCD8DF /* ElevationPreferences.swift in Sources */,
-				F6CB6D472F6964CE00CCD8DF /* BrandingPreferences.swift in Sources */,
-				F6CB6D482F6964CE00CCD8DF /* DesktopInfoPreferences.swift in Sources */,
-				F6890EEC2CFF330D00244985 /* Preferences.swift in Sources */,
 				F6575A9D2D117141007DBC83 /* SupportCompanionErrors.swift in Sources */,
-				F6575A992D117108007DBC83 /* ExecutionService.swift in Sources */,
-				F6575A9A2D117114007DBC83 /* HelperRemoteProvider.swift in Sources */,
 				F6890EED2CFF331400244985 /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -543,18 +525,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F60FAB872CEA108A00ECAC53 /* SidebarConfig.swift in Sources */,
-				F6F8AE9F2CE34E72009B0A1F /* HelperRemoteProvider.swift in Sources */,
-				F6F3BEBF2CE1E7BA0036ADB9 /* ContentView.swift in Sources */,
-				F6F3BEBD2CE1E7BA0036ADB9 /* SupportCompanion.swift in Sources */,
-				F6E4D26F2CE65D12003EB8C0 /* AppDelegate.swift in Sources */,
 				F6F8AE962CE34B81009B0A1F /* SupportCompanionErrors.swift in Sources */,
-				F6F8AE9D2CE34E54009B0A1F /* ExecutionService.swift in Sources */,
-				F6CB6D412F6964B600CCD8DF /* DesktopInfoPreferences.swift in Sources */,
-				F6CB6D422F6964B600CCD8DF /* ElevationPreferences.swift in Sources */,
-				F6CB6D432F6964B600CCD8DF /* NotificationPreferences.swift in Sources */,
-				F6CB6D442F6964B600CCD8DF /* BrandingPreferences.swift in Sources */,
-				F6E4D1D52CE4CE1E003EB8C0 /* Preferences.swift in Sources */,
 				F6A4E0F82CEC9DFC002B4D74 /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

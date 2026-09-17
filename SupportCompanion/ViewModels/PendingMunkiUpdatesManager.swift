@@ -35,6 +35,14 @@ class PendingMunkiUpdatesManager: PendingUpdatesManager {
         }
     }
 
+    // MARK: - Presentation
+
+    override var pendingUpdates: [any PendingUpdate] { appState.pendingMunkiUpdates }
+
+    override func managementApp(forUpdates: Bool) -> (name: String, path: String) {
+        forUpdates ? ("MSC Updates", Constants.AppPaths.MSCUpdates) : ("MSC", Constants.AppPaths.MSC)
+    }
+
     // MARK: - Pending Updates
 
     override func fetchPendingUpdatesList() async {
