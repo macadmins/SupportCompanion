@@ -26,7 +26,10 @@ struct CompactElevationCard: View {
                     Spacer()
                     
                     HStack {
-                        Button(action: {
+                        ScSmallButton(
+                            Constants.General.elevate,
+                            disabled: appState.userInfoManager.userInfo.isAdmin || appState.isDemotionActive
+                        ) {
                             if appState.preferences.elevation.requireReasonForElevation {
                                 ReasonInputManager.shared.presentAsWindow(
                                     isPresented: $showReasonInput,
@@ -37,19 +40,9 @@ struct CompactElevationCard: View {
                             } else {
                                 ElevationManager.shared.handleElevation(reason: "")
                             }
-                        }) {
-                            VStack {
-                                ButtonTitle(title: Constants.General.elevate, fontSize: 12, isLoading: false)
-                            }
-                            .padding(8)
-                            .background(Color(NSColor(hex: appState.preferences.branding.accentColor ?? "") ?? NSColor.controlAccentColor))
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
                         }
-                        .buttonStyle(PlainButtonStyle())
-                        .disabled(appState.userInfoManager.userInfo.isAdmin || appState.isDemotionActive)
-                        
-                        Button(action: {
+
+                        ScSmallButton(Constants.General.demote, disabled: !appState.isDemotionActive) {
                             appState.stopDemotionTimer()
                             ElevationManager.shared.demotePrivileges { success in
                                 if success {
@@ -58,17 +51,7 @@ struct CompactElevationCard: View {
                                     Logger.shared.logError("Failed to demote privileges")
                                 }
                             }
-                        }) {
-                            VStack {
-                                ButtonTitle(title: Constants.General.demote, fontSize: 12, isLoading: false)
-                            }
-                            .padding(8)
-                            .background(Color(NSColor(hex: appState.preferences.branding.accentColor ?? "") ?? NSColor.controlAccentColor))
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
                         }
-                        .buttonStyle(PlainButtonStyle())
-                        .disabled(!appState.isDemotionActive)
                     }
                 }
             }

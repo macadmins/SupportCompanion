@@ -24,7 +24,12 @@ class PendingFleetUpdatesManager: PendingUpdatesManager {
     }
 
     override func managementApp(forUpdates: Bool) -> (name: String, path: String) {
-        (Constants.Fleet.selfService, "supportcompanion://apps")
+        (Constants.Navigation.apps, "supportcompanion://apps")
+    }
+
+    /// The apps page is part of this app, so "Open Self Service" would be misleading.
+    override func openManagementAppTitle(forUpdates: Bool) -> String {
+        forUpdates ? Constants.Fleet.viewUpdates : Constants.Fleet.viewApps
     }
 
     // MARK: - Pending Updates
@@ -39,7 +44,7 @@ class PendingFleetUpdatesManager: PendingUpdatesManager {
         publishCounts()
 
         let updates = software.updatesAvailable.compactMap(PendingFleetUpdate.init(title:))
-        guard !updates.isEmpty, !appState.preferences.hiddenCards.contains(Constants.Cards.pendingAppUpdates) else { return }
+        guard !updates.isEmpty, appState.preferences.fleetNotifyUpdates, !appState.preferences.hiddenCards.contains(Constants.Cards.pendingAppUpdates) else { return }
         let list = updates.map { "\($0.name) \($0.availableVersion)" }.joined(separator: ", ")
         NotificationService(appState: appState).sendNotification(
             message: "\(appState.preferences.notifications.appUpdateNotificationMessage)\n\(list)",

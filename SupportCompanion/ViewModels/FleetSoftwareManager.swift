@@ -279,7 +279,7 @@ final class FleetSoftwareManager {
             categories = try await client.selfServiceCategories()
             categoriesFetchedAt = Date()
         } catch FleetError.server(status: 404, _) {
-            // Older Fleet servers don't have categories; every failed request counts toward Fleet's IP ban
+            // Older Fleet servers don't have categories, so don't keep asking
             Logger.shared.logDebug("Fleet: server doesn't support self-service categories")
             categoriesUnsupported = true
         } catch {

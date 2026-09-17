@@ -68,6 +68,10 @@ struct BatteryEvergreenStack: View {
                     })
                     .fixedSize(horizontal: false, vertical: false)
                 }
+
+                if viewModel.isCardVisible(Constants.Cards.fleetInfo) && appState.preferences.mode == Constants.Modes.fleet {
+                    FleetInfoCard()
+                }
             }
         }
     }

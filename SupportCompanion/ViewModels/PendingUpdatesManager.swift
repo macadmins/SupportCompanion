@@ -59,6 +59,11 @@ class PendingUpdatesManager {
         ("Unknown App", "")
     }
 
+    /// Title of the button that opens the management app.
+    func openManagementAppTitle(forUpdates: Bool) -> String {
+        "\(Constants.Actions.openManagementApp) \(managementApp(forUpdates: forUpdates).name)"
+    }
+
     // MARK: - Shared timer / task management
 
     final func startUpdateCheckTimer() {

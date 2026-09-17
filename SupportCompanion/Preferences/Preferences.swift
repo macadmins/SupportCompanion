@@ -137,6 +137,12 @@ class Preferences {
     var fleetNotifyInstallResults: Bool {
         DefaultsStore.value(forKey: "FleetNotifyInstallResults", default: true)
     }
+    var fleetNotifyUpdates: Bool {
+        DefaultsStore.value(forKey: "FleetNotifyUpdates", default: true)
+    }
+    var fleetNotifyPolicies: Bool {
+        DefaultsStore.value(forKey: "FleetNotifyPolicies", default: true)
+    }
 
     // MARK: - Support info
 

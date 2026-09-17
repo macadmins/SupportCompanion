@@ -4,9 +4,8 @@
 //
 //  Client for Fleet's device-authenticated API.
 //
-//  Fleet bans a client's public IP after repeated failed requests to device endpoints, which would lock
-//  out every Mac behind the same NAT. So this client never retries in a loop: after a failure it refuses
-//  requests locally until a backoff deadline, and while Fleet requires SSO it sends nothing gated at all.
+//  This client never retries in a loop: after a failure it refuses requests locally until a backoff
+//  deadline, and while Fleet requires SSO it sends nothing gated at all.
 //
 
 import Foundation
@@ -60,7 +59,14 @@ protocol FleetSoftwareAPI: Sendable {
     func refetch() async throws
 }
 
-actor FleetClient: FleetSoftwareAPI {
+/// The Fleet calls the device info and compliance cards need.
+protocol FleetDeviceAPI: Sendable {
+    nonisolated var configurationProblem: String? { get }
+    func deviceHost() async throws -> FleetHost
+    func refetch() async throws
+}
+
+actor FleetClient: FleetSoftwareAPI, FleetDeviceAPI {
     static let shared = FleetClient()
 
     /// Name of the cookie Fleet sets after Fleet Desktop SSO.
@@ -75,7 +81,8 @@ actor FleetClient: FleetSoftwareAPI {
     private var blockedUntil: Date?
 
     private static let minimumBackoff: TimeInterval = 60
-    private static let maximumBackoff: TimeInterval = 30 * 60
+    /// Short enough to recover quickly after an outage: 1, 2, 4, then 5 minutes.
+    private static let maximumBackoff: TimeInterval = 5 * 60
 
     init() {
         let configuration = URLSessionConfiguration.ephemeral
@@ -159,6 +166,12 @@ actor FleetClient: FleetSoftwareAPI {
         try await request("GET", "software/titles/\(titleID)/icon", gated: true)
     }
 
+    /// This Mac's host details, including its policies.
+    func deviceHost() async throws -> FleetHost {
+        let response: FleetDeviceHostResponse = try await get("")
+        return response.host
+    }
+
     func policies() async throws -> [FleetPolicy] {
         let response: FleetPoliciesResponse = try await get("policies")
         return response.policies
@@ -226,6 +239,12 @@ actor FleetClient: FleetSoftwareAPI {
                 registerFailure("\(method) \(path) returned 429", minimum: Self.maximumBackoff / 2)
                 throw FleetError.rateLimited
 
+            case 404:
+                // Something that doesn't exist, e.g. an old install result, not a server problem, so no backoff
+                Logger.shared.logDebug("Fleet: \(method) \(path) returned 404")
+                let message = (try? JSONDecoder.fleet.decode(FleetErrorResponse.self, from: data))?.summary ?? ""
+                throw FleetError.server(status: 404, message: message)
+
             default:
                 let message = (try? JSONDecoder.fleet.decode(FleetErrorResponse.self, from: data))?.summary ?? ""
                 registerFailure("\(method) \(path) returned \(response.statusCode) \(message)")
@@ -238,7 +257,8 @@ actor FleetClient: FleetSoftwareAPI {
         var components = URLComponents(url: server, resolvingAgainstBaseURL: false)
         var basePath = components?.path ?? ""
         while basePath.hasSuffix("/") { basePath.removeLast() }
-        components?.path = "\(basePath)/api/v1/fleet/device/\(token)/\(path)"
+        // The host endpoint is the device path itself, without a trailing slash
+        components?.path = "\(basePath)/api/v1/fleet/device/\(token)" + (path.isEmpty ? "" : "/\(path)")
         if !query.isEmpty {
             components?.queryItems = query.sorted { $0.key < $1.key }.map { URLQueryItem(name: $0.key, value: $0.value) }
         }

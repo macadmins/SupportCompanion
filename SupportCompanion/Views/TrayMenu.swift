@@ -65,6 +65,14 @@ struct TrayMenuView: View {
                     if !appState.preferences.hiddenCards.contains(Constants.Cards.jamfInfo) && appState.preferences.mode == Constants.Modes.jamf {
                         CompactJamfInfoCard()
                     }
+                    if appState.preferences.mode == Constants.Modes.fleet {
+                        if !appState.preferences.hiddenCards.contains(Constants.Cards.fleetPolicies) {
+                            CompactFleetPoliciesCard()
+                        }
+                        if !appState.preferences.hiddenCards.contains(Constants.Cards.fleetInfo) {
+                            CompactFleetInfoCard()
+                        }
+                    }
                 }
                 
                 Divider()

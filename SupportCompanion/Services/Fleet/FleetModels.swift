@@ -180,6 +180,40 @@ struct FleetPolicy: Decodable, Identifiable, Equatable, Sendable {
     var isFailing: Bool { response == "fail" }
 }
 
+// MARK: - Host
+
+/// This Mac's record in Fleet, from `GET /device/{token}`.
+struct FleetHost: Decodable, Equatable, Sendable {
+    let id: Int
+    let hostname: String?
+    let computerName: String?
+    let seenTime: Date?
+    let detailUpdatedAt: Date?
+    let policyUpdatedAt: Date?
+    let lastEnrolledAt: Date?
+    let teamName: String?
+    /// Newer Fleet versions call teams fleets.
+    let fleetName: String?
+    let orbitVersion: String?
+    let osqueryVersion: String?
+    let fleetDesktopVersion: String?
+    /// Set after a refetch until the host has sent fresh details.
+    let refetchRequested: Bool?
+    let policies: [FleetPolicy]?
+
+    var team: String? { [teamName, fleetName].compactMap { $0 }.first { !$0.isEmpty } }
+
+    /// Fleet sends Go's zero time (year 1) for events that haven't happened.
+    static func realDate(_ date: Date?) -> Date? {
+        guard let date, date > Date(timeIntervalSince1970: 0) else { return nil }
+        return date
+    }
+}
+
+struct FleetDeviceHostResponse: Decodable, Sendable {
+    let host: FleetHost
+}
+
 // MARK: - Desktop summary
 
 struct FleetDesktopSummary: Decodable, Sendable {
@@ -248,6 +282,11 @@ extension JSONDecoder {
             let fractional = ISO8601DateFormatter()
             fractional.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
             if let date = fractional.date(from: string) ?? ISO8601DateFormatter().date(from: string) {
+                return date
+            }
+            // Go can send more fractional digits than ISO8601DateFormatter reads
+            let trimmed = string.replacingOccurrences(of: #"\.\d+"#, with: "", options: .regularExpression)
+            if let date = ISO8601DateFormatter().date(from: trimmed) {
                 return date
             }
             throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath, debugDescription: "Invalid date: \(string)"))

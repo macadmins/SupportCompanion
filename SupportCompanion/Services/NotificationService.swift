@@ -157,10 +157,7 @@ class BadgeManager {
 
     private func updateBadge() {
         if badgeCount > 0 {
-            let prefs = AppStateManager.shared.preferences
-            let hasPendingUpdates = !prefs.hiddenCards.contains(Constants.Cards.pendingAppUpdates) && AppStateManager.shared.pendingUpdatesCount > 0
-            let hasSoftwareUpdates = !prefs.hiddenActions.contains(Constants.Actions.HideStrings.softwareUpdate) && AppStateManager.shared.systemUpdateCache.count > 0
-            if hasPendingUpdates || hasSoftwareUpdates {
+            if AppStateManager.shared.attentionCount > 0 {
                 NSApplication.shared.dockTile.showsApplicationBadge = true
                 NSApplication.shared.dockTile.badgeLabel = nil
                 NSApplication.shared.dockTile.badgeLabel = String(badgeCount)

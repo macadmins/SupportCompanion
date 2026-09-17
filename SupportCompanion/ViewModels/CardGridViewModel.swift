@@ -125,9 +125,11 @@ class CardGridViewModel {
     }
     
     func createOpenManagementAppButton(type: ManagementAppURLType, fontSize: CGFloat? = nil) -> ScButton {
-        let (appName, appURL) = appState.activeUpdatesManager?.managementApp(forUpdates: type == .update) ?? ("Unknown App", "")
+        let manager = appState.activeUpdatesManager
+        let appURL = manager?.managementApp(forUpdates: type == .update).path ?? ""
+        let title = manager?.openManagementAppTitle(forUpdates: type == .update) ?? "\(Constants.Actions.openManagementApp) Unknown App"
 
-        return ScButton("\(Constants.Actions.openManagementApp) \(appName)", fontSize: fontSize) {
+        return ScButton(title, fontSize: fontSize) {
             ActionHelpers.openManagementApp(appURL: appURL)
         }
     }

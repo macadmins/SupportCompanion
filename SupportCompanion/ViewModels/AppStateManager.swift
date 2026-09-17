@@ -31,6 +31,16 @@ class AppStateManager {
         }
         return manager
     }()
+    @ObservationIgnored lazy var fleetDeviceManager: FleetDeviceManager = {
+        let manager = FleetDeviceManager()
+        manager.onNewlyFailing = { [weak self] policies in
+            self?.notifyFleetPoliciesFailing(policies)
+        }
+        manager.onRefetchFinished = { [weak self] in
+            Task { await self?.fleetSoftwareManager.refresh() }
+        }
+        return manager
+    }()
     @ObservationIgnored var jsonCardManager: JsonCardManager?
     var isRefreshing: Bool = false
     var jamfId: String = ""
@@ -72,10 +82,28 @@ class AppStateManager {
         }
     }
 
+    /// Failing Fleet compliance checks, when the compliance card is shown.
+    var fleetFailingChecksCount: Int {
+        guard preferences.mode == Constants.Modes.fleet,
+              !preferences.hiddenCards.contains(Constants.Cards.fleetPolicies) else { return 0 }
+        return fleetDeviceManager.failingPolicies.count
+    }
+
+    /// What needs the user's attention, for the menu bar dot and Dock badge: pending app updates, macOS
+    /// updates and failing compliance checks, each counted only when its card or button is shown.
+    var attentionCount: Int {
+        let appUpdates = preferences.hiddenCards.contains(Constants.Cards.pendingAppUpdates) ? 0 : pendingUpdatesCount
+        let systemUpdates = preferences.hiddenActions.contains(Constants.Actions.HideStrings.softwareUpdate) ? 0 : systemUpdateCache.count
+        return appUpdates + systemUpdates + fleetFailingChecksCount
+    }
+
     func startBackgroundTasks() {
         activeUpdatesManager?.startUpdateCheckTimer()
         if preferences.mode == Constants.Modes.jamf && !preferences.hiddenCards.contains(Constants.Cards.jamfInfo) {
             jamfInfoManager.startMonitoring()
+        }
+        if preferences.mode == Constants.Modes.fleet {
+            fleetDeviceManager.startMonitoring()
         }
         systemUpdatesManager.startMonitoring()
         storageInfoManager.startMonitoring()
@@ -87,6 +115,7 @@ class AppStateManager {
         for manager in [pendingMunkiUpdatesManager, pendingIntuneUpdatesManager, pendingJamfUpdatesManager, pendingFleetUpdatesManager] as [PendingUpdatesManager] {
             manager.stopUpdateCheckTimer()
         }
+        fleetDeviceManager.stopMonitoring()
         systemUpdatesManager.stopMonitoring()
         storageInfoManager.stopMonitoring()
         deviceInfoManager.stopMonitoring()
@@ -174,6 +203,21 @@ class AppStateManager {
             }
             self.isRefreshing = false
         }
+    }
+
+    private func notifyFleetPoliciesFailing(_ policies: [FleetPolicy]) {
+        guard preferences.fleetNotifyPolicies,
+              !preferences.hiddenCards.contains(Constants.Cards.fleetPolicies),
+              let first = policies.first else { return }
+        let message = policies.count == 1
+            ? String(format: Constants.Fleet.policyFailingNotification, first.name)
+            : String(format: Constants.Fleet.policiesFailingNotification, policies.count, first.name)
+        NotificationService(appState: self).sendNotification(
+            message: message,
+            buttonText: Constants.Fleet.viewDetails,
+            command: "open supportcompanion://home",
+            notificationType: .generic
+        )
     }
 
     private func notifyFleetActionFinished(_ title: FleetSoftwareTitle, action: FleetSoftwareTitle.Action, succeeded: Bool) {

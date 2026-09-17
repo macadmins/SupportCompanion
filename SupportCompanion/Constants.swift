@@ -8,21 +8,24 @@
 import Foundation
 
 enum Constants {
-    
+
     enum Support {
         enum Titles {
-            static let support = String(localized: "Support.Support", defaultValue: "Support", comment: "Support title")
+            static let support = String(
+                localized: "Support.Support", defaultValue: "Support", comment: "Support title")
         }
         enum Labels {
-            static let phone = String(localized: "Support.Phone", defaultValue: "Phone:", comment: "Phone number")
-            static let email = String(localized: "Support.Email", defaultValue: "Email:", comment: "Email address")
+            static let phone = String(
+                localized: "Support.Phone", defaultValue: "Phone:", comment: "Phone number")
+            static let email = String(
+                localized: "Support.Email", defaultValue: "Email:", comment: "Email address")
         }
         enum Keys {
             static let phone = "SupportPhone"
             static let email = "SupportEmail"
         }
     }
-    
+
     enum Modes {
         static let munki = "Munki"
         static let intune = "Intune"
@@ -30,135 +33,336 @@ enum Constants {
         static let jamf = "Jamf"
         static let fleet = "Fleet"
     }
-    
+
     enum Fleet {
-        static let searchPlaceholder = String(localized: "Fleet.SearchPlaceholder", defaultValue: "Search apps", comment: "Placeholder for the Fleet app catalog search field")
-        static let allCategories = String(localized: "Fleet.AllCategories", defaultValue: "All", comment: "Category filter showing every app")
-        static let updatesAvailable = String(localized: "Fleet.UpdatesAvailable", defaultValue: "Updates Available", comment: "Section of apps with a newer version available")
-        static let available = String(localized: "Fleet.Available", defaultValue: "Available", comment: "Section of apps that can be installed")
-        static let installed = String(localized: "Fleet.Installed", defaultValue: "Installed", comment: "Section of installed apps, and the installed status badge")
-        static let installing = String(localized: "Fleet.Installing", defaultValue: "Installing…", comment: "Status badge while an app installs")
-        static let uninstalling = String(localized: "Fleet.Uninstalling", defaultValue: "Uninstalling…", comment: "Status badge while an app uninstalls")
-        static let installFailed = String(localized: "Fleet.InstallFailed", defaultValue: "Install failed", comment: "Status badge when an install failed")
-        static let uninstallFailed = String(localized: "Fleet.UninstallFailed", defaultValue: "Uninstall failed", comment: "Status badge when an uninstall failed")
-        static let updateAvailable = String(localized: "Fleet.UpdateAvailable", defaultValue: "Update available", comment: "Status badge when a newer version is available")
-        static let notInstalled = String(localized: "Fleet.NotInstalled", defaultValue: "Not installed", comment: "Status badge for an app that isn't installed")
-        static let loading = String(localized: "Fleet.Loading", defaultValue: "Loading apps…", comment: "Shown while the Fleet catalog loads")
-        static let noApps = String(localized: "Fleet.NoApps", defaultValue: "No apps are available for this Mac.", comment: "Shown when the Fleet catalog is empty")
-        static let noMatches = String(localized: "Fleet.NoMatches", defaultValue: "No apps match your search.", comment: "Shown when search or category filters hide every app")
-        static let notConfigured = String(localized: "Fleet.NotConfigured", defaultValue: "Fleet isn't set up on this Mac.", comment: "Shown when orbit or the Fleet server URL is missing")
-        static let signInRequired = String(localized: "Fleet.SignInRequired", defaultValue: "Sign in to see the apps available for this Mac.", comment: "Shown when Fleet requires single sign-on")
-        static let signIn = String(localized: "Fleet.SignIn", defaultValue: "Sign In", comment: "Button that starts Fleet single sign-on")
-        static let couldNotLoad = String(localized: "Fleet.CouldNotLoad", defaultValue: "Couldn't load apps", comment: "Title when the Fleet catalog failed to load")
-        static let couldNotRefresh = String(localized: "Fleet.CouldNotRefresh", defaultValue: "Couldn't refresh", comment: "Shown next to a catalog that failed to refresh")
-        static let retry = String(localized: "Fleet.Retry", defaultValue: "Try Again", comment: "Button to reload the Fleet catalog")
-        static let version = String(localized: "Fleet.Version", defaultValue: "Version", comment: "Label for an app's installed version")
-        static let latestVersion = String(localized: "Fleet.LatestVersion", defaultValue: "Latest", comment: "Label for the version available from Fleet")
-        static let install = String(localized: "Fleet.Install", defaultValue: "Install", comment: "Button that installs an app from Fleet")
-        static let update = String(localized: "Fleet.Update", defaultValue: "Update", comment: "Button that updates an app from Fleet")
-        static let recommended = String(localized: "Fleet.Recommended", defaultValue: "Recommended", comment: "Section of apps IT recommends installing")
-        static let reinstall = String(localized: "Fleet.Reinstall", defaultValue: "Reinstall", comment: "Button that installs an installed app again through Fleet")
-        static let reinstalledNotification = String(localized: "Fleet.ReinstalledNotification", defaultValue: "%@ was reinstalled.", comment: "Notification after a reinstall; %@ is the app name")
-        static let selfService = String(localized: "Fleet.SelfService", defaultValue: "Self Service", comment: "Name of the Fleet apps page in Open buttons and notifications")
-        static let uninstall = String(localized: "Fleet.Uninstall", defaultValue: "Uninstall", comment: "Button that uninstalls an app through Fleet")
-        static let details = String(localized: "Fleet.Details", defaultValue: "Details", comment: "Button that shows the output of a failed install or uninstall")
-        static let moreActions = String(localized: "Fleet.MoreActions", defaultValue: "More actions", comment: "Help text for the menu with extra actions for an app")
-        static let cancel = String(localized: "Fleet.Cancel", defaultValue: "Cancel", comment: "Cancel button")
-        static let close = String(localized: "Fleet.Close", defaultValue: "Close", comment: "Button that closes the install details")
-        static let uninstallConfirmTitle = String(localized: "Fleet.UninstallConfirmTitle", defaultValue: "Uninstall %@?", comment: "Title asking to confirm an uninstall; %@ is the app name")
-        static let uninstallConfirmMessage = String(localized: "Fleet.UninstallConfirmMessage", defaultValue: "The app will be removed from this Mac.", comment: "Message asking to confirm an uninstall")
-        static let installDetailsTitle = String(localized: "Fleet.InstallDetailsTitle", defaultValue: "Install details", comment: "Title of the sheet showing install output")
-        static let uninstallDetailsTitle = String(localized: "Fleet.UninstallDetailsTitle", defaultValue: "Uninstall details", comment: "Title of the sheet showing uninstall output")
-        static let noOutput = String(localized: "Fleet.NoOutput", defaultValue: "Fleet didn't report any output.", comment: "Shown when a failed install has no output")
-        static let couldNotLoadDetails = String(localized: "Fleet.CouldNotLoadDetails", defaultValue: "Couldn't load details", comment: "Shown when install output couldn't be fetched")
-        static let installedNotification = String(localized: "Fleet.InstalledNotification", defaultValue: "%@ was installed.", comment: "Notification after an install; %@ is the app name")
-        static let updatedNotification = String(localized: "Fleet.UpdatedNotification", defaultValue: "%@ was updated.", comment: "Notification after an update; %@ is the app name")
-        static let uninstalledNotification = String(localized: "Fleet.UninstalledNotification", defaultValue: "%@ was uninstalled.", comment: "Notification after an uninstall; %@ is the app name")
-        static let installFailedNotification = String(localized: "Fleet.InstallFailedNotification", defaultValue: "%@ couldn't be installed.", comment: "Notification after a failed install or update; %@ is the app name")
-        static let uninstallFailedNotification = String(localized: "Fleet.UninstallFailedNotification", defaultValue: "%@ couldn't be uninstalled.", comment: "Notification after a failed uninstall; %@ is the app name")
+        static let searchPlaceholder = String(
+            localized: "Fleet.SearchPlaceholder", defaultValue: "Search apps",
+            comment: "Placeholder for the Fleet app catalog search field")
+        static let allCategories = String(
+            localized: "Fleet.AllCategories", defaultValue: "All",
+            comment: "Category filter showing every app")
+        static let updatesAvailable = String(
+            localized: "Fleet.UpdatesAvailable", defaultValue: "Updates Available",
+            comment: "Section of apps with a newer version available")
+        static let available = String(
+            localized: "Fleet.Available", defaultValue: "Available",
+            comment: "Section of apps that can be installed")
+        static let installed = String(
+            localized: "Fleet.Installed", defaultValue: "Installed",
+            comment: "Section of installed apps, and the installed status badge")
+        static let installing = String(
+            localized: "Fleet.Installing", defaultValue: "Installing…",
+            comment: "Status badge while an app installs")
+        static let uninstalling = String(
+            localized: "Fleet.Uninstalling", defaultValue: "Uninstalling…",
+            comment: "Status badge while an app uninstalls")
+        static let installFailed = String(
+            localized: "Fleet.InstallFailed", defaultValue: "Install failed",
+            comment: "Status badge when an install failed")
+        static let uninstallFailed = String(
+            localized: "Fleet.UninstallFailed", defaultValue: "Uninstall failed",
+            comment: "Status badge when an uninstall failed")
+        static let updateAvailable = String(
+            localized: "Fleet.UpdateAvailable", defaultValue: "Update available",
+            comment: "Status badge when a newer version is available")
+        static let notInstalled = String(
+            localized: "Fleet.NotInstalled", defaultValue: "Not installed",
+            comment: "Status badge for an app that isn't installed")
+        static let loading = String(
+            localized: "Fleet.Loading", defaultValue: "Loading apps…",
+            comment: "Shown while the Fleet catalog loads")
+        static let noApps = String(
+            localized: "Fleet.NoApps", defaultValue: "No apps are available for this Mac.",
+            comment: "Shown when the Fleet catalog is empty")
+        static let noMatches = String(
+            localized: "Fleet.NoMatches", defaultValue: "No apps match your search.",
+            comment: "Shown when search or category filters hide every app")
+        static let notConfigured = String(
+            localized: "Fleet.NotConfigured", defaultValue: "Fleet isn't set up on this Mac.",
+            comment: "Shown when orbit or the Fleet server URL is missing")
+        static let signInRequired = String(
+            localized: "Fleet.SignInRequired",
+            defaultValue: "Sign in to see the apps available for this Mac.",
+            comment: "Shown when Fleet requires single sign-on")
+        static let signIn = String(
+            localized: "Fleet.SignIn", defaultValue: "Sign In",
+            comment: "Button that starts Fleet single sign-on")
+        static let couldNotLoad = String(
+            localized: "Fleet.CouldNotLoad", defaultValue: "Couldn't load apps",
+            comment: "Title when the Fleet catalog failed to load")
+        static let couldNotRefresh = String(
+            localized: "Fleet.CouldNotRefresh", defaultValue: "Couldn't refresh",
+            comment: "Shown next to a catalog that failed to refresh")
+        static let retry = String(
+            localized: "Fleet.Retry", defaultValue: "Try Again",
+            comment: "Button to reload the Fleet catalog")
+        static let version = String(
+            localized: "Fleet.Version", defaultValue: "Version",
+            comment: "Label for an app's installed version")
+        static let latestVersion = String(
+            localized: "Fleet.LatestVersion", defaultValue: "Latest",
+            comment: "Label for the version available from Fleet")
+        static let install = String(
+            localized: "Fleet.Install", defaultValue: "Install",
+            comment: "Button that installs an app from Fleet")
+        static let update = String(
+            localized: "Fleet.Update", defaultValue: "Update",
+            comment: "Button that updates an app from Fleet")
+        static let policiesPassing = String(
+            localized: "Fleet.PoliciesPassing", defaultValue: "All %d checks are passing.",
+            comment: "Compliance card when every policy passes; %d is the number of checks")
+        static let policiesFailing = String(
+            localized: "Fleet.PoliciesFailing", defaultValue: "%d of %d checks need attention",
+            comment: "Compliance card summary; the numbers are failing and total checks")
+        static let noPolicies = String(
+            localized: "Fleet.NoPolicies",
+            defaultValue: "There are no compliance checks for this Mac.",
+            comment: "Compliance card without policies")
+        static let policiesSignIn = String(
+            localized: "Fleet.PoliciesSignIn",
+            defaultValue: "Sign in on the Apps page to see compliance checks.",
+            comment: "Compliance card when Fleet requires single sign-on")
+        static let policiesUnavailable = String(
+            localized: "Fleet.PoliciesUnavailable",
+            defaultValue: "Couldn't load compliance checks.",
+            comment: "Compliance card when policies couldn't be loaded")
+        static let passingChecks = String(
+            localized: "Fleet.PassingChecks", defaultValue: "Passing checks (%d)",
+            comment: "Expandable list of passing Fleet policies; %d is the count")
+        static let critical = String(
+            localized: "Fleet.Critical", defaultValue: "Critical",
+            comment: "Badge for a critical Fleet policy")
+        static let howToFix = String(
+            localized: "Fleet.HowToFix", defaultValue: "How to fix",
+            comment: "Disclosure that shows how to resolve a failing policy")
+        static let policyFailingNotification = String(
+            localized: "Fleet.PolicyFailingNotification",
+            defaultValue: "Your Mac needs attention: %@",
+            comment: "Notification when a policy starts failing; %@ is the policy name")
+        static let policiesFailingNotification = String(
+            localized: "Fleet.PoliciesFailingNotification",
+            defaultValue: "Your Mac needs attention: %d checks are failing, including %@.",
+            comment:
+                "Notification when several policies start failing; %d is the count, %@ a policy name"
+        )
+        static let viewDetails = String(
+            localized: "Fleet.ViewDetails", defaultValue: "View Details",
+            comment: "Notification button that opens Support Companion")
+        static let recommended = String(
+            localized: "Fleet.Recommended", defaultValue: "Recommended",
+            comment: "Section of apps IT recommends installing")
+        static let reinstall = String(
+            localized: "Fleet.Reinstall", defaultValue: "Reinstall",
+            comment: "Button that installs an installed app again through Fleet")
+        static let reinstalledNotification = String(
+            localized: "Fleet.ReinstalledNotification", defaultValue: "%@ was reinstalled.",
+            comment: "Notification after a reinstall; %@ is the app name")
+        static let viewApps = String(
+            localized: "Fleet.ViewApps", defaultValue: "View Apps",
+            comment: "Button that shows the Apps page in Support Companion")
+        static let viewUpdates = String(
+            localized: "Fleet.ViewUpdates", defaultValue: "View Updates",
+            comment: "Button that shows available app updates in Support Companion")
+        static let complianceDetails = String(
+            localized: "Fleet.ComplianceDetails", defaultValue: "Details",
+            comment: "Button that opens Support Companion to show compliance details")
+        static let uninstall = String(
+            localized: "Fleet.Uninstall", defaultValue: "Uninstall",
+            comment: "Button that uninstalls an app through Fleet")
+        static let details = String(
+            localized: "Fleet.Details", defaultValue: "Details",
+            comment: "Button that shows the output of a failed install or uninstall")
+        static let moreActions = String(
+            localized: "Fleet.MoreActions", defaultValue: "More actions",
+            comment: "Help text for the menu with extra actions for an app")
+        static let cancel = String(
+            localized: "Fleet.Cancel", defaultValue: "Cancel", comment: "Cancel button")
+        static let close = String(
+            localized: "Fleet.Close", defaultValue: "Close",
+            comment: "Button that closes the install details")
+        static let uninstallConfirmTitle = String(
+            localized: "Fleet.UninstallConfirmTitle", defaultValue: "Uninstall %@?",
+            comment: "Title asking to confirm an uninstall; %@ is the app name")
+        static let uninstallConfirmMessage = String(
+            localized: "Fleet.UninstallConfirmMessage",
+            defaultValue: "The app will be removed from this Mac.",
+            comment: "Message asking to confirm an uninstall")
+        static let installDetailsTitle = String(
+            localized: "Fleet.InstallDetailsTitle", defaultValue: "Install details",
+            comment: "Title of the sheet showing install output")
+        static let uninstallDetailsTitle = String(
+            localized: "Fleet.UninstallDetailsTitle", defaultValue: "Uninstall details",
+            comment: "Title of the sheet showing uninstall output")
+        static let noOutput = String(
+            localized: "Fleet.NoOutput", defaultValue: "Fleet didn't report any output.",
+            comment: "Shown when a failed install has no output")
+        static let couldNotLoadDetails = String(
+            localized: "Fleet.CouldNotLoadDetails", defaultValue: "Couldn't load details",
+            comment: "Shown when install output couldn't be fetched")
+        static let installedNotification = String(
+            localized: "Fleet.InstalledNotification", defaultValue: "%@ was installed.",
+            comment: "Notification after an install; %@ is the app name")
+        static let updatedNotification = String(
+            localized: "Fleet.UpdatedNotification", defaultValue: "%@ was updated.",
+            comment: "Notification after an update; %@ is the app name")
+        static let uninstalledNotification = String(
+            localized: "Fleet.UninstalledNotification", defaultValue: "%@ was uninstalled.",
+            comment: "Notification after an uninstall; %@ is the app name")
+        static let installFailedNotification = String(
+            localized: "Fleet.InstallFailedNotification", defaultValue: "%@ couldn't be installed.",
+            comment: "Notification after a failed install or update; %@ is the app name")
+        static let uninstallFailedNotification = String(
+            localized: "Fleet.UninstallFailedNotification",
+            defaultValue: "%@ couldn't be uninstalled.",
+            comment: "Notification after a failed uninstall; %@ is the app name")
     }
 
     enum TrayMenu {
-        static let openApp = String(localized: "TrayMenu.OpenApp", defaultValue: "Open Support Companion", comment: "Open the app")
-        static let quitApp = String(localized: "TrayMenu.QuitApp", defaultValue: "Quit", comment: "Quit the app")
+        static let openApp = String(
+            localized: "TrayMenu.OpenApp", defaultValue: "Open Support Companion",
+            comment: "Open the app")
+        static let quitApp = String(
+            localized: "TrayMenu.QuitApp", defaultValue: "Quit", comment: "Quit the app")
     }
-    
+
     enum General {
-        static let days = String(localized: "General.Days", defaultValue: "Days", comment: "Number of days")
-        static let day = String(localized: "General.Day", defaultValue: "Day", comment: "Number of day")
-        static let dayAgo = String(localized: "General.DayAgo", defaultValue: "Day Ago", comment: "Number of day ago")
-        static let daysAgo = String(localized: "General.DaysAgo", defaultValue: "Days Ago", comment: "Number of days ago")
-        static let hours = String(localized: "General.Hours", defaultValue: "Hours", comment: "Number of hours")
-        static let hour = String(localized: "General.Hour", defaultValue: "Hour", comment: "Number of hour")
-        static let minute = String(localized: "General.Minute", defaultValue: "Minute", comment: "Number of minute")
-        static let minutes = String(localized: "General.Minutes", defaultValue: "Minutes", comment: "Number of minutes")
-        static let second = String(localized: "General.Second", defaultValue: "Second", comment: "Number of second")
-        static let seconds = String(localized: "General.Seconds", defaultValue: "Seconds", comment: "Number of seconds")
-        static let manage = String(localized: "General.Manage", defaultValue: "Manage", comment: "Manage")
-        static let close = String(localized: "General.Close", defaultValue: "Close", comment: "Close")
-        static let elevate = String(localized: "General.Elevate", defaultValue: "Elevate", comment: "Elevate")
-        static let demote: String = String(localized: "General.Demote", defaultValue: "Demote", comment: "Demote")
-        static let ago: String = String(localized: "General.Ago", defaultValue: "Ago", comment: "Ago")
-        static let justNow: String = String(localized: "General.JustNow", defaultValue: "Just Now", comment: "Just Now")
+        static let days = String(
+            localized: "General.Days", defaultValue: "Days", comment: "Number of days")
+        static let day = String(
+            localized: "General.Day", defaultValue: "Day", comment: "Number of day")
+        static let dayAgo = String(
+            localized: "General.DayAgo", defaultValue: "Day Ago", comment: "Number of day ago")
+        static let daysAgo = String(
+            localized: "General.DaysAgo", defaultValue: "Days Ago", comment: "Number of days ago")
+        static let hours = String(
+            localized: "General.Hours", defaultValue: "Hours", comment: "Number of hours")
+        static let hour = String(
+            localized: "General.Hour", defaultValue: "Hour", comment: "Number of hour")
+        static let minute = String(
+            localized: "General.Minute", defaultValue: "Minute", comment: "Number of minute")
+        static let minutes = String(
+            localized: "General.Minutes", defaultValue: "Minutes", comment: "Number of minutes")
+        static let second = String(
+            localized: "General.Second", defaultValue: "Second", comment: "Number of second")
+        static let seconds = String(
+            localized: "General.Seconds", defaultValue: "Seconds", comment: "Number of seconds")
+        static let manage = String(
+            localized: "General.Manage", defaultValue: "Manage", comment: "Manage")
+        static let close = String(
+            localized: "General.Close", defaultValue: "Close", comment: "Close")
+        static let elevate = String(
+            localized: "General.Elevate", defaultValue: "Elevate", comment: "Elevate")
+        static let demote: String = String(
+            localized: "General.Demote", defaultValue: "Demote", comment: "Demote")
+        static let ago: String = String(
+            localized: "General.Ago", defaultValue: "Ago", comment: "Ago")
+        static let justNow: String = String(
+            localized: "General.JustNow", defaultValue: "Just Now", comment: "Just Now")
     }
-    
+
     enum AppPaths {
         static let companyPortal = "/Applications/Company Portal.app"
         static let MSC = "/Applications/Managed Software Center.app"
         static let MSCUpdates = "munki://updates.html"
         static let selfService = "/Applications/Self Service+.app"
     }
-    
+
     enum Paths {
         static let tempArchivePath = "/tmp/supportcompanion_logs.zip"
-        static let jamfSelfServiceData = "~/Library/Application Support/osx-self-service.Self-Service.resources/CocoaAppCD.storedata"
+        static let jamfSelfServiceData =
+            "~/Library/Application Support/osx-self-service.Self-Service.resources/CocoaAppCD.storedata"
     }
-    
+
     enum Panels {
         static let storage = "x-apple.systempreferences:com.apple.settings.Storage"
-        static let softwareUpdates = "x-apple.systempreferences:com.apple.preferences.softwareupdate"
+        static let softwareUpdates =
+            "x-apple.systempreferences:com.apple.preferences.softwareupdate"
         static let users = "x-apple.systempreferences:com.apple.preferences.users"
-        static let backgroundSecurityImprovements = "x-apple.systempreferences:com.apple.SecurityImprovements-Settings.extension"
+        static let backgroundSecurityImprovements =
+            "x-apple.systempreferences:com.apple.SecurityImprovements-Settings.extension"
     }
-    
+
     enum ToolTips {
-        static let deviceInfoCopy = String(localized: "ToolTip.DeviceInfoCopy", defaultValue: "Copy device information to clipboard", comment: "Tooltip text when copying device information to clipboard")
-        static let openStoragePanel = String(localized: "ToolTip.OpenStoragePanel", defaultValue: "Open storage panel", comment: "Tooltip text when opening the storage panel")
-        static let deviceLastRebooted = String(localized: "ToolTip.DeviceLastRebooted", defaultValue: "Regularly rebooting your device can enhance its performance and longevity by clearing temporary files and freeing up system resources.", comment: "Tooltip text when showing reboot information")
+        static let deviceInfoCopy = String(
+            localized: "ToolTip.DeviceInfoCopy",
+            defaultValue: "Copy device information to clipboard",
+            comment: "Tooltip text when copying device information to clipboard")
+        static let openStoragePanel = String(
+            localized: "ToolTip.OpenStoragePanel", defaultValue: "Open storage panel",
+            comment: "Tooltip text when opening the storage panel")
+        static let deviceLastRebooted = String(
+            localized: "ToolTip.DeviceLastRebooted",
+            defaultValue:
+                "Regularly rebooting your device can enhance its performance and longevity by clearing temporary files and freeing up system resources.",
+            comment: "Tooltip text when showing reboot information")
     }
-    
+
     enum Notifications {
         enum SoftwareUpdate {
-            static let UpdateNotificationMessage = String(localized: "Notification.UpdateAvailable", defaultValue: "Software Updates Available. Please update your device to the latest version.", comment: "Notification message when an update is available")
-            static let UpdateNotificationButtonText = String(localized: "Notification.UpdateNow", defaultValue: "Update Now 🚀", comment: "Notification button text when an update is available")
+            static let UpdateNotificationMessage = String(
+                localized: "Notification.UpdateAvailable",
+                defaultValue:
+                    "Software Updates Available. Please update your device to the latest version.",
+                comment: "Notification message when an update is available")
+            static let UpdateNotificationButtonText = String(
+                localized: "Notification.UpdateNow", defaultValue: "Update Now 🚀",
+                comment: "Notification button text when an update is available")
         }
-        
+
         enum AppUpdate {
-            static let UpdateNotificationMessage = String(localized: "Notification.AppUpdateAvailable", defaultValue: "App Updates Available. Please update your apps to the latest version.", comment: "Notification message when an update is available")
-            static let UpdateNotificationButtonText = String(localized: "Notification.UpdateNow", defaultValue: "Update Now 🚀", comment: "Notification button text when an update is available")
+            static let UpdateNotificationMessage = String(
+                localized: "Notification.AppUpdateAvailable",
+                defaultValue:
+                    "App Updates Available. Please update your apps to the latest version.",
+                comment: "Notification message when an update is available")
+            static let UpdateNotificationButtonText = String(
+                localized: "Notification.UpdateNow", defaultValue: "Update Now 🚀",
+                comment: "Notification button text when an update is available")
         }
 
         enum Elevation {
-            static let ElevationStartedMessage = String(localized: "Notification.ElevationStarted", defaultValue: "Privileged session started. You will be demoted in", comment: "Notification message when an elevation is started")
-            static let ElevationHalfwayMessage = String(localized: "Notification.ElevationHalfway", defaultValue: "Your elevated privileges will be demoted in", comment: "Notification message when half the time has passed")
-            static let ElevationDemotedMessage = String(localized: "Notification.ElevationDemoted", defaultValue: "Your elevated privileges have been demoted.", comment: "Notification message when the elevation is demoted")
+            static let ElevationStartedMessage = String(
+                localized: "Notification.ElevationStarted",
+                defaultValue: "Privileged session started. You will be demoted in",
+                comment: "Notification message when an elevation is started")
+            static let ElevationHalfwayMessage = String(
+                localized: "Notification.ElevationHalfway",
+                defaultValue: "Your elevated privileges will be demoted in",
+                comment: "Notification message when half the time has passed")
+            static let ElevationDemotedMessage = String(
+                localized: "Notification.ElevationDemoted",
+                defaultValue: "Your elevated privileges have been demoted.",
+                comment: "Notification message when the elevation is demoted")
         }
 
         enum Reboot {
-            static let RebootMessage = String(localized: "Notification.RebootReminder", defaultValue: "Your device was last restarted %lld %@ ago. Please reboot your device to ensure optimal performance and security.", comment: "Notification message reminding the user to reboot their device")
+            static let RebootMessage = String(
+                localized: "Notification.RebootReminder",
+                defaultValue:
+                    "Your device was last restarted %lld %@ ago. Please reboot your device to ensure optimal performance and security.",
+                comment: "Notification message reminding the user to reboot their device")
         }
     }
-    
+
     enum Errors {
-        static let noInternetConnection = String(localized: "Error.NoInternetConnection", defaultValue: "No internet connection is available.", comment: "Error message when no internet connection is available")
-        static let invalidRealmSSO = String(localized: "Error.InvalidRealm", defaultValue: "Invalid SSO REALM detected.", comment: "Error message when the realm is invalid")
-        static let commandFailedSSO = String(localized: "Error.CommandFailed", defaultValue: "Failed to execute the SSO command.", comment: "Error message when a command failed")
+        static let noInternetConnection = String(
+            localized: "Error.NoInternetConnection",
+            defaultValue: "No internet connection is available.",
+            comment: "Error message when no internet connection is available")
+        static let invalidRealmSSO = String(
+            localized: "Error.InvalidRealm", defaultValue: "Invalid SSO REALM detected.",
+            comment: "Error message when the realm is invalid")
+        static let commandFailedSSO = String(
+            localized: "Error.CommandFailed", defaultValue: "Failed to execute the SSO command.",
+            comment: "Error message when a command failed")
     }
-    
+
     enum Titles {
-        static let saveLogs = String(localized: "Title.SaveLogs", defaultValue: "Save Logs", comment: "Title for save logs dialog")
+        static let saveLogs = String(
+            localized: "Title.SaveLogs", defaultValue: "Save Logs",
+            comment: "Title for save logs dialog")
     }
-    
+
     enum Cards {
         static let storage = "Storage"
         static let actions = "Actions"
@@ -169,39 +373,99 @@ enum Constants {
         static let battery = "Battery"
         static let pendingAppUpdates = "PendingAppUpdates"
         static let jamfInfo = "Jamf"
+        static let fleetPolicies = "FleetPolicies"
+        static let fleetInfo = "Fleet"
     }
-    
+
     enum CardTitle {
-        static let storage = String(localized: "Card.StorageTitle", defaultValue: "Storage", comment: "Title for storage card")
-        static let actions = String(localized: "Card.ActionsTitle", defaultValue: "Actions", comment: "Title for actions card")
-        static let evergreen = String(localized: "Card.EvergreenTitle", defaultValue: "Evergreen", comment: "Title for evergreen card")
-        static let deviceInfo = String(localized: "Card.DeviceInfoTitle", defaultValue: "Device Information", comment: "Title for device info card")
-        static let deviceManagement = String(localized: "Card.DeviceManagementTitle", defaultValue: "Device Management", comment: "Title for device management card")
-        static let appPatchProgress = String(localized: "Card.AppPatchProgressTitle", defaultValue: "Application Patching Progress", comment: "Title for app patch progress card")
-        static let battery = String(localized: "Card.BatteryTitle", defaultValue: "Battery", comment: "Title for battery card")
-        static let kerberosSSO = String(localized: "Card.KerberosSSOTitle", defaultValue: "Kerberos Single Sign On", comment: "Title for kerberos sso card")
-        static let platformSSO = String(localized: "Card.PlatformSSOTitle", defaultValue: "Platform Single Sign On", comment: "Title for platform sso card")
-        static let userInfo = String(localized: "Card.UserInfoTitle", defaultValue: "User Information", comment: "Title for user info card")
-        static let pendingUpdates = String(localized: "Card.PendingUpdatesTitle", defaultValue: "Pending Updates", comment: "Title for pending updates card")
-        static let installedApps = String(localized: "Card.InstalledAppsTitle", defaultValue: "Installed Applications", comment: "Title for installed apps card")
-        static let privileges = String(localized: "Card.PrivilegesTitle", defaultValue: "Privileges", comment: "Title for privileges card")
+        static let storage = String(
+            localized: "Card.StorageTitle", defaultValue: "Storage",
+            comment: "Title for storage card")
+        static let actions = String(
+            localized: "Card.ActionsTitle", defaultValue: "Actions",
+            comment: "Title for actions card")
+        static let evergreen = String(
+            localized: "Card.EvergreenTitle", defaultValue: "Evergreen",
+            comment: "Title for evergreen card")
+        static let deviceInfo = String(
+            localized: "Card.DeviceInfoTitle", defaultValue: "Device Information",
+            comment: "Title for device info card")
+        static let deviceManagement = String(
+            localized: "Card.DeviceManagementTitle", defaultValue: "Device Management",
+            comment: "Title for device management card")
+        static let appPatchProgress = String(
+            localized: "Card.AppPatchProgressTitle", defaultValue: "Application Patching Progress",
+            comment: "Title for app patch progress card")
+        static let battery = String(
+            localized: "Card.BatteryTitle", defaultValue: "Battery",
+            comment: "Title for battery card")
+        static let kerberosSSO = String(
+            localized: "Card.KerberosSSOTitle", defaultValue: "Kerberos Single Sign On",
+            comment: "Title for kerberos sso card")
+        static let platformSSO = String(
+            localized: "Card.PlatformSSOTitle", defaultValue: "Platform Single Sign On",
+            comment: "Title for platform sso card")
+        static let userInfo = String(
+            localized: "Card.UserInfoTitle", defaultValue: "User Information",
+            comment: "Title for user info card")
+        static let pendingUpdates = String(
+            localized: "Card.PendingUpdatesTitle", defaultValue: "Pending Updates",
+            comment: "Title for pending updates card")
+        static let installedApps = String(
+            localized: "Card.InstalledAppsTitle", defaultValue: "Installed Applications",
+            comment: "Title for installed apps card")
+        static let privileges = String(
+            localized: "Card.PrivilegesTitle", defaultValue: "Privileges",
+            comment: "Title for privileges card")
         static let jamfInfo = "Jamf"
+        static let fleetInfo = "Fleet"
+        static let fleetPolicies = String(
+            localized: "Card.FleetPoliciesTitle", defaultValue: "Device Compliance",
+            comment: "Title for the card listing failing Fleet policies")
     }
-    
+
     enum RebootModal {
-        static let title = String(localized: "Modal.RebootTitle", defaultValue: "Reboot Scheduled", comment: "Title for reboot modal")
+        static let title = String(
+            localized: "Modal.RebootTitle", defaultValue: "Reboot Scheduled",
+            comment: "Title for reboot modal")
         static let countdown = 60
-        static let message = String(localized: "Modal.RebootMessage", defaultValue: "Your system will reboot soon.", comment: "Message for reboot modal")
+        static let message = String(
+            localized: "Modal.RebootMessage", defaultValue: "Your system will reboot soon.",
+            comment: "Message for reboot modal")
     }
-    
+
     enum Actions {
-        static let reboot = String(localized: "Action.Reboot", defaultValue: "Reboot", comment: "Label for reboot action")
-        static let changePassword = String(localized: "Action.ChangePassword", defaultValue: "Change Password", comment: "Label for change password action")
-        static let gatherLogs = String(localized: "Action.GatherLogs", defaultValue: "Gather Logs", comment: "Label for gather logs action")
-        static let restartIntuneAgent = String(localized: "Action.RestartIntuneAgent", defaultValue: "Restart Intune Agent", comment: "Label for restart Intune agent action")
-        static let openManagementApp = String(localized: "Action.OpenManagementApp", defaultValue: "Open Management App", comment: "Label for open management app action")
-        static let softwareUpdate = String(localized: "Action.SoftwareUpdate", defaultValue: "Software Update", comment: "Label for software update action")
-        static let getSupport = String(localized: "Action.GetSupport", defaultValue: "Get Support", comment: "Label for get support action")
+        static let reboot = String(
+            localized: "Action.Reboot", defaultValue: "Reboot", comment: "Label for reboot action")
+        static let changePassword = String(
+            localized: "Action.ChangePassword", defaultValue: "Change Password",
+            comment: "Label for change password action")
+        static let gatherLogs = String(
+            localized: "Action.GatherLogs", defaultValue: "Gather Logs",
+            comment: "Label for gather logs action")
+        static let restartIntuneAgent = String(
+            localized: "Action.RestartIntuneAgent", defaultValue: "Restart Intune Agent",
+            comment: "Label for restart Intune agent action")
+        static let openManagementApp = String(
+            localized: "Action.OpenManagementApp", defaultValue: "Open Management App",
+            comment: "Label for open management app action")
+        static let softwareUpdate = String(
+            localized: "Action.SoftwareUpdate", defaultValue: "Software Update",
+            comment: "Label for software update action")
+        static let getSupport = String(
+            localized: "Action.GetSupport", defaultValue: "Get Support",
+            comment: "Label for get support action")
+        static let refetch = String(
+            localized: "Action.Refetch", defaultValue: "Re-check",
+            comment: "Button that asks Fleet to re-check this Mac")
+        static let refetching = String(
+            localized: "Action.Refetching", defaultValue: "Re-checking…",
+            comment: "Shown while Fleet re-checks this Mac")
+        static let refetchHelp = String(
+            localized: "Action.RefetchHelp",
+            defaultValue:
+                "Ask Fleet to update this Mac's details and re-run its compliance checks.",
+            comment: "Help text for the re-check button")
 
         enum HideStrings {
             static let changePassword = "ChangePassword"
@@ -213,48 +477,91 @@ enum Constants {
             static let reboot = "Reboot"
         }
     }
-    
+
     enum ToastMessages {
         enum SuccessMessages {
-            static let gatherLogsSuccess = String(localized: "GatherLogs.Success", defaultValue: "Logs gathered successfully.", comment: "Message for successfully gathered logs")
+            static let gatherLogsSuccess = String(
+                localized: "GatherLogs.Success", defaultValue: "Logs gathered successfully.",
+                comment: "Message for successfully gathered logs")
         }
         enum FailureMessages {
-            static let changePasswordSSOEFailure = String(localized: "ChangePasswordSSOE.Failure", defaultValue: "SSO Realm could not be fetched.", comment: "Failure message if REALM cannot be fetched")
+            static let changePasswordSSOEFailure = String(
+                localized: "ChangePasswordSSOE.Failure",
+                defaultValue: "SSO Realm could not be fetched.",
+                comment: "Failure message if REALM cannot be fetched")
         }
         enum InfoMessages {
-            static let changePasswordSSOEInfo = String(localized: "ChangePasswordSSOE.Info", defaultValue: "Cannot reach %@. Ensure VPN or corporate network is connected.", comment: "Info message if REALM cannot be reached")
-            static let gatherLogsInfo = String(localized: "GatherLogs.Info", defaultValue: "Gather logs was cancelled", comment: "Info message for gathering logs")
+            static let changePasswordSSOEInfo = String(
+                localized: "ChangePasswordSSOE.Info",
+                defaultValue: "Cannot reach %@. Ensure VPN or corporate network is connected.",
+                comment: "Info message if REALM cannot be reached")
+            static let gatherLogsInfo = String(
+                localized: "GatherLogs.Info", defaultValue: "Gather logs was cancelled",
+                comment: "Info message for gathering logs")
         }
     }
-    
+
     enum Navigation {
-        static let home = String(localized: "Nav.Home", defaultValue: "Home", comment: "Label for home navigation")
-        static let knowledgeBase = String(localized: "Nav.KnowledgeBase", defaultValue: "Knowledge Base", comment: "Label for knowledge base navigation")
-        static let identity = String(localized: "Nav.Identity", defaultValue: "Identity", comment: "Label for identity navigation")
-        static let apps = String(localized: "Nav.Apps", defaultValue: "Apps", comment: "Label for apps navigation")
-        static let selfService = String(localized: "Nav.SelfService", defaultValue: "Self Service", comment: "Label for self service navigation")
-        static let companyPortal = String(localized: "Nav.CompanyPortal", defaultValue: "Company Portal", comment: "Label for company portal navigation")
+        static let home = String(
+            localized: "Nav.Home", defaultValue: "Home", comment: "Label for home navigation")
+        static let knowledgeBase = String(
+            localized: "Nav.KnowledgeBase", defaultValue: "Knowledge Base",
+            comment: "Label for knowledge base navigation")
+        static let identity = String(
+            localized: "Nav.Identity", defaultValue: "Identity",
+            comment: "Label for identity navigation")
+        static let apps = String(
+            localized: "Nav.Apps", defaultValue: "Apps", comment: "Label for apps navigation")
+        static let selfService = String(
+            localized: "Nav.SelfService", defaultValue: "Self Service",
+            comment: "Label for self service navigation")
+        static let companyPortal = String(
+            localized: "Nav.CompanyPortal", defaultValue: "Company Portal",
+            comment: "Label for company portal navigation")
     }
-    
+
     enum DeviceInfo {
         enum Labels {
-            static let hostName = String(localized: "DeviceInfo.HostName", defaultValue: "Host Name:", comment: "Label for host name")
-            static let model = String(localized: "DeviceInfo.Model", defaultValue: "Model:", comment: "Label for model")
-            static let cpuType = String(localized: "DeviceInfo.CpuType", defaultValue: "Processor:", comment: "Label for CPU type")
-            static let ram = String(localized: "DeviceInfo.Ram", defaultValue: "Memory:", comment: "Label for RAM")
-            static let osVersion = String(localized: "DeviceInfo.OsVersion", defaultValue: "OS Version:", comment: "Label for OS version")
-            static let osBuild = String(localized: "DeviceInfo.OsBuild", defaultValue: "OS Build:", comment: "Label for OS build")
-            static let lastRestart = String(localized: "DeviceInfo.LastRestart", defaultValue: "Last Restart:", comment: "Label for last restart")
-            static let ipAddress = String(localized: "DeviceInfo.IpAddress", defaultValue: "IP Address:", comment: "Label for IP address")
-            static let serialNumber = String(localized: "DeviceInfo.SerialNumber", defaultValue: "Serial Number:", comment: "Label for serial number")
-            static let ssid = String(localized: "DeviceInfo.SSID", defaultValue: "SSID:", comment: "Label for SSID")
+            static let hostName = String(
+                localized: "DeviceInfo.HostName", defaultValue: "Host Name:",
+                comment: "Label for host name")
+            static let model = String(
+                localized: "DeviceInfo.Model", defaultValue: "Model:", comment: "Label for model")
+            static let cpuType = String(
+                localized: "DeviceInfo.CpuType", defaultValue: "Processor:",
+                comment: "Label for CPU type")
+            static let ram = String(
+                localized: "DeviceInfo.Ram", defaultValue: "Memory:", comment: "Label for RAM")
+            static let osVersion = String(
+                localized: "DeviceInfo.OsVersion", defaultValue: "OS Version:",
+                comment: "Label for OS version")
+            static let osBuild = String(
+                localized: "DeviceInfo.OsBuild", defaultValue: "OS Build:",
+                comment: "Label for OS build")
+            static let lastRestart = String(
+                localized: "DeviceInfo.LastRestart", defaultValue: "Last Restart:",
+                comment: "Label for last restart")
+            static let ipAddress = String(
+                localized: "DeviceInfo.IpAddress", defaultValue: "IP Address:",
+                comment: "Label for IP address")
+            static let serialNumber = String(
+                localized: "DeviceInfo.SerialNumber", defaultValue: "Serial Number:",
+                comment: "Label for serial number")
+            static let ssid = String(
+                localized: "DeviceInfo.SSID", defaultValue: "SSID:", comment: "Label for SSID")
         }
         enum Categories {
-            static let hardwareSpecs = String(localized: "DeviceInfo.HardwareSpecs", defaultValue: "Hardware Specifications", comment: "Category for hardware specs")
-            static let networkInfo = String(localized: "DeviceInfo.NetworkInfo", defaultValue: "Network Information", comment: "Category for network info")
-            static let systemInfo = String(localized: "DeviceInfo.SystemInfo", defaultValue: "System Information", comment: "Category for system info")
+            static let hardwareSpecs = String(
+                localized: "DeviceInfo.HardwareSpecs", defaultValue: "Hardware Specifications",
+                comment: "Category for hardware specs")
+            static let networkInfo = String(
+                localized: "DeviceInfo.NetworkInfo", defaultValue: "Network Information",
+                comment: "Category for network info")
+            static let systemInfo = String(
+                localized: "DeviceInfo.SystemInfo", defaultValue: "System Information",
+                comment: "Category for system info")
         }
-        
+
         enum Keys {
             static let hostName = "HostName"
             static let processor = "Processor"
@@ -269,15 +576,21 @@ enum Constants {
             static let lastRestartDays = "LastRestartDays"
         }
     }
-    
+
     enum JamfInfo {
         enum Labels {
-            static let lastCheckin = String(localized: "JamfInfo.LastCheckin", defaultValue: "Check-In:", comment: "Label for the last check-in date")
-            static let lastInventory = String(localized: "JamfInfo.LastInventory", defaultValue: "Inventory:", comment: "Label for the last update date")
-            static let url = String(localized: "JamfInfo.URL", defaultValue: "URL:", comment: "Label for the URL")
-            static let id = String(localized: "JamfInfo.ID", defaultValue: "ID:", comment: "Label for the ID")
+            static let lastCheckin = String(
+                localized: "JamfInfo.LastCheckin", defaultValue: "Check-In:",
+                comment: "Label for the last check-in date")
+            static let lastInventory = String(
+                localized: "JamfInfo.LastInventory", defaultValue: "Inventory:",
+                comment: "Label for the last update date")
+            static let url = String(
+                localized: "JamfInfo.URL", defaultValue: "URL:", comment: "Label for the URL")
+            static let id = String(
+                localized: "JamfInfo.ID", defaultValue: "ID:", comment: "Label for the ID")
         }
-        
+
         enum Keys {
             static let lastCheckin = "JamfLastCheckin"
             static let lastInventory = "JamfLastInventory"
@@ -285,15 +598,67 @@ enum Constants {
             static let id = "JamfId"
         }
     }
-    
+
+    enum FleetInfo {
+        enum Labels {
+            static let id = String(
+                localized: "FleetInfo.ID", defaultValue: "Host ID:",
+                comment: "Label for the Fleet host ID")
+            static let team = String(
+                localized: "FleetInfo.Team", defaultValue: "Fleet:",
+                comment: "Label for the fleet name")
+            static let lastSeen = String(
+                localized: "FleetInfo.LastSeen", defaultValue: "Check-In:",
+                comment: "Label for when Fleet last heard from this Mac")
+            static let lastInventory = String(
+                localized: "FleetInfo.LastInventory", defaultValue: "Inventory:",
+                comment: "Label for when Fleet last updated this Mac's details")
+            static let url = String(
+                localized: "FleetInfo.URL", defaultValue: "URL:",
+                comment: "Label for the Fleet server")
+        }
+
+        enum Keys {
+            static let id = "FleetHostId"
+            static let team = "FleetTeam"
+            static let lastSeen = "FleetLastSeen"
+            static let lastInventory = "FleetLastInventory"
+            static let url = "FleetUrl"
+        }
+
+        static let noTeam = String(
+            localized: "FleetInfo.NoTeam", defaultValue: "No fleet",
+            comment: "Shown when the Mac isn't in a fleet")
+        static let never = String(
+            localized: "FleetInfo.Never", defaultValue: "Never",
+            comment: "Shown when Fleet hasn't recorded an event yet")
+        static let unknown = String(
+            localized: "FleetInfo.Unknown", defaultValue: "Unknown",
+            comment: "Shown before Fleet details load")
+        static let refetchFailed = String(
+            localized: "FleetInfo.RefetchFailed",
+            defaultValue: "Couldn't ask Fleet to re-check this Mac.",
+            comment: "Shown when a re-check request failed")
+    }
+
     enum KerberosSSO {
         enum Labels {
-            static let exipiryDays = String(localized: "KerberosSSO.ExipiryDays", defaultValue: "AD Password Expiry:", comment: "Label for the number of days before the password expires")
-            static let lastSSOPasswordChangeDays = String(localized: "KerberosSSO.LastSSOPasswordChangeDays", defaultValue: "Last AD Password Change:", comment: "Label for the last time the SSO password was changed")
-            static let lastLocalPasswordChangeDays = String(localized: "KerberosSSO.LastLocalPasswordChangeDays", defaultValue: "Last Local Password Change:", comment: "Label for the last time the local password was changed")
-            static let kerberosSSOUsername = String(localized: "KerberosSSO.Username", defaultValue: "Username:", comment: "Label for the username")
+            static let exipiryDays = String(
+                localized: "KerberosSSO.ExipiryDays", defaultValue: "AD Password Expiry:",
+                comment: "Label for the number of days before the password expires")
+            static let lastSSOPasswordChangeDays = String(
+                localized: "KerberosSSO.LastSSOPasswordChangeDays",
+                defaultValue: "Last AD Password Change:",
+                comment: "Label for the last time the SSO password was changed")
+            static let lastLocalPasswordChangeDays = String(
+                localized: "KerberosSSO.LastLocalPasswordChangeDays",
+                defaultValue: "Last Local Password Change:",
+                comment: "Label for the last time the local password was changed")
+            static let kerberosSSOUsername = String(
+                localized: "KerberosSSO.Username", defaultValue: "Username:",
+                comment: "Label for the username")
         }
-        
+
         enum Keys {
             static let expiryDays = "ExpiryDays"
             static let lastSSOPasswordChangeDays = "LastSSOPasswordChangeDays"
@@ -302,18 +667,35 @@ enum Constants {
             static let realm = "Realm"
         }
     }
-    
+
     enum PlatformSSO {
         enum Labels {
-            static let loginFrequency = String(localized: "PlatformSSO.LoginFrequency", defaultValue: "Login Frequency:", comment: "Label for the login frequency")
-            static let loginType = String(localized: "PlatformSSO.LoginType", defaultValue: "Login Type:", comment: "Label for the login type")
-            static let newUserAuthorizationMode = String(localized: "PlatformSSO.NewUserAuthorizationMode", defaultValue: "New User Authorization Mode:", comment: "Label for the new user authorization mode")
-            static let registrationCompleted = String(localized: "PlatformSSO.RegistrationCompleted", defaultValue: "Registration Completed:", comment: "Label for the registration completion status")
-            static let sdkVersionString = String(localized: "PlatformSSO.SDKVersionString", defaultValue: "SDK Version:", comment: "Label for the SDK version string")
-            static let sharedDeviceKeys = String(localized: "PlatformSSO.SharedDeviceKeys", defaultValue: "Shared Device Keys:", comment: "Label for the shared device keys")
-            static let userAuthorizationMode = String(localized: "PlatformSSO.UserAuthorizationMode", defaultValue: "User Authorization Mode:", comment: "Label for the user authorization mode")
+            static let loginFrequency = String(
+                localized: "PlatformSSO.LoginFrequency", defaultValue: "Login Frequency:",
+                comment: "Label for the login frequency")
+            static let loginType = String(
+                localized: "PlatformSSO.LoginType", defaultValue: "Login Type:",
+                comment: "Label for the login type")
+            static let newUserAuthorizationMode = String(
+                localized: "PlatformSSO.NewUserAuthorizationMode",
+                defaultValue: "New User Authorization Mode:",
+                comment: "Label for the new user authorization mode")
+            static let registrationCompleted = String(
+                localized: "PlatformSSO.RegistrationCompleted",
+                defaultValue: "Registration Completed:",
+                comment: "Label for the registration completion status")
+            static let sdkVersionString = String(
+                localized: "PlatformSSO.SDKVersionString", defaultValue: "SDK Version:",
+                comment: "Label for the SDK version string")
+            static let sharedDeviceKeys = String(
+                localized: "PlatformSSO.SharedDeviceKeys", defaultValue: "Shared Device Keys:",
+                comment: "Label for the shared device keys")
+            static let userAuthorizationMode = String(
+                localized: "PlatformSSO.UserAuthorizationMode",
+                defaultValue: "User Authorization Mode:",
+                comment: "Label for the user authorization mode")
         }
-        
+
         enum Keys {
             static let loginFrequency = "LoginFrequency"
             static let loginType = "LoginType"
@@ -324,21 +706,41 @@ enum Constants {
             static let userAuthorizationMode = "UserAuthorizationMode"
         }
     }
-    
+
     enum Battery {
         enum Labels {
-            static let health = String(localized: "Battery.Health", defaultValue: "Health:", comment: "Label for the battery health")
-            static let cycleCount = String(localized: "Battery.CycleCount", defaultValue: "Cycle Count:", comment: "Label for the battery cycle count")
-            static let temperature = String(localized: "Battery.Temperature", defaultValue: "Temperature:", comment: "Label for the battery temperature")
-            static let isCharging = String(localized: "Battery.IsCharging", defaultValue: "Is Charging:", comment: "Label for the battery charging status")
-            static let timeToFull = String(localized: "Battery.TimeToFull", defaultValue: "Time to Full:", comment: "Label for the battery time to full")
-            static let charging = String(localized: "Battery.Charging", defaultValue: "Charging", comment: "Label for the battery charging status")
-            static let notCharging = String(localized: "Battery.NotCharging", defaultValue: "Not Charging", comment: "Label for the battery charging status")
-            static let fullyCharged = String(localized: "Battery.FullyCharged", defaultValue: "Fully Charged", comment: "Time to full value when the battery is full on external power")
-            static let calculating = String(localized: "Battery.Calculating", defaultValue: "Calculating…", comment: "Time to full value while macOS is still estimating the charge time")
-            static let usage = String(localized: "Battery.Usage", defaultValue: "Usage:", comment: "Label for the battery usage")
+            static let health = String(
+                localized: "Battery.Health", defaultValue: "Health:",
+                comment: "Label for the battery health")
+            static let cycleCount = String(
+                localized: "Battery.CycleCount", defaultValue: "Cycle Count:",
+                comment: "Label for the battery cycle count")
+            static let temperature = String(
+                localized: "Battery.Temperature", defaultValue: "Temperature:",
+                comment: "Label for the battery temperature")
+            static let isCharging = String(
+                localized: "Battery.IsCharging", defaultValue: "Is Charging:",
+                comment: "Label for the battery charging status")
+            static let timeToFull = String(
+                localized: "Battery.TimeToFull", defaultValue: "Time to Full:",
+                comment: "Label for the battery time to full")
+            static let charging = String(
+                localized: "Battery.Charging", defaultValue: "Charging",
+                comment: "Label for the battery charging status")
+            static let notCharging = String(
+                localized: "Battery.NotCharging", defaultValue: "Not Charging",
+                comment: "Label for the battery charging status")
+            static let fullyCharged = String(
+                localized: "Battery.FullyCharged", defaultValue: "Fully Charged",
+                comment: "Time to full value when the battery is full on external power")
+            static let calculating = String(
+                localized: "Battery.Calculating", defaultValue: "Calculating…",
+                comment: "Time to full value while macOS is still estimating the charge time")
+            static let usage = String(
+                localized: "Battery.Usage", defaultValue: "Usage:",
+                comment: "Label for the battery usage")
         }
-        
+
         enum Keys {
             static let health = "Health"
             static let cycleCount = "CycleCount"
@@ -347,40 +749,54 @@ enum Constants {
             static let timeToFull = "TimeToFull"
         }
     }
-    
+
     enum MDM {
         enum Labels {
-            static let enrolled = String(localized: "MDM.Enrolled", defaultValue: "Enrolled:", comment: "Label for the MDM enrollment status")
-            static let enrolledDate = String(localized: "MDM.EnrolledDate", defaultValue: "Enrolled Date:", comment: "Label for the MDM enrollment date")
+            static let enrolled = String(
+                localized: "MDM.Enrolled", defaultValue: "Enrolled:",
+                comment: "Label for the MDM enrollment status")
+            static let enrolledDate = String(
+                localized: "MDM.EnrolledDate", defaultValue: "Enrolled Date:",
+                comment: "Label for the MDM enrollment date")
         }
-        
+
         enum Keys {
             static let enrolled = "Enrolled"
             static let enrolledDate = "EnrolledDate"
         }
     }
-    
+
     enum Storage {
         enum Labels {
-            static let name = String(localized: "Storage.Name", defaultValue: "Name:", comment: "Label for the storage name")
+            static let name = String(
+                localized: "Storage.Name", defaultValue: "Name:",
+                comment: "Label for the storage name")
         }
-        
+
         enum Keys {
             static let name = "StorageName"
             static let fileVault = "FileVault"
             static let usage = "Usage"
         }
     }
-    
+
     enum UserInfo {
         enum Labels {
-            static let username = String(localized: "UserInfo.Username", defaultValue: "Username:", comment: "Label for the username")
-            static let name = String(localized: "UserInfo.Name", defaultValue: "Name:", comment: "Label for the name")
-            static let homeDir = String(localized: "UserInfo.HomeDir", defaultValue: "Home Directory:", comment: "Label for the home directory")
-            static let shell = String(localized: "UserInfo.Shell", defaultValue: "Shell:", comment: "Label for the shell")
-            static let isAdmin = String(localized: "UserInfo.IsAdmin", defaultValue: "Is Admin:", comment: "Label for the is admin status")
+            static let username = String(
+                localized: "UserInfo.Username", defaultValue: "Username:",
+                comment: "Label for the username")
+            static let name = String(
+                localized: "UserInfo.Name", defaultValue: "Name:", comment: "Label for the name")
+            static let homeDir = String(
+                localized: "UserInfo.HomeDir", defaultValue: "Home Directory:",
+                comment: "Label for the home directory")
+            static let shell = String(
+                localized: "UserInfo.Shell", defaultValue: "Shell:", comment: "Label for the shell")
+            static let isAdmin = String(
+                localized: "UserInfo.IsAdmin", defaultValue: "Is Admin:",
+                comment: "Label for the is admin status")
         }
-        
+
         enum Keys {
             static let username = "Login"
             static let name = "Name"
@@ -389,10 +805,16 @@ enum Constants {
             static let isAdmin = "IsAdmin"
         }
     }
-    
+
     enum TableHeaders {
-        static let name = String(localized: "TableHeaders.Name", defaultValue: "Name", comment: "Header for the name column")
-        static let version = String(localized: "TableHeaders.Version", defaultValue: "Version", comment: "Header for the version column")
-        static let action = String(localized: "TableHeaders.Action", defaultValue: "Action", comment: "Header for the action column")
+        static let name = String(
+            localized: "TableHeaders.Name", defaultValue: "Name",
+            comment: "Header for the name column")
+        static let version = String(
+            localized: "TableHeaders.Version", defaultValue: "Version",
+            comment: "Header for the version column")
+        static let action = String(
+            localized: "TableHeaders.Action", defaultValue: "Action",
+            comment: "Header for the action column")
     }
 }

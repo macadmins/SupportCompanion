@@ -12,8 +12,8 @@ import Foundation
 /// 2. The icon of the installed app, or the one saved the last time it was seen installed.
 /// 3. The icon Fleet's own web pages would show, from Fleet's icon set on GitHub (see FleetIconCatalog).
 ///
-/// Only titles with an `icon_url` are requested from Fleet: a request for a title without an icon would
-/// fail, and failed requests count toward Fleet's IP ban.
+/// Only titles with an `icon_url` are requested from Fleet, since a request for a title without an icon
+/// would fail.
 @MainActor
 final class FleetIconCache {
     static let shared = FleetIconCache()

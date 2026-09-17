@@ -24,6 +24,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     static var shouldExit = false
     private var notificationDelegate: NotificationDelegate?
     private var trayIconObservation: ObservationToken?
+    private var dockBadgeObservation: ObservationToken?
     private var popoverEventMonitors: [Any] = []
     private var popoverKeyWindowObserver: NSObjectProtocol?
     private var trayManager: TrayMenuManager { TrayMenuManager.shared }
@@ -31,7 +32,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     @AppStorage("isDarkMode") private var isDarkMode: Bool = false
 
     var hasUpdatesAvailable: Bool {
-        appStateManager.pendingUpdatesCount > 0 || appStateManager.systemUpdateCache.count > 0
+        appStateManager.attentionCount > 0
     }
 
     private func executeAction(_ action: Action) {
@@ -191,13 +192,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     }
 
     func setupTrayMenuIconBinding() {
+        // Updates or failing compliance checks
         let hasUpdates = { [unowned self] () -> Bool in
-            let appState = self.appStateManager
-            let hasPendingUpdates = !appState.preferences.hiddenCards.contains(Constants.Cards.pendingAppUpdates) && appState.pendingUpdatesCount > 0
-            let hasSoftwareUpdates = !appState.preferences.hiddenActions.contains(Constants.Actions.HideStrings.softwareUpdate) && appState.systemUpdateCache.count > 0
-            return hasPendingUpdates || hasSoftwareUpdates
+            self.appStateManager.attentionCount > 0
         }
         TrayMenuManager.shared.updateTrayIcon(hasUpdates: hasUpdates())
+        dockBadgeObservation = observeChanges(of: { [unowned self] in self.appStateManager.attentionCount }) { count in
+            BadgeManager.shared.incrementBadgeCount(count: count)
+        }
         trayIconObservation = observeChanges(of: hasUpdates) { hasUpdates in
             TrayMenuManager.shared.updateTrayIcon(hasUpdates: hasUpdates)
         }

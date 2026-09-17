@@ -22,7 +22,15 @@ struct CardGrid: View {
             GridItem(.adaptive(minimum: 300), alignment: .top)
         ]
         ZStack{
+            ScrollViewReader { scrollProxy in
             ScrollView {
+                if showsFleetComplianceBanner {
+                    FleetComplianceBanner {
+                        withAnimation { scrollProxy.scrollTo(Constants.Cards.fleetPolicies, anchor: .top) }
+                    }
+                    .padding(.horizontal, 20)
+                }
+
                 LazyVGrid(
                     columns: columns,
                     alignment: .leading
@@ -51,6 +59,12 @@ struct CardGrid: View {
                         stack.view
                             .frame(maxWidth: .infinity)
                     }
+
+                    // After the stacks, so the Fleet card sits under Battery the way the Jamf card does
+                    if appState.preferences.mode == Constants.Modes.fleet {
+                        FleetPoliciesCard(viewModel: viewModel)
+                            .id(Constants.Cards.fleetPolicies)
+                    }
                 }
                 .padding(.horizontal, 20)
                 //.padding(.top, 20)
@@ -69,6 +83,7 @@ struct CardGrid: View {
                         appState.refreshJsonCards()
                     }
                 }
+            }
             }
             CountdownModal(
                 isPresented: $showRebootModal,
@@ -110,6 +125,14 @@ struct CardGrid: View {
                 AlertToast(type: .regular, title: "No message")
             }
         }
+    }
+}
+
+extension CardGrid {
+    private var showsFleetComplianceBanner: Bool {
+        appState.preferences.mode == Constants.Modes.fleet
+            && viewModel.isCardVisible(Constants.Cards.fleetPolicies)
+            && !appState.fleetDeviceManager.failingPolicies.isEmpty
     }
 }
 
