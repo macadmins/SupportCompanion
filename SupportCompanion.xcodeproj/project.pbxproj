@@ -175,6 +175,7 @@
 				NetworkInfoHelpers.swift,
 				SSOInfoHelpers.swift,
 				StorageHelpers.swift,
+				TrustedPreferences.swift,
 				UserHelpers.swift,
 			);
 			target = F6890EE12CFF308F00244985 /* SupportCompanionCLI */;

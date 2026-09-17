@@ -43,7 +43,10 @@ class Preferences: ObservableObject {
     @AppStorage("ChangePasswordMode") var changePasswordMode: String = ""
     @AppStorage("ChangePasswordUrl") var changePasswordUrl: String = ""
     @AppStorage("Mode") var mode: String = ""
-    @AppStorage("RequirePrivilegedActionAuthentication") var requirePrivilegedActionAuthentication: Bool = true
+    // Only an administrator may turn off authentication for privileged actions. See TrustedPreferences.
+    var requirePrivilegedActionAuthentication: Bool {
+        TrustedPreferences.bool(forKey: "RequirePrivilegedActionAuthentication", default: true)
+    }
 
     @Published var actions: [Action] = []
     @Published var hiddenActions: [String] = UserDefaults.standard.array(forKey: "HiddenActions") as? [String] ?? []
@@ -147,6 +150,8 @@ class Preferences: ObservableObject {
                 self.loadExcludedLogFolders()
                 self.loadActions()
                 self.loadHiddenActions()
+                // Elevation settings are computed from TrustedPreferences, so views need a nudge
+                self.elevation.objectWillChange.send()
             }
 
         Task {
@@ -297,20 +302,30 @@ class Preferences: ObservableObject {
     }
 
     private func loadActions() {
-        let actions = UserDefaults.standard.array(forKey: "Actions") as? [[String: Any]] ?? []
-        let newActions = actions.compactMap { dict in
-            Action(
-                id: UUID(),
-                    name: dict["Name"] as? String ?? "Unnamed",
-                    command: dict["Command"] as? String ?? "",
-                    icon: dict["Icon"] as? String,
-                    isPrivileged: dict["IsPrivileged"] as? Bool ?? false,
-                    description: dict["Description"] as? String ?? "",
-                    buttonLabel: dict["ButtonLabel"] as? String ?? "Run"
-                )
+        // Privileged actions run as root through the helper, so they must come from an administrator.
+        // Actions a user wrote to their own defaults domain still work, but never with privileges.
+        let trustedActions = TrustedPreferences.object(forKey: "Actions") as? [[String: Any]]
+        let actions = trustedActions ?? UserDefaults.standard.array(forKey: "Actions") as? [[String: Any]] ?? []
+        let allowPrivileged = trustedActions != nil
+
+        let newActions = actions.map { dict in
+            let name = dict["Name"] as? String ?? "Unnamed"
+            let requestsPrivileges = dict["IsPrivileged"] as? Bool ?? false
+            if requestsPrivileges && !allowPrivileged {
+                Logger.shared.logError("Ignoring IsPrivileged for action '\(name)': Actions are not set by a configuration profile or /Library/Preferences")
             }
-            self.actions = newActions
+            return Action(
+                id: UUID(),
+                name: name,
+                command: dict["Command"] as? String ?? "",
+                icon: dict["Icon"] as? String,
+                isPrivileged: requestsPrivileges && allowPrivileged,
+                description: dict["Description"] as? String ?? "",
+                buttonLabel: dict["ButtonLabel"] as? String ?? "Run"
+            )
         }
+        self.actions = newActions
+    }
     
 
     // MARK: - Defaults
