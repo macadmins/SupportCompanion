@@ -5,99 +5,33 @@
 //  Created by Tobias Almén on 2024-11-16.
 //
 
+import AppKit
 import Foundation
 import SwiftUI
 
-struct WaveShape: Shape {
-    var progress: CGFloat
-    var waveHeight: CGFloat
-    var phase: CGFloat
-
-    var animatableData: CGFloat {
-        get { phase }
-        set { phase = newValue }
-    }
-
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        let width = rect.width
-        let height = rect.height
-        let midHeight = height * (1 - progress)
-
-        // Extend sampling beyond the visible rect to avoid straight edge at the clip boundary
-        let extra: CGFloat = max(12, width * 0.05)
-        let startX: CGFloat = -extra
-        let endX: CGFloat = width + extra
-
-        // Use a smaller step for smoother appearance
-        let step: CGFloat = 1
-
-        var isFirstPoint = true
-        var x = startX
-        while x <= endX {
-            let relativeX = x / width
-            let sine = sin((relativeX + phase) * 2 * .pi)
-            let y = midHeight + waveHeight * sine
-            if isFirstPoint {
-                path.move(to: CGPoint(x: x, y: y))
-                isFirstPoint = false
-            } else {
-                path.addLine(to: CGPoint(x: x, y: y))
-            }
-            x += step
-        }
-
-        // Close the shape below; this will be clipped by a circle in the parent view
-        path.addLine(to: CGPoint(x: endX, y: height))
-        path.addLine(to: CGPoint(x: startX, y: height))
-        path.closeSubpath()
-
-        return path
-    }
-}
-
 struct CircularProgressWithWave: View {
-    @State private var phase: CGFloat = 0
     var progress: CGFloat
     var size: CGFloat
     var waveHeight: CGFloat
-    var gradient: Gradient = Gradient(colors: [.blue, .purple])
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.accessibilityReduceMotion) var reduceMotion
-    @Environment(AppStateManager.self) var appState
-    @State private var isAnimating = false
 
     var body: some View {
         ZStack {
             // Accent ring
             Circle()
                 .stroke(
-                    colorScheme == .dark 
-                        ? Color(nsColor: .gray).opacity(0.5) 
-                        : Color(nsColor: .gray).opacity(0.3), 
+                    colorScheme == .dark
+                        ? Color(nsColor: .gray).opacity(0.5)
+                        : Color(nsColor: .gray).opacity(0.3),
                     lineWidth: size * 0.02
                 )// Thinner ring
                 .frame(width: size, height: size)
 
-            // Wave shape masked to a circle
-            WaveShape(progress: progress, waveHeight: waveHeight, phase: phase)
-                .fill(LinearGradient(gradient: gradient, startPoint: .top, endPoint: .bottom))
-                .frame(width: size, height: size) // Matches the full size of the ring
+            // Wave masked to a circle
+            WaveLayerView(progress: progress, waveHeight: waveHeight, isMoving: !reduceMotion)
+                .frame(width: size, height: size)
                 .clipShape(Circle())
-                .drawingGroup()
-                .onAppear {
-                    startAnimation()
-                }
-                .onDisappear {
-                    stopAnimation()
-                }
-                .onChange(of: appState.windowIsVisible) { oldValue, newValue in
-                    if newValue {
-                        startAnimation()
-                    } else {
-                        stopAnimation()
-                    }
-                }
 
             // Progress text in the center
             Text("\(Int(progress * 100))%")
@@ -107,18 +41,126 @@ struct CircularProgressWithWave: View {
         }
         .frame(width: size, height: size)
     }
+}
 
-    private func startAnimation() {
-        guard !isAnimating, !reduceMotion else { return }
-        isAnimating = true
-        withAnimation(Animation.linear(duration: 4).repeatForever(autoreverses: false)) {
-            phase = 1
-        }
+/// Renders the wave with Core Animation instead of SwiftUI.
+///
+/// Any SwiftUI animation, even one that only moves an offset, updates the view graph in the app on
+/// every frame; for this wave that cost ~35% CPU for as long as the Home page was open. A CAAnimation
+/// is played by the render server, so the app does no per-frame work. The earlier `.drawingGroup()`
+/// version also allocated ~140 MB of Metal buffers.
+private struct WaveLayerView: NSViewRepresentable {
+    var progress: CGFloat
+    var waveHeight: CGFloat
+    var isMoving: Bool
+
+    func makeNSView(context: Context) -> WaveNSView {
+        WaveNSView()
     }
 
-    private func stopAnimation() {
-        isAnimating = false
-        phase = 0 // Reset phase to avoid lingering animation effects
+    func updateNSView(_ view: WaveNSView, context: Context) {
+        view.progress = progress
+        view.waveHeight = waveHeight
+        view.isMoving = isMoving
     }
 }
 
+private final class WaveNSView: NSView {
+    var progress: CGFloat = 0 { didSet { if progress != oldValue { needsLayout = true } } }
+    var waveHeight: CGFloat = 0 { didSet { if waveHeight != oldValue { needsLayout = true } } }
+    var isMoving = false { didSet { if isMoving != oldValue { updateAnimation() } } }
+
+    /// Seconds for the wave to travel one full period
+    private let wavePeriod: CFTimeInterval = 4
+    private let animationKey = "waveMotion"
+    private let gradientLayer = CAGradientLayer()
+    private let waveMask = CAShapeLayer()
+    /// Width the running animation was built for; the slide distance depends on it
+    private var animatedWidth: CGFloat?
+
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        wantsLayer = true
+        layer?.addSublayer(gradientLayer)
+        gradientLayer.mask = waveMask
+        // Top to bottom, matching the previous SwiftUI LinearGradient (layer y points up on macOS)
+        gradientLayer.startPoint = CGPoint(x: 0.5, y: 1)
+        gradientLayer.endPoint = CGPoint(x: 0.5, y: 0)
+        updateColors()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func layout() {
+        super.layout()
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        gradientLayer.frame = bounds
+        // The mask is two periods wide; sliding it left by one period loops seamlessly
+        waveMask.bounds = CGRect(x: 0, y: 0, width: bounds.width * 2, height: bounds.height)
+        waveMask.anchorPoint = .zero
+        waveMask.position = .zero
+        waveMask.path = wavePath(width: bounds.width * 2, height: bounds.height)
+        CATransaction.commit()
+        updateAnimation()
+    }
+
+    override func viewDidChangeEffectiveAppearance() {
+        super.viewDidChangeEffectiveAppearance()
+        updateColors()
+    }
+
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        updateAnimation()
+    }
+
+    private func updateColors() {
+        effectiveAppearance.performAsCurrentDrawingAppearance {
+            gradientLayer.colors = [NSColor.systemBlue.cgColor, NSColor.systemPurple.cgColor]
+        }
+    }
+
+    private func updateAnimation() {
+        let shouldAnimate = isMoving && window != nil && bounds.width > 0
+        let isAnimating = waveMask.animation(forKey: animationKey) != nil
+        // Leave a running animation alone unless the width changed, so layout passes don't restart it
+        if shouldAnimate && isAnimating && animatedWidth == bounds.width { return }
+
+        waveMask.removeAnimation(forKey: animationKey)
+        animatedWidth = nil
+        guard shouldAnimate else { return }
+        animatedWidth = bounds.width
+
+        let animation = CABasicAnimation(keyPath: "position.x")
+        animation.fromValue = 0
+        animation.toValue = -bounds.width
+        animation.duration = wavePeriod
+        animation.repeatCount = .infinity
+        animation.timingFunction = CAMediaTimingFunction(name: .linear)
+        animation.isRemovedOnCompletion = false
+        waveMask.add(animation, forKey: animationKey)
+    }
+
+    /// Filled area below a sine wave with two periods across `width`, at `progress` of the height.
+    private func wavePath(width: CGFloat, height: CGFloat) -> CGPath {
+        let path = CGMutablePath()
+        let level = height * progress
+        let periodWidth = width / 2
+        let step: CGFloat = 2
+
+        path.move(to: CGPoint(x: 0, y: 0))
+        var x: CGFloat = 0
+        while x <= width {
+            let y = level + waveHeight * sin(x / periodWidth * 2 * .pi)
+            path.addLine(to: CGPoint(x: x, y: y))
+            x += step
+        }
+        path.addLine(to: CGPoint(x: width, y: level + waveHeight * sin(2 * 2 * .pi)))
+        path.addLine(to: CGPoint(x: width, y: 0))
+        path.closeSubpath()
+        return path
+    }
+}
