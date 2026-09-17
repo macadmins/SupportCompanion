@@ -146,7 +146,7 @@
 		F6575A9C2D117133007DBC83 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				HelperConstans.swift,
+				HelperConstants.swift,
 				HelperProtocol.swift,
 				"OSStatus+Extensions.swift",
 				RemoteApplicationProtocol.swift,
@@ -234,7 +234,7 @@
 		F6A4E0E82CEBD7F8002B4D74 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				HelperConstans.swift,
+				HelperConstants.swift,
 				HelperProtocol.swift,
 				"OSStatus+Extensions.swift",
 				RemoteApplicationProtocol.swift,
