@@ -22,7 +22,7 @@ struct ContentView: View {
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
-        let sidebarItems: [SidebarItem] = generateSidebarItems(preferences: appState.preferences, stateManager: webViewStateManager, cardGridViewModel: cardGridViewModel, pendingUpdatesCount: appState.pendingUpdatesCount)
+        let sidebarItems: [SidebarItem] = generateSidebarItems(preferences: appState.preferences, stateManager: webViewStateManager, cardGridViewModel: cardGridViewModel, pendingUpdatesCount: appState.pendingUpdatesCount, failingChecksCount: appState.fleetFailingChecksCount)
         let accentColor = Color(accentNSColor)
         
         NavigationSplitView {

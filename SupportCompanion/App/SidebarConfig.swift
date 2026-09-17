@@ -9,14 +9,16 @@ import Foundation
 import SwiftUI
 
 @MainActor
-func generateSidebarItems(preferences: Preferences, stateManager: WebViewStateManager, cardGridViewModel: CardGridViewModel, pendingUpdatesCount: Int = 0) -> [SidebarItem] {
+func generateSidebarItems(preferences: Preferences, stateManager: WebViewStateManager, cardGridViewModel: CardGridViewModel, pendingUpdatesCount: Int = 0, failingChecksCount: Int = 0) -> [SidebarItem] {
     var items: [SidebarItem] = [
         SidebarItem(
             label: Constants.Navigation.home,
             systemImage: "house.fill",
             destination: AnyView(
                 CardGrid(viewModel: cardGridViewModel)
-            )
+            ),
+            // Failing compliance checks, shown on Home
+            badge: failingChecksCount
         )
     ]
 
@@ -37,9 +39,9 @@ func generateSidebarItems(preferences: Preferences, stateManager: WebViewStateMa
             SidebarItem(
                 label: Constants.Navigation.apps,
                 systemImage: "app.fill",
-                destination: AnyView(
-                    Applications()
-                ),
+                destination: preferences.mode == Constants.Modes.fleet
+                    ? AnyView(FleetAppsView())
+                    : AnyView(Applications()),
                 badge: pendingUpdatesCount
             )
         )

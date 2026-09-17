@@ -66,6 +66,9 @@ final class ApplicationsInfoManager {
             await getInstalledProfilerApps()
         case Constants.Modes.jamf:
             await getInstalledJamfApps()
+        case Constants.Modes.fleet:
+            // Fleet mode shows FleetAppsView, backed by FleetSoftwareManager
+            break
         default:
             await getInstalledMunkiApps()
         }

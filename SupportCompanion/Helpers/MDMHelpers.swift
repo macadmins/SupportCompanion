@@ -8,26 +8,23 @@
 import Foundation
 
 func getMDMEnrollmentTime() async -> String {
-    let profileNames = ["MDM Profile", "Management Profile"]
-    let command = "/usr/bin/profiles -P -v | grep -A 10 '\(profileNames[0])' || /usr/bin/profiles -P -v | grep -A 10 '\(profileNames[1])'"
-    
+    // Find the enrollment profile by its com.apple.mdm payload rather than by name, since every MDM names it
+    // differently (Jamf "MDM Profile", Intune "Management Profile", Fleet "Fleet enrollment profile", …).
+    // xmllint keeps the output to the date alone: helpers built before ProcessRunner hang on output over ~64KB.
+    let installDate = #"(//dict[key[.='PayloadType']/following-sibling::*[1][.='com.apple.mdm']])[1]/../../key[.='ProfileInstallDate']/following-sibling::*[1]/text()"#
+    let command = #"/usr/bin/profiles -C -o stdout-xml | /usr/bin/xmllint --xpath "\#(installDate)" - 2>/dev/null || true"#
+
     do {
         let commandOutput = try await ExecutionService.executeCommandPrivileged("/bin/bash", arguments: ["-c", command])
-        
-        // Process the command output
-        let lines = commandOutput.split(separator: "\n")
-        for line in lines {
-            if line.contains("installationDate") {
-                let datePattern = #"(\d{4}-\d{2}-\d{2})"#
-                if let range = line.range(of: datePattern, options: .regularExpression) {
-                    return String(line[range])
-                }
-            }
+        if let range = commandOutput.range(of: #"\d{4}-\d{2}-\d{2}"#, options: .regularExpression) {
+            Logger.shared.logDebug("MDM enrollment profile installed \(commandOutput[range])")
+            return String(commandOutput[range])
         }
+        Logger.shared.logDebug("No MDM enrollment profile install date found")
     } catch {
         Logger.shared.logError("Error getting MDM enrollment time: \(error)")
     }
-    
+
     return "Unknown"
 }
 

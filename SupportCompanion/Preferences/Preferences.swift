@@ -132,6 +132,18 @@ class Preferences {
         set { DefaultsStore.set(newValue, forKey: "HiddenCards") }
     }
 
+    // MARK: - Fleet
+
+    var fleetNotifyInstallResults: Bool {
+        DefaultsStore.value(forKey: "FleetNotifyInstallResults", default: true)
+    }
+    var fleetNotifyUpdates: Bool {
+        DefaultsStore.value(forKey: "FleetNotifyUpdates", default: true)
+    }
+    var fleetNotifyPolicies: Bool {
+        DefaultsStore.value(forKey: "FleetNotifyPolicies", default: true)
+    }
+
     // MARK: - Support info
 
     var supportEmail: String {
@@ -251,20 +263,24 @@ class Preferences {
         if mdmUrl != "Unknown" {
             Logger.shared.logDebug("MDM URL detected: \(mdmUrl)")
 
-            if let url = URL(string: mdmUrl), let host = url.host?.lowercased() {
+            // getMDMUrl() returns the URL without its scheme, and a URL without a scheme has no host
+            let mdmURLString = mdmUrl.contains("://") ? mdmUrl : "https://\(mdmUrl)"
+            if let url = URL(string: mdmURLString), let host = url.host?.lowercased() {
                 let pattern = #"(^|\.)manage\.microsoft\.[a-z0-9-]{2,63}$"#
                 if let regex = try? NSRegularExpression(pattern: pattern, options: []) {
                     let range = NSRange(host.startIndex..<host.endIndex, in: host)
                     if regex.firstMatch(in: host, options: [], range: range) != nil {
                         Logger.shared.logDebug("MDM host '\(host)' is a manage.microsoft.* endpoint, setting MDM to Intune.")
                         mdm = "Intune"
-                        return
                     }
                 }
-                if host.contains("jamf") {
+                if mdm == "Unknown" && host.contains("jamf") {
                     Logger.shared.logDebug("MDM host '\(host)' contains 'jamf', setting MDM to Jamf.")
                     mdm = "Jamf"
-                    return
+                }
+                if mdm == "Unknown", let fleetHost = FleetDeviceIdentity.serverURL()?.host?.lowercased(), host == fleetHost {
+                    Logger.shared.logDebug("MDM host '\(host)' is the Fleet server, setting MDM to Fleet.")
+                    mdm = "Fleet"
                 }
             } else {
                 let lower = mdmUrl.lowercased()
@@ -278,7 +294,13 @@ class Preferences {
             }
         }
 
-        if companyPortalExists && mscExists {
+        let orbitInstalled = FleetDeviceIdentity.isOrbitInstalled
+
+        if orbitInstalled && mdm == "Fleet" {
+            Logger.shared.logDebug("Fleet is the MDM and orbit is installed, setting mode to Fleet.")
+            mode = Constants.Modes.fleet
+            logFolders = [FleetDeviceIdentity.logFolder]
+        } else if companyPortalExists && mscExists {
             Logger.shared.logDebug("Both Munki and Company Portal paths exist, defaulting to Munki mode.")
             mode = Constants.Modes.munki
             logFolders = ["/Library/Managed Installs/Logs", "/Library/Logs/Microsoft"]
@@ -298,6 +320,10 @@ class Preferences {
             Logger.shared.logDebug("MSC path exists, setting mode to Munki.")
             mode = Constants.Modes.munki
             logFolders = ["/Library/Managed Installs/Logs"]
+        } else if orbitInstalled {
+            Logger.shared.logDebug("Fleet orbit is installed, setting mode to Fleet.")
+            mode = Constants.Modes.fleet
+            logFolders = [FleetDeviceIdentity.logFolder]
         } else {
             Logger.shared.logDebug("No paths exist, defaulting mode to System Profiler.")
             mode = Constants.Modes.systemProfiler
