@@ -143,7 +143,7 @@ struct FleetAppCard: View {
             if let error = manager.actionErrors[title.id] {
                 Label(error, systemImage: "exclamationmark.triangle")
                     .font(.caption)
-                    .foregroundStyle(colorScheme == .light ? .orangeLight : .orange)
+                    .foregroundStyle(colorScheme == .light ? Color.orangeLight : .orange)
                     .lineLimit(2)
             }
         }
