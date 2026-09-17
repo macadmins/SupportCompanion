@@ -14,10 +14,12 @@ struct BatteryInfo: Identifiable {
     let maxCapacity: Int
     let cycleCount: Int
     let isCharging: String
-    let temperature: Double
+    /// Nil when the battery doesn't report a temperature.
+    let temperature: Double?
     let timeToFull: String
     
     var tempColor: Color {
+        guard let temperature else { return .primary }
         if temperature > 60 {
             return Color(NSColor.red)
         } else if temperature > 40 {
@@ -38,7 +40,7 @@ struct BatteryInfo: Identifiable {
     func toKeyValuePairs() -> [(key: String, display: String, value: InfoValue)] {
         let health = healthPercentage
         
-        return [
+        return withoutMissingTemperature([
             (
                 key: Constants.Battery.Keys.health,
                 display: Constants.Battery.Labels.health,
@@ -52,7 +54,7 @@ struct BatteryInfo: Identifiable {
             (
                 key: Constants.Battery.Keys.temperature,
                 display: Constants.Battery.Labels.temperature,
-                value: .double(temperature)
+                value: .double(temperature ?? 0)
             ),
             (
                 key: Constants.Battery.Keys.isCharging,
@@ -64,13 +66,13 @@ struct BatteryInfo: Identifiable {
                 display: Constants.Battery.Labels.timeToFull,
                 value: .string(timeToFull)
             )
-        ]
+        ])
     }
     
     func toKeyValuePairsCompact() -> [(key: String, display: String, value: InfoValue)] {
         let health = healthPercentage
         
-        return [
+        return withoutMissingTemperature([
             (
                 key: Constants.Battery.Keys.health,
                 display: Constants.Battery.Labels.health,
@@ -79,13 +81,17 @@ struct BatteryInfo: Identifiable {
             (
                 key: Constants.Battery.Keys.temperature,
                 display: Constants.Battery.Labels.temperature,
-                value: .double(temperature)
+                value: .double(temperature ?? 0)
             ),
             (
                 key: Constants.Battery.Keys.timeToFull,
                 display: Constants.Battery.Labels.timeToFull,
                 value: .string(timeToFull)
             )
-        ]
+        ])
+    }
+
+    private func withoutMissingTemperature(_ rows: [(key: String, display: String, value: InfoValue)]) -> [(key: String, display: String, value: InfoValue)] {
+        temperature == nil ? rows.filter { $0.key != Constants.Battery.Keys.temperature } : rows
     }
 }

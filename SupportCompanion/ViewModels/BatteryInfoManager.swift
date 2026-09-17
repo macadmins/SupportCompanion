@@ -18,7 +18,7 @@ class BatteryInfoManager: ObservableObject {
             maxCapacity: 0,
             cycleCount: 0,
             isCharging: "",
-            temperature: 0,
+            temperature: nil,
             timeToFull: ""
         )
     )
@@ -41,7 +41,7 @@ class BatteryInfoManager: ObservableObject {
             maxCapacity: getBatteryMaxCapacity() ?? 0,
             cycleCount: getBatteryCycleCount() ?? 0,
             isCharging: isBatteryCharging(),
-            temperature: getBatteryTemperature() ?? 0,
+            temperature: getBatteryTemperature(),
             timeToFull: getBatteryTimeRemaining()
         )
     }

@@ -1,9 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "" : {
-
-    },
     "%" : {
 
     },
@@ -394,6 +391,18 @@
         }
       }
     },
+    "Battery.Calculating" : {
+      "comment" : "Time to full value while macOS is still estimating the charge time",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Calculating…"
+          }
+        }
+      }
+    },
     "Battery.Charging" : {
       "comment" : "Label for the battery charging status",
       "extractionState" : "extracted_with_value",
@@ -474,6 +483,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cykler:"
+          }
+        }
+      }
+    },
+    "Battery.FullyCharged" : {
+      "comment" : "Time to full value when the battery is full on external power",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Fully Charged"
           }
         }
       }

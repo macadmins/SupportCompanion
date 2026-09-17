@@ -40,7 +40,9 @@ class CardGridViewModel: ObservableObject {
                 ("--------------------- Battery ---------------------", ""),
                 ("Health:", "\(healthPercentage)%"),
                 ("Cycle Count:", appState.batteryInfoManager.batteryInfo.cycleCount),
-                ("Temperature:", "\((String(format: "%.1f", appState.batteryInfoManager.batteryInfo.temperature)))°C"),
+                ("Temperature:", appState.batteryInfoManager.batteryInfo.temperature.map {
+                    String(format: "%.1f%@", $0, Locale.current.measurementSystem == .metric ? "°C" : "°F")
+                } ?? "N/A"),
                 ("--------------------- Storage ---------------------", ""),
                 ("Used:", "\(appState.storageInfoManager.storageInfo.usage)%"),
                 ("FileVault:", appState.storageInfoManager.storageInfo.fileVault ? "Enabled" : "Disabled"),

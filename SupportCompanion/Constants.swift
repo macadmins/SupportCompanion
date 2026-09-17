@@ -286,6 +286,8 @@ enum Constants {
             static let timeToFull = String(localized: "Battery.TimeToFull", defaultValue: "Time to Full:", comment: "Label for the battery time to full")
             static let charging = String(localized: "Battery.Charging", defaultValue: "Charging", comment: "Label for the battery charging status")
             static let notCharging = String(localized: "Battery.NotCharging", defaultValue: "Not Charging", comment: "Label for the battery charging status")
+            static let fullyCharged = String(localized: "Battery.FullyCharged", defaultValue: "Fully Charged", comment: "Time to full value when the battery is full on external power")
+            static let calculating = String(localized: "Battery.Calculating", defaultValue: "Calculating…", comment: "Time to full value while macOS is still estimating the charge time")
             static let usage = String(localized: "Battery.Usage", defaultValue: "Usage:", comment: "Label for the battery usage")
         }
         
