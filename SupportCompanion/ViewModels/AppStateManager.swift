@@ -23,8 +23,8 @@ class AppStateManager {
     @ObservationIgnored lazy var elevationManager = ElevationManager(appState: self)
     @ObservationIgnored lazy var fleetSoftwareManager: FleetSoftwareManager = {
         let manager = FleetSoftwareManager()
-        manager.onActionFinished = { [weak self] title, action, succeeded in
-            self?.notifyFleetActionFinished(title, action: action, succeeded: succeeded)
+        manager.onActionFinished = { [weak self] title, action, outcome in
+            self?.notifyFleetActionFinished(title, action: action, outcome: outcome)
         }
         manager.onCatalogUpdated = { [weak self] in
             self?.pendingFleetUpdatesManager.publishCounts()
@@ -220,8 +220,21 @@ class AppStateManager {
         )
     }
 
-    private func notifyFleetActionFinished(_ title: FleetSoftwareTitle, action: FleetSoftwareTitle.Action, succeeded: Bool) {
+    private func notifyFleetActionFinished(_ title: FleetSoftwareTitle, action: FleetSoftwareTitle.Action, outcome: FleetSoftwareManager.ActionOutcome) {
         guard preferences.fleetNotifyInstallResults else { return }
+        if outcome == .appOpen {
+            // Without a bundle identifier the app can't be found to quit it, so there's no button
+            let canQuit = !title.bundleIdentifiers.isEmpty
+            NotificationService(appState: self).sendNotification(
+                message: String(format: Constants.Fleet.appOpenNotification, title.title),
+                buttonText: canQuit ? Constants.Fleet.quitAndUpdate : nil,
+                command: canQuit ? "\(NotificationService.fleetQuitAndRetryCommand)\(title.id)" : nil,
+                openURL: "supportcompanion://apps",
+                notificationType: .generic
+            )
+            return
+        }
+        let succeeded = outcome == .succeeded
         let format: String
         switch (action, succeeded) {
         case (.install, true): format = Constants.Fleet.installedNotification
@@ -233,6 +246,7 @@ class AppStateManager {
         }
         NotificationService(appState: self).sendNotification(
             message: String(format: format, title.title),
+            openURL: "supportcompanion://apps",
             notificationType: .generic
         )
     }

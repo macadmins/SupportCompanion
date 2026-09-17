@@ -12,6 +12,12 @@ import SwiftUI
 @MainActor
 class NotificationService {
     private let appState: AppStateManager
+    /// Every category registered by this app. Registering replaces the whole set, so it's kept here and
+    /// always registered in full, rather than read back and merged by notifications sent at the same time.
+    private static var categories: [String: UNNotificationCategory] = [:]
+    /// Categories registered by earlier launches, which notifications still in Notification Center use.
+    /// Read once, before this launch registers anything.
+    private static var loadedEarlierCategories = false
     
     init(appState: AppStateManager) {
         self.appState = appState
@@ -35,10 +41,19 @@ class NotificationService {
         }
     }
 
+    /// Command that updates every Fleet title with an update available, for update notifications.
+    static let fleetUpdateAllCommand = "fleet-update-all"
+    /// Followed by a title id: quits that app and retries its install.
+    static let fleetQuitAndRetryCommand = "fleet-quit-and-retry:"
+
+    /// - Parameters:
+    ///   - command: Run by the button. `demote`, `fleet-update-all` and `open supportcompanion://…` are handled in the app.
+    ///   - openURL: A `supportcompanion://` page opened when the notification itself is clicked.
     func sendNotification(
         message: String,
         buttonText: String? = nil,
         command: String? = nil,
+        openURL: String? = nil,
         notificationType: NotificationType
     ) {
         guard appState.preferences.notifications.notificationInterval > 0 else {
@@ -61,8 +76,11 @@ class NotificationService {
         content.title = appState.preferences.notifications.notificationTitle
         content.body = message
         content.sound = .default
-        content.userInfo = ["Command": notificationCommand as Any]
-        content.categoryIdentifier = "ACTIONABLE"
+        var userInfo: [String: Any] = ["Command": notificationCommand as Any]
+        if let openURL, openURL.hasPrefix("supportcompanion://") {
+            userInfo["OpenURL"] = openURL
+        }
+        content.userInfo = userInfo
         
         if let imagePath = imagePath, let tempURL = prepareImageForNotification(imagePath: imagePath) {
             do {
@@ -74,7 +92,7 @@ class NotificationService {
         }
 
         var actions: [UNNotificationAction] = []
-        if let buttonText = buttonText, let _ = command {
+        if let buttonText = buttonText, notificationCommand != nil {
             let action = UNNotificationAction(
                 identifier: "RUN_COMMAND",
                 title: buttonText,
@@ -83,24 +101,43 @@ class NotificationService {
             actions.append(action)
         }
 
+        // A category per button title: categories are shared, so reusing one would change the buttons of
+        // notifications already delivered
         let category = UNNotificationCategory(
-            identifier: "ACTIONABLE",
+            identifier: actions.isEmpty ? "PLAIN" : "ACTIONABLE.\(buttonText ?? "")",
             actions: actions,
             intentIdentifiers: []
         )
-        UNUserNotificationCenter.current().setNotificationCategories([category])
+        content.categoryIdentifier = category.identifier
 
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
-                Logger.shared.logDebug("Failed to deliver notification: \(error.localizedDescription)")
-            } else {
+        Task {
+            let center = UNUserNotificationCenter.current()
+            await Self.register(category, in: center)
+            do {
+                try await center.add(request)
                 Logger.shared.logDebug("Notification sent: \(message)")
-                Task { @MainActor in
-                    AppStorageHelper.shared.setLastNotificationDate(Date(), for: notificationType)
+                AppStorageHelper.shared.setLastNotificationDate(Date(), for: notificationType)
+            } catch {
+                Logger.shared.logDebug("Failed to deliver notification: \(error.localizedDescription)")
+            }
+        }
+    }
+
+    private static func register(_ category: UNNotificationCategory, in center: UNUserNotificationCenter) async {
+        if !loadedEarlierCategories {
+            let earlier = await center.notificationCategories()
+            if !loadedEarlierCategories {
+                loadedEarlierCategories = true
+                for existing in earlier where categories[existing.identifier] == nil {
+                    categories[existing.identifier] = existing
                 }
             }
         }
+        // Checked and registered without suspending, so notifications sent together can't undo each other
+        guard categories[category.identifier] == nil else { return }
+        categories[category.identifier] = category
+        center.setNotificationCategories(Set(categories.values))
     }
 }
 
@@ -110,7 +147,11 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
-        if response.actionIdentifier == "RUN_COMMAND",
+        if response.actionIdentifier == UNNotificationDefaultActionIdentifier,
+           let openURL = response.notification.request.content.userInfo["OpenURL"] as? String {
+            Logger.shared.logDebug("Notification clicked, opening \(openURL)")
+            ActionHelpers.openManagementApp(appURL: openURL)
+        } else if response.actionIdentifier == "RUN_COMMAND",
             let command = response.notification.request.content.userInfo["Command"] as? String {
             Logger.shared.logDebug("Notification button clicked, running command: \(command)")
             if command == "demote" {
@@ -123,6 +164,17 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
                             Logger.shared.logError("Failed to demote privileges")
                         }
                     }
+                }
+            } else if command == NotificationService.fleetUpdateAllCommand {
+                Task { @MainActor in
+                    ActionHelpers.openManagementApp(appURL: "supportcompanion://apps")
+                    await AppStateManager.shared.fleetSoftwareManager.updateAll()
+                }
+            } else if command.hasPrefix(NotificationService.fleetQuitAndRetryCommand),
+                      let titleID = Int(command.dropFirst(NotificationService.fleetQuitAndRetryCommand.count)) {
+                Task { @MainActor in
+                    ActionHelpers.openManagementApp(appURL: "supportcompanion://apps")
+                    await AppStateManager.shared.fleetSoftwareManager.quitAndRetry(titleID: titleID)
                 }
             } else if command.hasPrefix("open supportcompanion://") {
                 ActionHelpers.openManagementApp(appURL: String(command.dropFirst("open ".count)))

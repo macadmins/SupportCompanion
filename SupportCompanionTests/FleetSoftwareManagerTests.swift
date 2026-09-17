@@ -13,6 +13,10 @@ private actor FakeFleetAPI: FleetSoftwareAPI {
     var softwareResults: [Result<[FleetSoftwareTitle], FleetError>]
     var categoryResults: [Result<[FleetSoftwareCategory], FleetError>]
     var installError: FleetError?
+    var installOutput = "Installer failed"
+    /// Thrown by the next install result request, then cleared.
+    var installResultError: FleetError?
+    private(set) var installResultCalls = 0
     private(set) var softwareCalls = 0
     private(set) var categoryCalls = 0
     private(set) var installedIDs: [Int] = []
@@ -47,8 +51,21 @@ private actor FakeFleetAPI: FleetSoftwareAPI {
     }
 
     func installResult(installUUID: String) async throws -> FleetInstallResult? {
-        let json = #"{"install_uuid": "\#(installUUID)", "output": "Installer failed", "post_install_script_output": "exit 1"}"#
-        return try JSONDecoder.fleet.decode(FleetInstallResult.self, from: Data(json.utf8))
+        installResultCalls += 1
+        if let installResultError {
+            self.installResultError = nil
+            throw installResultError
+        }
+        let object: [String: Any] = ["install_uuid": installUUID, "output": installOutput, "post_install_script_output": "exit 1"]
+        return try JSONDecoder.fleet.decode(FleetInstallResult.self, from: JSONSerialization.data(withJSONObject: object))
+    }
+
+    func setInstallOutput(_ output: String) {
+        installOutput = output
+    }
+
+    func failNextInstallResult(with error: FleetError) {
+        installResultError = error
     }
 
     func uninstallResult(executionID: String) async throws -> FleetScriptResult {
@@ -163,7 +180,7 @@ struct FleetSoftwareManagerTests {
             .success([title(1, "Arc", installed: "1.0", available: "1.0", status: "installed")]),
         ])
         let manager = FleetSoftwareManager(client: api, pendingPollInterval: 60)
-        var finished: [(Int, FleetSoftwareTitle.Action, Bool)] = []
+        var finished: [(Int, FleetSoftwareTitle.Action, FleetSoftwareManager.ActionOutcome)] = []
         manager.onActionFinished = { finished.append(($0.id, $1, $2)) }
 
         await manager.refresh()
@@ -177,7 +194,7 @@ struct FleetSoftwareManagerTests {
         #expect(manager.runningActions.isEmpty)
         #expect(finished.count == 1)
         #expect(finished.first?.1 == .install)
-        #expect(finished.first?.2 == true)
+        #expect(finished.first?.2 == .succeeded)
     }
 
     @Test("A title's status from before the action isn't taken as its result")
@@ -254,6 +271,154 @@ struct FleetButtonLabelsTests {
     func caseInsensitive() {
         let labels = FleetButtonLabels(["slack": "Request"])
         #expect(labels.label(for: title(2, "Slack"), action: .install) == "Request")
+    }
+
+    @Test("Fleet's patch-when-closed skip counts as waiting for the app, without fetching output")
+    @MainActor func skippedInstall() async throws {
+        let json = """
+        {"software": [{"id": 1, "name": "Google Chrome", "status": "failed_install", "skipped_install": true,
+        "installed_versions": [{"version": "1.0"}],
+        "software_package": {"version": "2.0", "last_install": {"install_uuid": "u-1"}}}]}
+        """
+        let titles = try JSONDecoder.fleet.decode(FleetSoftwareListResponse.self, from: Data(json.utf8)).software
+        let api = FakeFleetAPI(software: [.success(titles)])
+        let manager = FleetSoftwareManager(client: api, pendingPollInterval: 60)
+
+        await manager.refresh()
+
+        #expect(manager.isWaitingForAppToClose(manager.titles[0]))
+        #expect(manager.retryAction(for: manager.titles[0]) == .update)
+        #expect(await api.installResultCalls == 0)
+    }
+
+    @Test("A custom package's install output saying the app is open counts as waiting, checked once")
+    @MainActor func appOpenOutput() async throws {
+        let json = """
+        {"software": [{"id": 1, "name": "Zoom", "status": "failed_install",
+        "software_package": {"version": "6.0", "last_install": {"install_uuid": "u-2"}}}]}
+        """
+        let titles = try JSONDecoder.fleet.decode(FleetSoftwareListResponse.self, from: Data(json.utf8)).software
+        let api = FakeFleetAPI(software: [.success(titles), .success(titles)])
+        await api.setInstallOutput("Installing software...\nFailed\nZoom must be closed before it can be updated.")
+        let manager = FleetSoftwareManager(client: api, pendingPollInterval: 60)
+
+        await manager.refresh()
+        await manager.refresh()
+
+        #expect(manager.isWaitingForAppToClose(manager.titles[0]))
+        #expect(await api.installResultCalls == 1)
+    }
+
+    @Test("An install output that couldn't be fetched is checked again on the next refresh")
+    @MainActor func appOpenOutputRetried() async throws {
+        let json = """
+        {"software": [{"id": 1, "name": "Zoom", "status": "failed_install",
+        "software_package": {"version": "6.0", "last_install": {"install_uuid": "u-4"}}}]}
+        """
+        let titles = try JSONDecoder.fleet.decode(FleetSoftwareListResponse.self, from: Data(json.utf8)).software
+        let api = FakeFleetAPI(software: [.success(titles), .success(titles)])
+        await api.setInstallOutput("Zoom must be closed before it can be updated.")
+        await api.failNextInstallResult(with: .network("offline"))
+        let manager = FleetSoftwareManager(client: api, pendingPollInterval: 60)
+
+        await manager.refresh()
+        #expect(!manager.isWaitingForAppToClose(manager.titles[0]))
+
+        await manager.refresh()
+        #expect(manager.isWaitingForAppToClose(manager.titles[0]))
+        #expect(await api.installResultCalls == 2)
+    }
+
+    @Test("An install result Fleet no longer has isn't fetched again")
+    @MainActor func missingInstallResult() async throws {
+        let json = """
+        {"software": [{"id": 1, "name": "Zoom", "status": "failed_install",
+        "software_package": {"version": "6.0", "last_install": {"install_uuid": "u-5"}}}]}
+        """
+        let titles = try JSONDecoder.fleet.decode(FleetSoftwareListResponse.self, from: Data(json.utf8)).software
+        let api = FakeFleetAPI(software: [.success(titles), .success(titles)])
+        await api.failNextInstallResult(with: .server(status: 404, message: ""))
+        let manager = FleetSoftwareManager(client: api, pendingPollInterval: 60)
+
+        await manager.refresh()
+        await manager.refresh()
+
+        #expect(!manager.isWaitingForAppToClose(manager.titles[0]))
+        #expect(await api.installResultCalls == 1)
+    }
+
+    @Test("A server error while fetching install output is retried, not given up on")
+    @MainActor func serverErrorRetried() async throws {
+        let json = """
+        {"software": [{"id": 1, "name": "Zoom", "status": "failed_install",
+        "software_package": {"version": "6.0", "last_install": {"install_uuid": "u-6"}}}]}
+        """
+        let titles = try JSONDecoder.fleet.decode(FleetSoftwareListResponse.self, from: Data(json.utf8)).software
+        let api = FakeFleetAPI(software: [.success(titles), .success(titles)])
+        await api.setInstallOutput("Zoom must be closed before it can be updated.")
+        await api.failNextInstallResult(with: .server(status: 502, message: ""))
+        let manager = FleetSoftwareManager(client: api, pendingPollInterval: 60)
+
+        await manager.refresh()
+        await manager.refresh()
+
+        #expect(manager.isWaitingForAppToClose(manager.titles[0]))
+    }
+
+    @Test("A finished install isn't reported until its output was checked for an open app")
+    @MainActor func reportWaitsForOutputCheck() async throws {
+        let failedJSON = """
+        {"software": [{"id": 1, "name": "Zoom", "status": "failed_install",
+        "software_package": {"version": "6.0", "last_install": {"install_uuid": "u-7"}}}]}
+        """
+        let failed = try JSONDecoder.fleet.decode(FleetSoftwareListResponse.self, from: Data(failedJSON.utf8)).software
+        let api = FakeFleetAPI(software: [
+            .success([title(1, "Zoom", installed: nil, available: "6.0")]),
+            .success([title(1, "Zoom", installed: nil, available: "6.0", status: "pending_install")]),
+            .success(failed),
+            .success(failed),
+        ])
+        await api.setInstallOutput("Zoom must be closed before it can be updated.")
+        let manager = FleetSoftwareManager(client: api, pendingPollInterval: 60)
+        var outcomes: [FleetSoftwareManager.ActionOutcome] = []
+        manager.onActionFinished = { outcomes.append($2) }
+
+        await manager.refresh()
+        await manager.perform(.install, on: manager.titles[0])
+        await api.failNextInstallResult(with: .network("offline"))
+        await manager.refresh()
+        #expect(outcomes.isEmpty)
+
+        await manager.refresh()
+        #expect(outcomes == [.appOpen])
+    }
+
+    @Test("Other install failures aren't mistaken for an open app")
+    @MainActor func ordinaryFailure() async throws {
+        let json = """
+        {"software": [{"id": 1, "name": "Zoom", "status": "failed_install",
+        "software_package": {"version": "6.0", "last_install": {"install_uuid": "u-3"}}}]}
+        """
+        let titles = try JSONDecoder.fleet.decode(FleetSoftwareListResponse.self, from: Data(json.utf8)).software
+        let manager = FleetSoftwareManager(client: FakeFleetAPI(software: [.success(titles)]), pendingPollInterval: 60)
+
+        await manager.refresh()
+
+        #expect(!manager.isWaitingForAppToClose(manager.titles[0]))
+    }
+
+    @Test("Update all requests an update for each title with one available")
+    @MainActor func updateAll() async {
+        let api = FakeFleetAPI(software: [.success([
+            title(1, "Arc", installed: "1.0", available: "1.1"),
+            title(2, "Slack", installed: "4.0", available: "4.0"),
+            title(3, "Zoom", installed: "5.0", available: "6.0"),
+        ])])
+        let manager = FleetSoftwareManager(client: api, pendingPollInterval: 60)
+
+        await manager.updateAll()
+
+        #expect(await api.installedIDs == [1, 3])
     }
 
     @Test("An update stays available while installing and until inventory shows the new version")

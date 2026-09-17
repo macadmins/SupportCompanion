@@ -46,10 +46,12 @@ class PendingFleetUpdatesManager: PendingUpdatesManager {
         let updates = software.updatesAvailable.compactMap(PendingFleetUpdate.init(title:))
         guard !updates.isEmpty, appState.preferences.fleetNotifyUpdates, !appState.preferences.hiddenCards.contains(Constants.Cards.pendingAppUpdates) else { return }
         let list = updates.map { "\($0.name) \($0.availableVersion)" }.joined(separator: ", ")
+        // Clicking the notification shows the updates; its button installs them
         NotificationService(appState: appState).sendNotification(
             message: "\(appState.preferences.notifications.appUpdateNotificationMessage)\n\(list)",
             buttonText: appState.preferences.notifications.appUpdateNotificationButtonText,
-            command: appState.preferences.notifications.appUpdateNotificationCommand,
+            command: NotificationService.fleetUpdateAllCommand,
+            openURL: "supportcompanion://apps",
             notificationType: .appUpdate
         )
     }

@@ -148,6 +148,30 @@ enum Constants {
         static let viewDetails = String(
             localized: "Fleet.ViewDetails", defaultValue: "View Details",
             comment: "Notification button that opens Support Companion")
+        static let waitingForAppToClose = String(
+            localized: "Fleet.WaitingForAppToClose", defaultValue: "Waiting for app to close",
+            comment: "Status badge when an install didn't run because the app was open")
+        static let appOpenMessage = String(
+            localized: "Fleet.AppOpenMessage", defaultValue: "%@ is open. Quit it to finish.",
+            comment: "Card message when an install needs the app closed; %@ is the app name")
+        static let appClosedMessage = String(
+            localized: "Fleet.AppClosedMessage",
+            defaultValue: "%@ was open, so it wasn't changed. Try again now that it's closed.",
+            comment:
+                "Card message after the app that blocked an install was closed; %@ is the app name")
+        static let quitAndUpdate = String(
+            localized: "Fleet.QuitAndUpdate", defaultValue: "Quit & Update",
+            comment: "Button that quits an app and installs its update")
+        static let quitAndInstall = String(
+            localized: "Fleet.QuitAndInstall", defaultValue: "Quit & Install",
+            comment: "Button that quits an app and installs it again")
+        static let couldNotQuit = String(
+            localized: "Fleet.CouldNotQuit",
+            defaultValue: "%@ didn't quit. Save your work, quit it, and try again.",
+            comment: "Shown when an app didn't quit; %@ is the app name")
+        static let appOpenNotification = String(
+            localized: "Fleet.AppOpenNotification", defaultValue: "Quit %@ to finish updating it.",
+            comment: "Notification when an install needs the app closed; %@ is the app name")
         static let recommended = String(
             localized: "Fleet.Recommended", defaultValue: "Recommended",
             comment: "Section of apps IT recommends installing")

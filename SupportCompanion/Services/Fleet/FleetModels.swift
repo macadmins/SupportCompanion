@@ -62,6 +62,8 @@ struct FleetSoftwareTitle: Decodable, Identifiable, Equatable, Sendable {
     let iconUrl: String?
     let source: String?
     let status: FleetInstallStatus?
+    /// Set with a `failed_install` status when Fleet skipped a patch-when-closed install because the app was open.
+    let skippedInstall: Bool?
     let installedVersions: [FleetInstalledVersion]?
     let softwarePackage: FleetInstaller?
     let appStoreApp: FleetInstaller?
@@ -79,6 +81,10 @@ struct FleetSoftwareTitle: Decodable, Identifiable, Equatable, Sendable {
     }
 
     var installer: FleetInstaller? { softwarePackage ?? appStoreApp }
+
+    var bundleIdentifiers: [String] {
+        ([bundleIdentifier] + (installedVersions ?? []).map(\.bundleIdentifier)).compactMap { $0 }.filter { !$0.isEmpty }
+    }
 
     var categories: [String] { installer?.categories ?? [] }
 

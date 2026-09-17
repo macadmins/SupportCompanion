@@ -96,6 +96,10 @@ struct FleetAppCard: View {
                     Text(busyText)
                         .font(.callout)
                         .foregroundStyle(.secondary)
+                } else if waitingForAppToClose && appIsRunning {
+                    ScButton(manager.retryAction(for: title) == .update ? Constants.Fleet.quitAndUpdate : Constants.Fleet.quitAndInstall, fontSize: 13) {
+                        await manager.quitAndRetry(title)
+                    }
                 } else if let action = buttonAction {
                     ScButton(label(for: action), fontSize: 13) {
                         await manager.perform(action, on: title)
@@ -127,6 +131,15 @@ struct FleetAppCard: View {
                     .help(Constants.Fleet.moreActions)
                 }
             }
+            if waitingForAppToClose && !manager.isBusy(title) && manager.actionErrors[title.id] == nil {
+                Label(
+                    String(format: appIsRunning ? Constants.Fleet.appOpenMessage : Constants.Fleet.appClosedMessage, title.title),
+                    systemImage: "info.circle"
+                )
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .lineLimit(2)
+            }
             if let error = manager.actionErrors[title.id] {
                 Label(error, systemImage: "exclamationmark.triangle")
                     .font(.caption)
@@ -142,6 +155,14 @@ struct FleetAppCard: View {
         if manager.hasUpdate(title) { return .update }
         if !title.isInstalled { return .install }
         return title.status == .failedInstall ? .reinstall : nil
+    }
+
+    private var waitingForAppToClose: Bool {
+        manager.isWaitingForAppToClose(title)
+    }
+
+    private var appIsRunning: Bool {
+        FleetRunningApps.shared.isRunning(title)
     }
 
     private var canReinstall: Bool {
@@ -200,6 +221,8 @@ struct FleetAppCard: View {
             return (Constants.Fleet.installing, .blue)
         case .pendingUninstall:
             return (Constants.Fleet.uninstalling, .blue)
+        case .failedInstall where waitingForAppToClose:
+            return (Constants.Fleet.waitingForAppToClose, colorScheme == .light ? .orangeLight : .orange)
         case .failedInstall:
             return (Constants.Fleet.installFailed, colorScheme == .light ? .redLight : .red)
         case .failedUninstall:
