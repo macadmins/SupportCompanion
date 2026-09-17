@@ -76,8 +76,8 @@ actor FleetClient {
 
     // MARK: - Configuration
 
-    nonisolated var isConfigured: Bool {
-        FleetDeviceIdentity.isOrbitInstalled && FleetDeviceIdentity.serverURL() != nil
+    nonisolated var configurationProblem: String? {
+        FleetDeviceIdentity.configurationProblem()
     }
 
     /// Fleet's "My device" page for this Mac, used for the SSO sign-in web view.
