@@ -59,6 +59,7 @@ enum Constants {
         static let recommended = String(localized: "Fleet.Recommended", defaultValue: "Recommended", comment: "Section of apps IT recommends installing")
         static let reinstall = String(localized: "Fleet.Reinstall", defaultValue: "Reinstall", comment: "Button that installs an installed app again through Fleet")
         static let reinstalledNotification = String(localized: "Fleet.ReinstalledNotification", defaultValue: "%@ was reinstalled.", comment: "Notification after a reinstall; %@ is the app name")
+        static let selfService = String(localized: "Fleet.SelfService", defaultValue: "Self Service", comment: "Name of the Fleet apps page in Open buttons and notifications")
         static let uninstall = String(localized: "Fleet.Uninstall", defaultValue: "Uninstall", comment: "Button that uninstalls an app through Fleet")
         static let details = String(localized: "Fleet.Details", defaultValue: "Details", comment: "Button that shows the output of a failed install or uninstall")
         static let moreActions = String(localized: "Fleet.MoreActions", defaultValue: "More actions", comment: "Help text for the menu with extra actions for an app")

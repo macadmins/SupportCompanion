@@ -204,6 +204,7 @@
 				JamfInfoManager.swift,
 				JsonCardManager.swift,
 				MDMInfoManager.swift,
+				PendingFleetUpdatesManager.swift,
 				PendingIntuneUpdatesManager.swift,
 				PendingJamfUpdatesManager.swift,
 				PendingMunkiUpdatesManager.swift,

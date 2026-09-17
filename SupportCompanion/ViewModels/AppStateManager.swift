@@ -18,12 +18,16 @@ class AppStateManager {
     @ObservationIgnored lazy var applicationsInfoManager = ApplicationsInfoManager(appState: self)
     @ObservationIgnored lazy var pendingIntuneUpdatesManager = PendingIntuneUpdatesManager(appState: self)
     @ObservationIgnored lazy var pendingJamfUpdatesManager = PendingJamfUpdatesManager(appState: self)
+    @ObservationIgnored lazy var pendingFleetUpdatesManager = PendingFleetUpdatesManager(appState: self)
     @ObservationIgnored lazy var evergreenInfoManager = EvergreenInfoManager(appState: self)
     @ObservationIgnored lazy var elevationManager = ElevationManager(appState: self)
     @ObservationIgnored lazy var fleetSoftwareManager: FleetSoftwareManager = {
         let manager = FleetSoftwareManager()
         manager.onActionFinished = { [weak self] title, action, succeeded in
             self?.notifyFleetActionFinished(title, action: action, succeeded: succeeded)
+        }
+        manager.onCatalogUpdated = { [weak self] in
+            self?.pendingFleetUpdatesManager.publishCounts()
         }
         return manager
     }()
@@ -63,6 +67,7 @@ class AppStateManager {
         case Constants.Modes.munki: return pendingMunkiUpdatesManager
         case Constants.Modes.intune: return pendingIntuneUpdatesManager
         case Constants.Modes.jamf: return pendingJamfUpdatesManager
+        case Constants.Modes.fleet: return pendingFleetUpdatesManager
         default: return nil
         }
     }
@@ -79,7 +84,7 @@ class AppStateManager {
 
     func stopBackgroundTasks() {
         // Stop every manager, not just the active one, in case the mode changed while running
-        for manager in [pendingMunkiUpdatesManager, pendingIntuneUpdatesManager, pendingJamfUpdatesManager] as [PendingUpdatesManager] {
+        for manager in [pendingMunkiUpdatesManager, pendingIntuneUpdatesManager, pendingJamfUpdatesManager, pendingFleetUpdatesManager] as [PendingUpdatesManager] {
             manager.stopUpdateCheckTimer()
         }
         systemUpdatesManager.stopMonitoring()

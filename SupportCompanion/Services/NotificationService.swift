@@ -124,6 +124,8 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
                         }
                     }
                 }
+            } else if command.hasPrefix("open supportcompanion://") {
+                ActionHelpers.openManagementApp(appURL: String(command.dropFirst("open ".count)))
             } else {
                 Task {
                     do {

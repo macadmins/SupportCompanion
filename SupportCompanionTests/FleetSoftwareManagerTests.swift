@@ -289,6 +289,19 @@ struct FleetButtonLabelsTests {
     }
 }
 
+@Suite("Fleet pending updates")
+struct PendingFleetUpdateTests {
+    @Test("Only titles with a newer version become pending updates, with stable ids")
+    func pendingUpdates() {
+        let outdated = title(42, "Slack", installed: "4.0", available: "4.1")
+        let update = PendingFleetUpdate(title: outdated)
+        #expect(update?.version == "4.0 → 4.1")
+        #expect(update?.id == PendingFleetUpdate(title: outdated)?.id)
+        #expect(PendingFleetUpdate(title: title(1, "Arc", installed: "1.0", available: "1.0")) == nil)
+        #expect(PendingFleetUpdate(title: title(3, "Zoom", installed: nil, available: "6.0")) == nil)
+    }
+}
+
 @Suite("Fleet recommended apps")
 struct FleetRecommendedAppsTests {
     @Test("Recommended titles follow the preference order and match ids or names")

@@ -3,6 +3,7 @@
 //  SupportCompanion
 //
 
+import AppKit
 import Foundation
 
 extension ActionHelpers {
@@ -29,6 +30,13 @@ extension ActionHelpers {
     }
 
     static func openManagementApp(appURL: String) {
+        // This app's own pages (Fleet's apps page) open here rather than in whichever copy Launch Services picks
+        if let url = URL(string: appURL), url.scheme == "supportcompanion" {
+            Task { @MainActor in
+                NSApp.delegate?.application?(NSApp, open: [url])
+            }
+            return
+        }
         Task {
             do {
                 Logger.shared.logDebug("Opening Managed Software Center")
