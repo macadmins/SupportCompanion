@@ -4,6 +4,95 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- **Fleet mode.** Support Companion now integrates with [Fleet](https://fleetdm.com), using the Fleet device API with the device's own token, so no API keys are needed. Fleet mode is used when Fleet's agent (orbit) is installed, when the MDM server is the Fleet server, or when `Mode` is set to `Fleet`. The Fleet server URL is read from fleetd's configuration profile or orbit's LaunchDaemon. It can be overridden with `FleetUrl`, which is only honored when set by a configuration profile or in `/Library/Preferences`, since the device token is sent to that server. Example configuration:
+```xml
+<key>Mode</key>
+<string>Fleet</string>
+```
+- **Self-service apps.** In Fleet mode the Apps page shows the device's Fleet self-service software, with search, category filters and collapsible Updates Available, Available and Installed sections. Apps can be installed, updated, reinstalled and uninstalled. Progress is followed until Fleet reports the result, and the output of failed installs can be viewed from the app card. Updates stay listed until the new version is actually installed.
+- Custom button text per app, for example "Request" for an app named "Request software". Keys are the software title ID, display name or name; values are either a string that replaces the Install label, or a dictionary with `Install`, `Update`, `Reinstall` and `Uninstall`. Example configuration:
+```xml
+<key>FleetButtonLabels</key>
+<dict>
+    <key>Request software</key>
+    <string>Request</string>
+    <key>42</key>
+    <dict>
+        <key>Install</key>
+        <string>Get</string>
+        <key>Uninstall</key>
+        <string>Remove</string>
+    </dict>
+</dict>
+```
+- A highlighted Recommended section at the top of the Apps page, listing apps IT recommends in the configured order. Entries are title IDs or names, and the section title can be changed. Example configuration:
+```xml
+<key>FleetRecommendedApps</key>
+<array>
+    <string>Slack</string>
+    <string>42</string>
+</array>
+<key>FleetRecommendedTitle</key>
+<string>Start here</string>
+```
+- App icons come from Fleet (custom and App Store icons), from the installed app, or from the icon set Fleet's own web pages use. That icon set is loaded from Fleet's GitHub repository and cached, and apps without an icon get a letter tile. To stop requests to GitHub:
+```xml
+<key>FleetIconsFromGitHub</key>
+<false/>
+```
+- **Updates blocked by an open app.** When an install doesn't run because the app is open, the app card shows "Waiting for app to close" instead of "Install failed", with a **Quit & Update** button that quits the app gracefully (it can still prompt to save) and installs again. This works for Fleet-maintained apps with patch when closed, and for custom packages whose install script prints a message about the app being open. The built-in phrases can be replaced with your scripts' exact messages; an empty array turns detection off for custom packages. Example configuration:
+```xml
+<key>FleetAppOpenMessages</key>
+<array>
+    <string>Please close Chrome before updating</string>
+</array>
+```
+- **Home cards.** In Fleet mode the patching progress and pending updates cards use Fleet's self-service updates, and the Apps sidebar item shows the number of updates.
+- A **Device Compliance** card listing failing Fleet policies with their resolution text, critical ones first, and a collapsible list of passing checks. Its **Re-check** button asks Fleet to refresh the device's details and re-run its policies. While any check fails, a banner at the top of Home shows what needs attention. The card can be hidden using `HiddenCards`, which also hides the banner, badges and policy notifications:
+```xml
+<key>HiddenCards</key>
+<array>
+    <string>FleetPolicies</string>
+</array>
+```
+- A **Fleet** card showing the device's Fleet host ID, team, last check-in, last inventory update and server. It can be hidden using `HiddenCards`:
+```xml
+<key>HiddenCards</key>
+<array>
+    <string>Fleet</string>
+</array>
+```
+- The tray menu shows compact Device Compliance and Fleet cards in Fleet mode. The compliance card has Re-check and Details buttons.
+- **Fleet notifications**, each on by default:
+    - When an install, update, reinstall or uninstall started from Support Companion finishes or fails, or needs the app to be closed (with a Quit & Update button). Turn off with `FleetNotifyInstallResults`.
+    - When updates are available, listing the apps, with an **Update Now** button that installs them. Clicking the notification opens the Apps page. Uses `AppUpdateNotificationMessage`, `AppUpdateNotificationButtonText` and `NotificationInterval`. Turn off with `FleetNotifyUpdates`.
+    - When a policy starts failing, sent once per failure. Turn off with `FleetNotifyPolicies`.
+```xml
+<key>FleetNotifyInstallResults</key>
+<false/>
+<key>FleetNotifyUpdates</key>
+<false/>
+<key>FleetNotifyPolicies</key>
+<false/>
+```
+- Failing compliance checks count toward the tray menu icon's badge and the Dock badge, and are shown as a badge on the Home sidebar item.
+
+Notes for Fleet mode:
+- Requires Fleet's agent (orbit) on the device. Features follow what the Fleet server supports; the Fleet flag for skipped patch-when-closed installs (`skipped_install`) is newer than Fleet 4.91, and older servers are handled through the install output instead.
+- Fleet Desktop single sign-on isn't supported yet. It hasn't shipped in a Fleet release.
+
+### Changed
+- Clicking a notification about apps now opens the relevant page in Support Companion, handled by the running app.
+- The Dock badge updates as soon as the number of pending items changes, and no longer counts items whose card or button is hidden.
+- The small buttons in tray menu cards (Elevate, Demote) now share one button component.
+
+### Fixed
+- The MDM enrollment date is now found by the MDM payload instead of the profile name, so it works for MDMs other than Jamf and Intune instead of failing.
+- Mode detection now compares the MDM server's host correctly. The MDM URL is read without its scheme, so the host comparison never ran before.
+- A notification without a button could remove the button from earlier notifications still in Notification Center.
+
 ## [2.4.0] - 2026-03-19
 ### Added
 - Support for Background Security Improvements. If the pending update is a background security improvement, clicking the update will open the relevant pane in system settings.
