@@ -6,12 +6,14 @@
 //
 
 import Foundation
+import Observation
 
 @MainActor
-class SystemUpdatesManager: ObservableObject {
+@Observable
+class SystemUpdatesManager {
     private let appState: AppStateManager
     private var previousUpdateCount: Int = 0
-    private var monitorTask: Task<Void, Never>? // Track the monitoring task
+    @ObservationIgnored private var monitorTask: Task<Void, Never>? // Track the monitoring task
 
     init(appState: AppStateManager) {
         self.appState = appState

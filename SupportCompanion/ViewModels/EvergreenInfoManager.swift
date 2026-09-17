@@ -6,9 +6,11 @@
 //
 
 import Foundation
+import Observation
 
 @MainActor
-class EvergreenInfoManager: ObservableObject {
+@Observable
+class EvergreenInfoManager {
     private var evergreenHelper = EvergreenHelpers()
     private var appState: AppStateManager
     

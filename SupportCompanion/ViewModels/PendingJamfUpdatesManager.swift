@@ -9,8 +9,6 @@ import Foundation
 import Combine
 
 class PendingJamfUpdatesManager: PendingUpdatesManager {
-    // Track running patch installs across views/navigation
-    @Published private(set) var runningPatchIds: Set<Int> = []
 
     // MARK: - Install Percentage
 
@@ -107,12 +105,12 @@ class PendingJamfUpdatesManager: PendingUpdatesManager {
     // MARK: - Running state and execution
 
     func isRunning(patchId: Int) -> Bool {
-        runningPatchIds.contains(patchId)
+        runningUpdateIds.contains(patchId)
     }
 
     func runPatch(patchId: Int, userId: String? = nil) async {
-        runningPatchIds.insert(patchId)
-        defer { runningPatchIds.remove(patchId) }
+        markRunning(patchId)
+        defer { markFinished(patchId) }
 
         // The app runs as the logged-in user, so its UID is the user to run the patch as
         var args: [String] = ["asuser", String(getuid()), "/usr/local/bin/jamf", "patch", "-id", String(patchId), "-showSteps", "-selfServiceOnly"]

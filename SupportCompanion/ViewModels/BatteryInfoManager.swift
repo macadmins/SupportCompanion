@@ -6,10 +6,12 @@
 //
 
 import Foundation
+import Observation
 
 @MainActor
-class BatteryInfoManager: ObservableObject {
-    private var monitorTask: Task<Void, Never>?
+@Observable
+class BatteryInfoManager {
+    @ObservationIgnored private var monitorTask: Task<Void, Never>?
     
     static let shared = BatteryInfoManager(
         batteryInfo: BatteryInfo(
@@ -23,7 +25,7 @@ class BatteryInfoManager: ObservableObject {
         )
     )
     
-    @Published var batteryInfo: BatteryInfo
+    var batteryInfo: BatteryInfo
     
     init(batteryInfo: BatteryInfo) {
         self.batteryInfo = batteryInfo

@@ -6,9 +6,11 @@
 //
 
 import Foundation
+import Observation
 
 @MainActor
-class SSOInfoManager: ObservableObject {
+@Observable
+class SSOInfoManager {
     static let shared = SSOInfoManager(
         kerberosSSO: KerberosSSO(
             id: UUID(),
@@ -30,8 +32,8 @@ class SSOInfoManager: ObservableObject {
         )
     )
 
-    @Published var kerberosSSO: KerberosSSO
-    @Published var platformSSO: PlatformSSO
+    var kerberosSSO: KerberosSSO
+    var platformSSO: PlatformSSO
 
     private let helper = SSOInfoHelpers()
 

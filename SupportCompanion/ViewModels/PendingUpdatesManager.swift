@@ -6,17 +6,31 @@
 //
 
 import Foundation
+import Observation
 
 /// Shared timer/task lifecycle for all pending-update managers.
 /// Subclasses override `fetchPendingUpdates()`, `fetchPendingUpdatesList()`, and
 /// `getInstallPercentage()` to provide MDM-specific data-fetching logic.
 @MainActor
+@Observable
 class PendingUpdatesManager {
     let appState: AppStateManager
-    private var updateCheckTask: Task<Void, Never>?
-    private var fetchListTask: Task<Void, Never>?
-    private var installPercentageTask: Task<Void, Never>?
-    private var isInstallPercentageTaskRunning = false
+    @ObservationIgnored private var updateCheckTask: Task<Void, Never>?
+    @ObservationIgnored private var fetchListTask: Task<Void, Never>?
+    @ObservationIgnored private var installPercentageTask: Task<Void, Never>?
+    @ObservationIgnored private var isInstallPercentageTaskRunning = false
+
+    /// Ids of updates currently being installed from the app, so views can show progress.
+    /// Kept in the base class because subclasses can't add observed properties to an @Observable class.
+    private(set) var runningUpdateIds: Set<Int> = []
+
+    func markRunning(_ id: Int) {
+        runningUpdateIds.insert(id)
+    }
+
+    func markFinished(_ id: Int) {
+        runningUpdateIds.remove(id)
+    }
 
     init(appState: AppStateManager) {
         self.appState = appState

@@ -4,37 +4,37 @@
 //
 
 import Foundation
-import SwiftUI
-import Combine
+import Observation
 
 @MainActor
-class DesktopInfoPreferences: ObservableObject {
-    @AppStorage("DesktopInfoBackgroundOpacity") var desktopInfoBackgroundOpacity: Double = 0.001
-    @AppStorage("DesktopInfoBackgroundFrosted") var desktopInfoBackgroundFrosted: Bool = false
-    @AppStorage("DesktopInfoWindowPosition") var desktopInfoWindowPosition: String = "LowerRight"
-    @AppStorage("ShowDesktopInfo") var showDesktopInfo: Bool = false
-    @AppStorage("DesktopInfoFontSize") var desktopInfoFontSize: Int = 14
-    @AppStorage("DesktopInfoLevel") var desktopInfoLevel: Int = 4
-
-    /// Published mirror of `desktopInfoWindowPosition` so Combine subscribers react to position changes.
-    @Published var currentWindowPosition: String = "LowerRight"
-
-    /// Array preference loaded from UserDefaults (AppStorage doesn't support [String]).
-    @Published var desktopInfoHideItems: [String] = UserDefaults.standard.array(forKey: "DesktopInfoHideItems") as? [String] ?? []
-
-    private var cancellables = Set<AnyCancellable>()
-
-    init() {
-        NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)
-            .receive(on: RunLoop.main)
-            .sink { [weak self] _ in
-                guard let self else { return }
-                self.currentWindowPosition = self.desktopInfoWindowPosition
-                let latest = UserDefaults.standard.array(forKey: "DesktopInfoHideItems") as? [String] ?? []
-                if self.desktopInfoHideItems != latest {
-                    self.desktopInfoHideItems = latest
-                }
-            }
-            .store(in: &cancellables)
+@Observable
+class DesktopInfoPreferences {
+    var desktopInfoBackgroundOpacity: Double {
+        get { DefaultsStore.value(forKey: "DesktopInfoBackgroundOpacity", default: 0.001) }
+        set { DefaultsStore.set(newValue, forKey: "DesktopInfoBackgroundOpacity") }
+    }
+    var desktopInfoBackgroundFrosted: Bool {
+        get { DefaultsStore.value(forKey: "DesktopInfoBackgroundFrosted", default: false) }
+        set { DefaultsStore.set(newValue, forKey: "DesktopInfoBackgroundFrosted") }
+    }
+    var desktopInfoWindowPosition: String {
+        get { DefaultsStore.value(forKey: "DesktopInfoWindowPosition", default: "LowerRight") }
+        set { DefaultsStore.set(newValue, forKey: "DesktopInfoWindowPosition") }
+    }
+    var showDesktopInfo: Bool {
+        get { DefaultsStore.value(forKey: "ShowDesktopInfo", default: false) }
+        set { DefaultsStore.set(newValue, forKey: "ShowDesktopInfo") }
+    }
+    var desktopInfoFontSize: Int {
+        get { DefaultsStore.value(forKey: "DesktopInfoFontSize", default: 14) }
+        set { DefaultsStore.set(newValue, forKey: "DesktopInfoFontSize") }
+    }
+    var desktopInfoLevel: Int {
+        get { DefaultsStore.value(forKey: "DesktopInfoLevel", default: 4) }
+        set { DefaultsStore.set(newValue, forKey: "DesktopInfoLevel") }
+    }
+    var desktopInfoHideItems: [String] {
+        get { DefaultsStore.value(forKey: "DesktopInfoHideItems", default: []) }
+        set { DefaultsStore.set(newValue, forKey: "DesktopInfoHideItems") }
     }
 }

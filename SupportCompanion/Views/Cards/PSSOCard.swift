@@ -10,7 +10,7 @@ import Foundation
 import SwiftUI
 
 struct PSSOCard: View {
-    @EnvironmentObject var appState: AppStateManager
+    @Environment(AppStateManager.self) var appState
     
     var body: some View {
         VStack(alignment: .leading){

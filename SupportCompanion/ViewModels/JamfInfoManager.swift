@@ -6,13 +6,15 @@
 //
 
 import Foundation
+import Observation
 
 @MainActor
-class JamfInfoManager: ObservableObject {
-    private var monitorTask: Task<Void, Never>?
+@Observable
+class JamfInfoManager {
+    @ObservationIgnored private var monitorTask: Task<Void, Never>?
     private let appStateManager: AppStateManager
 
-    @Published var jamfInfo: JamfInfo
+    var jamfInfo: JamfInfo
 
     init(jamfInfo: JamfInfo, appStateManager: AppStateManager) {
         self.jamfInfo = jamfInfo

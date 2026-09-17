@@ -1,15 +1,17 @@
 import Foundation
+import Observation
 import Combine
 import SwiftUI
 
 @MainActor
-class CardGridViewModel: ObservableObject {
-    @Published var toastConfig: ToastConfig?
+@Observable
+class CardGridViewModel {
+    var toastConfig: ToastConfig?
     private let appState: AppStateManager
     private let munkiApps = MunkiApps()
-    private var fetchTask: Task<Void, Never>?
-    private var isTaskRunning = false
-    private var isPendingAppsTaskRunning = false
+    @ObservationIgnored private var fetchTask: Task<Void, Never>?
+    @ObservationIgnored private var isTaskRunning = false
+    @ObservationIgnored private var isPendingAppsTaskRunning = false
     
     init(appState: AppStateManager) {
         self.appState = appState
@@ -186,7 +188,7 @@ class CardGridViewModel: ObservableObject {
         !appState.preferences.hiddenActions.contains(button)
     }
     
-    @Published var isUpdating = false
+    var isUpdating = false
 
     func runJamfUpdate(forId: String) async {
         isUpdating = true

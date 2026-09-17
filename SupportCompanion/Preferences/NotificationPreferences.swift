@@ -4,31 +4,74 @@
 //
 
 import Foundation
-import SwiftUI
+import Observation
 
 @MainActor
-class NotificationPreferences: ObservableObject {
+@Observable
+class NotificationPreferences {
     // MARK: - Notification timestamps
-    @AppStorage("LastSoftwareUpdateNotificationTime") var lastSoftwareUpdateNotificationTime: String = ""
-    @AppStorage("LastRebootReminderNotificationTime") var lastRebootReminderNotificationTime: String = ""
-    @AppStorage("LastGenericNotificationTime") var lastGenericNotificationTime: String = ""
-    @AppStorage("LastAppUpdateNotificationTime") var lastAppUpdateNotificationTime: String = ""
+    var lastSoftwareUpdateNotificationTime: String {
+        get { DefaultsStore.value(forKey: "LastSoftwareUpdateNotificationTime", default: "") }
+        set { DefaultsStore.set(newValue, forKey: "LastSoftwareUpdateNotificationTime") }
+    }
+    var lastRebootReminderNotificationTime: String {
+        get { DefaultsStore.value(forKey: "LastRebootReminderNotificationTime", default: "") }
+        set { DefaultsStore.set(newValue, forKey: "LastRebootReminderNotificationTime") }
+    }
+    var lastGenericNotificationTime: String {
+        get { DefaultsStore.value(forKey: "LastGenericNotificationTime", default: "") }
+        set { DefaultsStore.set(newValue, forKey: "LastGenericNotificationTime") }
+    }
+    var lastAppUpdateNotificationTime: String {
+        get { DefaultsStore.value(forKey: "LastAppUpdateNotificationTime", default: "") }
+        set { DefaultsStore.set(newValue, forKey: "LastAppUpdateNotificationTime") }
+    }
 
     // MARK: - Notification content
-    @AppStorage("NotificationTitle") var notificationTitle: String = "Support Companion"
-    @AppStorage("NotificationInterval") var notificationInterval: Int = 4
-    @AppStorage("NotificationImage") var notificationImage: String = ""
+    var notificationTitle: String {
+        get { DefaultsStore.value(forKey: "NotificationTitle", default: "Support Companion") }
+        set { DefaultsStore.set(newValue, forKey: "NotificationTitle") }
+    }
+    var notificationInterval: Int {
+        get { DefaultsStore.value(forKey: "NotificationInterval", default: 4) }
+        set { DefaultsStore.set(newValue, forKey: "NotificationInterval") }
+    }
+    var notificationImage: String {
+        get { DefaultsStore.value(forKey: "NotificationImage", default: "") }
+        set { DefaultsStore.set(newValue, forKey: "NotificationImage") }
+    }
 
     // MARK: - Software update notification
-    @AppStorage("SoftwareUpdateNotificationButtonText") var softwareUpdateNotificationButtonText: String = Constants.Notifications.SoftwareUpdate.UpdateNotificationButtonText
-    @AppStorage("SoftwareUpdateNotificationCommand") var softwareUpdateNotificationCommand: String = "open \(Constants.Panels.softwareUpdates)"
-    @AppStorage("SoftwareUpdateNotificationMessage") var softwareUpdateNotificationMessage: String = Constants.Notifications.SoftwareUpdate.UpdateNotificationMessage
+    var softwareUpdateNotificationButtonText: String {
+        get { DefaultsStore.value(forKey: "SoftwareUpdateNotificationButtonText", default: Constants.Notifications.SoftwareUpdate.UpdateNotificationButtonText) }
+        set { DefaultsStore.set(newValue, forKey: "SoftwareUpdateNotificationButtonText") }
+    }
+    var softwareUpdateNotificationCommand: String {
+        get { DefaultsStore.value(forKey: "SoftwareUpdateNotificationCommand", default: "open \(Constants.Panels.softwareUpdates)") }
+        set { DefaultsStore.set(newValue, forKey: "SoftwareUpdateNotificationCommand") }
+    }
+    var softwareUpdateNotificationMessage: String {
+        get { DefaultsStore.value(forKey: "SoftwareUpdateNotificationMessage", default: Constants.Notifications.SoftwareUpdate.UpdateNotificationMessage) }
+        set { DefaultsStore.set(newValue, forKey: "SoftwareUpdateNotificationMessage") }
+    }
 
     // MARK: - App update notification
-    @AppStorage("AppUpdateNotificationMessage") var appUpdateNotificationMessage: String = Constants.Notifications.AppUpdate.UpdateNotificationMessage
-    @AppStorage("AppUpdateNotificationButtonText") var appUpdateNotificationButtonText: String = Constants.Notifications.AppUpdate.UpdateNotificationButtonText
-    @AppStorage("AppUpdateNotificationCommand") var appUpdateNotificationCommand: String = ""
+    var appUpdateNotificationMessage: String {
+        get { DefaultsStore.value(forKey: "AppUpdateNotificationMessage", default: Constants.Notifications.AppUpdate.UpdateNotificationMessage) }
+        set { DefaultsStore.set(newValue, forKey: "AppUpdateNotificationMessage") }
+    }
+    var appUpdateNotificationButtonText: String {
+        get { DefaultsStore.value(forKey: "AppUpdateNotificationButtonText", default: Constants.Notifications.AppUpdate.UpdateNotificationButtonText) }
+        set { DefaultsStore.set(newValue, forKey: "AppUpdateNotificationButtonText") }
+    }
+    var appUpdateNotificationCommand: String {
+        get { DefaultsStore.value(forKey: "AppUpdateNotificationCommand", default: "") }
+        set { DefaultsStore.set(newValue, forKey: "AppUpdateNotificationCommand") }
+    }
 
     // MARK: - Reboot reminder
-    @AppStorage("RebootReminderDays") var rebootReminderDays: Int = 0
+    var rebootReminderDays: Int {
+        get { DefaultsStore.value(forKey: "RebootReminderDays", default: 0) }
+        set { DefaultsStore.set(newValue, forKey: "RebootReminderDays") }
+    }
 }

@@ -11,10 +11,10 @@ import Combine
 struct ContentView: View {
     @State private var selectedItem: SidebarItem?
     @Namespace private var animationNamespace
-    @EnvironmentObject var preferences: Preferences
-    @EnvironmentObject var appState: AppStateManager
-    @StateObject private var webViewStateManager = WebViewStateManager()
-    @StateObject private var cardGridViewModel = CardGridViewModel(appState: AppStateManager.shared)
+    @Environment(Preferences.self) var preferences
+    @Environment(AppStateManager.self) var appState
+    @State private var webViewStateManager = WebViewStateManager()
+    @State private var cardGridViewModel = CardGridViewModel(appState: AppStateManager.shared)
     @State private var brandLogo: Image? = nil
     @State private var showLogo: Bool = false
     @State private var isShowingPopup = false
@@ -160,7 +160,7 @@ struct ContentView: View {
     }
 
     struct ToolbarSupportButton: View {
-        @EnvironmentObject var appState: AppStateManager
+        @Environment(AppStateManager.self) var appState
         @Binding var isShowingPopup: Bool
         
         var body: some View {
@@ -303,11 +303,11 @@ struct SidebarItemStyle: ViewModifier {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
-            .environmentObject(AppStateManager.shared.preferences)
-            .environmentObject(DeviceInfoManager.shared)
-            .environmentObject(StorageInfoManager.shared)
-            .environmentObject(MdmInfoManager.shared)
-            .environmentObject(BatteryInfoManager.shared)
+            .environment(AppStateManager.shared.preferences)
+            .environment(DeviceInfoManager.shared)
+            .environment(StorageInfoManager.shared)
+            .environment(MdmInfoManager.shared)
+            .environment(BatteryInfoManager.shared)
             .frame(width: 1500, height: 900)
     }
 }

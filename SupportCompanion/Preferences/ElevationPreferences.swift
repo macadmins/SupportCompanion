@@ -4,18 +4,28 @@
 //
 
 import Foundation
-import SwiftUI
+import Observation
 
 @MainActor
-class ElevationPreferences: ObservableObject {
-    @AppStorage("ShowElevateTrayCard") var showElevateTrayCard: Bool = true
+@Observable
+class ElevationPreferences {
+    var showElevateTrayCard: Bool {
+        get { DefaultsStore.value(forKey: "ShowElevateTrayCard", default: true) }
+        set { DefaultsStore.set(newValue, forKey: "ShowElevateTrayCard") }
+    }
 
     // Elevation grants admin rights, so these are only read from administrator-managed preferences.
     // See TrustedPreferences.
-    var enableElevation: Bool { TrustedPreferences.bool(forKey: "EnableElevation", default: false) }
-    var maxElevationTime: Int { TrustedPreferences.int(forKey: "MaxElevationTime", default: 5) }
-    var requireReasonForElevation: Bool { TrustedPreferences.bool(forKey: "RequireResonForElevation", default: true) }
-    var reasonMinLength: Int { TrustedPreferences.int(forKey: "ReasonMinLength", default: 10) }
-    var elevationWebhookURL: String { TrustedPreferences.string(forKey: "ElevationWebhookUrl", default: "") }
-    var elevationSeverity: Int { TrustedPreferences.int(forKey: "ElevationSeverity", default: 6) }
+    var enableElevation: Bool { trusted.bool(forKey: "EnableElevation", default: false) }
+    var maxElevationTime: Int { trusted.int(forKey: "MaxElevationTime", default: 5) }
+    var requireReasonForElevation: Bool { trusted.bool(forKey: "RequireResonForElevation", default: true) }
+    var reasonMinLength: Int { trusted.int(forKey: "ReasonMinLength", default: 10) }
+    var elevationWebhookURL: String { trusted.string(forKey: "ElevationWebhookUrl", default: "") }
+    var elevationSeverity: Int { trusted.int(forKey: "ElevationSeverity", default: 6) }
+
+    /// TrustedPreferences reads UserDefaults directly, so register the DefaultsStore revision to stay observable
+    private var trusted: TrustedPreferences.Type {
+        _ = DefaultsStore.shared.revision
+        return TrustedPreferences.self
+    }
 }

@@ -6,11 +6,13 @@
 //
 
 import Foundation
+import Observation
 import Combine
 
 @MainActor
-class DeviceInfoManager: ObservableObject {
-    private var monitorTask: Task<Void, Never>?
+@Observable
+class DeviceInfoManager {
+    @ObservationIgnored private var monitorTask: Task<Void, Never>?
     
     static let shared = DeviceInfoManager(
         deviceInfo: DeviceInfo(
@@ -29,7 +31,7 @@ class DeviceInfoManager: ObservableObject {
         )
     )
     
-    @Published var deviceInfo: DeviceInfo? = nil
+    var deviceInfo: DeviceInfo? = nil
     
     init(deviceInfo: DeviceInfo) {
         self.deviceInfo = deviceInfo

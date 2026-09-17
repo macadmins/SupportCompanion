@@ -16,8 +16,7 @@ struct ScButton: View, Hashable {
     let disabled: Bool?
     var maxWidth: CGFloat? // New parameter for button width
     let fontSize: CGFloat?
-    @EnvironmentObject var preferences: Preferences
-    @EnvironmentObject var appState: AppStateManager
+    @Environment(AppStateManager.self) var appState
     @State private var isHovered = false
     @State private var showBadge = false
     @State private var isLoading = false

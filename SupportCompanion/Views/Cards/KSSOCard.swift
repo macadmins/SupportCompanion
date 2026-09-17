@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 struct KSSOCard: View {
-    @EnvironmentObject var appState: AppStateManager
+    @Environment(AppStateManager.self) var appState
     
     var body: some View {
         VStack(alignment: .leading){

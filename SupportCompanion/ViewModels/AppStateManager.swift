@@ -6,49 +6,48 @@
 //
 
 import Foundation
-import Combine
+import Observation
 import SwiftUI
 
 @MainActor
-class AppStateManager: ObservableObject {
+@Observable
+class AppStateManager {
     static let shared = AppStateManager()
-    lazy var systemUpdatesManager = SystemUpdatesManager(appState: self)
-    lazy var pendingMunkiUpdatesManager = PendingMunkiUpdatesManager(appState: self)
-    lazy var applicationsInfoManager = ApplicationsInfoManager(appState: self)
-    lazy var pendingIntuneUpdatesManager = PendingIntuneUpdatesManager(appState: self)
-    lazy var pendingJamfUpdatesManager = PendingJamfUpdatesManager(appState: self)
-    lazy var evergreenInfoManager = EvergreenInfoManager(appState: self)
-    lazy var elevationManager = ElevationManager(appState: self)
-    var jsonCardManager: JsonCardManager?
-    @Published var isRefreshing: Bool = false
-    @Published var jamfId: String = ""
-    @Published var deviceInfoManager = DeviceInfoManager.shared
-    @Published var storageInfoManager = StorageInfoManager.shared
-    @Published var mdmInfoManager = MdmInfoManager.shared
-    @Published var batteryInfoManager = BatteryInfoManager.shared
-    @Published var ssoInfoManager = SSOInfoManager.shared
-    @Published var userInfoManager = UserInfoManager.shared
-    @Published var preferences = Preferences()
-    @Published var installPercentage: Double = 0.0
-    @Published var installedAppsCount: Int = 0
-    @Published var pendingUpdatesCount: Int = 0
-    @Published var pendingMunkiUpdates: [PendingMunkiUpdate] = []
-    @Published var pendingIntuneUpdates: [PendingIntuneUpdate] = []
-    @Published var pendingJamfUpdates: [PendingJamfUpdate] = []
-    @Published var installedApplications: [InstalledApp] = []
-    @Published var systemUpdateCache: SystemUpdates = SystemUpdates(id: UUID(), count: 0, updates: [], hasBackgroundSecurityImprovement: false)
-    @Published var windowIsVisible: Bool = false
-    @Published var storageUsageColor: Color = Color(NSColor.controlAccentColor)
-    @Published var JsonCards: [JsonCard] = []
-    @Published var catalogs: [String] = []
-    @Published var isDemotionActive: Bool = false
-    @Published var timeToDemote: TimeInterval = 0
-    @Published var jamfInfoManager: JamfInfoManager!
+    @ObservationIgnored lazy var systemUpdatesManager = SystemUpdatesManager(appState: self)
+    @ObservationIgnored lazy var pendingMunkiUpdatesManager = PendingMunkiUpdatesManager(appState: self)
+    @ObservationIgnored lazy var applicationsInfoManager = ApplicationsInfoManager(appState: self)
+    @ObservationIgnored lazy var pendingIntuneUpdatesManager = PendingIntuneUpdatesManager(appState: self)
+    @ObservationIgnored lazy var pendingJamfUpdatesManager = PendingJamfUpdatesManager(appState: self)
+    @ObservationIgnored lazy var evergreenInfoManager = EvergreenInfoManager(appState: self)
+    @ObservationIgnored lazy var elevationManager = ElevationManager(appState: self)
+    @ObservationIgnored var jsonCardManager: JsonCardManager?
+    var isRefreshing: Bool = false
+    var jamfId: String = ""
+    let deviceInfoManager = DeviceInfoManager.shared
+    let storageInfoManager = StorageInfoManager.shared
+    let mdmInfoManager = MdmInfoManager.shared
+    let batteryInfoManager = BatteryInfoManager.shared
+    let ssoInfoManager = SSOInfoManager.shared
+    let userInfoManager = UserInfoManager.shared
+    let preferences = Preferences()
+    var installPercentage: Double = 0.0
+    var installedAppsCount: Int = 0
+    var pendingUpdatesCount: Int = 0
+    var pendingMunkiUpdates: [PendingMunkiUpdate] = []
+    var pendingIntuneUpdates: [PendingIntuneUpdate] = []
+    var pendingJamfUpdates: [PendingJamfUpdate] = []
+    var installedApplications: [InstalledApp] = []
+    var systemUpdateCache: SystemUpdates = SystemUpdates(id: UUID(), count: 0, updates: [], hasBackgroundSecurityImprovement: false)
+    var windowIsVisible: Bool = false
+    var storageUsageColor: Color = Color(NSColor.controlAccentColor)
+    var JsonCards: [JsonCard] = []
+    var catalogs: [String] = []
+    var isDemotionActive: Bool = false
+    var timeToDemote: TimeInterval = 0
+    @ObservationIgnored var jamfInfoManager: JamfInfoManager!
 
-    private var cancellables: Set<AnyCancellable> = Set<AnyCancellable>()
-    private var customPathCancellable: AnyCancellable?
-    private var defaultsWatcher: FileWatcher?
-    var showWindowCallback: (() -> Void)?
+    @ObservationIgnored private var customCardPathObservation: ObservationToken?
+    @ObservationIgnored var showWindowCallback: (() -> Void)?
 
     /// The pending-updates manager for the configured mode, or nil when the mode has none (System Profiler).
     /// Views and background tasks should go through this rather than checking the mode themselves.
@@ -91,94 +90,33 @@ class AppStateManager: ObservableObject {
             appStateManager: self
         )
 
-        // Forward changes from other managers...
-        systemUpdatesManager.objectWillChange
-            .sink { [weak self] _ in self?.objectWillChange.send() }
-            .store(in: &cancellables)
-
-        storageInfoManager.objectWillChange
-            .sink { [weak self] _ in self?.objectWillChange.send() }
-            .store(in: &cancellables)
-
-        deviceInfoManager.objectWillChange
-            .sink { [weak self] _ in self?.objectWillChange.send() }
-            .store(in: &cancellables)
-
-        ssoInfoManager.objectWillChange
-            .sink { [weak self] _ in self?.objectWillChange.send() }
-            .store(in: &cancellables)
-
-        userInfoManager.objectWillChange
-            .sink { [weak self] _ in self?.objectWillChange.send() }
-            .store(in: &cancellables)
-
         setupCardManager()
 
-        wirePreferencesObservers()
-
-        // If the Preferences instance is ever replaced, rewire observers
-        $preferences
-            .receive(on: RunLoop.main)
-            .sink { [weak self] _ in
-                self?.wirePreferencesObservers()
-            }
-            .store(in: &cancellables)
-
-        // Also watch the preferences plist so external `defaults write` changes are picked up live
-        setupDefaultsWatcher()
+        // Reload custom cards when CustomCardPath changes (Preferences picks up external `defaults write` too)
+        customCardPathObservation = observeChanges(
+            of: { [unowned self] in self.preferences.customCardPath.trimmingCharacters(in: .whitespacesAndNewlines) },
+            onChange: { [weak self] path in self?.customCardPathChanged(to: path) }
+        )
     }
 
-    private func setupDefaultsWatcher() {
-        let domain = "com.github.macadmins.SupportCompanion"
-        let prefsURL = FileManager.default.homeDirectoryForCurrentUser
-            .appendingPathComponent("Library/Preferences/\(domain).plist")
-        let path = prefsURL.path
-        defaultsWatcher = FileWatcher(filePath: path) { [weak self] in
-            Task { @MainActor [weak self] in
-                guard let self else { return }
-                if let dict = NSDictionary(contentsOf: prefsURL) as? [String: Any],
-                   let latest = dict["CustomCardPath"] as? String,
-                   self.preferences.customCardPathPublished != latest {
-                    Logger.shared.logInfo("Prefs plist changed -> CustomCardPath='\(latest)'")
-                    if self.preferences.customCardPath != latest {
-                        self.preferences.customCardPath = latest
-                    }
-                    self.preferences.customCardPathPublished = latest
-                }
-            }
+    private func customCardPathChanged(to path: String) {
+        Logger.shared.logDebug("CustomCardPath changed -> '\(path)'")
+
+        // If path is empty, tear down any existing manager and clear cards
+        guard !path.isEmpty else {
+            jsonCardManager?.stopWatching()
+            jsonCardManager = nil
+            JsonCards.removeAll()
+            return
         }
-    }
 
-    private func wirePreferencesObservers() {
-        // Cancel any previous subscription tied to the old preferences instance
-        customPathCancellable?.cancel()
-
-        customPathCancellable = preferences.$customCardPathPublished
-            .map { $0.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines) }
-            .removeDuplicates { (lhs: String, rhs: String) -> Bool in
-                lhs == rhs
-            }
-            .receive(on: RunLoop.main)
-            .sink { [weak self] (trimmed: String) in
-                guard let self = self else { return }
-                Logger.shared.logDebug("CustomCardPath changed -> '\(trimmed)'")
-
-                // If path is empty, tear down any existing manager and clear cards
-                guard !trimmed.isEmpty else {
-                    self.jsonCardManager?.stopWatching()
-                    self.jsonCardManager = nil
-                    self.JsonCards.removeAll()
-                    return
-                }
-
-                // Ensure a manager exists, stop any current watcher, then load and start watching the new path
-                if self.jsonCardManager == nil {
-                    self.jsonCardManager = JsonCardManager(appState: self)
-                }
-                self.jsonCardManager?.stopWatching()
-                self.jsonCardManager?.loadFromFile(trimmed)
-                self.jsonCardManager?.watchFile(trimmed)
-            }
+        // Ensure a manager exists, stop any current watcher, then load and start watching the new path
+        if jsonCardManager == nil {
+            jsonCardManager = JsonCardManager(appState: self)
+        }
+        jsonCardManager?.stopWatching()
+        jsonCardManager?.loadFromFile(path)
+        jsonCardManager?.watchFile(path)
     }
 
     func startDemotionTimer(duration: TimeInterval) {

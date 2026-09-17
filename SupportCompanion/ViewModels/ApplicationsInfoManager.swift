@@ -7,16 +7,18 @@
 
 import AppKit
 import Foundation
+import Observation
 
 @MainActor
-final class ApplicationsInfoManager: ObservableObject {
-    private var monitorTask: Task<Void, Never>?
+@Observable
+final class ApplicationsInfoManager {
+    @ObservationIgnored private var monitorTask: Task<Void, Never>?
     private let munkiApps = MunkiApps()
     private let intuneApps = IntuneApps()
     private let profilerApps = SystemProfilerApplications()
     private var appState: AppStateManager
 
-    @Published var applicationInfo: InstalledApp = InstalledApp(
+    var applicationInfo: InstalledApp = InstalledApp(
         id: UUID(),
         name: "",
         version: "",

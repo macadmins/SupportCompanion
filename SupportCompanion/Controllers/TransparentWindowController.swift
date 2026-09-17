@@ -1,10 +1,9 @@
 import SwiftUI
-import Combine
 import AppKit
 
 class TransparentWindowController: NSWindowController {
     private var appState: AppStateManager
-    private var cancellables = Set<AnyCancellable>()
+    private var positionObservation: ObservationToken?
 
     init(appState: AppStateManager) {
         self.appState = appState
@@ -32,7 +31,7 @@ class TransparentWindowController: NSWindowController {
 
         // Content view setup
         let contentView = TransparentView()
-            .environmentObject(appState)
+            .environment(appState)
             .background(
                 GeometryReader { geometry in
                     Color.clear
@@ -48,13 +47,10 @@ class TransparentWindowController: NSWindowController {
         window.contentView = NSHostingView(rootView: contentView)
         self.updateWindowPosition()
 
-        // Manually observe position changes
-        appState.preferences.desktopInfo.$currentWindowPosition
-            .sink { [weak self] newPosition in
-                guard let self = self else { return }
-                self.updateWindowPosition()
-            }
-            .store(in: &cancellables)
+        // Move the window when the configured position changes
+        positionObservation = observeChanges(of: { appState.preferences.desktopInfo.desktopInfoWindowPosition }) { [weak self] _ in
+            self?.updateWindowPosition()
+        }
     }
 
     required init?(coder: NSCoder) {

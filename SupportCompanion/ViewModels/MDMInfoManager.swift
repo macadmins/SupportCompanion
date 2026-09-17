@@ -6,9 +6,11 @@
 //
 
 import Foundation
+import Observation
 
 @MainActor
-class MdmInfoManager: ObservableObject {
+@Observable
+class MdmInfoManager {
     static let shared = MdmInfoManager(
         mdmInfo: MdmInfo(
             id: UUID(),
@@ -18,7 +20,7 @@ class MdmInfoManager: ObservableObject {
         )
     )
     
-    @Published var mdmInfo: MdmInfo
+    var mdmInfo: MdmInfo
     
     init(mdmInfo: MdmInfo) {
         self.mdmInfo = mdmInfo

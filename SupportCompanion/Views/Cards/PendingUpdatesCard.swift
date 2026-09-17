@@ -9,8 +9,8 @@ import Foundation
 import SwiftUI
 
 struct PendingUpdatesCard: View {
-    @ObservedObject var viewModel: CardGridViewModel
-    @EnvironmentObject var appState: AppStateManager
+    var viewModel: CardGridViewModel
+    @Environment(AppStateManager.self) var appState
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {

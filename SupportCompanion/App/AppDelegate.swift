@@ -23,7 +23,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     static var urlLaunch = false
     static var shouldExit = false
     private var notificationDelegate: NotificationDelegate?
-    private var cancellables: Set<AnyCancellable> = []
+    private var trayIconObservation: ObservationToken?
     private var popoverEventMonitors: [Any] = []
     private var popoverKeyWindowObserver: NSObjectProtocol?
     private var trayManager: TrayMenuManager { TrayMenuManager.shared }
@@ -106,7 +106,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             rootView: TrayMenuView(
                 viewModel: CardGridViewModel(appState: AppStateManager.shared)
             )
-            .environmentObject(AppStateManager.shared)
+            .environment(AppStateManager.shared)
         )
         popover.delegate = self
 
@@ -188,21 +188,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     }
 
     func setupTrayMenuIconBinding() {
-        Publishers.CombineLatest4(
-            appStateManager.$pendingUpdatesCount,
-            appStateManager.$systemUpdateCache,
-            appStateManager.preferences.$hiddenActions,
-            appStateManager.preferences.$hiddenCards
-        )
-        .map { pendingUpdatesCount, systemUpdateCache, hiddenActions, hiddenCards in
-            let hasPendingUpdates = !hiddenCards.contains(Constants.Cards.pendingAppUpdates) && pendingUpdatesCount > 0
-            let hasSoftwareUpdates = !hiddenActions.contains(Constants.Actions.HideStrings.softwareUpdate) && systemUpdateCache.count > 0
+        let hasUpdates = { [unowned self] () -> Bool in
+            let appState = self.appStateManager
+            let hasPendingUpdates = !appState.preferences.hiddenCards.contains(Constants.Cards.pendingAppUpdates) && appState.pendingUpdatesCount > 0
+            let hasSoftwareUpdates = !appState.preferences.hiddenActions.contains(Constants.Actions.HideStrings.softwareUpdate) && appState.systemUpdateCache.count > 0
             return hasPendingUpdates || hasSoftwareUpdates
         }
-            .sink { hasUpdates in
-                TrayMenuManager.shared.updateTrayIcon(hasUpdates: hasUpdates)
-            }
-            .store(in: &cancellables)
+        TrayMenuManager.shared.updateTrayIcon(hasUpdates: hasUpdates())
+        trayIconObservation = observeChanges(of: hasUpdates) { hasUpdates in
+            TrayMenuManager.shared.updateTrayIcon(hasUpdates: hasUpdates)
+        }
     }
 
     @MainActor
@@ -294,7 +289,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
                 rootView: TrayMenuView(
                     viewModel: CardGridViewModel(appState: AppStateManager.shared)
                 )
-                .environmentObject(AppStateManager.shared)
+                .environment(AppStateManager.shared)
             )
             
             // Anchor the popover to the status item's button
@@ -379,8 +374,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         if windowController == nil {
             NSApp.setActivationPolicy(.regular)
             let contentView = ContentView()
-                .environmentObject(AppStateManager.shared)
-                .environmentObject(AppStateManager.shared.preferences)
+                .environment(AppStateManager.shared)
+                .environment(AppStateManager.shared.preferences)
                 .frame(minWidth: 1100, minHeight: 650)
 
             let hostingController = NSHostingController(rootView: contentView)

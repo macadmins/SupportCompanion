@@ -6,11 +6,11 @@
 //
 
 import Foundation
-import SwiftUI
-import Combine
+import Observation
 
 @MainActor
-class Preferences: ObservableObject {
+@Observable
+class Preferences {
 
     // MARK: - Domain sub-objects
 
@@ -21,181 +21,212 @@ class Preferences: ObservableObject {
 
     // MARK: - Menu
 
-    @AppStorage("MenuShowIdentity") var menuShowIdentity: Bool = true
-    @AppStorage("MenuShowApps") var menuShowApps: Bool = true
-    @AppStorage("MenuShowSelfService") var menuShowSelfService: Bool = true
-    @AppStorage("CompanyPortalUrl") var companyPortalUrl: String = ""
-    @AppStorage("MenuShowCompanyPortal") var menuShowCompanyPortal: Bool = true
-    @AppStorage("MenuShowKnowledgeBase") var menuShowKnowledgeBase: Bool = true
-    @AppStorage("KnowledgeBaseUrl") var knowledgeBaseUrl: String = ""
-    @AppStorage("ShowLogoInTrayMenu") var showLogoInTrayMenu: Bool = true
-    @AppStorage("MarkdownFilePath") var markdownFilePath: String = ""
-    @AppStorage("MarkdownMenuLabel") var markdownMenuLabel: String = ""
-    @AppStorage("MarkdownMenuIcon") var markdownMenuIcon: String = ""
-    @AppStorage("CustomCardsMenuLabel") var customCardsMenuLabel: String = ""
-    @AppStorage("CustomCardsMenuIcon") var customCardsMenuIcon: String = ""
-    @AppStorage("TrayMenuBrandingIcon") var trayMenuBrandingIcon: String = ""
-    @AppStorage("TrayMenuShowIcon") var trayMenuShowIcon: Bool = true
+    var menuShowIdentity: Bool {
+        get { DefaultsStore.value(forKey: "MenuShowIdentity", default: true) }
+        set { DefaultsStore.set(newValue, forKey: "MenuShowIdentity") }
+    }
+    var menuShowApps: Bool {
+        get { DefaultsStore.value(forKey: "MenuShowApps", default: true) }
+        set { DefaultsStore.set(newValue, forKey: "MenuShowApps") }
+    }
+    var menuShowSelfService: Bool {
+        get { DefaultsStore.value(forKey: "MenuShowSelfService", default: true) }
+        set { DefaultsStore.set(newValue, forKey: "MenuShowSelfService") }
+    }
+    var companyPortalUrl: String {
+        get { DefaultsStore.value(forKey: "CompanyPortalUrl", default: "") }
+        set { DefaultsStore.set(newValue, forKey: "CompanyPortalUrl") }
+    }
+    var menuShowCompanyPortal: Bool {
+        get { DefaultsStore.value(forKey: "MenuShowCompanyPortal", default: true) }
+        set { DefaultsStore.set(newValue, forKey: "MenuShowCompanyPortal") }
+    }
+    var menuShowKnowledgeBase: Bool {
+        get { DefaultsStore.value(forKey: "MenuShowKnowledgeBase", default: true) }
+        set { DefaultsStore.set(newValue, forKey: "MenuShowKnowledgeBase") }
+    }
+    var knowledgeBaseUrl: String {
+        get { DefaultsStore.value(forKey: "KnowledgeBaseUrl", default: "") }
+        set { DefaultsStore.set(newValue, forKey: "KnowledgeBaseUrl") }
+    }
+    var showLogoInTrayMenu: Bool {
+        get { DefaultsStore.value(forKey: "ShowLogoInTrayMenu", default: true) }
+        set { DefaultsStore.set(newValue, forKey: "ShowLogoInTrayMenu") }
+    }
+    var markdownFilePath: String {
+        get { DefaultsStore.value(forKey: "MarkdownFilePath", default: "") }
+        set { DefaultsStore.set(newValue, forKey: "MarkdownFilePath") }
+    }
+    var markdownMenuLabel: String {
+        get { DefaultsStore.value(forKey: "MarkdownMenuLabel", default: "") }
+        set { DefaultsStore.set(newValue, forKey: "MarkdownMenuLabel") }
+    }
+    var markdownMenuIcon: String {
+        get { DefaultsStore.value(forKey: "MarkdownMenuIcon", default: "") }
+        set { DefaultsStore.set(newValue, forKey: "MarkdownMenuIcon") }
+    }
+    var customCardsMenuLabel: String {
+        get { DefaultsStore.value(forKey: "CustomCardsMenuLabel", default: "") }
+        set { DefaultsStore.set(newValue, forKey: "CustomCardsMenuLabel") }
+    }
+    var customCardsMenuIcon: String {
+        get { DefaultsStore.value(forKey: "CustomCardsMenuIcon", default: "") }
+        set { DefaultsStore.set(newValue, forKey: "CustomCardsMenuIcon") }
+    }
+    var trayMenuBrandingIcon: String {
+        get { DefaultsStore.value(forKey: "TrayMenuBrandingIcon", default: "") }
+        set { DefaultsStore.set(newValue, forKey: "TrayMenuBrandingIcon") }
+    }
+    var trayMenuShowIcon: Bool {
+        get { DefaultsStore.value(forKey: "TrayMenuShowIcon", default: true) }
+        set { DefaultsStore.set(newValue, forKey: "TrayMenuShowIcon") }
+    }
 
     // MARK: - Actions
 
-    @AppStorage("SupportPageUrl") var supportPageURL: String = ""
-    @AppStorage("ChangePasswordMode") var changePasswordMode: String = ""
-    @AppStorage("ChangePasswordUrl") var changePasswordUrl: String = ""
-    @AppStorage("Mode") var mode: String = ""
+    var supportPageURL: String {
+        get { DefaultsStore.value(forKey: "SupportPageUrl", default: "") }
+        set { DefaultsStore.set(newValue, forKey: "SupportPageUrl") }
+    }
+    var changePasswordMode: String {
+        get { DefaultsStore.value(forKey: "ChangePasswordMode", default: "") }
+        set { DefaultsStore.set(newValue, forKey: "ChangePasswordMode") }
+    }
+    var changePasswordUrl: String {
+        get { DefaultsStore.value(forKey: "ChangePasswordUrl", default: "") }
+        set { DefaultsStore.set(newValue, forKey: "ChangePasswordUrl") }
+    }
+    var mode: String {
+        get { DefaultsStore.value(forKey: "Mode", default: "") }
+        set { DefaultsStore.set(newValue, forKey: "Mode") }
+    }
     // Only an administrator may turn off authentication for privileged actions. See TrustedPreferences.
     var requirePrivilegedActionAuthentication: Bool {
         TrustedPreferences.bool(forKey: "RequirePrivilegedActionAuthentication", default: true)
     }
 
-    @Published var actions: [Action] = []
-    @Published var hiddenActions: [String] = UserDefaults.standard.array(forKey: "HiddenActions") as? [String] ?? []
-    @Published var logFolders: [String] = UserDefaults.standard.array(forKey: "LogFolders") as? [String] ?? []
-    @Published var excludedLogFolders: [String] = UserDefaults.standard.array(forKey: "ExcludedLogFolders") as? [String] ?? []
+    /// Parsed from the Actions preference; reloaded when defaults change. See loadActions().
+    var actions: [Action] = []
+    var hiddenActions: [String] {
+        get { DefaultsStore.value(forKey: "HiddenActions", default: []) }
+        set { DefaultsStore.set(newValue, forKey: "HiddenActions") }
+    }
+    var logFolders: [String] {
+        get { DefaultsStore.value(forKey: "LogFolders", default: []) }
+        set { DefaultsStore.set(newValue, forKey: "LogFolders") }
+    }
+    var excludedLogFolders: [String] {
+        get { DefaultsStore.value(forKey: "ExcludedLogFolders", default: []) }
+        set { DefaultsStore.set(newValue, forKey: "ExcludedLogFolders") }
+    }
 
     // MARK: - Home / Cards
 
-    @AppStorage("CustomCardPath") var customCardPath: String = "" {
-        didSet {
-            if customCardPathPublished != customCardPath {
-                if Thread.isMainThread {
-                    Logger.shared.logDebug("Preferences: customCardPath didSet -> '\(customCardPath)'")
-                    customCardPathPublished = customCardPath
-                } else {
-                    let newValue = customCardPath
-                    Task { @MainActor in
-                        Logger.shared.logDebug("Preferences: customCardPath didSet (async) -> '\(newValue)'")
-                        if self.customCardPathPublished != newValue {
-                            self.customCardPathPublished = newValue
-                        }
-                    }
-                }
-            }
-        }
+    var customCardPath: String {
+        get { DefaultsStore.value(forKey: "CustomCardPath", default: "") }
+        set { DefaultsStore.set(newValue, forKey: "CustomCardPath") }
     }
-    /// Published mirror of customCardPath so non-View subscribers can react to changes.
-    @Published var customCardPathPublished: String = ""
 
-    @Published var hiddenCards: [String] = UserDefaults.standard.array(forKey: "HiddenCards") as? [String] ?? []
+    var hiddenCards: [String] {
+        get { DefaultsStore.value(forKey: "HiddenCards", default: []) }
+        set { DefaultsStore.set(newValue, forKey: "HiddenCards") }
+    }
 
     // MARK: - Support info
 
-    @AppStorage("SupportEmail") var supportEmail: String = ""
-    @AppStorage("SupportPhone") var supportPhone: String = ""
+    var supportEmail: String {
+        get { DefaultsStore.value(forKey: "SupportEmail", default: "") }
+        set { DefaultsStore.set(newValue, forKey: "SupportEmail") }
+    }
+    var supportPhone: String {
+        get { DefaultsStore.value(forKey: "SupportPhone", default: "") }
+        set { DefaultsStore.set(newValue, forKey: "SupportPhone") }
+    }
 
     // MARK: - General
 
-    @AppStorage("RefreshSelfService") var refreshSelfService: Bool = true
-    @AppStorage("JamfLogPollHours") var jamfLogPollHours: Int = 36
-    @AppStorage("DebugLogging") var debugLogging: Bool = false
+    var refreshSelfService: Bool {
+        get { DefaultsStore.value(forKey: "RefreshSelfService", default: true) }
+        set { DefaultsStore.set(newValue, forKey: "RefreshSelfService") }
+    }
+    var jamfLogPollHours: Int {
+        get { DefaultsStore.value(forKey: "JamfLogPollHours", default: 36) }
+        set { DefaultsStore.set(newValue, forKey: "JamfLogPollHours") }
+    }
+    var debugLogging: Bool {
+        get { DefaultsStore.value(forKey: "DebugLogging", default: false) }
+        set { DefaultsStore.set(newValue, forKey: "DebugLogging") }
+    }
 
     var mdm: String = "Unknown"
 
     // MARK: - Private state
 
-    private var cancellable: AnyCancellable?
-    private var cancellables = Set<AnyCancellable>()
-    private var prefsDirSource: DispatchSourceFileSystemObject?
-    private var prefsDirFD: Int32 = -1
+    @ObservationIgnored private var defaultsObserver: NSObjectProtocol?
+    @ObservationIgnored private var prefsDirSource: DispatchSourceFileSystemObject?
 
     // MARK: - Init
 
     init() {
         ensureDefaultsInitialized()
-        startWatchingCustomCardPath()
+        loadActions()
+        Logger.shared.setFileDebugLogging(fileDebugLoggingEnabled)
 
-        self.customCardPathPublished = self.customCardPath
-
-        Logger.shared.setFileDebugLogging(debugLogging)
-
-        // Forward sub-object changes so views observing `Preferences` update too
-        branding.objectWillChange
-            .sink { [weak self] in self?.objectWillChange.send() }
-            .store(in: &cancellables)
-        notifications.objectWillChange
-            .sink { [weak self] in self?.objectWillChange.send() }
-            .store(in: &cancellables)
-        elevation.objectWillChange
-            .sink { [weak self] in self?.objectWillChange.send() }
-            .store(in: &cancellables)
-        desktopInfo.objectWillChange
-            .sink { [weak self] in self?.objectWillChange.send() }
-            .store(in: &cancellables)
-
-        // Observe UserDefaults changes for complex-type properties and the debug-logging flag
-        cancellable = NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)
-            .receive(on: RunLoop.main)
-            .sink { [weak self] _ in
+        // Plain preferences are read from UserDefaults through DefaultsStore and stay current on their own.
+        // Only derived state needs reloading here.
+        defaultsObserver = NotificationCenter.default.addObserver(
+            forName: UserDefaults.didChangeNotification, object: nil, queue: .main
+        ) { [weak self] _ in
+            MainActor.assumeIsolated {
                 guard let self else { return }
-
-                let latestPath = UserDefaults.standard.string(forKey: "CustomCardPath") ?? ""
-                if self.customCardPath != latestPath {
-                    Logger.shared.logDebug("Preferences: observed defaults change for CustomCardPath -> '\(latestPath)'")
-                    self.customCardPath = latestPath
-                }
-                if self.customCardPathPublished != latestPath {
-                    self.customCardPathPublished = latestPath
-                }
-
-                if let anyVal = UserDefaults.standard.object(forKey: "FileDebugLogging") {
-                    let latestDebug = (anyVal as? Bool) ?? (anyVal as? NSNumber)?.boolValue ?? false
-                    if self.debugLogging != latestDebug {
-                        self.debugLogging = latestDebug
-                    }
-                    Logger.shared.setFileDebugLogging(latestDebug)
-                }
-
-                self.loadHiddenCards()
-                self.loadLogFolders()
-                self.loadExcludedLogFolders()
+                Logger.shared.setFileDebugLogging(self.fileDebugLoggingEnabled)
                 self.loadActions()
-                self.loadHiddenActions()
-                // Elevation settings are computed from TrustedPreferences, so views need a nudge
-                self.elevation.objectWillChange.send()
             }
+        }
+
+        startWatchingPreferencesDirectory()
 
         Task {
             await detectModeAndSetLogFolders()
         }
     }
 
-    // MARK: - File watcher for CustomCardPath
+    private var fileDebugLoggingEnabled: Bool {
+        let value = UserDefaults.standard.object(forKey: "FileDebugLogging")
+        return (value as? Bool) ?? (value as? NSNumber)?.boolValue ?? debugLogging
+    }
 
-    private func startWatchingCustomCardPath() {
-        let domain = "com.github.macadmins.SupportCompanion"
-        let prefsPlistURL = FileManager.default.homeDirectoryForCurrentUser
-            .appendingPathComponent("Library/Preferences/\(domain).plist")
-        let prefsDirURL = prefsPlistURL.deletingLastPathComponent()
+    // MARK: - Preferences file watcher
+
+    /// `defaults write` from another process doesn't post `UserDefaults.didChangeNotification` in this
+    /// process, so watch the preferences directory and tell DefaultsStore when the plist changes.
+    private func startWatchingPreferencesDirectory() {
+        let prefsDirURL = FileManager.default.homeDirectoryForCurrentUser
+            .appendingPathComponent("Library/Preferences")
 
         let fd = open(prefsDirURL.path, O_EVTONLY)
         guard fd >= 0 else {
             Logger.shared.logError("Preferences: failed to open preferences directory for watching: \(prefsDirURL.path)")
             return
         }
-        prefsDirFD = fd
         let queue = DispatchQueue(label: "com.github.macadmins.SupportCompanion.PrefsWatch")
         let src = DispatchSource.makeFileSystemObjectSource(
             fileDescriptor: fd,
             eventMask: [.write, .rename, .delete, .extend, .attrib],
             queue: queue
         )
+        let plistPath = prefsDirURL.appendingPathComponent("com.github.macadmins.SupportCompanion.plist").path
+        var lastModified = (try? FileManager.default.attributesOfItem(atPath: plistPath))?[.modificationDate] as? Date
+
         src.setCancelHandler { [fd] in close(fd) }
         src.setEventHandler { [weak self] in
-            guard let self else { return }
-            var latest = ""
-            if let dict = NSDictionary(contentsOf: prefsPlistURL) as? [String: Any],
-               let s = dict["CustomCardPath"] as? String {
-                latest = s
-            } else {
-                latest = UserDefaults.standard.string(forKey: "CustomCardPath") ?? ""
-            }
-            
-            if self.customCardPathPublished != latest {
-                Logger.shared.logInfo("Prefs watcher: CustomCardPath -> '\(latest)'")
-                if self.customCardPath != latest {
-                    self.customCardPath = latest
-                }
-                self.customCardPathPublished = latest
+            // Other apps write to this directory constantly; only react when our plist changed
+            let modified = (try? FileManager.default.attributesOfItem(atPath: plistPath))?[.modificationDate] as? Date
+            guard modified != lastModified else { return }
+            lastModified = modified
+            Task { @MainActor [weak self] in
+                DefaultsStore.shared.defaultsChanged()
+                self?.loadActions()
             }
         }
         src.resume()
@@ -273,33 +304,10 @@ class Preferences: ObservableObject {
             logFolders = []
         }
 
-        UserDefaults.standard.set(mode, forKey: "Mode")
-        saveLogFoldersToDefaults()
         Logger.shared.logDebug("Final mode: \(mode), log folders: \(logFolders)")
     }
 
-    // MARK: - Loaders
-
-    private func saveLogFoldersToDefaults() {
-        UserDefaults.standard.set(logFolders, forKey: "LogFolders")
-        Logger.shared.logDebug("Log folders saved to UserDefaults: \(logFolders)")
-    }
-
-    private func loadHiddenCards() {
-        self.hiddenCards = UserDefaults.standard.array(forKey: "HiddenCards") as? [String] ?? []
-    }
-
-    private func loadLogFolders() {
-        self.logFolders = UserDefaults.standard.array(forKey: "LogFolders") as? [String] ?? []
-    }
-
-    private func loadHiddenActions() {
-        self.hiddenActions = UserDefaults.standard.array(forKey: "HiddenActions") as? [String] ?? []
-    }
-
-    private func loadExcludedLogFolders() {
-        self.excludedLogFolders = UserDefaults.standard.array(forKey: "ExcludedLogFolders") as? [String] ?? []
-    }
+    // MARK: - Actions
 
     private func loadActions() {
         // Privileged actions run as root through the helper, so they must come from an administrator.
@@ -324,7 +332,10 @@ class Preferences: ObservableObject {
                 buttonLabel: dict["ButtonLabel"] as? String ?? "Run"
             )
         }
-        self.actions = newActions
+        // Actions get new ids on every parse; only publish when the content actually changed
+        if newActions.map(\.contentKey) != self.actions.map(\.contentKey) {
+            self.actions = newActions
+        }
     }
     
 

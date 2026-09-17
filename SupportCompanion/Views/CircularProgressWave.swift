@@ -64,7 +64,7 @@ struct CircularProgressWithWave: View {
     var gradient: Gradient = Gradient(colors: [.blue, .purple])
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.accessibilityReduceMotion) var reduceMotion
-    @EnvironmentObject var appState: AppStateManager
+    @Environment(AppStateManager.self) var appState
     @State private var isAnimating = false
 
     var body: some View {

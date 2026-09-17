@@ -2,7 +2,7 @@ import Foundation
 import SwiftUI
 
 struct CompactPatchProgressCard: View {
-    @EnvironmentObject var appState: AppStateManager
+    @Environment(AppStateManager.self) var appState
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {

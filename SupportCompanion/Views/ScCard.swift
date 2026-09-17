@@ -19,8 +19,7 @@ struct ScCard<Content: View>: View {
     let buttonHelpText: String?
     let imageSize: (CGFloat, CGFloat)?
     let useMultiColor: Bool?
-    @EnvironmentObject var preferences: Preferences
-    @EnvironmentObject var appState: AppStateManager
+    @Environment(AppStateManager.self) var appState
 
     init(
         title: String,

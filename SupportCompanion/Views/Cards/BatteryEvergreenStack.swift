@@ -9,8 +9,8 @@ import Foundation
 import SwiftUI
 
 struct BatteryEvergreenStack: View {
-    @ObservedObject var viewModel: CardGridViewModel
-    @EnvironmentObject var appState: AppStateManager
+    var viewModel: CardGridViewModel
+    @Environment(AppStateManager.self) var appState
     
     var body: some View {
         if !viewModel.isCardVisible(Constants.Cards.evergreen) && !viewModel.isCardVisible(Constants.Cards.battery) {

@@ -9,8 +9,8 @@ import Foundation
 import SwiftUI
 
 struct ActionsCard: View {
-    @ObservedObject var viewModel: CardGridViewModel
-    @EnvironmentObject var appState: AppStateManager
+    var viewModel: CardGridViewModel
+    @Environment(AppStateManager.self) var appState
     var onShowRebootModal: (Int, String, String) -> Void
     
     var body: some View {

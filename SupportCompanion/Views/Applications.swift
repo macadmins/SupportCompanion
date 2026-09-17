@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 struct Applications: View {
-    @EnvironmentObject var appState: AppStateManager
+    @Environment(AppStateManager.self) var appState
     @State private var isLoading = false
     @State private var task: Task<Void, Never>?
     

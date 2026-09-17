@@ -6,15 +6,14 @@
 //
 
 import Foundation
+import Observation
 import WebKit
 
-import Foundation
-import WebKit
-
-class WebViewState: NSObject, ObservableObject, WKNavigationDelegate {
-    @Published var isLoading: Bool = false
-    @Published var progress: Double = 0.0
-    private var webViewInstance: WKWebView?
+@Observable
+class WebViewState: NSObject, WKNavigationDelegate {
+    var isLoading: Bool = false
+    var progress: Double = 0.0
+    @ObservationIgnored private var webViewInstance: WKWebView?
     
     var webView: WKWebView {
         if let webView = webViewInstance {
@@ -31,7 +30,7 @@ class WebViewState: NSObject, ObservableObject, WKNavigationDelegate {
         return webView
     }
     
-    private let url: URL
+    @ObservationIgnored private let url: URL
     
     init(url: URL) {
         self.url = url

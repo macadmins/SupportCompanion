@@ -218,6 +218,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				BrandingPreferences.swift,
+				DefaultsStore.swift,
 				DesktopInfoPreferences.swift,
 				ElevationPreferences.swift,
 				NotificationPreferences.swift,

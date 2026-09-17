@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 struct ElevationCard: View {
-    @EnvironmentObject var appState: AppStateManager
+    @Environment(AppStateManager.self) var appState
     @State private var showReasonInput = false
     @State private var elevationReason = ""
 

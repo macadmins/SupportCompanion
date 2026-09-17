@@ -9,8 +9,8 @@ import Foundation
 import SwiftUI
 
 struct TrayMenuView: View {
-    @EnvironmentObject var appState: AppStateManager
-    @ObservedObject var viewModel: CardGridViewModel
+    @Environment(AppStateManager.self) var appState
+    var viewModel: CardGridViewModel
     @Environment(\.colorScheme) var colorScheme
     @State private var brandLogo: Image? = nil
     @State private var showLogo: Bool = false
@@ -172,7 +172,7 @@ struct TrayMenuView: View {
 }
 
 struct ButtonSection: View {
-    @ObservedObject var viewModel: CardGridViewModel
+    var viewModel: CardGridViewModel
     let url = "supportcompanion://"
     let appState: AppStateManager
     

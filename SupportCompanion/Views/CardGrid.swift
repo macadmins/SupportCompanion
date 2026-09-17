@@ -10,8 +10,8 @@ import SwiftUI
 import AlertToast
 
 struct CardGrid: View {
-    @ObservedObject var viewModel: CardGridViewModel
-    @EnvironmentObject var appState: AppStateManager
+    var viewModel: CardGridViewModel
+    @Environment(AppStateManager.self) var appState
     @State private var showRebootModal = false
     @State private var modalCountdown = Constants.RebootModal.countdown
     @State private var modalTitle = Constants.RebootModal.title
@@ -116,7 +116,7 @@ struct CardGrid: View {
 struct CardGridView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
-        .environmentObject(AppStateManager.shared)
+        .environment(AppStateManager.shared)
         .frame(width: 1500, height: 100)
     }
 }
