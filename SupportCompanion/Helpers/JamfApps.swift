@@ -319,6 +319,9 @@ func computeUpdates(policies: [Policy],
             matchedPolicy = fuzzyMatchPolicy(for: patch.name, in: policiesByName)
         }
         guard let policy = matchedPolicy else { continue }
+        // Self Service also lists policies for apps that aren't installed, and Jamf publishes patches for
+        // them too. Only an installed app can need one, so skip the rest rather than report a phantom update.
+        guard (policy.installStatus ?? 0) == 4 else { continue }
         matchedPolicyNames.insert(policy.name)
 
         let (needed, label) = evaluateUpdate(policy: policy, patch: patch, now: now)
