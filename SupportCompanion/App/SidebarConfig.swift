@@ -16,11 +16,22 @@ func generateSidebarItems(preferences: Preferences, stateManager: WebViewStateMa
             systemImage: "house.fill",
             destination: AnyView(
                 CardGrid(viewModel: cardGridViewModel)
-            ),
-            // Failing compliance checks, shown on Home
-            badge: failingChecksCount
+            )
         )
     ]
+
+    if preferences.mode == Constants.Modes.fleet && !preferences.hiddenCards.contains(Constants.Cards.fleetPolicies) {
+        items.append(
+            SidebarItem(
+                label: Constants.Navigation.compliance,
+                systemImage: "checkmark.shield.fill",
+                destination: AnyView(
+                    FleetComplianceView()
+                ),
+                badge: failingChecksCount
+            )
+        )
+    }
 
     if preferences.menuShowIdentity {
         items.append(

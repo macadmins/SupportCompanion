@@ -8,9 +8,6 @@
 import SwiftUI
 
 struct FleetComplianceBanner: View {
-    /// Scrolls to the Device Compliance card.
-    let showDetails: () -> Void
-
     @Environment(AppStateManager.self) private var appState
     @Environment(\.colorScheme) private var colorScheme
 
@@ -39,7 +36,7 @@ struct FleetComplianceBanner: View {
             Spacer(minLength: 12)
 
             ScButton(Constants.Fleet.complianceDetails, fontSize: 13) {
-                showDetails()
+                ActionHelpers.openManagementApp(appURL: "supportcompanion://compliance")
             }
             FleetRecheckButton(fontSize: 13)
         }

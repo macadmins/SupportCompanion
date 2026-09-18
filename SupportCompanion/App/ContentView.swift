@@ -136,6 +136,8 @@ struct ContentView: View {
             selectedItem = items.first(where: { $0.id == Constants.Navigation.apps })
         case "selfservice":
             selectedItem = items.first(where: { $0.id == Constants.Navigation.selfService })
+        case "compliance":
+            selectedItem = items.first(where: { $0.id == Constants.Navigation.compliance })
         case "companyportal":
             selectedItem = items.first(where: { $0.id == Constants.Navigation.companyPortal })
         case "knowledgebase":

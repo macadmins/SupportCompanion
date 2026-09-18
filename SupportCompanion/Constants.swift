@@ -38,6 +38,9 @@ enum Constants {
         static let searchPlaceholder = String(
             localized: "Fleet.SearchPlaceholder", defaultValue: "Search apps",
             comment: "Placeholder for the Fleet app catalog search field")
+        static let clearSearch = String(
+            localized: "Fleet.ClearSearch", defaultValue: "Clear search",
+            comment: "Button that empties the app catalog search field")
         static let allCategories = String(
             localized: "Fleet.AllCategories", defaultValue: "All",
             comment: "Category filter showing every app")
@@ -65,9 +68,6 @@ enum Constants {
         static let updateAvailable = String(
             localized: "Fleet.UpdateAvailable", defaultValue: "Update available",
             comment: "Status badge when a newer version is available")
-        static let notInstalled = String(
-            localized: "Fleet.NotInstalled", defaultValue: "Not installed",
-            comment: "Status badge for an app that isn't installed")
         static let loading = String(
             localized: "Fleet.Loading", defaultValue: "Loading apps…",
             comment: "Shown while the Fleet catalog loads")
@@ -128,7 +128,10 @@ enum Constants {
             comment: "Compliance card when policies couldn't be loaded")
         static let passingChecks = String(
             localized: "Fleet.PassingChecks", defaultValue: "Passing checks (%d)",
-            comment: "Expandable list of passing Fleet policies; %d is the count")
+            comment: "Heading above the list of passing Fleet policies; %d is the count")
+        static let lastChecked = String(
+            localized: "Fleet.LastChecked", defaultValue: "Checked %@",
+            comment: "When compliance last ran; %@ is a relative time such as '5 minutes ago'")
         static let critical = String(
             localized: "Fleet.Critical", defaultValue: "Critical",
             comment: "Badge for a critical Fleet policy")
@@ -542,6 +545,9 @@ enum Constants {
         static let companyPortal = String(
             localized: "Nav.CompanyPortal", defaultValue: "Company Portal",
             comment: "Label for company portal navigation")
+        static let compliance = String(
+            localized: "Nav.Compliance", defaultValue: "Compliance",
+            comment: "Label for compliance navigation")
     }
 
     enum DeviceInfo {

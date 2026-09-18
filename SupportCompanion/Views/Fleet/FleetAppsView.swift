@@ -30,31 +30,62 @@ struct FleetAppsView: View {
 
     // MARK: - Header
 
+    /// Search and filters share a row when they fit, so the catalog starts higher up.
     private var header: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 12) {
+                searchRow
+                chips
+                Spacer(minLength: 0)
+            }
+            VStack(alignment: .leading, spacing: 10) {
+                searchRow
+                if !visibleCategories.isEmpty {
+                    ScrollView(.horizontal, showsIndicators: false) { chips }
+                }
+            }
+        }
+        .padding(.horizontal, 5)
+    }
+
+    private var searchRow: some View {
+        HStack(spacing: 10) {
+            HStack(spacing: 6) {
                 Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
                 TextField(Constants.Fleet.searchPlaceholder, text: $searchText)
                     .textFieldStyle(.plain)
-                if case .failed(let message) = manager.loadState, !manager.titles.isEmpty {
-                    Label(Constants.Fleet.couldNotRefresh, systemImage: "exclamationmark.triangle")
-                        .font(.caption)
-                        .foregroundStyle(.orange)
-                        .help(message)
+                if !searchText.isEmpty {
+                    Button {
+                        searchText = ""
+                    } label: {
+                        Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
+                    }
+                    .buttonStyle(.plain)
+                    .help(Constants.Fleet.clearSearch)
                 }
             }
-            .padding(8)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 6)
+            .frame(width: 320)
             .isGlass()
             .cornerRadius(8)
 
-            if !visibleCategories.isEmpty {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 6) {
-                        categoryChip(nil, label: Constants.Fleet.allCategories)
-                        ForEach(visibleCategories, id: \.self) { category in
-                            categoryChip(category, label: category)
-                        }
-                    }
+            if case .failed(let message) = manager.loadState, !manager.titles.isEmpty {
+                Label(Constants.Fleet.couldNotRefresh, systemImage: "exclamationmark.triangle")
+                    .font(.caption)
+                    .foregroundStyle(.orange)
+                    .help(message)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var chips: some View {
+        if !visibleCategories.isEmpty {
+            HStack(spacing: 6) {
+                categoryChip(nil, label: Constants.Fleet.allCategories)
+                ForEach(visibleCategories, id: \.self) { category in
+                    categoryChip(category, label: category)
                 }
             }
         }
@@ -69,9 +100,13 @@ struct FleetAppsView: View {
                 .font(.callout)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 5)
-                .background(isSelected ? Color.accentColor.opacity(0.25) : Color.secondary.opacity(0.12), in: Capsule())
+                .background(isSelected ? accentColor.opacity(0.25) : Color.secondary.opacity(0.12), in: Capsule())
         }
         .buttonStyle(.plain)
+    }
+
+    private var accentColor: Color {
+        Color(NSColor(hex: appState.preferences.branding.accentColor ?? "") ?? .controlAccentColor)
     }
 
     /// Categories that at least one title uses, in the order Fleet returns them.

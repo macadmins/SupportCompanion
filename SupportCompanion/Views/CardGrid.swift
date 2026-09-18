@@ -22,13 +22,10 @@ struct CardGrid: View {
             GridItem(.adaptive(minimum: 300), alignment: .top)
         ]
         ZStack{
-            ScrollViewReader { scrollProxy in
             ScrollView {
                 if showsFleetComplianceBanner {
-                    FleetComplianceBanner {
-                        withAnimation { scrollProxy.scrollTo(Constants.Cards.fleetPolicies, anchor: .top) }
-                    }
-                    .padding(.horizontal, 20)
+                    FleetComplianceBanner()
+                        .padding(.horizontal, 20)
                 }
 
                 LazyVGrid(
@@ -59,12 +56,6 @@ struct CardGrid: View {
                         stack.view
                             .frame(maxWidth: .infinity)
                     }
-
-                    // After the stacks, so the Fleet card sits under Battery the way the Jamf card does
-                    if appState.preferences.mode == Constants.Modes.fleet {
-                        FleetPoliciesCard(viewModel: viewModel)
-                            .id(Constants.Cards.fleetPolicies)
-                    }
                 }
                 .padding(.horizontal, 20)
                 //.padding(.top, 20)
@@ -83,7 +74,6 @@ struct CardGrid: View {
                         appState.refreshJsonCards()
                     }
                 }
-            }
             }
             CountdownModal(
                 isPresented: $showRebootModal,

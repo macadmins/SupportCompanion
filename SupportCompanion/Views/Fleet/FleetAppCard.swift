@@ -41,18 +41,10 @@ struct FleetAppCard: View {
             }
             .font(.system(size: 13))
 
-            if !title.categories.isEmpty {
-                Text(title.categories.joined(separator: " · "))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-            }
-
-            Spacer(minLength: 0)
             actions
         }
-        .padding()
-        .frame(maxWidth: .infinity, minHeight: 190, alignment: .topLeading)
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .topLeading)
         .isGlass()
         .cornerRadius(10)
         .overlay {
@@ -97,11 +89,14 @@ struct FleetAppCard: View {
                         .font(.callout)
                         .foregroundStyle(.secondary)
                 } else if waitingForAppToClose && appIsRunning {
-                    ScButton(manager.retryAction(for: title) == .update ? Constants.Fleet.quitAndUpdate : Constants.Fleet.quitAndInstall, fontSize: 13) {
+                    FleetActionButton(
+                        manager.retryAction(for: title) == .update ? Constants.Fleet.quitAndUpdate : Constants.Fleet.quitAndInstall,
+                        tint: accentColor
+                    ) {
                         await manager.quitAndRetry(title)
                     }
                 } else if let action = buttonAction {
-                    ScButton(label(for: action), fontSize: 13) {
+                    FleetActionButton(label(for: action), tint: accentColor) {
                         await manager.perform(action, on: title)
                     }
                 }
@@ -202,17 +197,20 @@ struct FleetAppCard: View {
         }
     }
 
+    @ViewBuilder
     private var statusBadge: some View {
-        let (text, color) = status
-        return Text(text)
-            .font(.caption.weight(.medium))
-            .padding(.horizontal, 8)
-            .padding(.vertical, 2)
-            .background(color.opacity(0.18), in: Capsule())
-            .foregroundStyle(color)
+        if let (text, color) = status {
+            Text(text)
+                .font(.caption.weight(.medium))
+                .padding(.horizontal, 8)
+                .padding(.vertical, 2)
+                .background(color.opacity(0.18), in: Capsule())
+                .foregroundStyle(color)
+        }
     }
 
-    private var status: (String, Color) {
+    /// Only states worth calling out: the section the card sits in already says installed or available.
+    private var status: (String, Color)? {
         if manager.isBusy(title) {
             return (busyText, .blue)
         }
@@ -231,18 +229,54 @@ struct FleetAppCard: View {
             if manager.hasUpdate(title) {
                 return (Constants.Fleet.updateAvailable, colorScheme == .light ? .orangeLight : .orange)
             }
-            if title.isInstalled {
-                return (Constants.Fleet.installed, .ScGreen)
-            }
-            return (Constants.Fleet.notInstalled, .secondary)
+            return nil
         }
     }
 
     private func versionRow(_ label: String, _ value: String) -> some View {
         HStack(spacing: 4) {
-            Text("\(label):").bold()
-            Text(value).foregroundStyle(.secondary)
+            Text(label).foregroundStyle(.secondary)
+            Text(value)
         }
+    }
+}
+
+/// A tinted capsule rather than the filled `ScButton`: a catalog shows many of these at once, and the apps
+/// should carry more weight than a grid of identical solid buttons.
+private struct FleetActionButton: View {
+    let title: String
+    let tint: Color
+    let action: () async -> Void
+
+    @State private var isHovered = false
+    @State private var isRunning = false
+
+    init(_ title: String, tint: Color, action: @escaping () async -> Void) {
+        self.title = title
+        self.tint = tint
+        self.action = action
+    }
+
+    var body: some View {
+        Button {
+            guard !isRunning else { return }
+            Task {
+                isRunning = true
+                await action()
+                isRunning = false
+            }
+        } label: {
+            Text(title)
+                .font(.system(size: 13, weight: .semibold))
+                .padding(.horizontal, 16)
+                .padding(.vertical, 6)
+                .background(isHovered ? tint : tint.opacity(0.18), in: Capsule())
+                .foregroundStyle(isHovered ? Color.white : tint)
+        }
+        .buttonStyle(.plain)
+        .disabled(isRunning)
+        .onHover { isHovered = $0 }
+        .animation(.easeInOut(duration: 0.15), value: isHovered)
     }
 }
 

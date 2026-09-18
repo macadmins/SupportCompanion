@@ -47,7 +47,7 @@ struct CompactFleetPoliciesCard: View {
                 HStack {
                     FleetRecheckButton(compact: true)
                     ScSmallButton(Constants.Fleet.complianceDetails) {
-                        ActionHelpers.openManagementApp(appURL: "supportcompanion://home")
+                        ActionHelpers.openManagementApp(appURL: "supportcompanion://compliance")
                     }
                 }
             }
