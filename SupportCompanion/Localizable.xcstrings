@@ -4,6 +4,16 @@
     "%" : {
 
     },
+    "%@ (%lld)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ (%2$lld)"
+          }
+        }
+      }
+    },
     "%@ %@" : {
       "localizations" : {
         "en" : {
@@ -16,6 +26,16 @@
     },
     "%@:" : {
 
+    },
+    "%@: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@: %2$@"
+          }
+        }
+      }
     },
     "%@%%" : {
 
@@ -295,6 +315,42 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Starta om"
+          }
+        }
+      }
+    },
+    "Action.Refetch" : {
+      "comment" : "Button that asks Fleet to re-check this Mac",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Re-check"
+          }
+        }
+      }
+    },
+    "Action.RefetchHelp" : {
+      "comment" : "Help text for the re-check button",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Ask Fleet to update this Mac's details and re-run its compliance checks."
+          }
+        }
+      }
+    },
+    "Action.Refetching" : {
+      "comment" : "Shown while Fleet re-checks this Mac",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Re-checking…"
           }
         }
       }
@@ -991,6 +1047,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Evergreen"
+          }
+        }
+      }
+    },
+    "Card.FleetPoliciesTitle" : {
+      "comment" : "Title for the card listing failing Fleet policies",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Device Compliance"
           }
         }
       }
@@ -1988,6 +2056,894 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ingen internetåtkomst."
+          }
+        }
+      }
+    },
+    "Fleet.AllCategories" : {
+      "comment" : "Category filter showing every app",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "All"
+          }
+        }
+      }
+    },
+    "Fleet.AppClosedMessage" : {
+      "comment" : "Card message after the app that blocked an install was closed; %@ is the app name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%@ was open, so it wasn't changed. Try again now that it's closed."
+          }
+        }
+      }
+    },
+    "Fleet.AppOpenMessage" : {
+      "comment" : "Card message when an install needs the app closed; %@ is the app name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%@ is open. Quit it to finish."
+          }
+        }
+      }
+    },
+    "Fleet.AppOpenNotification" : {
+      "comment" : "Notification when an install needs the app closed; %@ is the app name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Quit %@ to finish updating it."
+          }
+        }
+      }
+    },
+    "Fleet.Available" : {
+      "comment" : "Section of apps that can be installed",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Available"
+          }
+        }
+      }
+    },
+    "Fleet.Cancel" : {
+      "comment" : "Cancel button",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Cancel"
+          }
+        }
+      }
+    },
+    "Fleet.ClearSearch" : {
+      "comment" : "Button that empties the app catalog search field",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Clear search"
+          }
+        }
+      }
+    },
+    "Fleet.Close" : {
+      "comment" : "Button that closes the install details",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Close"
+          }
+        }
+      }
+    },
+    "Fleet.ComplianceDetails" : {
+      "comment" : "Button that opens Support Companion to show compliance details",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Details"
+          }
+        }
+      }
+    },
+    "Fleet.CouldNotLoad" : {
+      "comment" : "Title when the Fleet catalog failed to load",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Couldn't load apps"
+          }
+        }
+      }
+    },
+    "Fleet.CouldNotLoadDetails" : {
+      "comment" : "Shown when install output couldn't be fetched",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Couldn't load details"
+          }
+        }
+      }
+    },
+    "Fleet.CouldNotQuit" : {
+      "comment" : "Shown when an app didn't quit; %@ is the app name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%@ didn't quit. Save your work, quit it, and try again."
+          }
+        }
+      }
+    },
+    "Fleet.CouldNotRefresh" : {
+      "comment" : "Shown next to a catalog that failed to refresh",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Couldn't refresh"
+          }
+        }
+      }
+    },
+    "Fleet.Critical" : {
+      "comment" : "Badge for a critical Fleet policy",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Critical"
+          }
+        }
+      }
+    },
+    "Fleet.Details" : {
+      "comment" : "Button that shows the output of a failed install or uninstall",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Details"
+          }
+        }
+      }
+    },
+    "Fleet.HowToFix" : {
+      "comment" : "Disclosure that shows how to resolve a failing policy",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "How to fix"
+          }
+        }
+      }
+    },
+    "Fleet.Install" : {
+      "comment" : "Button that installs an app from Fleet",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Install"
+          }
+        }
+      }
+    },
+    "Fleet.InstallDetailsTitle" : {
+      "comment" : "Title of the sheet showing install output",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Install details"
+          }
+        }
+      }
+    },
+    "Fleet.Installed" : {
+      "comment" : "Section of installed apps, and the installed status badge",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Installed"
+          }
+        }
+      }
+    },
+    "Fleet.InstalledNotification" : {
+      "comment" : "Notification after an install; %@ is the app name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%@ was installed."
+          }
+        }
+      }
+    },
+    "Fleet.InstallFailed" : {
+      "comment" : "Status badge when an install failed",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Install failed"
+          }
+        }
+      }
+    },
+    "Fleet.InstallFailedNotification" : {
+      "comment" : "Notification after a failed install or update; %@ is the app name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%@ couldn't be installed."
+          }
+        }
+      }
+    },
+    "Fleet.Installing" : {
+      "comment" : "Status badge while an app installs",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Installing…"
+          }
+        }
+      }
+    },
+    "Fleet.LastChecked" : {
+      "comment" : "When compliance last ran; %@ is a relative time such as '5 minutes ago'",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Checked %@"
+          }
+        }
+      }
+    },
+    "Fleet.LatestVersion" : {
+      "comment" : "Label for the version available from Fleet",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Latest"
+          }
+        }
+      }
+    },
+    "Fleet.Loading" : {
+      "comment" : "Shown while the Fleet catalog loads",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Loading apps…"
+          }
+        }
+      }
+    },
+    "Fleet.MoreActions" : {
+      "comment" : "Help text for the menu with extra actions for an app",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "More actions"
+          }
+        }
+      }
+    },
+    "Fleet.NoApps" : {
+      "comment" : "Shown when the Fleet catalog is empty",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "No apps are available for this Mac."
+          }
+        }
+      }
+    },
+    "Fleet.NoMatches" : {
+      "comment" : "Shown when search or category filters hide every app",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "No apps match your search."
+          }
+        }
+      }
+    },
+    "Fleet.NoOutput" : {
+      "comment" : "Shown when a failed install has no output",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Fleet didn't report any output."
+          }
+        }
+      }
+    },
+    "Fleet.NoPolicies" : {
+      "comment" : "Compliance card without policies",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "There are no compliance checks for this Mac."
+          }
+        }
+      }
+    },
+    "Fleet.NotConfigured" : {
+      "comment" : "Shown when orbit or the Fleet server URL is missing",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Fleet isn't set up on this Mac."
+          }
+        }
+      }
+    },
+    "Fleet.PassingChecks" : {
+      "comment" : "Heading above the list of passing Fleet policies; %d is the count",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Passing checks (%d)"
+          }
+        }
+      }
+    },
+    "Fleet.PoliciesFailing" : {
+      "comment" : "Compliance card summary; the numbers are failing and total checks",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$d of %2$d checks need attention"
+          }
+        }
+      }
+    },
+    "Fleet.PoliciesFailingNotification" : {
+      "comment" : "Notification when several policies start failing; %d is the count, %@ a policy name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Your Mac needs attention: %1$d checks are failing, including %2$@."
+          }
+        }
+      }
+    },
+    "Fleet.PoliciesPassing" : {
+      "comment" : "Compliance card when every policy passes; %d is the number of checks",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "All %d checks are passing."
+          }
+        }
+      }
+    },
+    "Fleet.PoliciesSignIn" : {
+      "comment" : "Compliance card when Fleet requires single sign-on",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Sign in on the Apps page to see compliance checks."
+          }
+        }
+      }
+    },
+    "Fleet.PoliciesUnavailable" : {
+      "comment" : "Compliance card when policies couldn't be loaded",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Couldn't load compliance checks."
+          }
+        }
+      }
+    },
+    "Fleet.PolicyFailingNotification" : {
+      "comment" : "Notification when a policy starts failing; %@ is the policy name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Your Mac needs attention: %@"
+          }
+        }
+      }
+    },
+    "Fleet.QuitAndInstall" : {
+      "comment" : "Button that quits an app and installs it again",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Quit & Install"
+          }
+        }
+      }
+    },
+    "Fleet.QuitAndUpdate" : {
+      "comment" : "Button that quits an app and installs its update",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Quit & Update"
+          }
+        }
+      }
+    },
+    "Fleet.Recommended" : {
+      "comment" : "Section of apps IT recommends installing",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Recommended"
+          }
+        }
+      }
+    },
+    "Fleet.Reinstall" : {
+      "comment" : "Button that installs an installed app again through Fleet",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Reinstall"
+          }
+        }
+      }
+    },
+    "Fleet.ReinstalledNotification" : {
+      "comment" : "Notification after a reinstall; %@ is the app name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%@ was reinstalled."
+          }
+        }
+      }
+    },
+    "Fleet.Retry" : {
+      "comment" : "Button to reload the Fleet catalog",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Try Again"
+          }
+        }
+      }
+    },
+    "Fleet.SearchPlaceholder" : {
+      "comment" : "Placeholder for the Fleet app catalog search field",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Search apps"
+          }
+        }
+      }
+    },
+    "Fleet.SignIn" : {
+      "comment" : "Button that starts Fleet single sign-on",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Sign In"
+          }
+        }
+      }
+    },
+    "Fleet.SignInRequired" : {
+      "comment" : "Shown when Fleet requires single sign-on",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Sign in to see the apps available for this Mac."
+          }
+        }
+      }
+    },
+    "Fleet.Uninstall" : {
+      "comment" : "Button that uninstalls an app through Fleet",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Uninstall"
+          }
+        }
+      }
+    },
+    "Fleet.UninstallConfirmMessage" : {
+      "comment" : "Message asking to confirm an uninstall",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "The app will be removed from this Mac."
+          }
+        }
+      }
+    },
+    "Fleet.UninstallConfirmTitle" : {
+      "comment" : "Title asking to confirm an uninstall; %@ is the app name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Uninstall %@?"
+          }
+        }
+      }
+    },
+    "Fleet.UninstallDetailsTitle" : {
+      "comment" : "Title of the sheet showing uninstall output",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Uninstall details"
+          }
+        }
+      }
+    },
+    "Fleet.UninstalledNotification" : {
+      "comment" : "Notification after an uninstall; %@ is the app name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%@ was uninstalled."
+          }
+        }
+      }
+    },
+    "Fleet.UninstallFailed" : {
+      "comment" : "Status badge when an uninstall failed",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Uninstall failed"
+          }
+        }
+      }
+    },
+    "Fleet.UninstallFailedNotification" : {
+      "comment" : "Notification after a failed uninstall; %@ is the app name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%@ couldn't be uninstalled."
+          }
+        }
+      }
+    },
+    "Fleet.Uninstalling" : {
+      "comment" : "Status badge while an app uninstalls",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Uninstalling…"
+          }
+        }
+      }
+    },
+    "Fleet.Update" : {
+      "comment" : "Button that updates an app from Fleet",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Update"
+          }
+        }
+      }
+    },
+    "Fleet.UpdateAvailable" : {
+      "comment" : "Status badge when a newer version is available",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Update available"
+          }
+        }
+      }
+    },
+    "Fleet.UpdatedNotification" : {
+      "comment" : "Notification after an update; %@ is the app name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%@ was updated."
+          }
+        }
+      }
+    },
+    "Fleet.UpdatesAvailable" : {
+      "comment" : "Section of apps with a newer version available",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Updates Available"
+          }
+        }
+      }
+    },
+    "Fleet.Version" : {
+      "comment" : "Label for an app's installed version",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Version"
+          }
+        }
+      }
+    },
+    "Fleet.ViewApps" : {
+      "comment" : "Button that shows the Apps page in Support Companion",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "View Apps"
+          }
+        }
+      }
+    },
+    "Fleet.ViewDetails" : {
+      "comment" : "Notification button that opens Support Companion",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "View Details"
+          }
+        }
+      }
+    },
+    "Fleet.ViewUpdates" : {
+      "comment" : "Button that shows available app updates in Support Companion",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "View Updates"
+          }
+        }
+      }
+    },
+    "Fleet.WaitingForAppToClose" : {
+      "comment" : "Status badge when an install didn't run because the app was open",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Waiting for app to close"
+          }
+        }
+      }
+    },
+    "FleetInfo.ID" : {
+      "comment" : "Label for the Fleet host ID",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Host ID:"
+          }
+        }
+      }
+    },
+    "FleetInfo.LastInventory" : {
+      "comment" : "Label for when Fleet last updated this Mac's details",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Inventory:"
+          }
+        }
+      }
+    },
+    "FleetInfo.LastSeen" : {
+      "comment" : "Label for when Fleet last heard from this Mac",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Check-In:"
+          }
+        }
+      }
+    },
+    "FleetInfo.Never" : {
+      "comment" : "Shown when Fleet hasn't recorded an event yet",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Never"
+          }
+        }
+      }
+    },
+    "FleetInfo.NoTeam" : {
+      "comment" : "Shown when the Mac isn't in a fleet",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "No fleet"
+          }
+        }
+      }
+    },
+    "FleetInfo.RefetchFailed" : {
+      "comment" : "Shown when a re-check request failed",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Couldn't ask Fleet to re-check this Mac."
+          }
+        }
+      }
+    },
+    "FleetInfo.Team" : {
+      "comment" : "Label for the fleet name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Fleet:"
+          }
+        }
+      }
+    },
+    "FleetInfo.Unknown" : {
+      "comment" : "Shown before Fleet details load",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Unknown"
+          }
+        }
+      }
+    },
+    "FleetInfo.URL" : {
+      "comment" : "Label for the Fleet server",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "URL:"
           }
         }
       }
@@ -3249,6 +4205,18 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Company Portal"
+          }
+        }
+      }
+    },
+    "Nav.Compliance" : {
+      "comment" : "Label for compliance navigation",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Compliance"
           }
         }
       }
