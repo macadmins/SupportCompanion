@@ -124,9 +124,19 @@ struct SupportCompanionCLI {
     }
 
     func triggerAction(named actionName: String) {
-        let url = "supportcompanion://run?action=\(actionName)"
         if actionName.isEmpty {
             print("Action name is empty. Please provide an action name.")
+            return
+        }
+
+        // Built with URLComponents so that names containing &, # or spaces reach the app intact
+        var components = URLComponents()
+        components.scheme = "supportcompanion"
+        components.host = "run"
+        components.queryItems = [URLQueryItem(name: "action", value: actionName)]
+
+        guard let url = components.url?.absoluteString else {
+            print("Could not build a URL for action '\(actionName)'.")
             return
         }
         print(
