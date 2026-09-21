@@ -20,26 +20,23 @@ struct FleetAppCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack(alignment: .top, spacing: 12) {
+            HStack(alignment: .center, spacing: 12) {
                 iconView
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: 3) {
                     Text(title.title)
                         .font(.system(size: 16, weight: .semibold))
                         .lineLimit(2)
                     statusBadge
+                    if let installed = installedVersion {
+                        versionRow(Constants.Fleet.version, installed)
+                    }
+                    if let available = title.availableVersion, available != installedVersion {
+                        versionRow(Constants.Fleet.latestVersion, available)
+                    }
                 }
+                .font(.system(size: 13))
                 Spacer(minLength: 0)
             }
-
-            VStack(alignment: .leading, spacing: 2) {
-                if let installed = installedVersion {
-                    versionRow(Constants.Fleet.version, installed)
-                }
-                if let available = title.availableVersion, available != installedVersion {
-                    versionRow(Constants.Fleet.latestVersion, available)
-                }
-            }
-            .font(.system(size: 13))
 
             actions
         }
