@@ -8,17 +8,12 @@
 import Foundation
 
 func getMDMEnrollmentTime() async -> String {
-    // Find the enrollment profile by its com.apple.mdm payload rather than by name, since every MDM names it
-    // differently (Jamf "MDM Profile", Intune "Management Profile", Fleet "Fleet enrollment profile", …).
-    // xmllint keeps the output to the date alone: helpers built before ProcessRunner hang on output over ~64KB.
-    let installDate = #"(//dict[key[.='PayloadType']/following-sibling::*[1][.='com.apple.mdm']])[1]/../../key[.='ProfileInstallDate']/following-sibling::*[1]/text()"#
-    let command = #"/usr/bin/profiles -C -o stdout-xml | /usr/bin/xmllint --xpath "\#(installDate)" - 2>/dev/null || true"#
-
+    // Reading the enrollment profile needs root, so the helper does it and returns just the date.
     do {
-        let commandOutput = try await ExecutionService.executeCommandPrivileged("/bin/bash", arguments: ["-c", command])
-        if let range = commandOutput.range(of: #"\d{4}-\d{2}-\d{2}"#, options: .regularExpression) {
-            Logger.shared.logDebug("MDM enrollment profile installed \(commandOutput[range])")
-            return String(commandOutput[range])
+        let installDate = try await ExecutionService.mdmEnrollmentDate()
+        if !installDate.isEmpty {
+            Logger.shared.logDebug("MDM enrollment profile installed \(installDate)")
+            return installDate
         }
         Logger.shared.logDebug("No MDM enrollment profile install date found")
     } catch {

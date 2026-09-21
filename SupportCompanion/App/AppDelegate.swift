@@ -38,7 +38,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     private func executeAction(_ action: Action) {
         Task {
             do {
-                _ = try await ExecutionService.executeShellCommand(action.command, isPrivileged: action.isPrivileged)
+                _ = try await ExecutionService.runAction(action)
             } catch {
                 Logger.shared.logError("Failed to execute action: \(error)")
             }
@@ -156,18 +156,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     }
 
     private func checkAndHandleDemotionOnLaunch() {
-        if let endTime = elevationManager.loadPersistedDemotionState(), Date() >= endTime {
-            elevationManager.demotePrivileges { success in
-                if success {
-                    Logger.shared.logDebug("Privileges automatically demoted on app launch.")
-                    // Clear persisted state
-                    UserDefaults.standard.removeObject(forKey: "PrivilegeDemotionEndTime")
-                } else {
-                    Logger.shared.logError("Failed to demote privileges on app launch.")
-                }
-            }
-        } else if let endTime = elevationManager.loadPersistedDemotionState() {
-            let remainingTime = endTime.timeIntervalSinceNow
+        // Demotion is the helper's job and it happens whether or not this app is running, including
+        // while it was quit. All there is to do at launch is pick up the countdown already in progress.
+        Task { @MainActor in
+            let remainingTime = await elevationManager.remainingElevationTime()
+
+            guard remainingTime > 0 else { return }
+
             elevationManager.startDemotionTimer(duration: remainingTime) { remainingTime in
                 Task { @MainActor in
                     AppStateManager.shared.timeToDemote = remainingTime
@@ -410,7 +405,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     @objc private func runAction(_ sender: NSMenuItem) {
         guard let action = sender.representedObject as? Action else { return }
         Task {
-            _ = try await ExecutionService.executeShellCommand(action.command, isPrivileged: action.isPrivileged)
+            _ = try await ExecutionService.runAction(action)
         }
     }
 

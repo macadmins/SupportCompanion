@@ -9,16 +9,10 @@ import Foundation
 
 @MainActor
 func getLastCheckIn() async throws -> String {
-    let predicate = #"process == "jamf" AND eventMessage CONTAINS "recurring check-in""#
-    let args = [
-        "show",
-        "--predicate", predicate,
-        "--last", "\(AppStateManager.shared.preferences.jamfLogPollHours)h",
-        "--style", "syslog"
-    ]
-    
-    let output: String
-    output = try await ExecutionService.executeCommandPrivileged("/usr/bin/log", arguments: args)
+    let output = try await ExecutionService.jamfLog(
+        kind: .checkIn,
+        hours: AppStateManager.shared.preferences.jamfLogPollHours
+    )
     
     let lines = output.split(whereSeparator: \.isNewline).map(String.init)
     guard let lastLine = lines.reversed().first(where: { !$0.trimmingCharacters(in: .whitespaces).isEmpty }) else {
@@ -44,16 +38,10 @@ func getLastCheckIn() async throws -> String {
 
 @MainActor
 func getLastInventoryUpdate() async throws -> String {
-    let predicate = #"process == "jamf" AND eventMessage CONTAINS "Submitting data""#
-    let args: [String] = [
-        "show",
-        "--predicate", predicate,
-        "--last", "\(AppStateManager.shared.preferences.jamfLogPollHours)h",
-        "--style", "syslog"
-    ]
-    
-    let output: String
-    output = try await ExecutionService.executeCommandPrivileged("/usr/bin/log", arguments: args)
+    let output = try await ExecutionService.jamfLog(
+        kind: .inventory,
+        hours: AppStateManager.shared.preferences.jamfLogPollHours
+    )
     
     let lines = output.split(whereSeparator: \.isNewline).map(String.init)
     guard let lastLine = lines.reversed().first(where: { !$0.trimmingCharacters(in: .whitespaces).isEmpty }) else {
@@ -92,8 +80,7 @@ func getJamfUrl() async throws -> String {
 }
 
 func getJamfId() async throws -> String {
-    let args = ["recon", "-concurrent"]
-    let output = try await ExecutionService.executeCommandPrivileged("/usr/local/bin/jamf", arguments: args)
+    let output = try await ExecutionService.jamfRecon()
     
     if let rangeStart = output.range(of: "<computer_id>"),
        let rangeEnd = output.range(of: "</computer_id>", range: rangeStart.upperBound..<output.endIndex) {

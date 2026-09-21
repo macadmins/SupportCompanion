@@ -57,6 +57,39 @@ CONSOLE_UID=$(get_console_uid || true)
 
 log "Console user: ${CONSOLE_USER:-unknown} (uid ${CONSOLE_UID:-n/a})"
 
+# --- hand back temporary administrator rights ------------------------------
+# Do this before anything is torn down. The helper is what takes elevated rights away when the
+# timer runs out, so uninstalling mid-window would otherwise leave whoever was elevated as a
+# permanent administrator, with nothing left on the Mac that knows the grant was temporary.
+ELEVATION_STATE="/var/db/${APP_ID}/elevation.plist"
+
+if [ -f "$ELEVATION_STATE" ]; then
+  log "Found elevation state; demoting anyone still elevated"
+
+  # Read the Elevations array one index at a time. Not via JSON: the deadlines are plist <date>
+  # values, which plutil refuses to convert, so a json extraction of the whole array returns nothing.
+  elevated_users=()
+  index=0
+  while true; do
+    entry=$(/usr/bin/plutil -extract "Elevations.${index}.UserName" raw -o - "$ELEVATION_STATE" 2>/dev/null) || break
+    [ -n "$entry" ] && elevated_users+=("$entry")
+    index=$((index + 1))
+  done
+
+  # Earlier builds wrote a single elevation at the top level
+  if [ ${#elevated_users[@]} -eq 0 ]; then
+    entry=$(/usr/bin/plutil -extract UserName raw -o - "$ELEVATION_STATE" 2>/dev/null) || entry=""
+    [ -n "$entry" ] && elevated_users+=("$entry")
+  fi
+
+  for elevated_user in "${elevated_users[@]}"; do
+    log "Demoting $elevated_user"
+    _try "demote $elevated_user" /usr/sbin/dseditgroup -o edit -d "$elevated_user" -t user admin
+  done
+else
+  log "no elevation state present: $ELEVATION_STATE"
+fi
+
 # --- stop processes --------------------------------------------------------
 log "Stopping application and helper if running"
 _try "kill app" pkill -f SupportCompanion
@@ -104,6 +137,11 @@ _rm_if_exists "$AGENT_PLIST"
 log "Removing installed components"
 _rm_if_exists "$APP_PATH"
 _rm_if_exists "$HELPER_PATH"
+
+# The helper's state directory, including the root-owned elevation audit log. Anyone still elevated
+# was demoted at the top of this script, so nothing here is needed any more. Keep a copy first if
+# the elevation log is wanted for an audit trail — it is removed with everything else.
+_rm_if_exists "/var/db/${APP_ID}"
 
 # --- pkg receipts -------------------------------------------
 forget_if_present() {

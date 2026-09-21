@@ -911,7 +911,8 @@
 					"-sectcreate",
 					__TEXT,
 					__launchd_plist,
-					"\"$(SRCROOT)/Helper/Launchd.plist",
+					"\"$(SRCROOT)/Helper/Launchd.plist\"",
+					"-lbsm",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.github.macadmins.SupportCompanion.helper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -942,7 +943,8 @@
 					"-sectcreate",
 					__TEXT,
 					__launchd_plist,
-					"\"$(SRCROOT)/Helper/Launchd.plist",
+					"\"$(SRCROOT)/Helper/Launchd.plist\"",
+					"-lbsm",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.github.macadmins.SupportCompanion.helper;
 				PRODUCT_NAME = "$(TARGET_NAME)";

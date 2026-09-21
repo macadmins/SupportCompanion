@@ -16,7 +16,14 @@ enum HelperRemoteProvider {
 
     // MARK: Computed
 
-    private static var isHelperInstalled: Bool { FileManager.default.fileExists(atPath: HelperConstants.helperPath) }
+    /// Whether the copy of the helper that *this package* installs is present.
+    ///
+    /// Not the same question as "is a helper available". When the helper is deployed declaratively
+    /// with `com.apple.configuration.services.background-tasks`, it lives in a managed directory named
+    /// after the administrator's chosen `TaskType`, which we cannot know and must not guess at. So this
+    /// only ever gates self-installation: if our own copy is not here, something else is responsible
+    /// for the helper and registering a second one would fight it.
+    private static var isPackagedHelperInstalled: Bool { FileManager.default.fileExists(atPath: HelperConstants.helperPath) }
     
     // MARK: Exported app proxy for XPC (optional but safer than exporting the enum type)
     private final class RemoteAppProxy: NSObject, RemoteApplicationProtocol {}
@@ -83,9 +90,15 @@ extension HelperRemoteProvider {
 extension HelperRemoteProvider {
 
     static private func connection() throws -> NSXPCConnection {
-        if !isHelperInstalled {
+        // When the helper is deployed declaratively it answers on the same Mach service from a managed
+        // directory, and our file is legitimately absent. Registering the bundled copy then would put a
+        // second daemon on the same Mach service, so the administrator says which deployment is in use.
+        let deployedElsewhere = TrustedPreferences.bool(forKey: "SkipHelperInstall", default: false)
+
+        if !isPackagedHelperInstalled && !deployedElsewhere {
             try installHelper()
         }
+
         return createConnection()
     }
 
@@ -96,10 +109,10 @@ extension HelperRemoteProvider {
         connection.exportedObject = exportedAppProxy
 
         connection.invalidationHandler = {
-            if isHelperInstalled {
+            if isPackagedHelperInstalled {
                 Logger.shared.logError("Unable to connect to Helper although it is installed")
             } else {
-                Logger.shared.logError("Helper is not installed")
+                Logger.shared.logError("Unable to connect to Helper. It is not installed by the package; if it is deployed declaratively, check that the declaration has been applied")
             }
         }
 

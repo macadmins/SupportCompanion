@@ -129,10 +129,7 @@ struct ActionHelpers {
     static func restartIntuneAgent(completion: @escaping (OperationResult) -> Void) {
         Task {
             do {
-                let executionResult = try await ExecutionService.executeCommandPrivileged(
-                    "killall",
-                    arguments: ["IntuneMdmAgent"]
-                )
+                let executionResult = try await ExecutionService.restartIntuneAgent()
                 completion(.success(executionResult))
             } catch {
                 completion(.failure(error))

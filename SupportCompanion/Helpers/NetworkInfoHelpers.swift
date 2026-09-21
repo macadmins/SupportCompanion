@@ -43,24 +43,18 @@ func getSSID() async -> String? {
     guard let wifi = CWWiFiClient.shared().interface() else { return "WiFi Off" }
     guard wifi.powerOn() else { return "WiFi Off" }
 
-    _ = try? await ExecutionService.executeCommandPrivileged(
-        "/bin/sh", arguments: ["-c", "/usr/sbin/ipconfig setverbose 1"]
-    )
+    _ = try? await ExecutionService.setIPConfigVerbose(true)
 
     do {
         let command = "/usr/sbin/ipconfig getsummary en0 | awk -F ' SSID : ' '/ SSID : / {print $2}'"
         let ssid = try await ExecutionService.executeCommand("/bin/sh", with: ["-c", command])
-        _ = try? await ExecutionService.executeCommandPrivileged(
-            "/bin/sh", arguments: ["-c", "/usr/sbin/ipconfig setverbose 0"]
-        )
+        _ = try? await ExecutionService.setIPConfigVerbose(false)
         let trimmed = ssid.trimmingCharacters(in: .whitespacesAndNewlines)
         if trimmed == "<redacted>" { return nil }
         return trimmed.isEmpty ? nil : trimmed
     } catch {
         Logger.shared.logError("Failed to fetch SSID: \(error)")
-        _ = try? await ExecutionService.executeCommandPrivileged(
-            "/bin/sh", arguments: ["-c", "/usr/sbin/ipconfig setverbose 0"]
-        )
+        _ = try? await ExecutionService.setIPConfigVerbose(false)
         return nil
     }
 }

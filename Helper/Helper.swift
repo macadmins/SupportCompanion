@@ -24,36 +24,14 @@ final class Helper: NSObject {
     }
 }
 
-// MARK: - HelperProtocol
-
-extension Helper: HelperProtocol {
-
-    func executeScript(at path: String) async throws -> String {
-        Logger.shared.logDebug("Executing script at \(path)")
-        do {
-            return try await ExecutionService.executeScript(at: path)
-        } catch {
-            Logger.shared.logError("Error: \(error.localizedDescription)")
-            throw error
-        }
-    }
-    
-    func executeCommand(_ command: String, with arguments: [String] = []) async throws -> String {
-        Logger.shared.logDebug("Executing command \(command) with arguments: \(arguments)")
-        do {
-            return try await ExecutionService.executeCommand(command, with: arguments)
-        } catch {
-            Logger.shared.logError("Error: \(error.localizedDescription)")
-            throw error
-        }
-    }
-}
-
 // MARK: - Run
 
 extension Helper {
 
     func run() {
+        // Take back any administrator rights that outlived the last run before accepting connections
+        ElevationCoordinator.shared.reconcileOnLaunch()
+
         // start listening on new connections
         listener.resume()
 
@@ -68,16 +46,26 @@ extension Helper {
 extension Helper: NSXPCListenerDelegate {
 
     func listener(_ listener: NSXPCListener, shouldAcceptNewConnection newConnection: NSXPCConnection) -> Bool {
+        let clientUID: uid_t
+
         do {
-            try ConnectionIdentityService.checkConnectionIsValid(connection: newConnection)
+            clientUID = try ConnectionIdentityService.checkConnectionIsValid(connection: newConnection)
         } catch {
             Logger.shared.logError("🛑 Connection \(newConnection) has not been validated. \(error.localizedDescription)")
             return false
         }
 
+        guard let clientUserName = HelperService.userName(forUID: clientUID) else {
+            Logger.shared.logError("🛑 Connection \(newConnection) has no user account behind uid \(clientUID)")
+            return false
+        }
+
         newConnection.exportedInterface = NSXPCInterface(with: HelperProtocol.self)
         newConnection.remoteObjectInterface = NSXPCInterface(with: RemoteApplicationProtocol.self)
-        newConnection.exportedObject = self
+
+        // One service object per connection, carrying the identity the kernel vouched for, so that
+        // operations act on the user who actually connected.
+        newConnection.exportedObject = HelperService(clientUID: clientUID, clientUserName: clientUserName)
 
         newConnection.resume()
         return true

@@ -2,6 +2,12 @@ import Foundation
 import Combine
 import SwiftUI
 
+/// Drives the elevation UI.
+///
+/// The helper owns temporary administrator rights: it decides whether elevation is allowed, records the
+/// deadline in a root-owned file, and takes the rights back when the time is up. The timer here only
+/// drives the countdown and the halfway notification, so quitting the app no longer leaves the user an
+/// administrator — it just stops the display.
 @MainActor
 class ElevationManager {
     private var elevationReason = ""
@@ -16,18 +22,17 @@ class ElevationManager {
         self.appState = appState
     }
 
-        func elevatePrivileges(completion: @escaping (Bool) -> Void) {
-            authenticateWithTouchIDOrPassword(completion: { success in
+    func elevatePrivileges(reason: String, completion: @escaping (Bool) -> Void) {
+        authenticateWithTouchIDOrPassword(completion: { success in
             guard success else {
                 completion(false)
                 return
             }
-            let command = "/usr/sbin/dseditgroup"
-            let arguments = ["-o", "edit", "-a", NSUserName(), "-t", "user", "admin"]
             Task {
                 do {
-                    _ = try await ExecutionService.executeCommandPrivileged(command, arguments: arguments)
-                    // Update isAdmin status
+                    // The helper re-checks EnableElevation before doing anything, and throws if an
+                    // administrator has not turned elevation on.
+                    _ = try await ExecutionService.elevate(reason: reason)
                     UserInfoManager.shared.updateUserInfo()
                     completion(true)
                 }
@@ -40,14 +45,11 @@ class ElevationManager {
     }
 
     func demotePrivileges(completion: @escaping (Bool) -> Void) {
-        let command = "/usr/sbin/dseditgroup"
-        let arguments = ["-o", "edit", "-d", NSUserName(), "-t", "user", "admin"]
         Task {
             do {
-                _ = try await ExecutionService.executeCommandPrivileged(command, arguments: arguments)
+                _ = try await ExecutionService.demote()
                 // Update isAdmin status
                 UserInfoManager.shared.updateUserInfo()
-                UserDefaults.standard.removeObject(forKey: "PrivilegeDemotionEndTime")
                 completion(true)
             }
             catch {
@@ -57,11 +59,19 @@ class ElevationManager {
         }
     }
 
+    /// Seconds until the helper demotes the user, as the helper sees it.
+    func remainingElevationTime() async -> TimeInterval {
+        do {
+            return try await ExecutionService.elevationTimeRemaining()
+        } catch {
+            Logger.shared.logError("Failed to read elevation time remaining: \(error.localizedDescription)")
+            return 0
+        }
+    }
+
     func startDemotionTimer(duration: TimeInterval, onUpdate: @escaping (Double) -> Void) {
         Logger.shared.logDebug("Starting demotion timer with duration: \(duration)")
         stopDemotionTimer() // Ensure any existing timer is stopped
-
-        persistDemotionState(endTime: Date().addingTimeInterval(duration))
 
         NotificationService(appState: self.appState).sendNotification(
             message: "\(Constants.Notifications.Elevation.ElevationStartedMessage) \(duration.formattedTimeUnit()).", 
@@ -96,17 +106,17 @@ class ElevationManager {
                 self.onTimeUpdate?(remainingTime)
             } else {
                 self.stopDemotionTimer()
-                self.demotePrivileges { success in
-                    guard success else {
-                        Logger.shared.logDebug("Failed to demote privileges.")
-                        return
-                    }
+
+                // The helper demotes on its own schedule; catch up with what it did rather than
+                // asking for a second demotion.
+                Task { @MainActor in
+                    UserInfoManager.shared.updateUserInfo()
                     NotificationService(appState: self.appState).sendNotification(
                         message: Constants.Notifications.Elevation.ElevationDemotedMessage,
                         notificationType: .generic
                     )
                 }
-                Logger.shared.logDebug("Demotion timer expired. Privileges demoted.")
+                Logger.shared.logDebug("Demotion timer expired.")
             }
         }
     }
@@ -121,14 +131,14 @@ class ElevationManager {
     func handleElevation(reason: String) {
         Logger.shared.logDebug("Handling elevation for reason: \(reason)")
         // Authenticate and elevate privileges
-        self.elevatePrivileges { success in
+        self.elevatePrivileges(reason: reason) { success in
             Task { @MainActor [weak self] in
                 guard let self else { return }
                 guard success else {
-                    Logger.shared.logDebug("Authentication failed. Unable to elevate privileges.")
+                    Logger.shared.logDebug("Authentication failed or elevation was refused.")
                     return
                 }
-                Logger.shared.logDebug("Authentication successful. Privileges elevated.")
+                Logger.shared.logDebug("Privileges elevated.")
                 if self.appState.preferences.elevation.requireReasonForElevation {
                     if !self.appState.preferences.elevation.elevationWebhookURL.isEmpty {
                         sendReasonToWebhook(reason: reason)
@@ -136,18 +146,10 @@ class ElevationManager {
                         saveReasonToDisk(reason: reason)
                     }
                 }
-                let duration = Double(self.appState.preferences.elevation.maxElevationTime * 60)
+                // Count down from what the helper actually granted, not from what we asked for
+                let duration = await self.remainingElevationTime()
                 self.appState.startDemotionTimer(duration: duration)
             }
         }
-    }
-
-    func persistDemotionState(endTime: Date) {
-        UserDefaults.standard.set(endTime, forKey: "PrivilegeDemotionEndTime")
-        UserDefaults.standard.synchronize()
-    }
-
-    func loadPersistedDemotionState() -> Date? {
-        return UserDefaults.standard.object(forKey: "PrivilegeDemotionEndTime") as? Date
     }
 }

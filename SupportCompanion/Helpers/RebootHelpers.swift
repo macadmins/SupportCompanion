@@ -17,7 +17,7 @@ extension ActionHelpers {
         }
 
         do {
-            _ = try await ExecutionService.executeCommandPrivileged("shutdown", arguments: ["-r", "+1"])
+            _ = try await ExecutionService.reboot()
             Logger.shared.logDebug("Reboot command executed")
         } catch {
             if (error as NSError).domain == NSCocoaErrorDomain && (error as NSError).code == NSUserCancelledError {
@@ -32,7 +32,7 @@ extension ActionHelpers {
 
     static func cancelShutdown() {
         Task {
-            _ = try? await ExecutionService.executeCommandPrivileged("killall", arguments: ["shutdown"])
+            _ = try? await ExecutionService.cancelReboot()
             Logger.shared.logDebug("Cancel reboot command executed")
         }
     }

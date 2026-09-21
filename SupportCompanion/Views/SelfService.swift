@@ -53,7 +53,7 @@ struct SelfService: View {
                         
                             ScButton(action.buttonLabel ?? "Run", maxWidth: 150) {
                                 do {
-                                    _ = try await ExecutionService.executeShellCommand(action.command, isPrivileged: action.isPrivileged)
+                                    _ = try await ExecutionService.runAction(action)
                                 } catch {
                                     Logger.shared.logError("Self Service action '\(action.command)' failed: \(error)")
                                 }

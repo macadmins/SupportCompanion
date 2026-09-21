@@ -198,10 +198,7 @@ class CardGridViewModel {
 
         // Kick off the update; ideally obtain a process handle or PID
         do {
-            _ = try await ExecutionService.executeCommandPrivileged(
-                "/usr/local/bin/jamf",
-                arguments: ["patch", "-id", forId]
-            )
+            _ = try await ExecutionService.jamfPatch(id: forId)
         } catch {
             // Log and bail
             Logger.shared.logError("jamf patch launch failed: \(error)")

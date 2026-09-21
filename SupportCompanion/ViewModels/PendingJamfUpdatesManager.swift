@@ -112,14 +112,10 @@ class PendingJamfUpdatesManager: PendingUpdatesManager {
         markRunning(patchId)
         defer { markFinished(patchId) }
 
-        // The app runs as the logged-in user, so its UID is the user to run the patch as
-        var args: [String] = ["asuser", String(getuid()), "/usr/local/bin/jamf", "patch", "-id", String(patchId), "-showSteps", "-selfServiceOnly"]
-        if let userId = userId, !userId.isEmpty {
-            args += ["-user", userId]
-        }
-
         do {
-            _ = try await ExecutionService.executeCommandPrivileged("/bin/launchctl", arguments: args)
+            // The helper runs the patch as whichever user connected to it, which it reads from the
+            // audit token rather than taking our word for it.
+            _ = try await ExecutionService.jamfSelfServicePatch(id: String(patchId), userId: userId)
         } catch {
             Logger.shared.logError("Failed to run patch \(patchId): \(error)")
         }

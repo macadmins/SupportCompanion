@@ -55,7 +55,7 @@ struct ScCardCompactButton<Content: View>: View {
             if let buttonAction = buttonAction {
                 Task {
                     isRunning = true // Set running state to true
-                    _ = try await ExecutionService.executeShellCommand(buttonAction.command, isPrivileged: buttonAction.isPrivileged)
+                    _ = try await ExecutionService.runAction(buttonAction)
                     isRunning = false // Reset running state
                 }
             }

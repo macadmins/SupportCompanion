@@ -9,39 +9,45 @@ import Foundation
 
 // MARK: - ExecutionService
 
-/// Execute a script.
+/// Runs the commands behind the helper's operations.
+///
+/// Nothing here is reachable from a client directly. Every caller is a named operation in `HelperService`
+/// that supplies its own executable path, so the set of programs the helper can run as root is fixed at
+/// compile time — with the single exception of `shell(_:)`, which runs an administrator-defined action.
 enum ExecutionService {
 
-    // MARK: Constants
-
-    static let programURL = URL(fileURLWithPath: "/usr/bin/env")
-
-    // MARK: Execute
-
-    /// Execute the script at the provided URL.
-    static func executeScript(at path: String) async throws -> String {
-        let process = Process()
-        process.executableURL = programURL
-        process.arguments = [path]
-
-        let outputPipe = Pipe()
-        process.standardOutput = outputPipe
-        process.standardError = outputPipe
-        try process.run()
-
-        return try await Task {
-            let outputData = outputPipe.fileHandleForReading.readDataToEndOfFile()
-
-            guard let output = String(data: outputData, encoding: .utf8) else {
-                throw SupportCompanionErrors.invalidStringConversion
-            }
-
-            return output
+    /// Run an executable by absolute path.
+    ///
+    /// Absolute paths only: the helper's `PATH` comes from launchd, and a root daemon has no business
+    /// resolving program names through it.
+    static func run(_ executable: String, _ arguments: [String] = []) async throws -> String {
+        guard executable.hasPrefix("/") else {
+            throw SupportCompanionErrors.helperConnection("Refusing to run '\(executable)': not an absolute path")
         }
-        .value
+
+        let result = try await ProcessRunner.run(
+            executableURL: URL(fileURLWithPath: executable),
+            arguments: arguments
+        )
+
+        guard result.status == 0 else {
+            let errorOutput = String(data: result.error, encoding: .utf8) ?? "Unknown error"
+            throw NSError(
+                domain: "HelperExecutionError",
+                code: Int(result.status),
+                userInfo: [
+                    NSLocalizedDescriptionKey: "'\(executable)' failed with status \(result.status): \(errorOutput)"
+                ]
+            )
+        }
+
+        return String(data: result.output, encoding: .utf8) ?? ""
     }
-    
-    static func executeCommand(_ command: String, with arguments: [String] = []) async throws -> String {
-        try await ProcessRunner.runCommand(command, with: arguments)
+
+    /// Run an administrator-defined action command through `/bin/sh`.
+    ///
+    /// The command always comes from `HelperPreferences`, never from the connection.
+    static func shell(_ command: String) async throws -> String {
+        try await run("/bin/sh", ["-c", command])
     }
 }
