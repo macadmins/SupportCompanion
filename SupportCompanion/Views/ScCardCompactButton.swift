@@ -55,8 +55,12 @@ struct ScCardCompactButton<Content: View>: View {
             if let buttonAction = buttonAction {
                 Task {
                     isRunning = true // Set running state to true
-                    _ = try await ExecutionService.runAction(buttonAction)
-                    isRunning = false // Reset running state
+                    defer { isRunning = false } // Reset even if the action throws, or the button sticks
+                    do {
+                        _ = try await ExecutionService.runAction(buttonAction)
+                    } catch {
+                        Logger.shared.logError("Action '\(buttonAction.name)' failed: \(error)")
+                    }
                 }
             }
         }) {
