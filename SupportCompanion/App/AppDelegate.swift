@@ -5,11 +5,11 @@
 //  Created by Tobias Almén on 2024-11-14.
 //
 
-import Foundation
 import AppKit
-import UserNotifications
-import SwiftUI
 import Combine
+import Foundation
+import SwiftUI
+import UserNotifications
 
 @MainActor
 class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
@@ -24,6 +24,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     static var shouldExit = false
     private var notificationDelegate: NotificationDelegate?
     private var trayIconObservation: ObservationToken?
+    private var elevationCountdownObservation: ObservationToken?
     private var dockBadgeObservation: ObservationToken?
     private var popoverEventMonitors: [Any] = []
     private var popoverKeyWindowObserver: NSObjectProtocol?
@@ -50,20 +51,28 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
         if url.host == "run" {
             Logger.shared.logDebug("Received run command request")
-            if let queryItems = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems {
+            if let queryItems = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems
+            {
                 if let actionName = queryItems.first(where: { $0.name == "action" })?.value {
                     // Get the action details
-                    if let action = appStateManager.preferences.actions.first(where: { $0.name == actionName }) {
+                    if let action = appStateManager.preferences.actions.first(where: {
+                        $0.name == actionName
+                    }) {
                         Logger.shared.logDebug("Found action: \(action.name)")
-                        if action.isPrivileged ?? false && appStateManager.preferences.requirePrivilegedActionAuthentication {
-                            Logger.shared.logDebug("Action requires authentication") 
-                            authenticateWithTouchIDOrPassword(completion: { success in
-                                if success {
-                                    self.executeAction(action)
-                                } else {
-                                    Logger.shared.logError("Authentication failed. Action: \(action.name) was not executed.")
-                                }
-                            }, reason: "authenticate to execute this privileged action.")
+                        if action.isPrivileged ?? false
+                            && appStateManager.preferences.requirePrivilegedActionAuthentication
+                        {
+                            Logger.shared.logDebug("Action requires authentication")
+                            authenticateWithTouchIDOrPassword(
+                                completion: { success in
+                                    if success {
+                                        self.executeAction(action)
+                                    } else {
+                                        Logger.shared.logError(
+                                            "Authentication failed. Action: \(action.name) was not executed."
+                                        )
+                                    }
+                                }, reason: "authenticate to execute this privileged action.")
                         } else {
                             Logger.shared.logDebug("Executing action: \(action.name)")
                             self.executeAction(action)
@@ -77,15 +86,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         }
 
         switch url.host?.lowercased() {
-            case nil:
-                AppDelegate.shouldExit = true
-                if let statusItem = statusItem {
-                    Logger.shared.logDebug("Removing status item")
-                    NSStatusBar.system.removeStatusItem(statusItem)
-                    self.statusItem = nil
-                }
-            default:
-                AppDelegate.shouldExit = false
+        case nil:
+            AppDelegate.shouldExit = true
+            if let statusItem = statusItem {
+                Logger.shared.logDebug("Removing status item")
+                NSStatusBar.system.removeStatusItem(statusItem)
+                self.statusItem = nil
+            }
+        default:
+            AppDelegate.shouldExit = false
         }
         AppDelegate.urlLaunch = true
         showWindow()
@@ -94,7 +103,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Unit tests are hosted in the app; don't start the menu bar item, timers, or notifications for them
-        guard ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil else { return }
+        guard ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil else {
+            return
+        }
 
         if !AppDelegate.shouldExit && appStateManager.preferences.trayMenuShowIcon {
             setupTrayMenu()
@@ -119,26 +130,28 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         appStateManager.showWindowCallback = { [weak self] in
             self?.showWindow()
         }
-        
-        if appStateManager.preferences.desktopInfo.showDesktopInfo {            
+
+        if appStateManager.preferences.desktopInfo.showDesktopInfo {
             // Initialize transparent window
             transparentWindowController = TransparentWindowController(appState: appStateManager)
             transparentWindowController?.showWindow(nil)
-            
+
             // Make sure the transparent window is set up correctly
             if let window = NSApplication.shared.windows.first {
                 window.isOpaque = false
                 window.backgroundColor = .clear
             }
         }
-        
+
         requestNotificationPermissions()
         notificationDelegate = NotificationDelegate()
         UNUserNotificationCenter.current().delegate = notificationDelegate
         appStateManager.startBackgroundTasks()
         appStateManager.refreshAll()
         checkAndHandleDemotionOnLaunch()
-        if !appStateManager.preferences.hiddenCards.contains(Constants.Cards.jamfInfo) && appStateManager.preferences.mode == Constants.Modes.jamf {
+        if !appStateManager.preferences.hiddenCards.contains(Constants.Cards.jamfInfo)
+            && appStateManager.preferences.mode == Constants.Modes.jamf
+        {
             Task {
                 let id: String
                 do {
@@ -192,11 +205,23 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             self.appStateManager.attentionCount > 0
         }
         TrayMenuManager.shared.updateTrayIcon(hasUpdates: hasUpdates())
-        dockBadgeObservation = observeChanges(of: { [unowned self] in self.appStateManager.attentionCount }) { count in
+        dockBadgeObservation = observeChanges(of: { [unowned self] in
+            self.appStateManager.attentionCount
+        }) { count in
             BadgeManager.shared.incrementBadgeCount(count: count)
         }
         trayIconObservation = observeChanges(of: hasUpdates) { hasUpdates in
             TrayMenuManager.shared.updateTrayIcon(hasUpdates: hasUpdates)
+        }
+
+        // Count down next to the icon while administrator rights are held, so the time left is
+        // visible without opening anything. The demotion timer already publishes once a second.
+        let remaining = { [unowned self] () -> TimeInterval in
+            self.appStateManager.isDemotionActive ? self.appStateManager.timeToDemote : 0
+        }
+        TrayMenuManager.shared.updateElevationCountdown(remaining: remaining())
+        elevationCountdownObservation = observeChanges(of: remaining) { remaining in
+            TrayMenuManager.shared.updateElevationCountdown(remaining: remaining)
         }
     }
 
@@ -209,7 +234,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
         private init() {
             statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-            updateTrayIcon(hasUpdates: false) // Default state
+            updateTrayIcon(hasUpdates: false)  // Default state
         }
 
         func updateTrayIcon(hasUpdates: Bool) {
@@ -234,40 +259,58 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
                 return
             }
 
-            baseIcon.size = NSSize(width: 16, height: 16)
-            baseIcon.isTemplate = true // Ensure base icon respects system appearance
+            baseIcon.size = NSSize(width: 18, height: 18)
+            baseIcon.isTemplate = true  // Ensure base icon respects system appearance
 
             if let button = statusItem.button {
                 // Clear any existing layers
                 button.layer?.sublayers?.forEach { $0.removeFromSuperlayer() }
-                
+
                 // Set the base icon as the button's image
                 button.image = baseIcon
                 button.image?.isTemplate = true
 
                 if hasUpdates {
                     Logger.shared.logDebug("Updates available, adding badge to tray icon")
-                    
+
                     // Add badge dynamically as a layer
                     let badgeLayer = CALayer()
                     badgeLayer.backgroundColor = NSColor.red.cgColor
                     badgeLayer.frame = CGRect(
-                        x: button.bounds.width - 15, // Align to the lower-right corner
-                        y: 10, // Small offset from the bottom
+                        x: button.bounds.width - 15,  // Align to the lower-right corner
+                        y: 13,  // Small offset from the bottom
                         width: 8,
                         height: 8
                     )
-                    badgeLayer.cornerRadius = 4 // Make it circular
-                    
+                    badgeLayer.cornerRadius = 4  // Make it circular
+
                     // Ensure button has a layer to add sublayers
                     if button.layer == nil {
                         button.wantsLayer = true
                         button.layer = CALayer()
                     }
-                    
+
                     button.layer?.addSublayer(badgeLayer)
                 }
             }
+        }
+
+        /// Show the time left on an active elevation beside the tray icon.
+        ///
+        /// Set as the button's title rather than drawn into the image: the status item is
+        /// variable-length, so the text lays out beside the icon on its own, and `updateTrayIcon`
+        /// rebuilds the image and its layers without disturbing it.
+        func updateElevationCountdown(remaining: TimeInterval) {
+            guard let button = statusItem.button else { return }
+
+            guard remaining > 0 else {
+                button.title = ""
+                button.toolTip = nil
+                return
+            }
+
+            button.title = " \(remaining.formattedTime())"
+            button.toolTip = Constants.General.demote
         }
 
         func getStatusItem() -> NSStatusItem {
@@ -291,7 +334,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
                 )
                 .environment(AppStateManager.shared)
             )
-            
+
             // Anchor the popover to the status item's button
             popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
 
@@ -309,7 +352,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         removePopoverEventMonitors()
 
         // Another of this app's windows taking focus, e.g. the main window opened from the popover
-        popoverKeyWindowObserver = NotificationCenter.default.addObserver(forName: NSWindow.didBecomeKeyNotification, object: nil, queue: .main) { [weak self] notification in
+        popoverKeyWindowObserver = NotificationCenter.default.addObserver(
+            forName: NSWindow.didBecomeKeyNotification, object: nil, queue: .main
+        ) { [weak self] notification in
             MainActor.assumeIsolated {
                 guard let self, let window = notification.object as? NSWindow else { return }
                 if window !== self.popover.contentViewController?.view.window {
@@ -319,30 +364,36 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         }
 
         // Clicks in other apps
-        if let globalMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown, .otherMouseDown], handler: { [weak self] _ in
-            Task { @MainActor in self?.closePopover() }
-        }) {
+        if let globalMonitor = NSEvent.addGlobalMonitorForEvents(
+            matching: [.leftMouseDown, .rightMouseDown, .otherMouseDown],
+            handler: { [weak self] _ in
+                Task { @MainActor in self?.closePopover() }
+            })
+        {
             popoverEventMonitors.append(globalMonitor)
         }
 
         // Clicks in this app's other windows, and Escape
-        if let localMonitor = NSEvent.addLocalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown, .otherMouseDown, .keyDown], handler: { [weak self] event in
-            guard let self else { return event }
-            if event.type == .keyDown {
-                if event.keyCode == 53 { // Escape
+        if let localMonitor = NSEvent.addLocalMonitorForEvents(
+            matching: [.leftMouseDown, .rightMouseDown, .otherMouseDown, .keyDown],
+            handler: { [weak self] event in
+                guard let self else { return event }
+                if event.type == .keyDown {
+                    if event.keyCode == 53 {  // Escape
+                        self.closePopover()
+                        return nil
+                    }
+                    return event
+                }
+                let popoverWindow = self.popover.contentViewController?.view.window
+                let statusItemWindow = self.trayManager.getStatusItem().button?.window
+                // Clicks on the status item are left to togglePopover
+                if event.window !== popoverWindow && event.window !== statusItemWindow {
                     self.closePopover()
-                    return nil
                 }
                 return event
-            }
-            let popoverWindow = self.popover.contentViewController?.view.window
-            let statusItemWindow = self.trayManager.getStatusItem().button?.window
-            // Clicks on the status item are left to togglePopover
-            if event.window !== popoverWindow && event.window !== statusItemWindow {
-                self.closePopover()
-            }
-            return event
-        }) {
+            })
+        {
             popoverEventMonitors.append(localMonitor)
         }
     }
@@ -405,17 +456,21 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     @objc private func runAction(_ sender: NSMenuItem) {
         guard let action = sender.representedObject as? Action else { return }
         Task {
-            _ = try await ExecutionService.runAction(action)
+            do {
+                _ = try await ExecutionService.runAction(action)
+            } catch {
+                Logger.shared.logError("Tray menu action '\(action.name)' failed: \(error)")
+            }
         }
     }
 
     @objc private func quitApp() {
         NSApplication.shared.terminate(nil)
     }
-    
+
     private func configureAppUpdateNotificationCommand() {
         guard let manager = appStateManager.activeUpdatesManager else { return }
-        appStateManager.preferences.notifications.appUpdateNotificationCommand = "open \(manager.managementApp(forUpdates: true).path)"
+        appStateManager.preferences.notifications.appUpdateNotificationCommand =
+            "open \(manager.managementApp(forUpdates: true).path)"
     }
 }
-
