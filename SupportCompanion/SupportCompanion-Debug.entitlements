@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>com.apple.security.app-sandbox</key>
+	<false/>
+	<key>com.apple.security.files.user-selected.read-only</key>
+	<true/>
+	<key>com.apple.security.application-groups</key>
+	<true/>
+	<key>com.apple.security.inherit</key>
+	<true/>
+	<!--
+	  Debug only, and not in SupportCompanion.entitlements, which Release uses unchanged.
+
+	  The hardened runtime brings library validation with it, and that refuses to load code signed by
+	  a different team than the host. The test bundle is signed ad hoc so that the project needs no
+	  developer's team baked into it, which leaves it with no team at all — so a hardened app cannot
+	  load it and every test fails before it runs.
+
+	  Disabling library validation here is what makes the tests loadable. It does weaken the debug
+	  app: the helper requires a hardened client precisely because an unhardened one can be injected
+	  into and used as a proxy, and an app that will load anybody's code is open to the same thing.
+	  That is acceptable for a build that only ever runs on a developer's own Mac, and the release
+	  build keeps the full guarantee.
+	-->
+	<key>com.apple.security.cs.disable-library-validation</key>
+	<true/>
+</dict>
+</plist>
