@@ -20,7 +20,8 @@ struct PatchingProgressCard: View {
                         CircularProgressWithWave(
                             progress: appState.installPercentage / 100,
                             size: 200,
-                            waveHeight: (appState.installPercentage == 0.0 || appState.installPercentage == 100.0) ? 0 : 5
+                            waveHeight: (appState.installPercentage == 0.0 || appState.installPercentage == 100.0) ? 0 : 5,
+                            tint: NSColor(hex: appState.preferences.branding.accentColor ?? "") ?? .controlAccentColor
                         )
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)

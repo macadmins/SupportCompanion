@@ -85,7 +85,7 @@ struct FleetComplianceView: View {
         guard manager.host != nil,
               let date = FleetHost.realDate(manager.host?.detailUpdatedAt) else { return nil }
         if manager.isRefetching { return Constants.Actions.refetching }
-        return String(format: Constants.Fleet.lastChecked, date.formatted(.relative(presentation: .named)))
+        return String(format: Constants.Fleet.lastChecked, date.relativeDescription())
     }
 
     // MARK: - Content

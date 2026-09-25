@@ -5,8 +5,8 @@
 //  Created by Tobias Almén on 2024-11-11.
 //
 
-import SwiftUI
 import Combine
+import SwiftUI
 
 struct ContentView: View {
     @State private var selectedItem: SidebarItem?
@@ -22,12 +22,15 @@ struct ContentView: View {
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
-        let sidebarItems: [SidebarItem] = generateSidebarItems(preferences: appState.preferences, stateManager: webViewStateManager, cardGridViewModel: cardGridViewModel, pendingUpdatesCount: appState.pendingUpdatesCount, failingChecksCount: appState.fleetFailingChecksCount)
+        let sidebarItems: [SidebarItem] = generateSidebarItems(
+            preferences: appState.preferences, stateManager: webViewStateManager,
+            cardGridViewModel: cardGridViewModel, pendingUpdatesCount: appState.pendingUpdatesCount,
+            failingChecksCount: appState.fleetFailingChecksCount)
         let accentColor = Color(accentNSColor)
-        
+
         NavigationSplitView {
             VStack(spacing: 10) {
-                Spacer() // Push content to the center dynamically
+                Spacer()  // Push content to the center dynamically
 
                 // Logo Section
                 if showLogo, let logo = brandLogo {
@@ -39,7 +42,7 @@ struct ContentView: View {
                         .frame(maxWidth: 230)
                         .drawingGroup()
                         .fixedSize(horizontal: false, vertical: true)
-                        .padding(.top, 20) // Minimal padding
+                        .padding(.top, 20)  // Minimal padding
                         .padding(.horizontal, 20)
                 }
 
@@ -48,10 +51,10 @@ struct ContentView: View {
                     Text(appState.preferences.branding.brandName)
                         .font(.title)
                         .multilineTextAlignment(.center)
-                        .padding(.top, 20) // Bring the title closer to the logo
+                        .padding(.top, 20)  // Bring the title closer to the logo
                 }
 
-                Spacer() // Push content to the center dynamically
+                Spacer()  // Push content to the center dynamically
 
                 // Sidebar List (custom to avoid List clipping)
                 SidebarListView(
@@ -86,33 +89,34 @@ struct ContentView: View {
                 .background(Color.clear)
             }
             .navigationSplitViewColumnWidth(
-                min: 280, ideal: 280, max: 320)
+                min: 280, ideal: 280, max: 320
+            )
             .frame(maxHeight: .infinity, alignment: .top)
             .background(Color.clear)
         } detail: {
-                Group{
-                    if let selectedItem = selectedItem {
-                        selectedItem.destination
-                            .id(selectedItem.id)
-                    } else {
-                        Text("Select an option") // Placeholder if nothing is selected
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .background(Color.gray.opacity(0.1))
-                    }
+            Group {
+                if let selectedItem = selectedItem {
+                    selectedItem.destination
+                        .id(selectedItem.id)
+                } else {
+                    Text("Select an option")  // Placeholder if nothing is selected
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(Color.gray.opacity(0.1))
                 }
-                .toolbar {
-                    ToolbarItem(placement: .automatic) {
-                        ToolbarSupportButton(isShowingPopup: $isShowingPopup)
-                    }
-
-                    if #available(macOS 26.0, *) {
-                        ToolbarSpacer(.fixed)
-                    }
-
-                    ToolbarItem(placement: .automatic) {
-                        ToolbarDarkModeToggleView()
-                    }
+            }
+            .toolbar {
+                ToolbarItem(placement: .automatic) {
+                    ToolbarSupportButton(isShowingPopup: $isShowingPopup)
                 }
+
+                if #available(macOS 26.0, *) {
+                    ToolbarSpacer(.fixed)
+                }
+
+                ToolbarItem(placement: .automatic) {
+                    ToolbarDarkModeToggleView()
+                }
+            }
         }
         .sheet(isPresented: $isShowingPopup) {
             // The popup content
@@ -176,9 +180,11 @@ struct ContentView: View {
     struct ToolbarSupportButton: View {
         @Environment(AppStateManager.self) var appState
         @Binding var isShowingPopup: Bool
-        
+
         var body: some View {
-            if !appState.preferences.supportEmail.isEmpty && !appState.preferences.supportPhone.isEmpty {
+            if !appState.preferences.supportEmail.isEmpty
+                && !appState.preferences.supportPhone.isEmpty
+            {
                 Button {
                     isShowingPopup = true
                 } label: {
@@ -206,16 +212,16 @@ struct ContentView: View {
 
         var body: some View {
             ZStack {
-                // Background layers: selected capsule or hover capsule
+                // Background layers: selected highlight or hover highlight
                 if isSelected {
-                    Capsule()
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
                         .fill(accentColor)
                         .matchedGeometryEffect(id: "sidebar-highlight", in: namespace)
-                        .frame(height: 50)
+                        .frame(height: 38)
                 } else if isHovered {
-                    Capsule()
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
                         .fill(Color.primary.opacity(0.08))
-                        .frame(height: 50)
+                        .frame(height: 38)
                 }
 
                 // Row content
@@ -239,7 +245,7 @@ struct ContentView: View {
                     }
                 }
                 .padding(.horizontal, 15)
-                .padding(.vertical, 15)
+                .padding(.vertical, 10)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .contentShape(Rectangle())
@@ -290,15 +296,19 @@ private struct SidebarListView: View {
                 onIncomingURL(url)
             }
         }
-        .onChange(of: AppStateManager.shared.preferences.branding.brandLogo) { _, _ in onBrandLogoChange() }
-        .onChange(of: AppStateManager.shared.preferences.branding.brandLogoLight) { _, _ in onBrandLogoLightChange() }
+        .onChange(of: AppStateManager.shared.preferences.branding.brandLogo) { _, _ in
+            onBrandLogoChange()
+        }
+        .onChange(of: AppStateManager.shared.preferences.branding.brandLogoLight) { _, _ in
+            onBrandLogoLightChange()
+        }
     }
 
     @Environment(\.colorScheme) private var colorScheme
 }
 
-private extension ContentView {
-    var accentNSColor: NSColor {
+extension ContentView {
+    fileprivate var accentNSColor: NSColor {
         NSColor(hex: appState.preferences.branding.accentColor ?? "") ?? NSColor.controlAccentColor
     }
 }

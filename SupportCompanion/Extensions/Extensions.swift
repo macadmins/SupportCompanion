@@ -143,6 +143,28 @@ extension TimeInterval {
     }
 }
 
+extension Date {
+    /// Relative time for card rows, e.g. "5 minutes ago".
+    ///
+    /// Swedish and Norwegian build this with a leading preposition — "för 5 minuter sedan",
+    /// "for 5 minutter siden" — which is long for a row that sits next to a label. The
+    /// preposition is dropped for those two languages; the trailing "sedan"/"siden" still
+    /// carries the meaning, so the result reads correctly. Languages that carry the meaning
+    /// in the preposition instead, such as German ("vor 5 Minuten") and French
+    /// ("il y a 5 minutes"), are left alone, as is a named day like "i förrgår".
+    func relativeDescription() -> String {
+        let formatted = formatted(.relative(presentation: .named))
+        let preposition: String
+        switch Locale.current.language.languageCode?.identifier {
+        case "sv": preposition = "för "
+        case "nb", "nn", "no": preposition = "for "
+        default: return formatted
+        }
+        guard formatted.hasPrefix(preposition) else { return formatted }
+        return String(formatted.dropFirst(preposition.count))
+    }
+}
+
 extension Color {
     // Orange shades
     static let orangeLight = Color(hue: 0.1, saturation: 0.9, brightness: 0.75) // Softer orange for light mode

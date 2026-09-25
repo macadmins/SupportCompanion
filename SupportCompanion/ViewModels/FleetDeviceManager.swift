@@ -49,7 +49,7 @@ final class FleetDeviceManager {
         let unknown = Info.unknown
         func relative(_ date: Date?) -> String {
             guard host != nil else { return unknown }
-            return FleetHost.realDate(date).map { $0.formatted(.relative(presentation: .named)) } ?? Info.never
+            return FleetHost.realDate(date).map { $0.relativeDescription() } ?? Info.never
         }
         return [
             (Info.Keys.id, Info.Labels.id, .string(host.map { String($0.id) } ?? unknown)),
