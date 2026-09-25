@@ -34,6 +34,18 @@ enum Constants {
         static let fleet = "Fleet"
     }
 
+    /// Wording the Apps page shares with the Fleet catalog.
+    ///
+    /// Aliases rather than keys of their own: the text is word for word the same, and a second set of
+    /// keys would mean translating "Installed" into five languages twice and keeping both in step.
+    enum Apps {
+        static var searchPlaceholder: String { Fleet.searchPlaceholder }
+        static var clearSearch: String { Fleet.clearSearch }
+        static var updatesAvailable: String { Fleet.updatesAvailable }
+        static var installed: String { Fleet.installed }
+        static var noMatches: String { Fleet.noMatches }
+    }
+
     enum Fleet {
         static let searchPlaceholder = String(
             localized: "Fleet.SearchPlaceholder", defaultValue: "Search apps",
