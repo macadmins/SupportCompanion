@@ -47,6 +47,25 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     }
 
     func application(_ application: NSApplication, open urls: [URL]) {
+        // Installers the user double-clicked, when this app is registered to open them. Taken before
+        // the custom scheme is looked at: these are file URLs and have no host to switch on.
+        let installers = urls.filter {
+            $0.isFileURL && InstallerFileTypes.fileExtensions.contains($0.pathExtension.lowercased())
+        }
+
+        if let first = installers.first {
+            AppDelegate.shouldExit = false
+
+            // One at a time. The rest go where they would have gone anyway rather than queueing up
+            // behind a window the user has not answered yet.
+            for other in installers.dropFirst() {
+                NSWorkspace.shared.open(other)
+            }
+
+            UserInstallManager.shared.open(first)
+            return
+        }
+
         guard let url = urls.first else { return }
 
         if url.host == "run" {
@@ -101,6 +120,25 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         NotificationCenter.default.post(name: .handleIncomingURL, object: url)
     }
 
+    /// The Services menu item, for an installer the user right-clicked in Finder.
+    @objc func installOpenedInstaller(
+        _ pasteboard: NSPasteboard,
+        userData: String,
+        error: AutoreleasingUnsafeMutablePointer<NSString>
+    ) {
+        guard
+            let urls = pasteboard.readObjects(forClasses: [NSURL.self], options: nil) as? [URL],
+            let first = urls.first(where: {
+                InstallerFileTypes.fileExtensions.contains($0.pathExtension.lowercased())
+            })
+        else {
+            error.pointee = "No installer package or disk image was selected" as NSString
+            return
+        }
+
+        UserInstallManager.shared.open(first)
+    }
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Unit tests are hosted in the app; don't start the menu bar item, timers, or notifications for them
         guard ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil else {
@@ -142,6 +180,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
                 window.backgroundColor = .clear
             }
         }
+
+        // The right-click "Install with Support Companion" item.
+        NSApp.servicesProvider = self
+        NSUpdateDynamicServices()
+
+        // Whether Finder actually offers it. Applied on every launch rather than once, so turning the
+        // preference off takes the item away again.
+        InstallerServiceMenu.apply(showing: appStateManager.preferences.showInstallerServiceMenuItem)
+
+        // What this process read, so that a disagreement with the helper — which reads the same
+        // setting by a different route — is visible in one place.
+        Logger.shared.logInfo(
+            "User installs: EnableUserInstalls=\(appStateManager.preferences.enableUserInstalls)"
+        )
 
         requestNotificationPermissions()
         notificationDelegate = NotificationDelegate()

@@ -108,6 +108,9 @@
     "%lld%%" : {
 
     },
+    "•" : {
+
+    },
     "°C" : {
 
     },
@@ -3535,6 +3538,18 @@
         }
       }
     },
+    "General.Cancel" : {
+      "comment" : "Cancel",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Cancel"
+          }
+        }
+      }
+    },
     "General.Close" : {
       "comment" : "Close",
       "extractionState" : "manual",
@@ -3783,6 +3798,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nedgradera"
+          }
+        }
+      }
+    },
+    "General.Done" : {
+      "comment" : "Done",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Done"
           }
         }
       }
@@ -6526,6 +6553,318 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Användarnamn:"
+          }
+        }
+      }
+    },
+    "UserInstalls.AllowedAs" : {
+      "comment" : "Label for which allowlist entry matched",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Allowed as"
+          }
+        }
+      }
+    },
+    "UserInstalls.AllowedByAdministrator" : {
+      "comment" : "Shown when an installer matches the administrator's allowlist",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Your administrator allows you to install this"
+          }
+        }
+      }
+    },
+    "UserInstalls.AvailableInCatalog" : {
+      "comment" : "Shown when a refused installer matches something in the software catalog",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Your organisation already offers this"
+          }
+        }
+      }
+    },
+    "UserInstalls.AvailableInCatalogDetail" : {
+      "comment" : "Explains the catalog suggestion; %@ is the name of the Apps page",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Install the approved version from %@ instead of this download."
+          }
+        }
+      }
+    },
+    "UserInstalls.Certificate" : {
+      "comment" : "Label for the digest of the certificate an installer was signed with",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Signing certificate SHA-256"
+          }
+        }
+      }
+    },
+    "UserInstalls.Checking" : {
+      "comment" : "Shown while the helper assesses an installer the user opened",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Checking this installer"
+          }
+        }
+      }
+    },
+    "UserInstalls.Details" : {
+      "comment" : "Collapsed section holding what an organisation needs to allow an installer",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Details"
+          }
+        }
+      }
+    },
+    "UserInstalls.Developer" : {
+      "comment" : "Label for who signed the installer",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Developer"
+          }
+        }
+      }
+    },
+    "UserInstalls.ElevateInstead" : {
+      "comment" : "Button offering the elevation flow for an installer that is not allowed",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Request admin rights"
+          }
+        }
+      }
+    },
+    "UserInstalls.Failed" : {
+      "comment" : "Shown when an allowed installer failed to install",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "The installation did not finish"
+          }
+        }
+      }
+    },
+    "UserInstalls.Fingerprint" : {
+      "comment" : "Precedes a file name, above that file's digest, for a refused installer",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "SHA-256 of"
+          }
+        }
+      }
+    },
+    "UserInstalls.Identifier" : {
+      "comment" : "Label for a refused installer's package or bundle identifier",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Identifier"
+          }
+        }
+      }
+    },
+    "UserInstalls.Install" : {
+      "comment" : "Button that installs an allowed application",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Install"
+          }
+        }
+      }
+    },
+    "UserInstalls.Installed" : {
+      "comment" : "Shown when an allowed installer has finished installing",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Installed successfully"
+          }
+        }
+      }
+    },
+    "UserInstalls.Installing" : {
+      "comment" : "Shown while an allowed installer is being installed",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Installing"
+          }
+        }
+      }
+    },
+    "UserInstalls.InstallsTo" : {
+      "comment" : "Label for the places an installer writes",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Installs to"
+          }
+        }
+      }
+    },
+    "UserInstalls.KindApplication" : {
+      "comment" : "Describes an app from a .dmg in the install window",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Application"
+          }
+        }
+      }
+    },
+    "UserInstalls.KindPackage" : {
+      "comment" : "Describes a .pkg in the install window",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Installer package"
+          }
+        }
+      }
+    },
+    "UserInstalls.NotAllowed" : {
+      "comment" : "Shown when an installer does not match the organisation's allowlist",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Your organisation has not allowed this installer"
+          }
+        }
+      }
+    },
+    "UserInstalls.OpenInInstaller" : {
+      "comment" : "Button handing the installer to Installer.app after the check could not be made",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Open Anyway"
+          }
+        }
+      }
+    },
+    "UserInstalls.ShowInCatalog" : {
+      "comment" : "Button taking the user to the software catalog page",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Show me"
+          }
+        }
+      }
+    },
+    "UserInstalls.Verification" : {
+      "comment" : "Label for how the installer was verified",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Verified"
+          }
+        }
+      }
+    },
+    "UserInstalls.VerifiedByDigest" : {
+      "comment" : "Shown when an installer matched on its SHA-256",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Exact copy your organisation approved"
+          }
+        }
+      }
+    },
+    "UserInstalls.VerifiedNotarized" : {
+      "comment" : "Shown when an installer matched on a notarized signature",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Signature and Apple notarization"
+          }
+        }
+      }
+    },
+    "UserInstalls.VerifiedSignature" : {
+      "comment" : "Shown when an installer matched on its signature alone",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Developer signature"
+          }
+        }
+      }
+    },
+    "UserInstalls.Version" : {
+      "comment" : "Precedes the version number of an installer in the install window",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Version"
           }
         }
       }

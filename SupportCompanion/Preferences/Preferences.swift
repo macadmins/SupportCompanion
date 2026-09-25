@@ -105,6 +105,30 @@ class Preferences {
         TrustedPreferences.bool(forKey: "RequirePrivilegedActionAuthentication", default: true)
     }
 
+    // MARK: - User installs
+
+    /// Whether to take an interest in installers the user opens.
+    ///
+    /// Presentation only, as everywhere else here: the helper re-reads this and the allowlist before it
+    /// does anything, and its answer is the one that counts. This only decides whether to bother
+    /// staging a file the user just opened.
+    var enableUserInstalls: Bool {
+        TrustedPreferences.bool(forKey: "EnableUserInstalls", default: false)
+    }
+
+    /// Whether Finder offers "Install with Support Companion" when someone right-clicks an installer.
+    ///
+    /// Follows `EnableUserInstalls` unless an administrator says otherwise, so an organisation that
+    /// does not use the feature never sees the menu item, and one that does can still hide it — for
+    /// instance to keep the only route the catalog inside the app.
+    var showInstallerServiceMenuItem: Bool {
+        guard TrustedPreferences.object(forKey: "ShowInstallerServiceMenuItem") != nil else {
+            return enableUserInstalls
+        }
+
+        return TrustedPreferences.bool(forKey: "ShowInstallerServiceMenuItem", default: true)
+    }
+
     /// Parsed from the Actions preference; reloaded when defaults change. See loadActions().
     var actions: [Action] = []
     var hiddenActions: [String] {

@@ -32,6 +32,9 @@ extension Helper {
         // Take back any administrator rights that outlived the last run before accepting connections
         ElevationCoordinator.shared.reconcileOnLaunch()
 
+        // Clear staged installers, and any disk image still attached, that a previous run left behind
+        InstallCoordinator.shared.reconcileOnLaunch()
+
         // start listening on new connections
         listener.resume()
 

@@ -20,7 +20,10 @@ class AppStateManager {
     @ObservationIgnored lazy var pendingJamfUpdatesManager = PendingJamfUpdatesManager(appState: self)
     @ObservationIgnored lazy var pendingFleetUpdatesManager = PendingFleetUpdatesManager(appState: self)
     @ObservationIgnored lazy var evergreenInfoManager = EvergreenInfoManager(appState: self)
-    @ObservationIgnored lazy var elevationManager = ElevationManager(appState: self)
+    // The shared one, never a fresh instance. The countdown lives on the manager, while the value it
+    // publishes lives here — so two managers mean two timers writing one `timeToDemote`, and stopping
+    // one leaves the other to write its own value straight back.
+    @ObservationIgnored lazy var elevationManager = ElevationManager.shared
     @ObservationIgnored lazy var fleetSoftwareManager: FleetSoftwareManager = {
         let manager = FleetSoftwareManager()
         manager.onActionFinished = { [weak self] title, action, outcome in

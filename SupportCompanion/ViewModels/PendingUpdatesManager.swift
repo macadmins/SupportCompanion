@@ -59,6 +59,27 @@ class PendingUpdatesManager {
         ("Unknown App", "")
     }
 
+    /// Whether this mode's catalog already offers the application an installer would install.
+    ///
+    /// The default is nil, meaning "no claim": a mode that cannot inspect its catalog should say
+    /// nothing rather than guess. A mode that can implements this by mapping its own catalog to
+    /// `CatalogEntry` and handing it to `CatalogMatching` — the matching rule stays in one place, and
+    /// adding Munki or Jamf later is an override here rather than a change anywhere that displays it.
+    func catalogSuggestion(for facts: InstallerFacts) -> CatalogSuggestion? { nil }
+
+    /// Helper for the above: match against this mode's catalog and point at this mode's software app.
+    final func suggestion(matching facts: InstallerFacts, in entries: [CatalogEntry]) -> CatalogSuggestion? {
+        guard let match = CatalogMatching.match(facts, in: entries) else { return nil }
+
+        let destination = managementApp(forUpdates: false)
+
+        return CatalogSuggestion(
+            name: match.name,
+            destinationName: destination.name,
+            destinationPath: destination.path
+        )
+    }
+
     /// Title of the button that opens the management app.
     func openManagementAppTitle(forUpdates: Bool) -> String {
         "\(Constants.Actions.openManagementApp) \(managementApp(forUpdates: forUpdates).name)"

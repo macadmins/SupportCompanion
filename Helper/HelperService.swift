@@ -52,6 +52,24 @@ extension HelperService {
         return userId
     }
 
+    /// Reduce a client-supplied file name to something safe to log and to derive an extension from.
+    ///
+    /// Only ever used for display, for the log, and for its extension — never to build a path to read
+    /// from. The staging file is named by the helper. See `StagedFile.copy(from:toDirectory:fileName:)`.
+    private func sanitizedFileName(_ fileName: String) throws -> String {
+        let name = (fileName as NSString).lastPathComponent
+            .unicodeScalars
+            .map { CharacterSet.controlCharacters.contains($0) || $0 == "/" ? " " : Character($0) }
+            .reduce(into: "") { $0.append($1) }
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !name.isEmpty, name != ".", name != ".." else {
+            throw SupportCompanionErrors.helperConnection("'\(fileName)' is not a usable file name")
+        }
+
+        return String(name.prefix(255))
+    }
+
     /// Refuse to act on root or on a uid with no account behind it.
     private func validatedElevationTarget() throws -> String {
         guard clientUID != 0 else {
@@ -110,6 +128,51 @@ extension HelperService: HelperProtocol {
         Logger.shared.logInfo("Running privileged action '\(name)' for \(clientUserName)")
 
         return try await ExecutionService.shell(command)
+    }
+
+    // MARK: User installs
+
+    func stageInstaller(_ installer: FileHandle, fileName: String) async throws -> String {
+        guard clientUID != 0, !clientUserName.isEmpty else {
+            throw SupportCompanionErrors.helperConnection("No user account for uid \(clientUID)")
+        }
+
+        let name = try sanitizedFileName(fileName)
+
+        Logger.shared.logInfo("Assessing installer '\(name)' for \(clientUserName)")
+
+        let assessment = try await InstallCoordinator.shared.stage(
+            from: installer,
+            fileName: name,
+            clientUID: clientUID,
+            clientUserName: clientUserName
+        )
+
+        return try assessment.jsonString()
+    }
+
+    func installStagedInstaller(token: String) async throws -> String {
+        guard UUID(uuidString: token) != nil else {
+            throw SupportCompanionErrors.helperConnection("That is not a staged installer")
+        }
+
+        Logger.shared.logInfo("Installing staged installer for \(clientUserName)")
+
+        return try await InstallCoordinator.shared.install(
+            token: token,
+            clientUID: clientUID,
+            clientUserName: clientUserName
+        )
+    }
+
+    func discardStagedInstaller(token: String) async throws -> String {
+        guard UUID(uuidString: token) != nil else {
+            throw SupportCompanionErrors.helperConnection("That is not a staged installer")
+        }
+
+        await InstallCoordinator.shared.discard(token, clientUID: clientUID)
+
+        return ""
     }
 
     // MARK: Jamf
