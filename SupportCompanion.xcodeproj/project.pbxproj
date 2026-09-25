@@ -130,6 +130,7 @@
 			membershipExceptions = (
 				HelperConstants.swift,
 				HelperProtocol.swift,
+				InstallerPolicy.swift,
 				"OSStatus+Extensions.swift",
 				RemoteApplicationProtocol.swift,
 			);
@@ -215,6 +216,7 @@
 				StorageInfoManager.swift,
 				SystemUpdatesManager.swift,
 				UserInfoManager.swift,
+				UserInstallManager.swift,
 			);
 			target = F6F3BEB82CE1E7BA0036ADB9 /* SupportCompanion */;
 		};
@@ -223,6 +225,7 @@
 			membershipExceptions = (
 				HelperConstants.swift,
 				HelperProtocol.swift,
+				InstallerPolicy.swift,
 				"OSStatus+Extensions.swift",
 				RemoteApplicationProtocol.swift,
 			);

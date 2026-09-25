@@ -27,6 +27,13 @@ class PendingFleetUpdatesManager: PendingUpdatesManager {
         (Constants.Navigation.apps, "supportcompanion://apps")
     }
 
+    override func catalogSuggestion(for facts: InstallerFacts) -> CatalogSuggestion? {
+        suggestion(
+            matching: facts,
+            in: software.titles.map { CatalogEntry(name: $0.title, bundleIdentifier: $0.bundleIdentifier) }
+        )
+    }
+
     /// The apps page is part of this app, so "Open Self Service" would be misleading.
     override func openManagementAppTitle(forUpdates: Bool) -> String {
         forUpdates ? Constants.Fleet.viewUpdates : Constants.Fleet.viewApps

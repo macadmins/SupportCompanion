@@ -13,6 +13,7 @@ struct CircularProgressWithWave: View {
     var progress: CGFloat
     var size: CGFloat
     var waveHeight: CGFloat
+    var tint: NSColor
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.accessibilityReduceMotion) var reduceMotion
 
@@ -29,7 +30,7 @@ struct CircularProgressWithWave: View {
                 .frame(width: size, height: size)
 
             // Wave masked to a circle
-            WaveLayerView(progress: progress, waveHeight: waveHeight, isMoving: !reduceMotion)
+            WaveLayerView(progress: progress, waveHeight: waveHeight, isMoving: !reduceMotion, tint: tint)
                 .frame(width: size, height: size)
                 .clipShape(Circle())
 
@@ -53,6 +54,7 @@ private struct WaveLayerView: NSViewRepresentable {
     var progress: CGFloat
     var waveHeight: CGFloat
     var isMoving: Bool
+    var tint: NSColor
 
     func makeNSView(context: Context) -> WaveNSView {
         WaveNSView()
@@ -62,6 +64,7 @@ private struct WaveLayerView: NSViewRepresentable {
         view.progress = progress
         view.waveHeight = waveHeight
         view.isMoving = isMoving
+        view.tint = tint
     }
 }
 
@@ -69,6 +72,7 @@ private final class WaveNSView: NSView {
     var progress: CGFloat = 0 { didSet { if progress != oldValue { needsLayout = true } } }
     var waveHeight: CGFloat = 0 { didSet { if waveHeight != oldValue { needsLayout = true } } }
     var isMoving = false { didSet { if isMoving != oldValue { updateAnimation() } } }
+    var tint: NSColor = .controlAccentColor { didSet { if tint != oldValue { updateColors() } } }
 
     /// Seconds for the wave to travel one full period
     private let wavePeriod: CFTimeInterval = 4
@@ -117,9 +121,25 @@ private final class WaveNSView: NSView {
         updateAnimation()
     }
 
+    /// Top stop is a lighter shade of the tint, so the wave keeps its sense of depth on any accent.
     private func updateColors() {
         effectiveAppearance.performAsCurrentDrawingAppearance {
-            gradientLayer.colors = [NSColor.systemBlue.cgColor, NSColor.systemPurple.cgColor]
+            guard let base = tint.usingColorSpace(.sRGB) else {
+                gradientLayer.colors = [tint.cgColor, tint.cgColor]
+                return
+            }
+            var hue: CGFloat = 0
+            var saturation: CGFloat = 0
+            var brightness: CGFloat = 0
+            var alpha: CGFloat = 0
+            base.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
+            let top = NSColor(
+                hue: hue,
+                saturation: max(saturation - 0.25, 0),
+                brightness: min(brightness + 0.2, 1),
+                alpha: alpha
+            )
+            gradientLayer.colors = [top.cgColor, base.cgColor]
         }
     }
 

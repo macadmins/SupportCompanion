@@ -196,6 +196,17 @@ enum Constants {
         static let uninstall = String(
             localized: "Fleet.Uninstall", defaultValue: "Uninstall",
             comment: "Button that uninstalls an app through Fleet")
+        static let availableInCatalog = String(
+            localized: "UserInstalls.AvailableInCatalog",
+            defaultValue: "Your organisation already offers this",
+            comment: "Shown when a refused installer matches something in the software catalog")
+        static let availableInCatalogDetail = String(
+            localized: "UserInstalls.AvailableInCatalogDetail",
+            defaultValue: "Install the approved version from %@ instead of this download.",
+            comment: "Explains the catalog suggestion; %@ is the name of the Apps page")
+        static let showInCatalog = String(
+            localized: "UserInstalls.ShowInCatalog", defaultValue: "Show me",
+            comment: "Button taking the user to the software catalog page")
         static let details = String(
             localized: "Fleet.Details", defaultValue: "Details",
             comment: "Button that shows the output of a failed install or uninstall")
@@ -204,6 +215,45 @@ enum Constants {
             comment: "Help text for the menu with extra actions for an app")
         static let cancel = String(
             localized: "Fleet.Cancel", defaultValue: "Cancel", comment: "Cancel button")
+        static let ssoSheetTitle = String(
+            localized: "Fleet.SSOSheetTitle", defaultValue: "Sign in to Fleet",
+            comment: "Title of the Fleet single sign-on window")
+        static let ssoConnecting = String(
+            localized: "Fleet.SSOConnecting", defaultValue: "Connecting to your identity provider\u{2026}",
+            comment: "Shown while the Fleet sign-in page is being prepared")
+        static let ssoCouldNotSignIn = String(
+            localized: "Fleet.SSOCouldNotSignIn", defaultValue: "Couldn't sign in",
+            comment: "Title when Fleet single sign-on failed")
+        static let ssoDisabled = String(
+            localized: "Fleet.SSODisabled",
+            defaultValue: "Single sign-on for Fleet isn't enabled. Contact your IT department.",
+            comment: "Shown when Fleet Desktop single sign-on was turned off during sign-in")
+        static let ssoFailed = String(
+            localized: "Fleet.SSOFailed",
+            defaultValue: "Your identity provider didn't complete the sign-in. Try again.",
+            comment: "Shown when the identity provider didn't return a valid Fleet session")
+        static let signInNotification = String(
+            localized: "Fleet.SignInNotification",
+            defaultValue: "Sign in to Fleet to see your apps and compliance checks.",
+            comment: "Notification when Fleet needs the user to sign in")
+        static let signInNotificationFailing = String(
+            localized: "Fleet.SignInNotificationFailing",
+            defaultValue: "%d compliance checks need attention. Sign in to see which.",
+            comment: "Notification when a signed-out Mac has failing checks; %d is how many")
+        static let signedOutRecord = String(
+            localized: "Fleet.SignedOutRecord",
+            defaultValue: "Sign in to see this Mac's record in Fleet.",
+            comment: "Fleet info card when the user hasn't signed in")
+        static let signedOutFailing = String(
+            localized: "Fleet.SignedOutFailing",
+            defaultValue: "%d checks need attention. Sign in to see which.",
+            comment: "Compliance summary while signed out; %d is the number of failing checks")
+        static let signedOutPassing = String(
+            localized: "Fleet.SignedOutPassing", defaultValue: "No checks are failing.",
+            comment: "Compliance summary while signed out when nothing is failing")
+        static let signInForChecks = String(
+            localized: "Fleet.SignInForChecks", defaultValue: "Sign in to see compliance checks.",
+            comment: "Compliance page when Fleet requires single sign-on")
         static let close = String(
             localized: "Fleet.Close", defaultValue: "Close",
             comment: "Button that closes the install details")
@@ -285,6 +335,99 @@ enum Constants {
             localized: "General.Ago", defaultValue: "Ago", comment: "Ago")
         static let justNow: String = String(
             localized: "General.JustNow", defaultValue: "Just Now", comment: "Just Now")
+        static let cancel = String(
+            localized: "General.Cancel", defaultValue: "Cancel", comment: "Cancel")
+        static let done = String(
+            localized: "General.Done", defaultValue: "Done", comment: "Done")
+    }
+
+    /// The window shown when a user opens an installer an organisation may have allowed.
+    enum UserInstalls {
+        static let checking = String(
+            localized: "UserInstalls.Checking", defaultValue: "Checking this installer",
+            comment: "Shown while the helper assesses an installer the user opened")
+        static let installing = String(
+            localized: "UserInstalls.Installing", defaultValue: "Installing",
+            comment: "Shown while an allowed installer is being installed")
+        static let installed = String(
+            localized: "UserInstalls.Installed", defaultValue: "Installed successfully",
+            comment: "Shown when an allowed installer has finished installing")
+        static let failed = String(
+            localized: "UserInstalls.Failed", defaultValue: "The installation did not finish",
+            comment: "Shown when an allowed installer failed to install")
+        static let install = String(
+            localized: "UserInstalls.Install", defaultValue: "Install",
+            comment: "Button that installs an allowed application")
+        static let allowedByAdministrator = String(
+            localized: "UserInstalls.AllowedByAdministrator",
+            defaultValue: "Your administrator allows you to install this",
+            comment: "Shown when an installer matches the administrator's allowlist")
+        static let notAllowed = String(
+            localized: "UserInstalls.NotAllowed",
+            defaultValue: "Your organisation has not allowed this installer",
+            comment: "Shown when an installer does not match the organisation's allowlist")
+        static let elevateInstead = String(
+            localized: "UserInstalls.ElevateInstead", defaultValue: "Request admin rights",
+            comment: "Button offering the elevation flow for an installer that is not allowed")
+        static let version = String(
+            localized: "UserInstalls.Version", defaultValue: "Version",
+            comment: "Precedes the version number of an installer in the install window")
+        static let kindPackage = String(
+            localized: "UserInstalls.KindPackage", defaultValue: "Installer package",
+            comment: "Describes a .pkg in the install window")
+        static let kindApplication = String(
+            localized: "UserInstalls.KindApplication", defaultValue: "Application",
+            comment: "Describes an app from a .dmg in the install window")
+        static let availableInCatalog = String(
+            localized: "UserInstalls.AvailableInCatalog",
+            defaultValue: "Your organisation already offers this",
+            comment: "Shown when a refused installer matches something in the software catalog")
+        static let availableInCatalogDetail = String(
+            localized: "UserInstalls.AvailableInCatalogDetail",
+            defaultValue: "Install the approved version from %@ instead of this download.",
+            comment: "Explains the catalog suggestion; %@ is the name of the Apps page")
+        static let showInCatalog = String(
+            localized: "UserInstalls.ShowInCatalog", defaultValue: "Show me",
+            comment: "Button taking the user to the software catalog page")
+        static let details = String(
+            localized: "UserInstalls.Details", defaultValue: "Details",
+            comment: "Collapsed section holding what an organisation needs to allow an installer")
+        static let certificate = String(
+            localized: "UserInstalls.Certificate", defaultValue: "Signing certificate SHA-256",
+            comment: "Label for the digest of the certificate an installer was signed with")
+        static let identifier = String(
+            localized: "UserInstalls.Identifier", defaultValue: "Identifier",
+            comment: "Label for a refused installer's package or bundle identifier")
+        static let installsTo = String(
+            localized: "UserInstalls.InstallsTo", defaultValue: "Installs to",
+            comment: "Label for the places an installer writes")
+        static let fingerprint = String(
+            localized: "UserInstalls.Fingerprint", defaultValue: "SHA-256 of",
+            comment: "Precedes a file name, above that file's digest, for a refused installer")
+        static let developer = String(
+            localized: "UserInstalls.Developer", defaultValue: "Developer",
+            comment: "Label for who signed the installer")
+        static let verification = String(
+            localized: "UserInstalls.Verification", defaultValue: "Verified",
+            comment: "Label for how the installer was verified")
+        static let allowedAs = String(
+            localized: "UserInstalls.AllowedAs", defaultValue: "Allowed as",
+            comment: "Label for which allowlist entry matched")
+        static let verifiedByDigest = String(
+            localized: "UserInstalls.VerifiedByDigest",
+            defaultValue: "Exact copy your organisation approved",
+            comment: "Shown when an installer matched on its SHA-256")
+        static let verifiedNotarized = String(
+            localized: "UserInstalls.VerifiedNotarized",
+            defaultValue: "Signature and Apple notarization",
+            comment: "Shown when an installer matched on a notarized signature")
+        static let openInInstaller = String(
+            localized: "UserInstalls.OpenInInstaller", defaultValue: "Open Anyway",
+            comment:
+                "Button handing the installer to Installer.app after the check could not be made")
+        static let verifiedSignature = String(
+            localized: "UserInstalls.VerifiedSignature", defaultValue: "Developer signature",
+            comment: "Shown when an installer matched on its signature alone")
     }
 
     enum AppPaths {

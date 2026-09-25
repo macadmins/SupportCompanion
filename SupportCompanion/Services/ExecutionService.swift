@@ -68,6 +68,43 @@ enum ExecutionService {
         try await HelperRemoteProvider.remote().elevationTimeRemaining()
     }
 
+    // MARK: User installs
+
+    /// Hand an installer the user opened to the helper, which copies it somewhere only root can write
+    /// and judges that copy.
+    ///
+    /// The file is opened here, as the logged-in user, and only the descriptor is passed on. That keeps
+    /// the helper from reading anything this user could not read themselves, and means the copy it
+    /// judges is of the file the user actually opened rather than of whatever a path points at by the
+    /// time root gets to it.
+    static func stageInstaller(at url: URL) async throws -> InstallerAssessment {
+        let handle = try FileHandle(forReadingFrom: url)
+        defer { try? handle.close() }
+
+        let json = try await HelperRemoteProvider.remote().stageInstaller(handle, fileName: url.lastPathComponent)
+
+        do {
+            return try InstallerAssessment.make(fromJSON: json)
+        } catch {
+            // Decoding tolerates a helper that is a version behind, so reaching here means the answer
+            // was not one of ours at all. Say what to do about it; the raw decoding error names a
+            // missing key and helps nobody.
+            Logger.shared.logError("Unable to decode the helper's assessment: \(error)")
+
+            throw SupportCompanionErrors.helperConnection(
+                "Support Companion could not read the privileged helper's answer. The app and the helper are different versions; update both and try again."
+            )
+        }
+    }
+
+    static func installStagedInstaller(token: String) async throws -> String {
+        try await HelperRemoteProvider.remote().installStagedInstaller(token: token)
+    }
+
+    static func discardStagedInstaller(token: String) async throws {
+        _ = try await HelperRemoteProvider.remote().discardStagedInstaller(token: token)
+    }
+
     // MARK: Jamf
 
     static func jamfPatch(id: String) async throws -> String {

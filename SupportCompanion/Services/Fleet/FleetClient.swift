@@ -46,6 +46,16 @@ enum FleetError: Error, Equatable, LocalizedError {
     }
 }
 
+/// What `POST /device/{token}/sso` answers with: where to send the user, and the short-lived
+/// handshake cookie Fleet matches the IdP's callback against.
+///
+/// Unchecked because of `HTTPCookie`, which has no `Sendable` conformance but is immutable once
+/// created — it has no settable properties — and this one is read on the main actor and never written.
+struct FleetSSOInitiation: @unchecked Sendable {
+    let idpURL: URL
+    let handshakeCookie: HTTPCookie?
+}
+
 /// The Fleet calls the software catalog needs, so managers can be tested with a fake.
 protocol FleetSoftwareAPI: Sendable {
     /// Why Fleet can't be used on this Mac, or nil when it can.
@@ -63,6 +73,8 @@ protocol FleetSoftwareAPI: Sendable {
 protocol FleetDeviceAPI: Sendable {
     nonisolated var configurationProblem: String? { get }
     func deviceHost() async throws -> FleetHost
+    /// Outside the SSO gate, so the compliance count survives a signed-out session.
+    func desktopSummary() async throws -> FleetDesktopSummary
     func refetch() async throws
 }
 
@@ -71,12 +83,17 @@ actor FleetClient: FleetSoftwareAPI, FleetDeviceAPI {
 
     /// Name of the cookie Fleet sets after Fleet Desktop SSO.
     static let ssoSessionCookieName = "__Host-FLEET_DESKTOP_SESSION"
+    /// Name of the cookie that ties the IdP's callback to the sign-in this app started. Fleet sets it
+    /// on the response to the initiation call and reads it back at the SAML callback.
+    static let ssoHandshakeCookieName = "__Host-FLEETSSOSESSIONID"
 
     private let session: URLSession
     private var token: FleetDeviceIdentity.Token?
     private var ssoSessionCookie: String?
 
     private(set) var isSSORequired = false
+    /// Whether the keychain has been consulted for a session from an earlier launch.
+    private var didRestoreSSOSession = false
     private var consecutiveFailures = 0
     private var blockedUntil: Date?
 
@@ -100,10 +117,9 @@ actor FleetClient: FleetSoftwareAPI, FleetDeviceAPI {
         FleetDeviceIdentity.configurationProblem()
     }
 
-    /// Fleet's "My device" page for this Mac, used for the SSO sign-in web view.
-    func deviceWebURL() -> URL? {
-        guard let server = FleetDeviceIdentity.serverURL(), let token = currentToken() else { return nil }
-        return server.appending(path: "device").appending(path: token.value)
+    /// The host requests go to, used to scope the stored SSO session to one Fleet server.
+    private func serverHost() -> String? {
+        FleetDeviceIdentity.serverURL()?.host
     }
 
     /// Stores the Fleet Desktop SSO session and lifts the SSO and backoff pauses.
@@ -113,6 +129,71 @@ actor FleetClient: FleetSoftwareAPI, FleetDeviceAPI {
             isSSORequired = false
             resetBackoff()
         }
+    }
+
+    /// Starts Fleet Desktop SSO and returns where to send the user.
+    ///
+    /// Deliberately not routed through `request`: this endpoint is outside the SSO gate, and its
+    /// errors are configuration problems (the feature is off, no IdP, mismatched hosts) rather than
+    /// signs the server is unwell, so they must not pause every other Fleet request behind a backoff.
+    func initiateSSO() async throws -> FleetSSOInitiation {
+        guard let server = FleetDeviceIdentity.serverURL() else { throw FleetError.notConfigured }
+        guard let token = currentToken() else { throw FleetError.notConfigured }
+
+        let (data, response) = try await perform("POST", "sso", query: [:], server: server, token: token.value)
+        guard (200..<300).contains(response.statusCode) else {
+            let message = (try? JSONDecoder.fleet.decode(FleetErrorResponse.self, from: data))?.summary ?? ""
+            throw FleetError.server(status: response.statusCode, message: message)
+        }
+
+        let body: FleetSSOInitiationResponse
+        do {
+            body = try JSONDecoder.fleet.decode(FleetSSOInitiationResponse.self, from: data)
+        } catch {
+            throw FleetError.decoding(String(describing: error))
+        }
+        guard let idpURL = URL(string: body.url), idpURL.scheme?.lowercased() == "https" else {
+            throw FleetError.decoding("Fleet returned an identity provider URL that isn't HTTPS")
+        }
+
+        return FleetSSOInitiation(idpURL: idpURL, handshakeCookie: Self.handshakeCookie(from: response, server: server))
+    }
+
+    /// Fleet sets the handshake cookie on this response, but the sign-in runs in a web view with its
+    /// own cookie store, so it's lifted off the headers here and planted there before the IdP loads.
+    static func handshakeCookie(from response: HTTPURLResponse, server: URL) -> HTTPCookie? {
+        guard let header = response.value(forHTTPHeaderField: "Set-Cookie") else { return nil }
+        let cookies = HTTPCookie.cookies(withResponseHeaderFields: ["Set-Cookie": header], for: server)
+        return cookies.first { $0.name == ssoHandshakeCookieName }
+    }
+
+    /// Takes the session a completed sign-in produced and keeps it for the next launch.
+    func completeSSO(cookie: String, expiresAt: Date?) {
+        didRestoreSSOSession = true
+        setSSOSessionCookie(cookie)
+        guard let host = serverHost() else { return }
+        FleetSSOSessionStore.save(.init(cookie: cookie, host: host, expiresAt: expiresAt))
+    }
+
+    /// Reloads a sign-in from an earlier launch, if it hasn't expired and still belongs to this server.
+    ///
+    /// Done on the way into the first request rather than at startup, so that nothing can get ahead of
+    /// it: a gated request sent before the session was loaded would come back asking for SSO, and that
+    /// answer discards the stored session — which is the one it should have been sending.
+    private func restoreSSOSessionIfNeeded() {
+        guard !didRestoreSSOSession else { return }
+        didRestoreSSOSession = true
+        guard ssoSessionCookie == nil, let host = serverHost() else { return }
+        guard let session = FleetSSOSessionStore.load(host: host) else { return }
+        Logger.shared.logDebug("Fleet: restored a stored Fleet Desktop SSO session")
+        setSSOSessionCookie(session.cookie)
+    }
+
+    /// Drops the session everywhere it's held, so the next gated request asks for a fresh sign-in.
+    func signOutSSO() {
+        ssoSessionCookie = nil
+        didRestoreSSOSession = true
+        FleetSSOSessionStore.clear()
     }
 
     func resetBackoff() {
@@ -206,6 +287,7 @@ actor FleetClient: FleetSoftwareAPI, FleetDeviceAPI {
     /// Sends a request, retrying once with a re-read token if Fleet rejects a rotated one.
     private func request(_ method: String, _ path: String, query: [String: String] = [:], gated: Bool) async throws -> Data {
         guard let server = FleetDeviceIdentity.serverURL() else { throw FleetError.notConfigured }
+        if gated { restoreSSOSessionIfNeeded() }
         if gated && isSSORequired { throw FleetError.ssoRequired }
         if let blockedUntil, blockedUntil > Date() { throw FleetError.backingOff(until: blockedUntil) }
 
@@ -225,6 +307,8 @@ actor FleetClient: FleetSoftwareAPI, FleetDeviceAPI {
                 if body?.ssoRequired == true {
                     Logger.shared.logDebug("Fleet: \(method) \(path) requires Fleet Desktop SSO")
                     isSSORequired = true
+                    // Whatever session was being sent is spent, so it isn't kept for the next launch
+                    signOutSSO()
                     throw FleetError.ssoRequired
                 }
                 // The token may have rotated since it was read; re-read and retry exactly once

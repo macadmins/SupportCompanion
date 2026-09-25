@@ -54,6 +54,10 @@ class ElevationManager {
             }
             catch {
                 Logger.shared.logError("Failed to demote privileges: \(error.localizedDescription)")
+
+                // The callers stop the countdown before asking, so a failure here would otherwise
+                // leave an administrator looking demoted with no way back to the button.
+                await resyncDemotionTimer()
                 completion(false)
             }
         }
@@ -125,17 +129,50 @@ class ElevationManager {
     func stopDemotionTimer() {
         cancellable?.cancel()
         cancellable = nil
+        timerPublisher = nil
+
+        let onTimeUpdate = self.onTimeUpdate
+        // Released before the last call rather than after, so a cancelled countdown has no way to
+        // write a value again even if something still holds a reference to its closure.
+        self.onTimeUpdate = nil
+
         onTimeUpdate?(0) // Notify remaining time is 0
     }
 
-    func handleElevation(reason: String) {
+    /// Put the countdown back in step with the helper, which is the only authority on it.
+    ///
+    /// Used when a demotion did not happen after all: the UI has already been told the countdown is
+    /// over, and leaving it that way would show someone as demoted while they still hold rights.
+    func resyncDemotionTimer() async {
+        let remaining = await remainingElevationTime()
+
+        if remaining > 0 {
+            appState.startDemotionTimer(duration: remaining)
+        } else {
+            appState.stopDemotionTimer()
+        }
+    }
+
+    /// Elevate, and tell the caller how it went once the user has answered the authentication prompt.
+    ///
+    /// `completion` runs on the main actor, after rights are granted and the countdown has started, so
+    /// a caller that wants to do something with those rights knows when they exist. It is optional
+    /// because most callers are a button that has nothing left to do.
+    func handleElevation(reason: String, completion: (@MainActor (Bool) -> Void)? = nil) {
         Logger.shared.logDebug("Handling elevation for reason: \(reason)")
         // Authenticate and elevate privileges
         self.elevatePrivileges(reason: reason) { success in
             Task { @MainActor [weak self] in
-                guard let self else { return }
+                guard let self else {
+                    // Nothing below this point runs if the manager has been released, which is why
+                    // callers must use the shared instance rather than one of their own.
+                    Logger.shared.logError("Elevation finished after its manager was released; the countdown was not started")
+                    completion?(false)
+                    return
+                }
                 guard success else {
                     Logger.shared.logDebug("Authentication failed or elevation was refused.")
+                    completion?(false)
                     return
                 }
                 Logger.shared.logDebug("Privileges elevated.")
@@ -149,6 +186,8 @@ class ElevationManager {
                 // Count down from what the helper actually granted, not from what we asked for
                 let duration = await self.remainingElevationTime()
                 self.appState.startDemotionTimer(duration: duration)
+
+                completion?(true)
             }
         }
     }

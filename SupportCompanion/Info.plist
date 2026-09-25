@@ -18,6 +18,74 @@
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
 	<string>3.0.0</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Installer Package</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>pkg</string>
+				<string>mpkg</string>
+			</array>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.apple.installer-package-archive</string>
+				<string>com.apple.installer-distribution-package</string>
+				<string>com.apple.installer-package</string>
+				<string>com.apple.installer-meta-package</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Disk Image</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>dmg</string>
+			</array>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.apple.disk-image-udif</string>
+			</array>
+		</dict>
+	</array>
+	<key>NSServices</key>
+	<array>
+		<dict>
+			<key>NSMenuItem</key>
+			<dict>
+				<key>default</key>
+				<string>Install with Support Companion</string>
+			</dict>
+			<key>NSMessage</key>
+			<string>installOpenedInstaller</string>
+			<key>NSPortName</key>
+			<string>SupportCompanion</string>
+			<key>NSRequiredContext</key>
+			<dict>
+				<key>NSApplicationIdentifier</key>
+				<array>
+					<string>com.apple.finder</string>
+				</array>
+			</dict>
+			<key>NSSendFileTypes</key>
+			<array>
+				<string>com.apple.installer-package-archive</string>
+				<string>com.apple.installer-distribution-package</string>
+				<string>com.apple.installer-package</string>
+				<string>com.apple.installer-meta-package</string>
+				<string>com.apple.disk-image-udif</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

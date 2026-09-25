@@ -14,7 +14,7 @@ struct ElevationCard: View {
     @State private var elevationReason = ""
 
     var body: some View {
-        let elevationManager = ElevationManager(appState: appState)
+        let elevationManager = ElevationManager.shared
 
         VStack(alignment: .leading) {
             ScCard(title: Constants.CardTitle.privileges, titleImageName: "lock.fill", useMultiColor: false, content: {
@@ -60,7 +60,9 @@ struct ElevationCard: View {
             })
         }
         .sheet(isPresented: $showReasonInput) {
-            ReasonInputView(isPresented: $showReasonInput, onElevate: elevationManager.handleElevation)
+            ReasonInputView(isPresented: $showReasonInput) { reason in
+                elevationManager.handleElevation(reason: reason)
+            }
         }
     }
 }
