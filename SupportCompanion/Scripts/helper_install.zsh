@@ -15,24 +15,29 @@ launch_daemon="com.github.macadmins.SupportCompanion.helper"
 # job in a managed directory the OS re-asserts. Installing our own copy as well would leave two
 # daemons claiming the same Mach service, so this skips the whole helper install.
 #
-# Read only from administrator-managed sources, the same two the app and the helper trust. The key
-# must come from a DEVICE-scoped profile: a user-scoped one lands under a per-user directory that
-# an installer script has no reliable way to resolve.
+# Read only from a DEVICE-scoped configuration profile, which is the single source the app and the
+# helper trust for anything privileged. A user-scoped profile is no good here either: it lands under
+# a per-user directory that an installer script has no reliable way to resolve.
+#
+# /Library/Preferences is deliberately not consulted, for the reason HelperPreferences gives: only
+# root can write it, and that is the problem. Setting this key removes the helper and its launchd
+# job, so honouring it from a root-writable file would let one root moment disable the component
+# that demotes elevated users, and every later package install would keep it disabled.
 skip_helper_install=false
-for domain in \
-  "/Library/Managed Preferences/com.github.macadmins.SupportCompanion.plist" \
-  "/Library/Preferences/com.github.macadmins.SupportCompanion.plist"
-do
-  if [[ -f "$domain" ]]; then
-    value=$(/usr/bin/defaults read "${domain%.plist}" SkipHelperInstall 2>/dev/null)
-    # First source that defines the key wins, so a profile can override /Library/Preferences,
-    # which is how the app and the helper resolve the same settings.
-    if [[ -n "$value" ]]; then
-      [[ "$value" == "1" ]] && skip_helper_install=true
-      break
-    fi
-  fi
-done
+managed_domain="/Library/Managed Preferences/com.github.macadmins.SupportCompanion"
+if [[ -f "${managed_domain}.plist" ]]; then
+  value=$(/usr/bin/defaults read "$managed_domain" SkipHelperInstall 2>/dev/null)
+  [[ "$value" == "1" ]] && skip_helper_install=true
+fi
+
+# Say when the key is being ignored because of where it lives, rather than silently installing the
+# helper anyway and leaving two daemons claiming the same Mach service.
+if [[ "$skip_helper_install" == "false" ]] \
+  && [[ -f "/Library/Preferences/com.github.macadmins.SupportCompanion.plist" ]] \
+  && [[ -n "$(/usr/bin/defaults read /Library/Preferences/com.github.macadmins.SupportCompanion SkipHelperInstall 2>/dev/null)" ]]
+then
+  echo "Ignoring SkipHelperInstall in /Library/Preferences: it is only read from a device-scoped configuration profile. Deliver it through your MDM."
+fi
 
 if [[ "$skip_helper_install" == "true" ]]; then
   echo "SkipHelperInstall is set; leaving the helper to the declarative configuration."
