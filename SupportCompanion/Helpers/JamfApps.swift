@@ -250,52 +250,115 @@ func evaluateUpdate(policy: Policy, patch: Patch, now: Date = .init()) -> (neede
     }
 }
 
+// MARK: - Name matching
+
+/// Lowercased, punctuation-free tokens, for deciding whether two names mean the same application.
+///
+/// Used for patch-to-policy and for policy-to-bundle alike. That sharing is deliberate: the names Jamf
+/// uses for a patch title, for the policy that installed the app, and for the bundle on disk are all
+/// different — "Zoom Client for Meetings", "zoom.us", `zoom.us.app` — and a lookup that only handles
+/// one of those mismatches trades a missed update for a phantom one.
+func canonicalTokens(_ s: String) -> [String] {
+    // Lowercase and remove non-alphanumerics to get stable tokens
+    let lowered = s.lowercased()
+    let cleaned = lowered.replacingOccurrences(of: #"[^a-z0-9]+"#, with: " ", options: .regularExpression)
+    let tokens = cleaned.split(separator: " ").map(String.init)
+    // Remove very short/common tokens to reduce false positives
+    let stop: Set<String> = ["client", "for", "the", "and", "app", "apps", "application", "meetings", "installer", "update", "patch"]
+    return tokens.filter { $0.count >= 3 && !stop.contains($0) }
+}
+
+/// How alike two names are, as the share of the shorter one's tokens that the longer also has.
+func nameSimilarity(_ a: String, _ b: String) -> Double {
+    let ta = Set(canonicalTokens(a))
+    let tb = Set(canonicalTokens(b))
+    guard !ta.isEmpty, !tb.isEmpty else { return 0 }
+
+    let denom = Double(min(ta.count, tb.count))
+    return denom > 0 ? Double(ta.intersection(tb).count) / denom : 0
+}
+
+/// Threshold tuned for distinctive names like "zoom", "slack", "chrome".
+let nameMatchThreshold = 0.5
+
+/// The application bundles on this Mac, by name.
+///
+/// `/Applications` and `~/Applications`, plus one level below each so that vendor folders and
+/// `Utilities` are covered. Anything kept outside those is not somewhere Jamf patching would be
+/// managing it from.
+func installedAppNames() -> [String] {
+    let fileManager = FileManager.default
+    let roots = ["/Applications", ("~/Applications" as NSString).expandingTildeInPath]
+    var names: [String] = []
+
+    for root in roots {
+        guard let entries = try? fileManager.contentsOfDirectory(atPath: root) else { continue }
+
+        for entry in entries {
+            if entry.hasSuffix(".app") {
+                names.append(String(entry.dropLast(4)))
+                continue
+            }
+
+            let nested = "\(root)/\(entry)"
+            var isDirectory: ObjCBool = false
+            guard fileManager.fileExists(atPath: nested, isDirectory: &isDirectory), isDirectory.boolValue
+            else { continue }
+
+            let children = (try? fileManager.contentsOfDirectory(atPath: nested)) ?? []
+            names.append(contentsOf: children.filter { $0.hasSuffix(".app") }.map { String($0.dropLast(4)) })
+        }
+    }
+
+    return names
+}
+
+/// How good the evidence is that a policy's application is on this Mac.
+///
+/// Ordered, because more than one policy can plausibly answer for the same app and the strongest
+/// evidence should win. Jamf lists a patch title as a policy of its own beside the policy that
+/// installed the app, and name matching cannot separate them — "Zoom Client for Meetings" and
+/// "zoom.us" both reduce to `zoom`, so both resemble `zoom.us.app` equally well. What separates them is
+/// that only one of them is Jamf's record of an installation.
+enum InstallEvidence: Int, Comparable {
+    /// Neither Jamf nor the Mac says the app is here.
+    case absent = 0
+    /// A matching bundle is present, but Jamf has no record of installing it — an app somebody
+    /// installed by hand. Its patches still apply.
+    case onDisk = 1
+    /// Jamf installed it, and the Mac agrees.
+    case installedByJamf = 2
+
+    static func < (lhs: InstallEvidence, rhs: InstallEvidence) -> Bool {
+        lhs.rawValue < rhs.rawValue
+    }
+}
+
+/// What we can tell about whether a policy's application is really here.
+///
+/// `installstatus` disagrees with the Mac in both directions, and each direction costs something
+/// different: an app installed by hand reads `0`, which used to hide its patches, and one the user has
+/// since dragged to the Trash still reads `4`, which offered an update for software that was not there.
+/// So the Mac gets the veto and Jamf gets the tie-break. Jamf's record is trusted outright only when
+/// the disk could not be read, since an empty index means the lookup failed rather than that the Mac
+/// has no applications.
+func installEvidence(for policy: Policy, among installedApps: [String]) -> InstallEvidence {
+    let claimedByJamf = (policy.installStatus ?? 0) == 4
+
+    guard !installedApps.isEmpty else { return claimedByJamf ? .installedByJamf : .absent }
+
+    let onDisk = installedApps.contains { nameSimilarity(policy.name, $0) >= nameMatchThreshold }
+    guard onDisk else { return .absent }
+
+    return claimedByJamf ? .installedByJamf : .onDisk
+}
+
 func computeUpdates(policies: [Policy],
                     patches: [Patch],
-                    now: Date = Date()) async -> ([PendingJamfUpdate], Int, Int) {
+                    now: Date = Date(),
+                    installedApps: [String]? = nil) async -> ([PendingJamfUpdate], Int, Int) {
 
-    // MARK: - Non-hardcoded fuzzy name matching helpers
-    func canonicalTokens(_ s: String) -> [String] {
-        // Lowercase and remove non-alphanumerics to get stable tokens
-        let lowered = s.lowercased()
-        let cleaned = lowered.replacingOccurrences(of: #"[^a-z0-9]+"#, with: " ", options: .regularExpression)
-        let tokens = cleaned.split(separator: " ").map(String.init)
-        // Remove very short/common tokens to reduce false positives
-        let stop: Set<String> = ["client", "for", "the", "and", "app", "apps", "application", "meetings", "installer", "update", "patch"]
-        return tokens.filter { $0.count >= 3 && !stop.contains($0) }
-    }
-
-    func fuzzyMatchPolicy(for patchName: String, in dict: [String: Policy]) -> Policy? {
-        let pTokens = Set(canonicalTokens(patchName))
-        guard !pTokens.isEmpty else { return nil }
-
-        var best: (policy: Policy, score: Double)?
-        for (policyName, policy) in dict {
-            let t = Set(canonicalTokens(policyName))
-            if t.isEmpty { continue }
-            let overlap = Double(pTokens.intersection(t).count)
-            let denom = Double(min(pTokens.count, t.count))
-            let score = denom > 0 ? overlap / denom : 0
-            // Threshold tuned for distinctive names like "zoom", "slack", "chrome".
-            if score >= 0.5 {
-                if let current = best {
-                    if score > current.score {
-                        best = (policy, score)
-                    } else if score == current.score {
-                        // Tie-break using existing recency/priority logic
-                        let s0 = policy.installStatus ?? 0
-                        let s1 = current.policy.installStatus ?? 0
-                        if s0 > s1 || (s0 == s1 && (policy.installedOrUpdated ?? .distantPast) > (current.policy.installedOrUpdated ?? .distantPast)) {
-                            best = (policy, score)
-                        }
-                    }
-                } else {
-                    best = (policy, score)
-                }
-            }
-        }
-        return best?.policy
-    }
+    let installed = installedApps ?? installedAppNames()
 
     // Keep one policy per name: the newest (by installedOrUpdated date)
     let policiesByName: [String: Policy] = Dictionary(grouping: policies, by: { $0.name })
@@ -306,22 +369,61 @@ func computeUpdates(policies: [Policy],
                 return ($0.installedOrUpdated ?? .distantPast) > ($1.installedOrUpdated ?? .distantPast)
             }.first
         }
+
+    /// The policy a patch is about: the best evidence of an installation, then the closest name.
+    ///
+    /// The previous version took an exact name match unconditionally and only fell back to fuzzy
+    /// matching when there was none. That picked Jamf's listing of the patch title over the policy that
+    /// had actually installed the app, and the installed-app check then discarded the patch — which is
+    /// how a pending Zoom update went unreported.
+    func resolvePolicy(for patchName: String) -> Policy? {
+        guard !canonicalTokens(patchName).isEmpty else { return nil }
+
+        var best: (policy: Policy, evidence: InstallEvidence, score: Double, exact: Bool)?
+
+        for (policyName, policy) in policiesByName {
+            let exact = policyName == patchName
+            let score = exact ? 1.0 : nameSimilarity(patchName, policyName)
+            guard score >= nameMatchThreshold else { continue }
+
+            let evidence = installEvidence(for: policy, among: installed)
+            // Self Service lists policies for apps that are not installed, and Jamf publishes patches
+            // for them too. Offering an update for software that is not here would be a fresh install
+            // nobody asked for, so those are no candidate at all.
+            guard evidence > .absent else { continue }
+
+            guard let current = best else {
+                best = (policy, evidence, score, exact)
+                continue
+            }
+
+            // Evidence of an installation first, then name closeness, then an exact name, then
+            // recency — the same tie-break the fuzzy matcher used before.
+            let better: Bool
+            if evidence != current.evidence {
+                better = evidence > current.evidence
+            } else if score != current.score {
+                better = score > current.score
+            } else if exact != current.exact {
+                better = exact
+            } else {
+                better = (policy.installedOrUpdated ?? .distantPast)
+                    > (current.policy.installedOrUpdated ?? .distantPast)
+            }
+
+            if better { best = (policy, evidence, score, exact) }
+        }
+
+        return best?.policy
+    }
+
     var results: [PendingJamfUpdate] = []
     var matchedPolicyNames = Set<String>()
     var updateCount = 0
     var upToDateCount = 0
 
     for patch in patches {
-        // Try exact match by normalized name first
-        var matchedPolicy: Policy? = policiesByName[patch.name]
-        // Fallback to fuzzy token-based match if exact match fails
-        if matchedPolicy == nil {
-            matchedPolicy = fuzzyMatchPolicy(for: patch.name, in: policiesByName)
-        }
-        guard let policy = matchedPolicy else { continue }
-        // Self Service also lists policies for apps that aren't installed, and Jamf publishes patches for
-        // them too. Only an installed app can need one, so skip the rest rather than report a phantom update.
-        guard (policy.installStatus ?? 0) == 4 else { continue }
+        guard let policy = resolvePolicy(for: patch.name) else { continue }
         matchedPolicyNames.insert(policy.name)
 
         let (needed, label) = evaluateUpdate(policy: policy, patch: patch, now: now)
@@ -358,14 +460,14 @@ func computeUpdates(policies: [Policy],
     // does not show 0% patched purely due to missing patch objects.
     if patches.isEmpty {
         for (_, policy) in policiesByName {
-            if (policy.installStatus ?? 0) == 4 {
+            if installEvidence(for: policy, among: installed) > .absent {
                 upToDateCount += 1
             }
         }
     } else {
         // Also count installed policies that did not have a matching patch name.
         for (name, policy) in policiesByName where !matchedPolicyNames.contains(name) {
-            if (policy.installStatus ?? 0) == 4 {
+            if installEvidence(for: policy, among: installed) > .absent {
                 upToDateCount += 1
             }
         }
