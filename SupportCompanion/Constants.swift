@@ -204,6 +204,45 @@ enum Constants {
             comment: "Help text for the menu with extra actions for an app")
         static let cancel = String(
             localized: "Fleet.Cancel", defaultValue: "Cancel", comment: "Cancel button")
+        static let ssoSheetTitle = String(
+            localized: "Fleet.SSOSheetTitle", defaultValue: "Sign in to Fleet",
+            comment: "Title of the Fleet single sign-on window")
+        static let ssoConnecting = String(
+            localized: "Fleet.SSOConnecting", defaultValue: "Connecting to your identity provider\u{2026}",
+            comment: "Shown while the Fleet sign-in page is being prepared")
+        static let ssoCouldNotSignIn = String(
+            localized: "Fleet.SSOCouldNotSignIn", defaultValue: "Couldn't sign in",
+            comment: "Title when Fleet single sign-on failed")
+        static let ssoDisabled = String(
+            localized: "Fleet.SSODisabled",
+            defaultValue: "Single sign-on for Fleet isn't enabled. Contact your IT department.",
+            comment: "Shown when Fleet Desktop single sign-on was turned off during sign-in")
+        static let ssoFailed = String(
+            localized: "Fleet.SSOFailed",
+            defaultValue: "Your identity provider didn't complete the sign-in. Try again.",
+            comment: "Shown when the identity provider didn't return a valid Fleet session")
+        static let signInNotification = String(
+            localized: "Fleet.SignInNotification",
+            defaultValue: "Sign in to Fleet to see your apps and compliance checks.",
+            comment: "Notification when Fleet needs the user to sign in")
+        static let signInNotificationFailing = String(
+            localized: "Fleet.SignInNotificationFailing",
+            defaultValue: "%d compliance checks need attention. Sign in to see which.",
+            comment: "Notification when a signed-out Mac has failing checks; %d is how many")
+        static let signedOutRecord = String(
+            localized: "Fleet.SignedOutRecord",
+            defaultValue: "Sign in to see this Mac's record in Fleet.",
+            comment: "Fleet info card when the user hasn't signed in")
+        static let signedOutFailing = String(
+            localized: "Fleet.SignedOutFailing",
+            defaultValue: "%d checks need attention. Sign in to see which.",
+            comment: "Compliance summary while signed out; %d is the number of failing checks")
+        static let signedOutPassing = String(
+            localized: "Fleet.SignedOutPassing", defaultValue: "No checks are failing.",
+            comment: "Compliance summary while signed out when nothing is failing")
+        static let signInForChecks = String(
+            localized: "Fleet.SignInForChecks", defaultValue: "Sign in to see compliance checks.",
+            comment: "Compliance page when Fleet requires single sign-on")
         static let close = String(
             localized: "Fleet.Close", defaultValue: "Close",
             comment: "Button that closes the install details")

@@ -121,8 +121,13 @@ struct ContentView: View {
         // Set the background color based on the color scheme with opacity
         .background(colorScheme == .dark ? Color.black.opacity(0.4) : Color.white.opacity(0.4))
         .background(.ultraThinMaterial)
+        // One sign-in sheet for the window: both Fleet pages start the same sign-in, and only one of
+        // them is ever in the detail pane. Attached out here rather than to the detail pane, because a
+        // sheet centres on the view it is attached to -- on the detail pane it sits off to the right.
+        .sheet(isPresented: Bindable(appState.fleetSSOController).isPresented) {
+            FleetSSOSignInSheet(controller: appState.fleetSSOController)
+        }
     }
-    
 
     private func handleIncomingURL(_ url: URL, items: [SidebarItem]) {
         guard url.scheme == "supportcompanion" else { return }
@@ -144,11 +149,18 @@ struct ContentView: View {
             selectedItem = items.first(where: { $0.id == Constants.Navigation.knowledgeBase })
         case "markdown":
             selectedItem = items.first(where: { $0.id == appState.preferences.markdownMenuLabel })
+        case "fleetsignin":
+            // Reached from the tray cards and the sign-in notification, where there may be no window
+            // yet. Opening the window is the AppDelegate's job; this lands the user somewhere that
+            // makes sense once signed in, and puts the sheet up.
+            selectedItem = items.first(where: { $0.id == Constants.Navigation.apps })
+                ?? items.first(where: { $0.id == Constants.Navigation.compliance })
+            appState.fleetSSOController.present()
         default:
             selectedItem = items.first(where: { $0.id == Constants.Navigation.home })
         }
     }
-    
+
     private func loadLogoForCurrentColorScheme() {
         let preferredLight = appState.preferences.branding.brandLogoLight
         let darkLogo = appState.preferences.branding.brandLogo

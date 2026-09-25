@@ -2612,6 +2612,132 @@
         }
       }
     },
+    "Fleet.SignedOutFailing" : {
+      "comment" : "Compliance summary while signed out; %d is the number of failing checks",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d Prüfungen erfordern Aufmerksamkeit. Melden Sie sich an, um zu sehen, welche."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%d checks need attention. Sign in to see which."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d vérifications nécessitent votre attention. Connectez-vous pour voir lesquelles."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d件のチェックに対応が必要です。サインインして確認してください。"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d kontroller krever oppmerksomhet. Logg inn for å se hvilke."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d kontroller behöver åtgärdas. Logga in för att se vilka."
+          }
+        }
+      }
+    },
+    "Fleet.SignedOutPassing" : {
+      "comment" : "Compliance summary while signed out when nothing is failing",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Prüfungen sind fehlgeschlagen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "No checks are failing."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune vérification n’est en échec."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "失敗しているチェックはありません。"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ingen kontroller er mislykket."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inga kontroller misslyckas."
+          }
+        }
+      }
+    },
+    "Fleet.SignedOutRecord" : {
+      "comment" : "Fleet info card when the user hasn't signed in",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Melden Sie sich an, um den Eintrag dieses Mac in Fleet zu sehen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Sign in to see this Mac's record in Fleet."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connectez-vous pour voir la fiche de ce Mac dans Fleet."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このMacのFleetでの登録情報を表示するには、サインインしてください。"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Logg inn for å se oppføringen for denne Macen i Fleet."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Logga in för att se den här Macens post i Fleet."
+          }
+        }
+      }
+    },
     "Fleet.SignIn" : {
       "comment" : "Button that starts Fleet single sign-on",
       "extractionState" : "extracted_with_value",
@@ -2624,6 +2750,132 @@
         }
       }
     },
+    "Fleet.SignInForChecks" : {
+      "comment" : "Compliance page when Fleet requires single sign-on",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Melden Sie sich an, um die Konformitätsprüfungen zu sehen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Sign in to see compliance checks."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connectez-vous pour voir les vérifications de conformité."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "コンプライアンスチェックを表示するには、サインインしてください。"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Logg inn for å se samsvarskontrollene."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Logga in för att se efterlevnadskontrollerna."
+          }
+        }
+      }
+    },
+    "Fleet.SignInNotification" : {
+      "comment" : "Notification when Fleet needs the user to sign in",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Melden Sie sich bei Fleet an, um Ihre Apps und Konformitätsprüfungen zu sehen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Sign in to Fleet to see your apps and compliance checks."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connectez-vous à Fleet pour voir vos apps et vos vérifications de conformité."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アプリとコンプライアンスチェックを表示するには、Fleetにサインインしてください。"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Logg inn på Fleet for å se appene og samsvarskontrollene dine."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Logga in på Fleet för att se dina appar och efterlevnadskontroller."
+          }
+        }
+      }
+    },
+    "Fleet.SignInNotificationFailing" : {
+      "comment" : "Notification when a signed-out Mac has failing checks; %d is how many",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d Konformitätsprüfungen erfordern Aufmerksamkeit. Melden Sie sich an, um zu sehen, welche."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%d compliance checks need attention. Sign in to see which."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d vérifications de conformité nécessitent votre attention. Connectez-vous pour voir lesquelles."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d件のコンプライアンスチェックに対応が必要です。サインインして確認してください。"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d samsvarskontroller krever oppmerksomhet. Logg inn for å se hvilke."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d efterlevnadskontroller behöver åtgärdas. Logga in för att se vilka."
+          }
+        }
+      }
+    },
     "Fleet.SignInRequired" : {
       "comment" : "Shown when Fleet requires single sign-on",
       "extractionState" : "extracted_with_value",
@@ -2632,6 +2884,216 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Sign in to see the apps available for this Mac."
+          }
+        }
+      }
+    },
+    "Fleet.SSOConnecting" : {
+      "comment" : "Shown while the Fleet sign-in page is being prepared",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbindung zum Identitätsanbieter wird hergestellt…"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Connecting to your identity provider…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connexion à votre fournisseur d’identité…"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IDプロバイダに接続中…"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kobler til identitetsleverandøren…"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ansluter till din identitetsleverantör…"
+          }
+        }
+      }
+    },
+    "Fleet.SSOCouldNotSignIn" : {
+      "comment" : "Title when Fleet single sign-on failed",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anmeldung nicht möglich"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Couldn't sign in"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connexion impossible"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サインインできませんでした"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kunne ikke logge inn"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Det gick inte att logga in"
+          }
+        }
+      }
+    },
+    "Fleet.SSODisabled" : {
+      "comment" : "Shown when Fleet Desktop single sign-on was turned off during sign-in",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Single Sign-On für Fleet ist nicht aktiviert. Wenden Sie sich an Ihre IT-Abteilung."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Single sign-on for Fleet isn't enabled. Contact your IT department."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’authentification unique pour Fleet n’est pas activée. Contactez votre service informatique."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fleetのシングルサインオンが有効になっていません。IT部門にお問い合わせください。"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enkel pålogging for Fleet er ikke aktivert. Kontakt IT-avdelingen."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enkel inloggning för Fleet är inte aktiverad. Kontakta din IT-avdelning."
+          }
+        }
+      }
+    },
+    "Fleet.SSOFailed" : {
+      "comment" : "Shown when the identity provider didn't return a valid Fleet session",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihr Identitätsanbieter hat die Anmeldung nicht abgeschlossen. Versuchen Sie es erneut."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Your identity provider didn't complete the sign-in. Try again."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Votre fournisseur d’identité n’a pas terminé la connexion. Réessayez."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IDプロバイダがサインインを完了しませんでした。もう一度お試しください。"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Identitetsleverandøren fullførte ikke påloggingen. Prøv igjen."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Din identitetsleverantör slutförde inte inloggningen. Försök igen."
+          }
+        }
+      }
+    },
+    "Fleet.SSOSheetTitle" : {
+      "comment" : "Title of the Fleet single sign-on window",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bei Fleet anmelden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Sign in to Fleet"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se connecter à Fleet"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fleetにサインイン"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Logg inn på Fleet"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Logga in på Fleet"
           }
         }
       }

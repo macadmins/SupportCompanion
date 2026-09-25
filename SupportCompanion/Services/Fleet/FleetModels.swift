@@ -251,6 +251,11 @@ struct FleetPoliciesResponse: Decodable, Sendable {
     let policies: [FleetPolicy]
 }
 
+/// Where Fleet wants the user sent to sign in.
+struct FleetSSOInitiationResponse: Decodable, Sendable {
+    let url: String
+}
+
 /// Fleet's error body. `ssoRequired` is set when Fleet Desktop SSO is enabled and no session cookie was sent.
 struct FleetErrorResponse: Decodable, Sendable {
     struct Detail: Decodable, Sendable {

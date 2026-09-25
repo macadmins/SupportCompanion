@@ -21,6 +21,9 @@ final class FleetDeviceManager {
     }
 
     private(set) var host: FleetHost?
+    /// The ungated `/desktop` summary. Fleet keeps this outside the SSO gate deliberately — it carries
+    /// no identifying detail — so it's what's left to show when the user hasn't signed in.
+    private(set) var summary: FleetDesktopSummary?
     private(set) var loadState: LoadState = .idle
     private(set) var lastUpdated: Date?
     /// A refetch was requested and Fleet hasn't received the Mac's fresh details yet.
@@ -29,6 +32,16 @@ final class FleetDeviceManager {
     private(set) var refetchError: String?
 
     var policies: [FleetPolicy] { host?.policies ?? [] }
+
+    /// Whether Fleet is withholding this Mac's record until the user signs in.
+    var isSignedOut: Bool { loadState == .ssoRequired && host == nil }
+
+    /// Failing checks from the host record, or from the ungated summary while signed out, so the
+    /// badge and notifications stay truthful either way. Nil when even the summary is unavailable.
+    var failingChecksCount: Int? {
+        if host != nil { return failingPolicies.count }
+        return summary?.failingPoliciesCount
+    }
 
     /// Rows for the Fleet card.
     var infoRows: [(key: String, display: String, value: InfoValue)] {
@@ -52,6 +65,8 @@ final class FleetDeviceManager {
     @ObservationIgnored var onNewlyFailing: (([FleetPolicy]) -> Void)?
     /// Called when a refetch finishes, so other Fleet data can be refreshed too.
     @ObservationIgnored var onRefetchFinished: (() -> Void)?
+    /// Called when Fleet starts asking for a sign-in, at most once a day while the user stays out.
+    @ObservationIgnored var onSignInRequired: (() -> Void)?
 
     @ObservationIgnored private let client: any FleetDeviceAPI
     @ObservationIgnored private let defaults: UserDefaults
@@ -61,6 +76,10 @@ final class FleetDeviceManager {
 
     /// Ids of failing policies the user has been told about.
     static let reportedFailuresKey = "FleetReportedFailingPolicies"
+    /// When the user was last told to sign in, so an hourly poll doesn't nag hourly.
+    static let signInNotifiedKey = "FleetSignInNotifiedAt"
+    /// How long to wait before mentioning a sign-in again while the user stays signed out.
+    private static let signInReminderInterval: TimeInterval = 24 * 3600
     /// Fleet re-runs details and policies at the Mac's next check-in, usually within a minute or two.
     private static let refetchTimeout: TimeInterval = 5 * 60
 
@@ -158,17 +177,40 @@ final class FleetDeviceManager {
             loadState = .failed(problem)
             return
         }
+        // Fetched first and on its own: it's outside the SSO gate, so it still answers when the
+        // host record below doesn't, and it's what the signed-out cards fall back to.
+        do {
+            summary = try await client.desktopSummary()
+        } catch {
+            Logger.shared.logDebug("Fleet: couldn't read the desktop summary: \(error.localizedDescription)")
+        }
+
         do {
             host = try await client.deviceHost()
             lastUpdated = Date()
             loadState = .loaded
+            // Signed in again, so a later sign-out is reported promptly rather than waiting out
+            // the remainder of the reminder interval
+            defaults.removeObject(forKey: Self.signInNotifiedKey)
             reportNewlyFailing()
         } catch FleetError.ssoRequired {
             loadState = .ssoRequired
+            reportSignInRequired()
         } catch {
             // Keep showing the last details
             loadState = .failed(error.localizedDescription)
         }
+    }
+
+    /// Tells the app a sign-in is needed, but no more than once per reminder interval: this runs on
+    /// every poll, and the session stays expired until the user does something about it.
+    private func reportSignInRequired() {
+        if let last = defaults.object(forKey: Self.signInNotifiedKey) as? Date,
+           Date().timeIntervalSince(last) < Self.signInReminderInterval {
+            return
+        }
+        defaults.set(Date(), forKey: Self.signInNotifiedKey)
+        onSignInRequired?()
     }
 
     private func reportNewlyFailing() {

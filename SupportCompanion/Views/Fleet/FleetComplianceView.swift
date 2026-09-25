@@ -35,7 +35,8 @@ struct FleetComplianceView: View {
     private var hero: some View {
         let failing = manager.failingPolicies
         let checked = manager.checkedPolicies
-        let isFailing = !failing.isEmpty
+        // Signed out there are no policies to count, but the ungated summary still knows how many fail
+        let isFailing = manager.isSignedOut ? (manager.failingChecksCount ?? 0) > 0 : !failing.isEmpty
         let hasCritical = failing.contains { $0.critical == true }
         let tint = isFailing ? (hasCritical ? criticalColor : warningColor) : Color.ScGreen
 
@@ -69,6 +70,12 @@ struct FleetComplianceView: View {
     }
 
     private func headline(failing: Int, checked: Int) -> String {
+        if manager.isSignedOut {
+            guard let signedOutFailing = manager.failingChecksCount else { return Constants.Fleet.signInForChecks }
+            return signedOutFailing > 0
+                ? String(format: Constants.Fleet.signedOutFailing, signedOutFailing)
+                : Constants.Fleet.signedOutPassing
+        }
         if checked == 0 { return Constants.Fleet.noPolicies }
         if failing == 0 { return String(format: Constants.Fleet.policiesPassing, checked) }
         return String(format: Constants.Fleet.policiesFailing, failing, checked)
@@ -91,7 +98,14 @@ struct FleetComplianceView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.top, 60)
         case .ssoRequired where manager.policies.isEmpty:
-            message(Constants.Fleet.policiesSignIn, systemImage: "person.badge.key")
+            VStack(spacing: 16) {
+                message(Constants.Fleet.signInForChecks, systemImage: "person.badge.key")
+                ScButton(Constants.Fleet.signIn) {
+                    await appState.fleetSSOController.present()
+                }
+                .frame(maxWidth: 200)
+            }
+            .frame(maxWidth: .infinity)
         case .failed where manager.policies.isEmpty:
             message(Constants.Fleet.policiesUnavailable, systemImage: "exclamationmark.triangle")
         default:

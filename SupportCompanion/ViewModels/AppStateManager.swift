@@ -31,6 +31,17 @@ class AppStateManager {
         }
         return manager
     }()
+    /// Drives Fleet Desktop SSO sign-in, and reloads what the SSO gate blocked once it succeeds.
+    @ObservationIgnored lazy var fleetSSOController: FleetSSOController = {
+        let controller = FleetSSOController()
+        controller.onSignedIn = { [weak self] in
+            Task {
+                await self?.fleetSoftwareManager.refresh()
+                await self?.fleetDeviceManager.refresh()
+            }
+        }
+        return controller
+    }()
     @ObservationIgnored lazy var fleetDeviceManager: FleetDeviceManager = {
         let manager = FleetDeviceManager()
         manager.onNewlyFailing = { [weak self] policies in
@@ -38,6 +49,9 @@ class AppStateManager {
         }
         manager.onRefetchFinished = { [weak self] in
             Task { await self?.fleetSoftwareManager.refresh() }
+        }
+        manager.onSignInRequired = { [weak self] in
+            self?.notifyFleetSignInRequired()
         }
         return manager
     }()
@@ -86,7 +100,8 @@ class AppStateManager {
     var fleetFailingChecksCount: Int {
         guard preferences.mode == Constants.Modes.fleet,
               !preferences.hiddenCards.contains(Constants.Cards.fleetPolicies) else { return 0 }
-        return fleetDeviceManager.failingPolicies.count
+        // The ungated count when signed out, so the badge doesn't silently drop to zero
+        return fleetDeviceManager.failingChecksCount ?? 0
     }
 
     /// What needs the user's attention, for the menu bar dot and Dock badge: pending app updates, macOS
@@ -203,6 +218,22 @@ class AppStateManager {
             }
             self.isRefreshing = false
         }
+    }
+
+    /// Off unless an administrator sets `FleetNotifySignIn`. Leads with the failing count when the
+    /// ungated summary has one: what's wrong is the news, and signing in is how to see it.
+    private func notifyFleetSignInRequired() {
+        guard preferences.fleetNotifySignIn, preferences.mode == Constants.Modes.fleet else { return }
+        let failing = fleetDeviceManager.failingChecksCount ?? 0
+        let message = failing > 0
+            ? String(format: Constants.Fleet.signInNotificationFailing, failing)
+            : Constants.Fleet.signInNotification
+        NotificationService(appState: self).sendNotification(
+            message: message,
+            buttonText: Constants.Fleet.signIn,
+            command: "open supportcompanion://fleetsignin",
+            notificationType: .generic
+        )
     }
 
     private func notifyFleetPoliciesFailing(_ policies: [FleetPolicy]) {

@@ -143,6 +143,11 @@ class Preferences {
     var fleetNotifyPolicies: Bool {
         DefaultsStore.value(forKey: "FleetNotifyPolicies", default: true)
     }
+    /// Off unless an administrator turns it on: unlike the others this one asks the user to do
+    /// something rather than telling them something, so it isn't imposed by default.
+    var fleetNotifySignIn: Bool {
+        DefaultsStore.value(forKey: "FleetNotifySignIn", default: false)
+    }
 
     // MARK: - Support info
 

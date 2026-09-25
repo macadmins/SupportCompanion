@@ -12,6 +12,8 @@ private actor FakePolicyAPI: FleetDeviceAPI {
     private var results: [Result<[FleetPolicy], FleetError>]
     private var refetchRequested: [Bool]
     private(set) var refetchCalls = 0
+    /// What the ungated `/desktop` endpoint answers, or nil to make it fail like the gated calls.
+    var summaryFailingCount: Int?
 
     init(_ results: [Result<[FleetPolicy], FleetError>], refetchRequested: [Bool] = []) {
         self.results = results
@@ -22,6 +24,16 @@ private actor FakePolicyAPI: FleetDeviceAPI {
         let policies = try (results.isEmpty ? .success([]) : results.removeFirst()).get()
         let requested = refetchRequested.isEmpty ? false : refetchRequested.removeFirst()
         return try host(policies: policies, refetchRequested: requested)
+    }
+
+    func desktopSummary() async throws -> FleetDesktopSummary {
+        guard let summaryFailingCount else { throw FleetError.network("no summary") }
+        let json: [String: Any] = ["failing_policies_count": summaryFailingCount, "self_service": true]
+        return try JSONDecoder.fleet.decode(FleetDesktopSummary.self, from: JSONSerialization.data(withJSONObject: json))
+    }
+
+    func setSummaryFailingCount(_ count: Int?) {
+        summaryFailingCount = count
     }
 
     func refetch() async throws {
@@ -93,6 +105,82 @@ struct FleetDeviceManagerTests {
 
         #expect(manager.failingPolicies.map(\.id) == [2, 1])
         #expect(manager.checkedPolicies.count == 3)
+    }
+
+    @Test("Signed out, the failing count comes from the ungated summary")
+    func failingCountSurvivesSignedOut() async {
+        let api = FakePolicyAPI([.failure(.ssoRequired)])
+        await api.setSummaryFailingCount(3)
+        let manager = FleetDeviceManager(client: api, defaults: makeDefaults())
+
+        await manager.refresh()
+
+        #expect(manager.isSignedOut)
+        #expect(manager.policies.isEmpty)
+        // The whole point: the badge and the compliance card still say something true
+        #expect(manager.failingChecksCount == 3)
+    }
+
+    @Test("Signed in, the count comes from the policies, not the summary")
+    func signedInPrefersPolicies() async {
+        let api = FakePolicyAPI([.success([policy(1, "A", "fail"), policy(2, "B", "pass")])])
+        await api.setSummaryFailingCount(99)
+        let manager = FleetDeviceManager(client: api, defaults: makeDefaults())
+
+        await manager.refresh()
+
+        #expect(!manager.isSignedOut)
+        #expect(manager.failingChecksCount == 1)
+    }
+
+    /// The summary is a separate request and can fail on its own; that must not invent a count of zero.
+    @Test("With no summary and no host, the count is unknown rather than zero")
+    func noSummaryMeansUnknown() async {
+        let api = FakePolicyAPI([.failure(.ssoRequired)])
+        await api.setSummaryFailingCount(nil)
+        let manager = FleetDeviceManager(client: api, defaults: makeDefaults())
+
+        await manager.refresh()
+
+        #expect(manager.isSignedOut)
+        #expect(manager.failingChecksCount == nil)
+    }
+
+    @Test("A sign-in is reported once, not on every poll")
+    func signInReportedOncePerDay() async {
+        let api = FakePolicyAPI([.failure(.ssoRequired), .failure(.ssoRequired), .failure(.ssoRequired)])
+        await api.setSummaryFailingCount(0)
+        let manager = FleetDeviceManager(client: api, defaults: makeDefaults())
+        var reports = 0
+        manager.onSignInRequired = { reports += 1 }
+
+        await manager.refresh()
+        await manager.refresh()
+        await manager.refresh()
+
+        // The session stays expired until the user acts, so every poll would otherwise nag
+        #expect(reports == 1)
+    }
+
+    /// Signing in clears the reminder, so the next sign-out is reported promptly rather than being
+    /// swallowed by the remainder of the day's interval.
+    @Test("Signing in resets the reminder")
+    func signingInResetsReminder() async {
+        let api = FakePolicyAPI([
+            .failure(.ssoRequired),
+            .success([policy(1, "A", "pass")]),
+            .failure(.ssoRequired),
+        ])
+        await api.setSummaryFailingCount(0)
+        let manager = FleetDeviceManager(client: api, defaults: makeDefaults())
+        var reports = 0
+        manager.onSignInRequired = { reports += 1 }
+
+        await manager.refresh()
+        await manager.refresh()
+        await manager.refresh()
+
+        #expect(reports == 2)
     }
 
     @Test("SSO required keeps earlier policies")

@@ -127,7 +127,7 @@ struct FleetAppsView: View {
         case .ssoRequired:
             message(Constants.Fleet.signInRequired, systemImage: "person.badge.key") {
                 ScButton(Constants.Fleet.signIn) {
-                    await openDeviceWebPage()
+                    await appState.fleetSSOController.present()
                 }
                 .frame(maxWidth: 200)
             }
@@ -247,10 +247,4 @@ struct FleetAppsView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    /// Opens Fleet's My Device page, which handles sign-in. Replaced by the in-app sign-in sheet.
-    private func openDeviceWebPage() async {
-        if let url = await FleetClient.shared.deviceWebURL() {
-            NSWorkspace.shared.open(url)
-        }
-    }
 }
