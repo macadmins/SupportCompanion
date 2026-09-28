@@ -1,8 +1,9 @@
-import SwiftUI
 import AppKit
+import SwiftUI
 
 class ReasonInputManager {
     private var window: NSWindow?
+    private var windowDelegate: WindowDelegate?
 
     static let shared = ReasonInputManager()
 
@@ -40,10 +41,13 @@ class ReasonInputManager {
 
         self.window = newWindow
 
-        // Handle manual closure via delegate
-        newWindow.delegate = WindowDelegate { [weak self] in
+        let delegate = WindowDelegate { [weak self] in
             self?.closeWindow()
         }
+
+        // Handle manual closure via delegate
+        newWindow.delegate = delegate
+        self.windowDelegate = delegate
     }
 
     func closeWindow() {
@@ -51,9 +55,13 @@ class ReasonInputManager {
             return
         }
 
-        window.orderOut(nil) // Explicitly remove from the screen
-        window.close()       // Close the window
+        // Clear state before closing: `close()` sends `windowWillClose`, which routes straight
+        // back here, and re-entering with `window` still set would close the window twice.
         self.window = nil
+        self.windowDelegate = nil
+        window.delegate = nil
+        window.orderOut(nil)
+        window.close()
     }
 }
 
