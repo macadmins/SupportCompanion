@@ -27,6 +27,23 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_26.6.app
+
+      - name: Run tests
+        # Signed ad hoc on purpose. The Debug configuration expects a Developer ID certificate
+        # the runner does not have, and the tests need none. Debug is also the only configuration
+        # that relaxes library validation, without which the hardened runtime refuses to load an
+        # ad-hoc signed test bundle into the app.
+        run: |
+          xcodebuild test \
+            -project SupportCompanion.xcodeproj \
+            -scheme SupportCompanion \
+            -configuration Debug \
+            -destination 'platform=macOS' \
+            CODE_SIGN_IDENTITY=- \
+            DEVELOPMENT_TEAM=
+
       - name: Install Apple Xcode certificates
         uses: apple-actions/import-codesign-certs@8f3fb608891dd2244cdab3d69cd68c0d37a7fe93 # v2.0.0
         with:
@@ -72,6 +89,7 @@ jobs:
         with:
           name: SupportCompanion ${{env.SC_VERSION}}
           tag_name: v${{env.SC_VERSION}}
+          target_commitish: ${{ github.sha }}
           draft: false
           prerelease: false
           token: ${{ secrets.GITHUB_TOKEN }}
