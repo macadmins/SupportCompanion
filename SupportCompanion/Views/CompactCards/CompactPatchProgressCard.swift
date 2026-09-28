@@ -2,7 +2,7 @@ import Foundation
 import SwiftUI
 
 struct CompactPatchProgressCard: View {
-    @EnvironmentObject var appState: AppStateManager
+    @Environment(AppStateManager.self) var appState
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
@@ -16,8 +16,9 @@ struct CompactPatchProgressCard: View {
                         value: appState.installPercentage,
                         total: 100,
                         label: {
-                            Text("\(String(format: "%.1f", appState.installPercentage))% Patched")
-                            .font(.system(size: 12))}
+                            Text("\(String(format: "%1d", Int(appState.installPercentage/100*100)))% Patched")
+                                .font(.system(size: 12))
+                        }
                     )
                     .tint(appState.installPercentage < 90 ? (colorScheme == .light ? .orangeLight : .orange)
                         : appState.installPercentage < 60 ? (colorScheme == .light ? .redLight : .red)
@@ -26,20 +27,10 @@ struct CompactPatchProgressCard: View {
             }
         )
         .onAppear {
-            if appState.preferences.mode == Constants.modes.munki {
-                appState.pendingMunkiUpdatesManager.startInstallPercentageTask()
-            }
-            if appState.preferences.mode == Constants.modes.intune {
-                appState.pendingIntuneUpdatesManager.startInstallPercentageTask()
-            }
+            appState.activeUpdatesManager?.startInstallPercentageTask()
         }
         .onDisappear() {
-            if appState.preferences.mode == Constants.modes.munki {
-                appState.pendingMunkiUpdatesManager.stopInstallPercentageTask()
-            }
-            if appState.preferences.mode == Constants.modes.intune {
-                appState.pendingIntuneUpdatesManager.stopInstallPercentageTask()
-            }
+            appState.activeUpdatesManager?.stopInstallPercentageTask()
         }
     }
 }

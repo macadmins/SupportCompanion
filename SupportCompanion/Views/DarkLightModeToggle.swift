@@ -1,3 +1,4 @@
+import AppKit
 //
 //  DarkLightModeButton.swift
 //  SupportCompanion
@@ -6,22 +7,25 @@
 //
 //NSAppearance.currentDrawing().bestMatch(from: [.aqua, .darkAqua])
 import SwiftUI
-import AppKit
 
 struct DarkLightModeToggle: View {
-    @AppStorage("isDarkMode") private var isDarkMode: Int = -1 // -1: System mode, 1: Dark, 0: Light
-    @Environment(\.colorScheme) var colorScheme // Detect system theme
-    @State private var currentSystemTheme: ColorScheme = .light // Track the current system theme
+    @AppStorage("isDarkMode") private var isDarkMode: Int = -1  // -1: System mode, 1: Dark, 0: Light
+    @Environment(\.colorScheme) var colorScheme  // Detect system theme
+    @State private var currentSystemTheme: ColorScheme = .light  // Track the current system theme
 
     var body: some View {
         ZStack {
             // Background of the toggle
             Capsule()
-                .fill(LinearGradient(
-                    gradient: Gradient(colors: resolvedTheme == .dark ? [.purple, .black] : [.yellow, .orange]),
-                    startPoint: .leading,
-                    endPoint: .trailing
-                ))
+                .fill(
+                    LinearGradient(
+                        gradient: Gradient(
+                            colors: resolvedTheme == .dark
+                                ? [.accentColor, .black] : [.yellow, .orange]),
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
                 .frame(width: 50, height: 30)
                 .shadow(color: .black.opacity(0.2), radius: 5, x: 0, y: 2)
                 .overlay(
@@ -48,14 +52,15 @@ struct DarkLightModeToggle: View {
         .frame(width: 50, height: 30)
         .onAppear {
             updateAppAppearance()
-            currentSystemTheme = colorScheme // Initialize system theme
+            currentSystemTheme = colorScheme  // Initialize system theme
         }
         .onChange(of: colorScheme) {
-            currentSystemTheme = colorScheme // Update system theme on change
+            currentSystemTheme = colorScheme  // Update system theme on change
             if isDarkMode == -1 {
                 updateAppAppearance()
             }
-        }    }
+        }
+    }
 
     // MARK: - Resolved Theme
     private var resolvedTheme: ColorScheme {
@@ -77,9 +82,9 @@ struct DarkLightModeToggle: View {
 
     private var iconColor: Color {
         switch isDarkMode {
-        case 1: return .purple
+        case 1: return .accentColor
         case 0: return .yellow
-        default: return currentSystemTheme == .dark ? .purple : .yellow
+        default: return currentSystemTheme == .dark ? .accentColor : .yellow
         }
     }
 
@@ -114,7 +119,7 @@ struct DarkLightModeToggle: View {
             case 0:
                 NSApp.appearance = NSAppearance(named: .aqua)
             default:
-                NSApp.appearance = nil // Follow system
+                NSApp.appearance = nil  // Follow system
             }
         }
     }

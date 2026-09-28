@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 struct CustomCardsView: View {
-    @EnvironmentObject var appState: AppStateManager
+    @Environment(AppStateManager.self) var appState
     
     var body: some View {
         let columns = [GridItem(.adaptive(minimum: 300))]

@@ -9,8 +9,8 @@ import Foundation
 import SwiftUI
 
 struct BatteryEvergreenStack: View {
-    @ObservedObject var viewModel: CardGridViewModel
-    @EnvironmentObject var appState: AppStateManager
+    var viewModel: CardGridViewModel
+    @Environment(AppStateManager.self) var appState
     
     var body: some View {
         if !viewModel.isCardVisible(Constants.Cards.evergreen) && !viewModel.isCardVisible(Constants.Cards.battery) {
@@ -31,7 +31,7 @@ struct BatteryEvergreenStack: View {
                 .fixedSize(horizontal: false, vertical: false)
                 }
                 
-                if viewModel.isCardVisible(Constants.Cards.evergreen) && appState.preferences.mode == Constants.modes.munki {
+                if viewModel.isCardVisible(Constants.Cards.evergreen) && appState.preferences.mode == Constants.Modes.munki {
                     ScCard(title: "\(Constants.CardTitle.evergreen)", titleImageName: "leaf.fill", content: {
                         VStack(alignment: .leading) {
                             Text("Rings")
@@ -53,6 +53,24 @@ struct BatteryEvergreenStack: View {
                         .padding(.horizontal)
                     })
                     .fixedSize(horizontal: false, vertical: false)
+                }
+                
+                if viewModel.isCardVisible(Constants.Cards.jamfInfo) && appState.preferences.mode == Constants.Modes.jamf {
+                    ScCard(title: Constants.CardTitle.jamfInfo, titleImageName: "server.rack", content: {
+                        VStack(alignment: .leading, spacing: 5) {
+                            CardData(info: appState.jamfInfoManager.jamfInfo.toKeyValuePairs())
+                            Spacer()
+                        }
+                        .padding(.horizontal)
+                        //.frame(height: 116)
+                        .frame(maxHeight: .infinity, alignment: .top)
+                        .frame(minHeight: 110)
+                    })
+                    .fixedSize(horizontal: false, vertical: false)
+                }
+
+                if viewModel.isCardVisible(Constants.Cards.fleetInfo) && appState.preferences.mode == Constants.Modes.fleet {
+                    FleetInfoCard()
                 }
             }
         }

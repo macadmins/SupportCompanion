@@ -6,11 +6,14 @@
 //
 
 import Foundation
+import Observation
 
-class SystemUpdatesManager: ObservableObject {
+@MainActor
+@Observable
+class SystemUpdatesManager {
     private let appState: AppStateManager
     private var previousUpdateCount: Int = 0
-    private var monitorTask: Task<Void, Never>? // Track the monitoring task
+    @ObservationIgnored private var monitorTask: Task<Void, Never>? // Track the monitoring task
 
     init(appState: AppStateManager) {
         self.appState = appState
@@ -22,8 +25,8 @@ class SystemUpdatesManager: ObservableObject {
             do {
                 let result = await ActionHelpers.getSystemUpdateStatus()
                 switch result {
-                case .success(let (count, updates)):
-                    updateCache(count: count, updates: updates)
+                case .success(let (count, updates, hasBackgroundSecurityImprovement)):
+                    updateCache(count: count, updates: updates, hasBackgroundSecurityImprovement: hasBackgroundSecurityImprovement)
                 case .failure(let error):
                     Logger.shared.logError("Failed to refresh system updates: \(error.localizedDescription)")
                 }
@@ -38,12 +41,12 @@ class SystemUpdatesManager: ObservableObject {
         monitorTask = Task {
             while !Task.isCancelled {
                 do {
-                    let result = await ActionHelpers.getSystemUpdateStatus(sendNotification: !appState.preferences.hiddenActions.contains("SoftwareUpdates"))
+                    let result = await ActionHelpers.getSystemUpdateStatus(sendNotification: !appState.preferences.hiddenActions.contains(Constants.Actions.HideStrings.softwareUpdate))
                     switch result {
-                    case .success(let (count, updates)):
+                    case .success(let (count, updates, hasBackgroundSecurityImprovement)):
                         if count != self.previousUpdateCount {
                             self.previousUpdateCount = count
-                            updateCache(count: count, updates: updates)
+                            updateCache(count: count, updates: updates, hasBackgroundSecurityImprovement: hasBackgroundSecurityImprovement)
                         }
                     case .failure(let error):
                         Logger.shared.logError("Monitoring failed to get system updates: \(error.localizedDescription)")
@@ -62,10 +65,7 @@ class SystemUpdatesManager: ObservableObject {
     }
 
     /// Updates the cache in `AppStateManager`.
-    private func updateCache(count: Int, updates: [String]) {
-        Task { @MainActor in
-            let newInfo = SystemUpdates(id: UUID(), count: count, updates: updates)
-            self.appState.systemUpdateCache = newInfo
-        }
+    private func updateCache(count: Int, updates: [String], hasBackgroundSecurityImprovement: Bool) {
+        appState.systemUpdateCache = SystemUpdates(id: UUID(), count: count, updates: updates, hasBackgroundSecurityImprovement: hasBackgroundSecurityImprovement)
     }
 }

@@ -3,13 +3,17 @@
 app_path="/Applications/SupportCompanion.app"
 process_name="SupportCompanion"
 launcha_name="com.github.macadmins.SupportCompanion.agent.plist"
-launch_daemon_path="/Library/LaunchDaemons/${launchd_name}"
 launch_agent_path="/Library/LaunchAgents/${launcha_name}"
 console_user=$(/usr/bin/stat -f "%Su" /dev/console)
 console_user_uid=$(/usr/bin/id -u "$console_user")
 
 # install helper
+#
+# The result is remembered rather than acted on immediately: the app should still be started and the
+# launch agent reloaded either way. But a failure here leaves the new app talking to an old helper,
+# which breaks every privileged operation, so the install must not report success.
 "$app_path/Contents/Resources/helper_install.zsh"
+helper_install_status=$?
 
 # kill the process if it's running
 if [[ -n $( ps -ef | grep "${process_name}" | grep -v grep ) ]]; then
@@ -35,6 +39,11 @@ if [[ -f "${launch_agent_path}" ]]; then
 else
   echo "Did not detect launch agent, opening app."
     open -g -a "${app_path}"
+fi
+
+if [[ "$helper_install_status" -ne 0 ]]; then
+    echo "Privileged helper installation failed; reporting the package install as failed." >&2
+    exit "$helper_install_status"
 fi
 
 exit 0

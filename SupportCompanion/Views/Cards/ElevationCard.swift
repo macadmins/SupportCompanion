@@ -9,12 +9,12 @@ import Foundation
 import SwiftUI
 
 struct ElevationCard: View {
-    @EnvironmentObject var appState: AppStateManager
+    @Environment(AppStateManager.self) var appState
     @State private var showReasonInput = false
     @State private var elevationReason = ""
 
     var body: some View {
-        let elevationManager = ElevationManager(appState: appState)
+        let elevationManager = ElevationManager.shared
 
         VStack(alignment: .leading) {
             ScCard(title: Constants.CardTitle.privileges, titleImageName: "lock.fill", useMultiColor: false, content: {
@@ -34,17 +34,17 @@ struct ElevationCard: View {
                     
                     HStack {
                         ScButton(Constants.General.elevate, disabled: appState.userInfoManager.userInfo.isAdmin || appState.isDemotionActive) {
-                            if appState.preferences.requireReasonForElevation {
+                            if await appState.preferences.elevation.requireReasonForElevation {
                                 showReasonInput = true // Show reason input modal
                             } else {
-                                elevationManager.handleElevation(reason: "")
+                                await elevationManager.handleElevation(reason: "")
                             }
                         }
                         .padding(.top)
                         
                         ScButton(Constants.General.demote, disabled: !appState.isDemotionActive) {
-                            appState.stopDemotionTimer()
-                            elevationManager.demotePrivileges(completion: { success in
+                            await appState.stopDemotionTimer()
+                            await elevationManager.demotePrivileges(completion: { success in
                                 if success {
                                     Logger.shared.logDebug("Successfully demoted privileges")
                                 } else {
@@ -60,7 +60,9 @@ struct ElevationCard: View {
             })
         }
         .sheet(isPresented: $showReasonInput) {
-            ReasonInputView(isPresented: $showReasonInput, onElevate: elevationManager.handleElevation)
+            ReasonInputView(isPresented: $showReasonInput) { reason in
+                elevationManager.handleElevation(reason: reason)
+            }
         }
     }
 }

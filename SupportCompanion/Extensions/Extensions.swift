@@ -34,6 +34,20 @@ extension Double {
         let divisor = pow(10.0, Double(places))
         return (self * divisor).rounded() / divisor
     }
+
+    /// Color for a storage usage percentage (0–100).
+    func storageColor(colorScheme: ColorScheme) -> Color {
+        if self < 50 { return .ScGreen }
+        if self < 80 { return colorScheme == .light ? .orangeLight : .orange }
+        return colorScheme == .light ? .redLight : .red
+    }
+
+    /// Color for a battery health percentage (0–100).
+    func batteryHealthColor(colorScheme: ColorScheme) -> Color {
+        if self <= 30 { return colorScheme == .light ? .redLight : .red }
+        if self < 80 { return colorScheme == .light ? .orangeLight : .orange }
+        return .ScGreen
+    }
 }
 
 extension View {
@@ -77,14 +91,18 @@ extension AppDelegate: NSWindowDelegate {
         }
         Logger.shared.logDebug("Main window is closing.")
         AppStateManager.shared.windowIsVisible = false
+        // Explicitly remove the hosting controller before releasing the window controller.
+        // This ensures SwiftUI's onDisappear fires on all visible views (stopping battery/apps
+        // monitoring) and that @State-owned objects are torn down via proper view lifecycle
+        // rather than relying solely on the dealloc chain.
+        windowController?.window?.contentViewController = nil
         windowController = nil
-        AppStateManager.shared.jsonCardManager = nil
         NSApp.setActivationPolicy(.accessory)
     }
 
     func windowDidBecomeKey(_ notification: Notification) {
         AppStateManager.shared.windowIsVisible = true
-        BadgeManager.shared.incrementBadgeCount(count: AppStateManager.shared.pendingUpdatesCount + AppStateManager.shared.systemUpdateCache.count)
+        BadgeManager.shared.incrementBadgeCount(count: AppStateManager.shared.attentionCount)
     }
 }
 
@@ -125,6 +143,28 @@ extension TimeInterval {
     }
 }
 
+extension Date {
+    /// Relative time for card rows, e.g. "5 minutes ago".
+    ///
+    /// Swedish and Norwegian build this with a leading preposition — "för 5 minuter sedan",
+    /// "for 5 minutter siden" — which is long for a row that sits next to a label. The
+    /// preposition is dropped for those two languages; the trailing "sedan"/"siden" still
+    /// carries the meaning, so the result reads correctly. Languages that carry the meaning
+    /// in the preposition instead, such as German ("vor 5 Minuten") and French
+    /// ("il y a 5 minutes"), are left alone, as is a named day like "i förrgår".
+    func relativeDescription() -> String {
+        let formatted = formatted(.relative(presentation: .named))
+        let preposition: String
+        switch Locale.current.language.languageCode?.identifier {
+        case "sv": preposition = "för "
+        case "nb", "nn", "no": preposition = "for "
+        default: return formatted
+        }
+        guard formatted.hasPrefix(preposition) else { return formatted }
+        return String(formatted.dropFirst(preposition.count))
+    }
+}
+
 extension Color {
     // Orange shades
     static let orangeLight = Color(hue: 0.1, saturation: 0.9, brightness: 0.75) // Softer orange for light mode
@@ -140,7 +180,7 @@ extension Color {
 }
 
 extension Theme {
-    static let sc = Theme.basic
+    @MainActor static var sc: Theme { Theme.basic
         .codeBlock { configuration in
             ScrollView(.horizontal) {
                 configuration.label
@@ -176,7 +216,7 @@ extension Theme {
                     .alternatingRows(
                         Color.primary.opacity(0.1),
                         Color.clear, 
-                        header: (Color(NSColor(hex: AppStateManager.shared.preferences.accentColor ?? "") ?? NSColor.controlAccentColor))
+                        header: (Color(NSColor(hex: AppStateManager.shared.preferences.branding.accentColor ?? "") ?? NSColor.controlAccentColor))
                     )
                 )
             }
@@ -193,6 +233,7 @@ extension Theme {
                 .padding(.horizontal, 13)
                 .relativeLineSpacing(.em(0.25))
             }
+    }
 }
 
 extension View {

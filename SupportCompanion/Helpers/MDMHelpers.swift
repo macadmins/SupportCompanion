@@ -8,26 +8,18 @@
 import Foundation
 
 func getMDMEnrollmentTime() async -> String {
-    let command = """
-    /usr/bin/profiles -P -v | grep -A 10 'Management Profile'
-    """
+    // Reading the enrollment profile needs root, so the helper does it and returns just the date.
     do {
-        let commandOutput = try await ExecutionService.executeCommandPrivileged("/bin/bash", arguments: ["-c", command])
-        
-        // Process the command output
-        let lines = commandOutput.split(separator: "\n")
-        for line in lines {
-            if line.contains("installationDate") {
-                let datePattern = #"(\d{4}-\d{2}-\d{2})"#
-                if let range = line.range(of: datePattern, options: .regularExpression) {
-                    return String(line[range])
-                }
-            }
+        let installDate = try await ExecutionService.mdmEnrollmentDate()
+        if !installDate.isEmpty {
+            Logger.shared.logDebug("MDM enrollment profile installed \(installDate)")
+            return installDate
         }
+        Logger.shared.logDebug("No MDM enrollment profile install date found")
     } catch {
         Logger.shared.logError("Error getting MDM enrollment time: \(error)")
     }
-    
+
     return "Unknown"
 }
 

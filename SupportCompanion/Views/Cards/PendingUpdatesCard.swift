@@ -9,8 +9,8 @@ import Foundation
 import SwiftUI
 
 struct PendingUpdatesCard: View {
-    @ObservedObject var viewModel: CardGridViewModel
-    @EnvironmentObject var appState: AppStateManager
+    var viewModel: CardGridViewModel
+    @Environment(AppStateManager.self) var appState
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
@@ -39,16 +39,16 @@ struct PendingUpdatesCard: View {
     
     private var headerView: some View {
         HStack {
-            Text(Constants.TabelHeaders.name)
+            Text(Constants.TableHeaders.name)
                 .font(.subheadline)
                 .bold()
                 .frame(maxWidth: .infinity, alignment: .leading)
-            Text(Constants.TabelHeaders.version)
+            Text(Constants.TableHeaders.version)
                 .font(.subheadline)
                 .bold()
                 .frame(maxWidth: .infinity, alignment: .trailing)
-            if appState.preferences.mode == Constants.modes.intune {
-                Text("")
+            if let detailTitle = appState.activeUpdatesManager?.pendingUpdatesDetailColumnTitle {
+                Text(detailTitle)
                     .font(.subheadline)
                     .bold()
                     .frame(maxWidth: .infinity, alignment: .trailing)
@@ -59,36 +59,50 @@ struct PendingUpdatesCard: View {
         .background(Color.clear)
     }
     
-    @ViewBuilder
     private var pendingUpdatesList: some View {
-        if appState.preferences.mode == Constants.modes.munki {
-            updateList(items: appState.pendingMunkiUpdates)
-        } else if appState.preferences.mode == Constants.modes.intune {
-            updateList(items: appState.pendingIntuneUpdates)
-        }
+        updateList(items: appState.activeUpdatesManager?.pendingUpdates ?? [])
     }
     
-    private func updateList<T: Identifiable>(items: [T]) -> some View where T: PendingUpdate {
-        List {
-            if items.isEmpty {
+    /// Concrete row type: ForEach with a key path over `any PendingUpdate` crashes the Swift compiler.
+    private struct Row: Identifiable {
+        let id: UUID
+        let name: String
+        let version: String
+        let dueBy: String?
+    }
+
+    private func updateList(items: [any PendingUpdate]) -> some View {
+        let rows = items.map { Row(id: $0.id, name: $0.name, version: $0.version, dueBy: $0.dueBy) }
+        return List {
+            if rows.isEmpty {
                 Text("No pending updates")
                     .frame(maxWidth: .infinity, alignment: .leading)
             } else {
-                ForEach(items) { update in
-                    HStack {
+                ForEach(rows) { update in
+                    HStack(spacing: 8) {
+                        // Keep this leading text flexible
                         Text(update.name)
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .lineLimit(2)
+                            .minimumScaleFactor(0.8)
+                            .truncationMode(.tail)
+
+                        Spacer()
+
+                        // Keep this trailing text compact; no infinite frames
                         Text(update.version)
-                            .frame(maxWidth: .infinity, alignment: .trailing)
                             .foregroundColor(colorScheme == .dark ? .gray : .grayLight)
-                        if let intuneUpdate = update as? PendingIntuneUpdate, intuneUpdate.showInfoIcon {
-                            Image(systemName: "info.circle")
-                                .help(intuneUpdate.pendingReason)
+                            .lineLimit(1)
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+
+                        if let dueBy = update.dueBy {
+                            Text(dueBy)
+                                .foregroundColor(colorScheme == .dark ? .gray : .grayLight)
+                                .lineLimit(1)
                                 .frame(maxWidth: .infinity, alignment: .trailing)
                         }
                     }
+                    .padding(.vertical, 6)
                     .listRowSeparator(.hidden)
-                    Divider()
                 }
             }
         }
@@ -99,35 +113,16 @@ struct PendingUpdatesCard: View {
     }
     
     private func startFetching() {
-        DispatchQueue.main.async {
-            if appState.preferences.mode == Constants.modes.munki {
-                appState.pendingMunkiUpdatesManager.startFetchingList()
-            } else if appState.preferences.mode == Constants.modes.intune {
-                appState.pendingIntuneUpdatesManager.startFetchingList()
-            }
-        }
+        appState.activeUpdatesManager?.startFetchingList()
     }
 
     private func stopFetching() {
-        DispatchQueue.main.async {
-            if appState.preferences.mode == Constants.modes.munki {
-                appState.pendingMunkiUpdatesManager.stopFetchingList()
-            } else if appState.preferences.mode == Constants.modes.intune {
-                appState.pendingIntuneUpdatesManager.stopFetchingList()
-            }
-        }
+        appState.activeUpdatesManager?.stopFetchingList()
     }
     
     private func handleVisibilityChange(_ newValue: Bool) {
         if !newValue {
             stopFetching()
         }
-    }
-}
-
-struct PendingMunkiUpdatesCard_Previews: PreviewProvider {
-    static var previews: some View {
-        PendingUpdatesCard(viewModel: CardGridViewModel(appState: AppStateManager()))
-            .previewLayout(.sizeThatFits)
     }
 }

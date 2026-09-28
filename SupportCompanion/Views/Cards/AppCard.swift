@@ -8,41 +8,21 @@
 import Foundation
 import SwiftUI
 
+// Mode-specific details (version, icon, button label) are resolved by ApplicationsInfoManager when the
+// list is built, so this view only displays them.
 struct AppCard: View {
     let card: InstalledApp
-    let version: String
+    
+    @State private var resolvedTitleImage: String = "app.gift.fill"
 
-    init(card: InstalledApp) {
-        self.card = card
-
-        // Determine version
-        if AppStateManager.shared.preferences.mode == Constants.modes.intune,
-           let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: card.bundleId) {
-            let appInfoPlistPath = "\(appURL.path)/Contents/Info.plist"
-            self.version = getAppVersion(plistPath: appInfoPlistPath) ?? "Unknown"
-        } else {
-            self.version = card.version
-        }
-    }
+    private var version: String { card.version }
 
     var titleImage: String {
-        if AppStateManager.shared.preferences.mode == Constants.modes.munki {
-            let iconPath = "/Library/Managed Installs/icons/\(card.name).png"
-            if FileManager.default.fileExists(atPath: iconPath) {
-                return iconPath
-            } else {
-                return "app.gift.fill"
-            }
-        } else if AppStateManager.shared.preferences.mode == Constants.modes.systemProfiler {
-            let appInfoPlistPath = "\(card.path)/Contents/Info.plist"
-            return getIconPath(plistPath: appInfoPlistPath, appPath: card.path) ?? "app.gift.fill"
-        } else if AppStateManager.shared.preferences.mode == Constants.modes.intune {
-            if let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: card.bundleId) {
-                let appInfoPlistPath = "\(appURL.path)/Contents/Info.plist"
-                return getIconPath(plistPath: appInfoPlistPath, appPath: appURL.path) ?? "app.gift.fill"
-            }
-        }
-        return "app.gift.fill"
+        card.iconPath ?? resolvedTitleImage
+    }
+    
+    private var buttonText: String {
+        card.actionText ?? ""
     }
 
     var body: some View {
@@ -52,12 +32,14 @@ struct AppCard: View {
             imageSize: (40, 40),
             content: {
                 VStack(alignment: .leading, spacing: 5) {
-                    HStack(alignment: .top) {
-                        Text("\(Constants.TabelHeaders.version):")
-                            .bold()
-                        Text(version)
+                    if !version.isEmpty {
+                        HStack(alignment: .top) {
+                            Text("\(Constants.TableHeaders.version):")
+                                .bold()
+                            Text(version)
+                        }
+                        .font(.system(size: 14))
                     }
-                    .font(.system(size: 14))
                     
                     if !card.arch.isEmpty {
                         HStack {
@@ -76,23 +58,53 @@ struct AppCard: View {
                         }
                         .font(.system(size: 14))
                     }
-
-                    if card.isSelfServe {
-                        ScButton(Constants.General.manage, action: {
-                            Task {
+                    
+                    HStack {
+                        if card.isSelfServe {
+                            ScButton(buttonText, action: {
                                 if !card.action.isEmpty {
-                                    _ = try await ExecutionService.executeShellCommand(card.action)
+                                    do {
+                                        _ = try await ExecutionService.executeShellCommand(card.action)
+                                    } catch {
+                                        Logger.shared.logError("App card action '\(card.action)' failed: \(error)")
+                                    }
                                 }
+                            })
+                            .padding(.top, 40)
+                        }
+                        if AppStateManager.shared.preferences.mode == Constants.Modes.jamf {
+                            if let pending = AppStateManager.shared.pendingJamfUpdates.first(where: { $0.policyName == card.name }),
+                               let patchID = pending.patchId {
+                                let isRunning = AppStateManager.shared.pendingJamfUpdatesManager.isRunning(patchId: patchID)
+                                ScButton(isRunning ? "Updating…" : "Update", action: {
+                                    await AppStateManager.shared.pendingJamfUpdatesManager.runPatch(patchId: patchID)
+                                })
+                                .disabled(isRunning)
+                                .padding(.top, 40)
                             }
-                        })
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .padding(.top, 40)
+                        }
                     }
+                    .frame(maxWidth: .infinity, alignment: .center)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal)
             }
         )
+        .task {
+            await loadRemoteIconIfNeeded()
+        }
+    }
+    
+    @MainActor
+    private func loadRemoteIconIfNeeded() async {
+        guard card.iconPath == nil, let iconUrl = card.iconUrl, !iconUrl.isEmpty else { return }
+        // Attempt to download icon asynchronously
+        if let iconPath = try? await downloadAppIcon(forApp: card) {
+            resolvedTitleImage = iconPath
+        } else {
+            // Keep fallback if download fails
+            resolvedTitleImage = "app.gift.fill"
+        }
     }
 }
 
@@ -141,3 +153,4 @@ struct PlistService {
         return nil
     }
 }
+

@@ -9,8 +9,15 @@ import Foundation
 import UserNotifications
 import SwiftUI
 
+@MainActor
 class NotificationService {
     private let appState: AppStateManager
+    /// Every category registered by this app. Registering replaces the whole set, so it's kept here and
+    /// always registered in full, rather than read back and merged by notifications sent at the same time.
+    private static var categories: [String: UNNotificationCategory] = [:]
+    /// Categories registered by earlier launches, which notifications still in Notification Center use.
+    /// Read once, before this launch registers anything.
+    private static var loadedEarlierCategories = false
     
     init(appState: AppStateManager) {
         self.appState = appState
@@ -34,33 +41,46 @@ class NotificationService {
         }
     }
 
+    /// Command that updates every Fleet title with an update available, for update notifications.
+    static let fleetUpdateAllCommand = "fleet-update-all"
+    /// Followed by a title id: quits that app and retries its install.
+    static let fleetQuitAndRetryCommand = "fleet-quit-and-retry:"
+
+    /// - Parameters:
+    ///   - command: Run by the button. `demote`, `fleet-update-all` and `open supportcompanion://…` are handled in the app.
+    ///   - openURL: A `supportcompanion://` page opened when the notification itself is clicked.
     func sendNotification(
         message: String,
         buttonText: String? = nil,
         command: String? = nil,
+        openURL: String? = nil,
         notificationType: NotificationType
     ) {
-        guard appState.preferences.notificationInterval > 0 else {
+        guard appState.preferences.notifications.notificationInterval > 0 else {
             Logger.shared.logDebug("Notification interval set to 0, skipping notification")
             return
         }
         
-        let imagePath = appState.preferences.notificationImage.isEmpty ? nil : appState.preferences.notificationImage
+        let imagePath = appState.preferences.notifications.notificationImage.isEmpty ? nil : appState.preferences.notifications.notificationImage
 
         if notificationType != .generic {
             if let lastDate = AppStorageHelper.shared.getLastNotificationDate(for: notificationType),
-            Date().timeIntervalSince(lastDate) < TimeInterval(appState.preferences.notificationInterval * 3600) {
+            Date().timeIntervalSince(lastDate) < TimeInterval(appState.preferences.notifications.notificationInterval * 3600) {
                 Logger.shared.logDebug("Notification interval for \(notificationType) not reached, skipping notification")
                 return
             }
         }
 
+        let notificationCommand = command?.isEmpty == false ? command : nil
         let content = UNMutableNotificationContent()
-        content.title = appState.preferences.notificationTitle
+        content.title = appState.preferences.notifications.notificationTitle
         content.body = message
         content.sound = .default
-        content.userInfo = ["Command": command]
-        content.categoryIdentifier = "ACTIONABLE"
+        var userInfo: [String: Any] = ["Command": notificationCommand as Any]
+        if let openURL, openURL.hasPrefix("supportcompanion://") {
+            userInfo["OpenURL"] = openURL
+        }
+        content.userInfo = userInfo
         
         if let imagePath = imagePath, let tempURL = prepareImageForNotification(imagePath: imagePath) {
             do {
@@ -72,7 +92,7 @@ class NotificationService {
         }
 
         var actions: [UNNotificationAction] = []
-        if let buttonText = buttonText, let command = command {
+        if let buttonText = buttonText, notificationCommand != nil {
             let action = UNNotificationAction(
                 identifier: "RUN_COMMAND",
                 title: buttonText,
@@ -81,22 +101,43 @@ class NotificationService {
             actions.append(action)
         }
 
+        // A category per button title: categories are shared, so reusing one would change the buttons of
+        // notifications already delivered
         let category = UNNotificationCategory(
-            identifier: "ACTIONABLE",
+            identifier: actions.isEmpty ? "PLAIN" : "ACTIONABLE.\(buttonText ?? "")",
             actions: actions,
             intentIdentifiers: []
         )
-        UNUserNotificationCenter.current().setNotificationCategories([category])
+        content.categoryIdentifier = category.identifier
 
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
-                Logger.shared.logDebug("Failed to deliver notification: \(error.localizedDescription)")
-            } else {
+        Task {
+            let center = UNUserNotificationCenter.current()
+            await Self.register(category, in: center)
+            do {
+                try await center.add(request)
                 Logger.shared.logDebug("Notification sent: \(message)")
                 AppStorageHelper.shared.setLastNotificationDate(Date(), for: notificationType)
+            } catch {
+                Logger.shared.logDebug("Failed to deliver notification: \(error.localizedDescription)")
             }
         }
+    }
+
+    private static func register(_ category: UNNotificationCategory, in center: UNUserNotificationCenter) async {
+        if !loadedEarlierCategories {
+            let earlier = await center.notificationCategories()
+            if !loadedEarlierCategories {
+                loadedEarlierCategories = true
+                for existing in earlier where categories[existing.identifier] == nil {
+                    categories[existing.identifier] = existing
+                }
+            }
+        }
+        // Checked and registered without suspending, so notifications sent together can't undo each other
+        guard categories[category.identifier] == nil else { return }
+        categories[category.identifier] = category
+        center.setNotificationCategories(Set(categories.values))
     }
 }
 
@@ -106,18 +147,37 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
-        if response.actionIdentifier == "RUN_COMMAND",
-           let command = response.notification.request.content.userInfo["Command"] as? String {
+        if response.actionIdentifier == UNNotificationDefaultActionIdentifier,
+           let openURL = response.notification.request.content.userInfo["OpenURL"] as? String {
+            Logger.shared.logDebug("Notification clicked, opening \(openURL)")
+            ActionHelpers.openManagementApp(appURL: openURL)
+        } else if response.actionIdentifier == "RUN_COMMAND",
+            let command = response.notification.request.content.userInfo["Command"] as? String {
             Logger.shared.logDebug("Notification button clicked, running command: \(command)")
             if command == "demote" {
-                AppStateManager.shared.stopDemotionTimer()
-                ElevationManager.shared.demotePrivileges { success in
-                    if success {
-                        Logger.shared.logDebug("Successfully demoted privileges")
-                    } else {
-                        Logger.shared.logError("Failed to demote privileges")
+                Task { @MainActor in
+                    AppStateManager.shared.stopDemotionTimer()
+                    ElevationManager.shared.demotePrivileges { success in
+                        if success {
+                            Logger.shared.logDebug("Successfully demoted privileges")
+                        } else {
+                            Logger.shared.logError("Failed to demote privileges")
+                        }
                     }
                 }
+            } else if command == NotificationService.fleetUpdateAllCommand {
+                Task { @MainActor in
+                    ActionHelpers.openManagementApp(appURL: "supportcompanion://apps")
+                    await AppStateManager.shared.fleetSoftwareManager.updateAll()
+                }
+            } else if command.hasPrefix(NotificationService.fleetQuitAndRetryCommand),
+                      let titleID = Int(command.dropFirst(NotificationService.fleetQuitAndRetryCommand.count)) {
+                Task { @MainActor in
+                    ActionHelpers.openManagementApp(appURL: "supportcompanion://apps")
+                    await AppStateManager.shared.fleetSoftwareManager.quitAndRetry(titleID: titleID)
+                }
+            } else if command.hasPrefix("open supportcompanion://") {
+                ActionHelpers.openManagementApp(appURL: String(command.dropFirst("open ".count)))
             } else {
                 Task {
                     do {
@@ -133,44 +193,33 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
     }
 }
 
+@MainActor
 class BadgeManager {
     static let shared = BadgeManager()
     private(set) var badgeCount = 0
-    private let lock = NSLock()
 
     func incrementBadgeCount(count: Int) {
-        lock.lock()
         badgeCount = count
-        lock.unlock()
         updateBadge()
     }
 
     func currentBadgeCount() -> Int {
-        lock.lock()
-        let count = badgeCount
-        lock.unlock()
-        return count
+        return badgeCount
     }
 
     private func updateBadge() {
-        DispatchQueue.main.async {
-            if self.badgeCount > 0 {
-                let prefs = AppStateManager.shared.preferences
-                let hasPendingUpdates = !prefs.hiddenCards.contains("PendingAppUpdates") && AppStateManager.shared.pendingUpdatesCount > 0
-                let hasSoftwareUpdates = !prefs.hiddenActions.contains("SoftwareUpdates") && AppStateManager.shared.systemUpdateCache.count > 0
-                if hasPendingUpdates || hasSoftwareUpdates {
-                    NSApplication.shared.dockTile.showsApplicationBadge = true
-                    NSApplication.shared.dockTile.badgeLabel = nil
-                    NSApplication.shared.dockTile.badgeLabel = String(self.badgeCount)
-                } else {
-                    NSApplication.shared.dockTile.showsApplicationBadge = false
-                    NSApplication.shared.dockTile.badgeLabel = nil
-                }
-
-            } else {
+        if badgeCount > 0 {
+            if AppStateManager.shared.attentionCount > 0 {
+                NSApplication.shared.dockTile.showsApplicationBadge = true
                 NSApplication.shared.dockTile.badgeLabel = nil
+                NSApplication.shared.dockTile.badgeLabel = String(badgeCount)
+            } else {
                 NSApplication.shared.dockTile.showsApplicationBadge = false
+                NSApplication.shared.dockTile.badgeLabel = nil
             }
+        } else {
+            NSApplication.shared.dockTile.badgeLabel = nil
+            NSApplication.shared.dockTile.showsApplicationBadge = false
         }
     }
 }
@@ -183,6 +232,7 @@ enum NotificationType: String {
 }
 
 
+@MainActor
 class AppStorageHelper {
     // Singleton instance
     static let shared = AppStorageHelper(appState: AppStateManager.shared)
@@ -197,13 +247,13 @@ class AppStorageHelper {
         let formattedDate = ISO8601DateFormatter().string(from: date)
         switch type {
         case .softwareUpdate:
-            appState.preferences.lastSoftwareUpdateNotificationTime = formattedDate
+            appState.preferences.notifications.lastSoftwareUpdateNotificationTime = formattedDate
         case .rebootReminder:
-            appState.preferences.lastRebootReminderNotificationTime = formattedDate
+            appState.preferences.notifications.lastRebootReminderNotificationTime = formattedDate
         case .generic:
-            appState.preferences.lastGenericNotificationTime = formattedDate
+            appState.preferences.notifications.lastGenericNotificationTime = formattedDate
         case .appUpdate:
-            appState.preferences.lastAppUpdateNotificationTime = formattedDate
+            appState.preferences.notifications.lastAppUpdateNotificationTime = formattedDate
         }
     }
 
@@ -211,13 +261,13 @@ class AppStorageHelper {
         let dateString: String
         switch type {
         case .softwareUpdate:
-            dateString = appState.preferences.lastSoftwareUpdateNotificationTime
+            dateString = appState.preferences.notifications.lastSoftwareUpdateNotificationTime
         case .rebootReminder:
-            dateString = appState.preferences.lastRebootReminderNotificationTime
+            dateString = appState.preferences.notifications.lastRebootReminderNotificationTime
         case .generic:
-            dateString = appState.preferences.lastGenericNotificationTime
+            dateString = appState.preferences.notifications.lastGenericNotificationTime
         case .appUpdate:
-            dateString = appState.preferences.lastAppUpdateNotificationTime
+            dateString = appState.preferences.notifications.lastAppUpdateNotificationTime
         }
         guard !dateString.isEmpty else { return nil }
         return ISO8601DateFormatter().date(from: dateString)

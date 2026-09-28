@@ -2,7 +2,7 @@ import Foundation
 import SwiftUI
 
 struct CompactDeviceCard: View {
-    @EnvironmentObject var appState: AppStateManager
+    @Environment(AppStateManager.self) var appState
     
     var body: some View {
         ScCardCompact(

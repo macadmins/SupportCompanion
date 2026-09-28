@@ -4,6 +4,234 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2026-09-25
+### Breaking changes
+- **Privileged settings are only read when set by an administrator.** `IsPrivileged` on `Actions`, `RequirePrivilegedActionAuthentication`, and the elevation settings (`EnableElevation`, `MaxElevationTime`, `RequireResonForElevation`, `ReasonMinLength`, `ElevationWebhookUrl`, `ElevationSeverity`) are now only honored when they come from an MDM configuration profile. These settings decide what runs as root and who gets administrator rights, so honoring them from a domain the user can write to was a local privilege escalation. `/Library/Preferences/com.github.macadmins.SupportCompanion.plist` is **no longer trusted for these keys either**: only root can write it, which is exactly the problem — anything that reaches root once, a privileged action or somebody inside an elevation window, could write itself a permanent grant there and nothing would put it back. A profile is owned by the MDM, which re-applies it. Actions defined in the user's own preferences still run, but never with privileges, and `RequirePrivilegedActionAuthentication` defaults to `true` unless an administrator sets it. **If you deploy these settings with `defaults write`, to either the user's domain or `/Library/Preferences`, move them to a configuration profile.** A key that is ignored because of where it lives is logged, so a setting that appears to have stopped working can be confirmed from the log.
+- **Fleet mode is selected automatically** on Macs with Fleet's agent (orbit) installed when no other mode matches. Before, these Macs used System Profiler mode. Set `Mode` explicitly to keep a different mode.
+- **The privileged helper is installed by the package's `helper_install.zsh`**, which places it in `/Library/PrivilegedHelperTools` and loads its LaunchDaemon. `SMJobBless` is deprecated in macOS 14 and later; `SMAppService` registration remains only as a fallback for a Mac where the packaged helper is missing, and is skipped entirely when `SkipHelperInstall` says the helper is deployed declaratively.
+- **Existing helper installs:** the package now replaces the helper on every install, unloading the old one first and loading the new one, and the install fails if the helper does not end up running. The app and the helper speak a versioned interface, so a Mac left with an older helper is not merely stale — every privileged operation fails — and that must not pass silently.
+- **The helper only serves 3.0.0 and later clients.** A valid signature proves only that a connecting app is a Support Companion build signed by us, which every 2.x release satisfies too. Signature alone therefore cannot tell this version's client apart from an older one that enforced less, so the restrictions added here would not hold if an earlier build could still connect. The helper now checks the connecting app's version, requires it to be signed with the hardened runtime, and requires it to run from `/Applications/SupportCompanion.app`, which a standard user cannot write to.
+- **The helper no longer runs commands on request.** Its interface was a pair of methods that ran any command or script as root, so every restriction on what could run — `IsPrivileged`, `EnableElevation` — was enforced only in the app, and any code running in the app process was equivalent to root. It now exposes named operations instead, and decides what each one runs. For privileged actions the app sends only the action's name; the helper looks the `Command` up in the administrator-managed preferences itself, so what runs as root always comes from an administrator. `EnableElevation` is re-checked in the helper rather than only hiding a button.
+
+### Security
+- **Temporary administrator rights are enforced by the helper, not the app.** The demotion timer used to run in the app and keep its deadline in `PrivilegeDemotionEndTime` in the user's own preferences, so quitting the app or deleting the key left the user an administrator indefinitely. Both the deadline and the timer live in the helper now, in a root-owned file under `/var/db/com.github.macadmins.SupportCompanion`, and demotion happens whether or not the app is running — including catching up on a deadline that passed while the Mac was off. The app's timer only drives the countdown.
+- **Administrator rights granted to other accounts during an elevation are revoked.** Demoting the elevated account does nothing about a second administrator created while the window is open, which would outlive the elevation entirely. The helper watches the `admin` group for the length of the window, by short name and by UUID, and takes back rights granted to anyone who was not already an administrator when the window opened, repeatedly if they are granted again. The elevated user keeps their own rights until the timer runs out. Every grant and revocation is written to the root-owned log.
+- **Elevation reasons are also recorded where the user cannot edit them.** The reason log in the user's Application Support folder is writable by that user, so it was never an audit trail. The helper keeps its own root-owned log alongside the elevation state. Reasons are flattened to a single line and bounded in length before being written, so a reason containing newlines cannot forge entries in that log, and one containing a great deal of text cannot inflate it.
+- **Uninstalling hands back any administrator rights it was holding.** The uninstaller removes the helper, which is what would have taken those rights away, so uninstalling during an elevation window previously left the elevated user a permanent administrator. It now demotes anyone still elevated before removing anything, and clears the helper's state directory.
+- **More than one user can be elevated at a time.** With fast user switching two accounts can each be logged in and each ask for rights. Each window is now tracked separately with its own deadline and timer, rather than the second replacing the first and leaving that user elevated with nothing left to demote them.
+- The package's preinstall script now verifies that the 1.x `Uninstall.sh` it runs is owned by root and not writable by group or others before executing it.
+
+### Added
+- **`EnforceAdminAllowlist` and `PermanentAdmins`, to stop an elevation outliving its window.** The helper's deadline lives in a root-owned file, and a user who is briefly an administrator is briefly root, so they can delete it and restart the helper — leaving nothing to say a demotion was owed, and no way to tell their rights from a permanent administrator's. With an allowlist set, the helper reconciles the `admin` group at startup and every five minutes: anyone holding administrator rights who is neither in `PermanentAdmins` nor inside a live elevation window is demoted. Deleting the state file then removes the only evidence that an elevation was legitimate, so it ends the elevation rather than extending it. `root` is always permitted and never demoted, and the policy is re-read on every pass, so removing the profile only suspends enforcement while it is actually missing.
+
+  **`EnforceAdminAllowlist` defaults to off, and `PermanentAdmins` must list every account that should keep administrator rights before it is turned on** — management accounts, break-glass accounts and permanently-admin staff included. This includes accounts granted administrator rights by something else, such as Platform SSO's `AdministratorGroups`: anything not on the list is demoted, and an identity provider that grants it again simply produces a demotion every five minutes. With it on and the list incomplete, those accounts are demoted within five minutes. An explicitly empty list is honored, meaning no account is permanently an administrator; a missing list is refused with an error rather than acted on. Both keys must come from a **device-scoped** configuration profile, since reconciliation runs when there is no logged-in user to attribute it to.
+
+  Administrator group members that cannot be resolved to an account are reported and left alone rather than removed, since a failed lookup is not evidence that an entry does not belong. Entries that appear while an elevation is open are still revoked, because there the group's earlier state establishes that they are new.
+
+  This is containment rather than prevention. Brief root access has other routes to persistence — a launch daemon, a sudoers drop-in, enabling the root account — which group membership does not show. Treat elevation as a speed bump with an audit trail, not as a boundary.
+- **The helper can be deployed declaratively.** With `com.apple.configuration.services.background-tasks` (macOS 15+, supervised), the helper and its launchd job are placed in `/var/db/ManagedConfigurationFiles`, which the system will not let even root write to, and the job cannot be unloaded or disabled — so an elevated user cannot stop the process that will demote them. `DDM/make_ddm_assets.zsh` builds the archive, the launchd job and the declarations from a built app. This is the recommended deployment wherever `EnableElevation` is used.
+- `SkipHelperInstall`, which stops the package installing and loading its own copy of the helper, for Macs where it is deployed declaratively. Set it in a **device-scoped** configuration profile: a user-scoped one is not readable by an installer script, and `/Library/Preferences` is not read for this key either. Setting it removes the helper and its launchd job, so honoring it from a root-writable file would let one root moment disable the component that demotes elevated users. The installer script logs the key when it finds it somewhere it is not read from.
+- `ElevationAllowedAdmins`, a list of account names the elevation watchdog ignores, for management accounts an MDM may legitimately add while somebody is elevated. Read from a **device-scoped** configuration profile, like the other elevation enforcement keys.
+- While administrator rights are held, the time left counts down next to the tray menu icon, so it is visible without opening anything. The tooltip offers to demote immediately. The countdown is driven by the app's timer, but the deadline it shows belongs to the helper, so quitting the app does not extend it.
+- **User installs.** A standard user can install an application an administrator has allowlisted, without holding administrator rights for it. Support Companion registers for `.pkg` and `.dmg` files, so a double-click opens a sheet that names the installer, what signed it, what verified it, and where it would write, then installs it through the helper. Finder's context menu also offers **Install with Support Companion**.
+
+  This exists because the alternative is worse. The usual answer to "I need to install this" is a window of full administrator rights, during which the user can do everything else administrator rights allow, and only the reason they typed records what it was for. Here the user gets one install of one approved thing, and nothing else.
+
+  **The helper decides, not the app.** It re-reads the policy and re-derives the installer's facts before it acts, so the sheet is presentation only. As with the other privileged settings, the policy is read **only from a configuration profile** — a device-scoped one, or one scoped to the user being served.
+
+```xml
+<key>EnableUserInstalls</key>
+<true/>
+<key>AllowedInstallers</key>
+<array>
+    <dict>
+        <key>Name</key>
+        <string>Firefox</string>
+        <key>TeamID</key>
+        <string>43AQ936H96</string>
+        <key>BundleIdentifier</key>
+        <string>org.mozilla.firefox</string>
+        <key>MinimumVersion</key>
+        <string>128.0</string>
+    </dict>
+</array>
+```
+
+  Each entry needs a `Name`, which is what the sheet and the log call it, and enough to identify one thing: a `TeamID` plus a `PackageIdentifier` or `BundleIdentifier`, or a `SHA256` of the installer file. **An entry that cannot decide anything is dropped and logged, not read permissively** — the safe reading of a half-written entry is that nothing was allowed. Per entry:
+
+  - `TeamID` — the Developer ID team the installer must be signed by. Required unless `SHA256` is set.
+  - `PackageIdentifier`, `BundleIdentifier` — the identifier to accept, as a string or an array. For a `.dmg` this is the app inside it.
+  - A distribution package must have **every** component covered, not merely one. Accepting it because one component was named would let the others in unexamined, which is how an approved application arrives with a LaunchDaemon nobody asked about. The refusal names the component that was not covered.
+  - `AllowAnyIdentifier` — accept anything that team signs. This is a vendor allowlist, not an app: it covers every installer they will ever sign. It has its own key so that leaving an identifier out of a profile by mistake cannot produce it.
+  - `SHA256` — the exact digest of the installer file. Pins one build, and is the only form that needs no signature at all.
+  - `LeafCertificateSHA256` — pins the signing certificate itself, which is unambiguous in a way a team name is not, at the cost of needing an update when the vendor renews. Never required.
+  - `MinimumVersion` — refuse anything older, so a signed-but-vulnerable build cannot be installed instead of the current one. Compared numerically, not as text.
+  - `RequireNotarized` — require Apple notarization as well as a signature.
+  - `AllowScripts` — **off by default, and the most useful restriction here.** A scriptless package whose payload lands in `/Applications` is a file copy; one with a postinstall script is arbitrary code as root on every future build that vendor signs.
+  - `AllowedPayloadPrefixes` — the absolute path prefixes this installer may write to. Unrestricted by default, because enumerating paths for every app is more than most administrators will do, but setting it is what bounds the damage when an entry is written loosely: an allowlisted package is otherwise free to drop a LaunchDaemon while installing the app that was approved.
+  - `AllowUnrestrictedPayload` — let it write anywhere, including the paths held back below. Its own key, so the most dangerous setting is one somebody has to mean rather than one they can reach by typing a prefix wrong.
+
+  **Some destinations are held back unless `AllowedPayloadPrefixes` names them**, whatever signed the package: `/Library/Managed Preferences` and `/Library/Preferences`, this app's own preferences and its helper's state directory, `/Library/PrivilegedHelperTools`, `/Library/Security`, `/Library/ScriptingAdditions`, `/var/db/dslocal`, `/etc/sudoers` and `sudoers.d`, `/etc/pam.d`, `/etc/ssh`, and `/var/root`. These are the paths that decide what may be installed and who may hold administrator rights, so an install that writes there is how this feature would be turned against itself.
+
+  **This is a policy, not a sandbox.** An allowlisted installer runs as root, and `AllowScripts` with a broad `AllowedPayloadPrefixes` is close to the elevation it replaces. The restrictions are worth setting; what they buy is that an administrator chose the software, not that the software is harmless.
+
+- `RequireAuthenticationForInstalls`, on by default, which asks the user to authenticate before an allowlisted install proceeds. Only honored from a configuration profile.
+- `UserInstallFallback`, which decides what a user is offered when an installer is **not** allowlisted: `installer` (the default) hands the file to Installer.app or Finder exactly as a double-click would without this app, `elevate` offers the existing time-limited elevation flow, and `none` offers nothing. The sheet names why it was refused either way, in terms an administrator can act on.
+- `ShowInstallerServiceMenuItem`, which controls Finder's **Install with Support Companion** item. Follows `EnableUserInstalls` unless set, so an organisation that does not use the feature never sees it, and one that does can still hide it to keep the only route inside the app.
+- **Fleet mode.** Support Companion now integrates with [Fleet](https://fleetdm.com), using the Fleet device API with the device's own token, so no API keys are needed. Fleet mode is used when Fleet's agent (orbit) is installed, when the MDM server is the Fleet server, or when `Mode` is set to `Fleet`. The Fleet server URL is read from fleetd's configuration profile or orbit's LaunchDaemon. It can be overridden with `FleetUrl`, which is only honored when set by a configuration profile, since the device token is sent to that server. Example configuration:
+```xml
+<key>Mode</key>
+<string>Fleet</string>
+```
+- **In-app Fleet Desktop SSO sign-in.** Where Fleet requires SSO for the device page (Fleet 4.92 and later), signing in happens in the app: Fleet hands back the identity provider's URL, the user signs in to it in a web view, and the app keeps the session Fleet returns in the keychain. The SAML assertion stays between the user and their identity provider — the app only ever sees the resulting session cookie. Sessions last as long as Fleet's `session.duration` (five days by default) and expire absolutely rather than on idle, so the sheet reappears when it lapses.
+
+  **Signed out, the app does not pretend to know nothing.** Fleet's device summary endpoint is outside the SSO gate and reports the failing-policy count, so the sidebar badge, the Dock badge, the compliance banner and the compliance card stay truthful, and the Fleet and compliance cards collapse to a single Sign In action instead of a wall of Unknown. Everything identifying — host ID, team, last seen, policy names, the self-service catalog — is withheld by Fleet until sign-in, and that is not something this app can work around. `supportcompanion://fleetsignin` opens the sheet.
+- `FleetNotifySignIn`, a notification asking the user to sign in to Fleet, leading with the number of failing checks when there are any. **Off by default**, unlike the other `FleetNotify*` keys: it asks the user to do something rather than telling them something, so it is not imposed. Sent at most once a day, and reset by a successful sign-in.
+```xml
+<key>FleetNotifySignIn</key>
+<true/>
+```
+- **Self-service apps.** In Fleet mode the Apps page shows the device's Fleet self-service software, with search, category filters and collapsible Updates Available, Available and Installed sections. Apps can be installed, updated, reinstalled and uninstalled. Progress is followed until Fleet reports the result, and the output of failed installs can be viewed from the app card. Updates stay listed until the new version is actually installed.
+- Custom button text per app, for example "Request" for an app named "Request software". Keys are the software title ID, display name or name; values are either a string that replaces the Install label, or a dictionary with `Install`, `Update`, `Reinstall` and `Uninstall`. Example configuration:
+```xml
+<key>FleetButtonLabels</key>
+<dict>
+    <key>Request software</key>
+    <string>Request</string>
+    <key>42</key>
+    <dict>
+        <key>Install</key>
+        <string>Get</string>
+        <key>Uninstall</key>
+        <string>Remove</string>
+    </dict>
+</dict>
+```
+- A highlighted Recommended section at the top of the Apps page, listing apps IT recommends in the configured order. Entries are title IDs or names, and the section title can be changed. Example configuration:
+```xml
+<key>FleetRecommendedApps</key>
+<array>
+    <string>Slack</string>
+    <string>42</string>
+</array>
+<key>FleetRecommendedTitle</key>
+<string>Start here</string>
+```
+- App icons come from Fleet (custom and App Store icons), from the installed app, or from the icon set Fleet's own web pages use. That icon set is loaded from Fleet's GitHub repository and cached, and apps without an icon get a letter tile. To stop requests to GitHub:
+```xml
+<key>FleetIconsFromGitHub</key>
+<false/>
+```
+- **Updates blocked by an open app.** When an install doesn't run because the app is open, the app card shows "Waiting for app to close" instead of "Install failed", with a **Quit & Update** button that quits the app gracefully (it can still prompt to save) and installs again. This works for Fleet-maintained apps with patch when closed, and for custom packages whose install script prints a message about the app being open. The built-in phrases can be replaced with your scripts' exact messages; an empty array turns detection off for custom packages. Example configuration:
+```xml
+<key>FleetAppOpenMessages</key>
+<array>
+    <string>Please close Chrome before updating</string>
+</array>
+```
+- **Home cards.** In Fleet mode the patching progress and pending updates cards use Fleet's self-service updates, and the Apps sidebar item shows the number of updates.
+- A **Device Compliance** card listing failing Fleet policies with their resolution text, critical ones first, and a collapsible list of passing checks. Its **Re-check** button asks Fleet to refresh the device's details and re-run its policies. While any check fails, a banner at the top of Home shows what needs attention. The card can be hidden using `HiddenCards`, which also hides the banner, badges and policy notifications:
+```xml
+<key>HiddenCards</key>
+<array>
+    <string>FleetPolicies</string>
+</array>
+```
+- A **Fleet** card showing the device's Fleet host ID, team, last check-in, last inventory update and server. It can be hidden using `HiddenCards`:
+```xml
+<key>HiddenCards</key>
+<array>
+    <string>Fleet</string>
+</array>
+```
+- The tray menu shows compact Device Compliance and Fleet cards in Fleet mode. The compliance card has Re-check and Details buttons.
+- **Fleet notifications**, each on by default:
+    - When an install, update, reinstall or uninstall started from Support Companion finishes or fails, or needs the app to be closed (with a Quit & Update button). Turn off with `FleetNotifyInstallResults`.
+    - When updates are available, listing the apps, with an **Update Now** button that installs them. Clicking the notification opens the Apps page. Uses `AppUpdateNotificationMessage`, `AppUpdateNotificationButtonText` and `NotificationInterval`. Turn off with `FleetNotifyUpdates`.
+    - When a policy starts failing, sent once per failure. Turn off with `FleetNotifyPolicies`.
+```xml
+<key>FleetNotifyInstallResults</key>
+<false/>
+<key>FleetNotifyUpdates</key>
+<false/>
+<key>FleetNotifyPolicies</key>
+<false/>
+```
+- Failing compliance checks count toward the tray menu icon's badge and the Dock badge, and are shown as a badge on the Home sidebar item.
+- Support for Background Security Improvements. If the pending update is a background security improvement, clicking the update will open the relevant pane in system settings.
+- WiFi SSID information is now included in the device information
+- New option to hide tray menu icon. This allows for using the desktop information window without displaying the tray menu icon. Example configuration:
+```xml
+<key>TrayMenuShowIcon</key>
+<false/>
+```
+- Support for monitoring Jamf application patches. When in Jamf mode, the app will now monitor for pending application patches and display them in the tray menu as well as in the main app. The badge will also be displayed in the tray menu icon when there are pending application patches. Requires the use of Self Service+.
+    - Correctly monitoring application patches from Self Service+ requires that Self Service+ is configured for SSO and that `Enable Self Service user login` is **not** checked in the Self Service configuration in Jamf Pro. This is because the data in the app is lazy updated when the user starts and authenticates in Self Service+. To work around this, Support Companion will briefly launch Self Service+ in the background to update the patch data. An icon will appear in the dock while this is happening. This process should only take a few seconds.
+    - Can be turned off by setting `RefreshSelfService` to `false` in the configuration. Example configuration:
+```xml
+<key>RefreshSelfService</key>
+<false/>
+```
+- A new default card for Jamf mode that displays the last time the device checked in, the last inventory time and the MDM enrollment time as well as the ID of the device in Jamf. This card is only displayed when in Jamf mode and can be hidden using the `HiddenCards` configuration.
+```xml
+<key>HiddenCards</key>
+<array>
+    <string>Jamf</string>
+</array>
+```
+- A new option for Jamf mode to set the polling interval for logs collection to gather last check in time and last inventory time. This allows for admins to set how often the app should check for new log data. By default, the interval is set to 36 hours. Example configuration:
+```xml
+<key>JamfLogPollHours</key>
+<integer>46</integer>
+```
+- Logging will now be done in a log file located at `~/Library/Logs/SupportCompanion/SupportCompanion.log` in addition to os log. This allows for easier troubleshooting of issues with the app. The log file will be rotated when it reaches 5 MB in size. Debug logging can be enabled by setting `DebugLogging` to `true` in the configuration. Example configuration:
+```xml
+<key>DebugLogging</key>
+<true/>
+```
+
+### Changed
+- Pending updates count is now shown as a badge on the sidebar navigation item, making it visible without opening the updates view.
+- Accessibility labels added to icon-only buttons for improved VoiceOver support.
+- Significant internal code quality improvements: preferences split into focused sub-objects, helpers refactored into dedicated files, Timer-based polling migrated to Swift structured concurrency, and improved error handling with logging throughout.
+- If `BrandName` is configured, it will now be displayed in the desktop information window as well as the header instead of "Device Information".
+- A new localized message will be displayed in the applications view stating that the apps are installed by the `mode`. This is to clarify the view only displays apps installed by the MDM and not all apps installed on the device.
+- User info will now use OpenDirectory to gather user information instead of `finger` command.
+- A delay has been added to `InfoHelp` when hovering over the info icon to prevent accidental triggering of the help popup.
+- App update names line limit has been increased to `2` lines to prevent truncation of long app names.
+- Add support for a custom Company Portal URL (e.g. GCC High / sovereign cloud endpoints) and harden the Intune MDM detection logic so it correctly identifies Intune across all manage.microsoft.* domains while avoiding obvious false positives. Thanks @Actu4l-Human.
+- Clicking a notification about apps now opens the relevant page in Support Companion, handled by the running app.
+- The Dock badge updates as soon as the number of pending items changes, and no longer counts items whose card or button is hidden.
+- Much lower resource use on the Home page: the patch progress wave is drawn with Core Animation. With Home open, memory use went from about 140 MB to about 55 MB, and CPU use from 30–40% to about 0%. Reduce Motion still stops the animation.
+- Views only update when the data they show changes, and preference changes from a configuration profile or `defaults write` show up right away.
+- The battery card's Time to Full shows Fully Charged, Not Charging or Calculating… instead of N/A while on external power. The temperature row is hidden when no reading is available, and copied device info uses the system's temperature unit.
+- The tray menu popover closes when clicking outside it, pressing Escape, or opening the main window.
+
+### Fixed
+- **Opening a web page in the sidebar — Knowledge Base or Company Portal — could crash the app.** The embedded web view was sized from its own content, and the page reflowed to whatever size it was given, so each layout pass changed the size that drove the next one. SwiftUI reported the resulting dependency cycles and eventually crashed laying out the view. The web view now takes the size it is offered. Its navigation delegate was also being replaced by one that updated loading state synchronously, which could invalidate the view while it was being evaluated; the web view's own delegate, which defers those updates, is left in place.
+- The CLI built its `supportcompanion://run` URL by interpolation, so action names containing `&`, `#` or spaces were misrouted. It now uses `URLComponents`.
+- Removed an undefined variable from the package's postinstall script, and balanced a quote in the helper's linker flags that absorbed the following flag.
+- File watcher would not correctly detect changes on custom JSON cards if the file was replaced instead of modified. This has been fixed by using a different method to monitor file changes.
+- The pending updates badge on `Software Updates` was transparent in the main app.
+- `FileVault` did not hide the item on the desktop information window when configured to be hidden.
+- The MDM enrollment date is now found by the MDM payload instead of the profile name, so it works for MDMs other than Jamf and Intune instead of failing.
+- Mode detection now compares the MDM server's host correctly. The MDM URL is read without its scheme, so the host comparison never ran before.
+- A notification without a button could remove the button from earlier notifications still in Notification Center.
+- On macOS 27 the tray menu popover closed a few seconds after opening, for example in Jamf mode while Self Service+ was refreshed in the background.
+- On macOS 27 the battery card showed 0% health and 0.0 °C.
+- Commands that print a lot of output, such as gathering logs over a long period, could hang.
+- Commands and actions containing single quotes didn't run correctly.
+- Jamf patches ran as the user with UID 504 instead of the logged-in user.
+- Mode detection stopped before choosing a mode when the MDM server was Intune or Jamf, so the mode was never set on those Macs.
+- On non-English systems, hiding the Battery or Evergreen card with `HiddenCards` didn't stop their background refresh.
+- The "Updating…" label for Jamf patches didn't update.
+- Web views could be created twice for the same tab, and monitoring (for example battery) kept running after the main window was closed.
+- Swedish and French restart countdown translations.
+
+### Notes for Fleet mode
+- Requires Fleet's agent (orbit) on the device. Features follow what the Fleet server supports; the Fleet flag for skipped patch-when-closed installs (`skipped_install`) is newer than Fleet 4.91, and older servers are handled through the install output instead.
+- Fleet Desktop single sign-on isn't supported yet. It hasn't shipped in a Fleet release.
+
 ## [2.3.1] - 2025-10-06
 ### Changed
 - Refactored the uninstall script with better error handling and logging.

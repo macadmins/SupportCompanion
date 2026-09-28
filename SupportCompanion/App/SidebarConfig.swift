@@ -8,20 +8,30 @@
 import Foundation
 import SwiftUI
 
-func generateSidebarItems(preferences: Preferences, stateManager: WebViewStateManager) -> [SidebarItem] {
+@MainActor
+func generateSidebarItems(preferences: Preferences, stateManager: WebViewStateManager, cardGridViewModel: CardGridViewModel, pendingUpdatesCount: Int = 0, failingChecksCount: Int = 0) -> [SidebarItem] {
     var items: [SidebarItem] = [
         SidebarItem(
             label: Constants.Navigation.home,
             systemImage: "house.fill",
             destination: AnyView(
-                CardGrid(
-                    viewModel: CardGridViewModel(
-                        appState: AppStateManager.shared
-                    )
-                )
+                CardGrid(viewModel: cardGridViewModel)
             )
         )
     ]
+
+    if preferences.mode == Constants.Modes.fleet && !preferences.hiddenCards.contains(Constants.Cards.fleetPolicies) {
+        items.append(
+            SidebarItem(
+                label: Constants.Navigation.compliance,
+                systemImage: "checkmark.shield.fill",
+                destination: AnyView(
+                    FleetComplianceView()
+                ),
+                badge: failingChecksCount
+            )
+        )
+    }
 
     if preferences.menuShowIdentity {
         items.append(
@@ -40,13 +50,14 @@ func generateSidebarItems(preferences: Preferences, stateManager: WebViewStateMa
             SidebarItem(
                 label: Constants.Navigation.apps,
                 systemImage: "app.fill",
-                destination: AnyView(
-                    Applications()
-                )
+                destination: preferences.mode == Constants.Modes.fleet
+                    ? AnyView(FleetAppsView())
+                    : AnyView(Applications()),
+                badge: pendingUpdatesCount
             )
         )
     }
-    
+
     if !preferences.actions.isEmpty && preferences.menuShowSelfService {
         items.append(
             SidebarItem(
@@ -72,7 +83,7 @@ func generateSidebarItems(preferences: Preferences, stateManager: WebViewStateMa
             )
         }
     }
-    
+
     if !preferences.customCardPath.isEmpty && !preferences.customCardsMenuLabel.isEmpty {
         if FileManager.default.fileExists(atPath: preferences.customCardPath) {
             items.append(
@@ -84,13 +95,14 @@ func generateSidebarItems(preferences: Preferences, stateManager: WebViewStateMa
             )
         }
     }
-    
+
     // Add "Company Portal" with persistent WebViewState
     if preferences.menuShowCompanyPortal {
-        if preferences.mode == Constants.modes.intune || FileManager.default.fileExists(atPath: Constants.AppPaths.companyPortal) {
+        if preferences.mode == Constants.Modes.intune || FileManager.default.fileExists(atPath: Constants.AppPaths.companyPortal),
+           let companyPortalURL = URL(string: preferences.companyPortalUrl), !preferences.companyPortalUrl.isEmpty {
             let companyPortalState = stateManager.getWebViewState(
                 for: "CompanyPortal",
-                url: URL(string: "https://portal.manage.microsoft.com/")!
+                url: companyPortalURL
             )
             items.append(
                 SidebarItem(
@@ -103,10 +115,11 @@ func generateSidebarItems(preferences: Preferences, stateManager: WebViewStateMa
     }
 
     // Add "Knowledge Base" with persistent WebViewState
-    if preferences.menuShowKnowledgeBase && !preferences.knowledgeBaseUrl.isEmpty {
+    if preferences.menuShowKnowledgeBase,
+       let knowledgeBaseURL = URL(string: preferences.knowledgeBaseUrl), !preferences.knowledgeBaseUrl.isEmpty {
         let knowledgeBaseState = stateManager.getWebViewState(
             for: "KnowledgeBase",
-            url: URL(string: preferences.knowledgeBaseUrl)!
+            url: knowledgeBaseURL
         )
         items.append(
             SidebarItem(
@@ -116,6 +129,6 @@ func generateSidebarItems(preferences: Preferences, stateManager: WebViewStateMa
             )
         )
     }
-    
+
     return items
 }

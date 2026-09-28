@@ -109,7 +109,7 @@ elif [ "$CONFIGURATION" = "Release" ]; then
     SIGNING_IDENTITY_APP="Developer ID Application: Mac Admins Open Source (T4SK8ZXCXG)"
     SIGNING_IDENTITY="Developer ID Installer: Mac Admins Open Source (T4SK8ZXCXG)"
     KEYCHAIN_PROFILE="supportcompanion"
-    XCODE_PATH="/Applications/Xcode_26.0.app"
+    XCODE_PATH="/Applications/Xcode_26.6.app"
     TEAM_ID="T4SK8ZXCXG"
 else
     echo "No configuration set, exiting..."
@@ -170,7 +170,7 @@ OTHER_CODE_SIGN_FLAGS="--timestamp --options runtime --deep" \
 DEVELOPMENT_TEAM="$TEAM_ID" \
 ARCHS="arm64 x86_64" \
 ONLY_ACTIVE_ARCH=NO \
--archivePath "$BUILDSDIR/SupportCompanion" >/dev/null 2>&1
+-archivePath "$BUILDSDIR/SupportCompanion"
 
 check_exit_code "$?" "Error running xcodebuild"
 

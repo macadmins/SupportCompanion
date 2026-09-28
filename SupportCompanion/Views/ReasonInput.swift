@@ -47,7 +47,7 @@ struct ReasonInputView: View {
                     onElevate(reason)
                     isPresented = false
                 }
-                .disabled(reason.count < appState.preferences.reasonMinLength)
+                .disabled(reason.count < appState.preferences.elevation.reasonMinLength)
                 .padding()
             }
         }

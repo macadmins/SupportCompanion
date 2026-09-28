@@ -5,17 +5,20 @@
 //  Created by Tobias Almén on 2024-11-22.
 //
 
+import AppKit
 import Foundation
+import Observation
 
-class ApplicationsInfoManager: ObservableObject {
-    private var monitorTask: Task<Void, Never>?
-    private var updateTimer: Timer?
+@MainActor
+@Observable
+final class ApplicationsInfoManager {
+    @ObservationIgnored private var monitorTask: Task<Void, Never>?
     private let munkiApps = MunkiApps()
     private let intuneApps = IntuneApps()
     private let profilerApps = SystemProfilerApplications()
     private var appState: AppStateManager
 
-    @Published var applicationInfo: InstalledApp = InstalledApp(
+    var applicationInfo: InstalledApp = InstalledApp(
         id: UUID(),
         name: "",
         version: "",
@@ -24,36 +27,30 @@ class ApplicationsInfoManager: ObservableObject {
         isSelfServe: false,
         path: "",
         type: "",
-        bundleId: ""
+        bundleId: "",
+        iconUrl: "",
+        actionText: ""
     )
 
     init(appState: AppStateManager) {
         self.appState = appState
     }
 
-    /// Starts the timer to fetch installed applications periodically
+    /// Starts periodic fetching of installed applications
     func startMonitoring(interval: TimeInterval = 60.0) {
-        // Stop any ongoing monitoring tasks or timers
         stopMonitoring()
-        
-        // Start a task to fetch immediately based on the mode
         monitorTask = Task {
             await fetchAppsBasedOnMode()
-        }
-        
-        // Create a timer to periodically fetch applications
-        updateTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
-            Task { [weak self] in
-                guard let self = self else { return }
-                await self.fetchAppsBasedOnMode()
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(interval))
+                guard !Task.isCancelled else { break }
+                await fetchAppsBasedOnMode()
             }
         }
     }
 
-    /// Stops the timer and cancels any ongoing tasks
+    /// Cancels any ongoing monitoring task
     func stopMonitoring() {
-        updateTimer?.invalidate()
-        updateTimer = nil
         monitorTask?.cancel()
         monitorTask = nil
     }
@@ -61,12 +58,17 @@ class ApplicationsInfoManager: ObservableObject {
     /// Fetches installed applications based on the current mode
     func fetchAppsBasedOnMode() async {
         switch appState.preferences.mode {
-        case Constants.modes.munki:
+        case Constants.Modes.munki:
             await getInstalledMunkiApps()
-        case Constants.modes.intune:
+        case Constants.Modes.intune:
             await getInstalledIntuneApps()
-        case Constants.modes.systemProfiler:
+        case Constants.Modes.systemProfiler:
             await getInstalledProfilerApps()
+        case Constants.Modes.jamf:
+            await getInstalledJamfApps()
+        case Constants.Modes.fleet:
+            // Fleet mode shows FleetAppsView, backed by FleetSoftwareManager
+            break
         default:
             await getInstalledMunkiApps()
         }
@@ -97,6 +99,7 @@ class ApplicationsInfoManager: ObservableObject {
                     command = "open munki://detail-\(commandName)"
                 }
 
+                let munkiIconPath = "/Library/Managed Installs/icons/\(name).png"
                 return InstalledApp(
                     id: UUID(),
                     name: name,
@@ -106,54 +109,95 @@ class ApplicationsInfoManager: ObservableObject {
                     isSelfServe: isSelfServe,
                     path: "",
                     type: "",
-                    bundleId: ""
+                    bundleId: "",
+                    iconUrl: "",
+                    actionText: Constants.General.manage,
+                    iconPath: FileManager.default.fileExists(atPath: munkiIconPath) ? munkiIconPath : nil
                 )
             }
             
             let sortedApps = installedApps.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
 
-            DispatchQueue.main.async {
-                self.appState.installedApplications = sortedApps
-            }
+            appState.installedApplications = sortedApps
         }
     }
-    
+
     func getInstalledIntuneApps() async {
+        let apps = await intuneApps.getInstalledAppsListFromLog()
+        let installedApps = apps.compactMap { app -> InstalledApp? in
+            guard
+                let info = app["Info"] as? [String: Any],
+                let name = info["AppName"] as? String
+            else {
+                return nil
+            }
+
+            var version = info["Version"] as? String ?? ""
+            let type = info["AppType"] as? String ?? ""
+            let bundleId = info["BundleID"] as? String ?? ""
+
+            // Prefer the installed bundle's version and icon over what the log reports
+            var iconPath: String?
+            if let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleId) {
+                let appInfoPlistPath = "\(appURL.path)/Contents/Info.plist"
+                version = getAppVersion(plistPath: appInfoPlistPath) ?? "Unknown"
+                iconPath = getIconPath(plistPath: appInfoPlistPath, appPath: appURL.path)
+            }
+            
+            return InstalledApp(
+                id: UUID(),
+                name: name,
+                version: version,
+                action: "",
+                arch: "",
+                isSelfServe: false,
+                path: "",
+                type: type,
+                bundleId: bundleId,
+                iconUrl: "",
+                actionText: "",
+                iconPath: iconPath
+            )
+        }
+        
+        let sortedApps = installedApps.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+        appState.installedApplications = sortedApps
+    }
+
+    func getInstalledJamfApps() async {
         do {
-            let apps = await intuneApps.getInstalledAppsListFromLog()
-            let installedApps = apps.compactMap { app -> InstalledApp? in
-                guard
-                    let info = app["Info"] as? [String: Any],
-                    let name = info["AppName"] as? String
-                else {
+            let apps = await getInstalledJamfAppsFromStore()
+            let installedApps = apps.compactMap { (key: AnyHashable, value: Any) -> InstalledApp? in
+                guard let dict = value as? [String: Any] else { return nil }
+                guard let name = dict["name"] as? String,
+                    let version = dict["version"] as? String else {
                     return nil
                 }
+                let iconUrl = dict["iconUrl"] as? String ?? ""
+                let id = dict["id"] as? Int ?? 0
+                let command = "open \"selfservicecapability://content?entity=policy&id=\(id)&action=execute\""
+                let actionText = (dict["postInstallText"] as? String) ?? ""
 
-                let version = info["Version"] as? String ?? ""
-                let type = info["AppType"] as? String ?? ""
-                let bundleId = info["BundleID"] as? String ?? ""
-                
                 return InstalledApp(
                     id: UUID(),
                     name: name,
                     version: version,
-                    action: "",
+                    action: command,
                     arch: "",
-                    isSelfServe: false,
+                    isSelfServe: true,
                     path: "",
-                    type: type,
-                    bundleId: bundleId
+                    type: "",
+                    bundleId: "",
+                    iconUrl: iconUrl,
+                    actionText: actionText
                 )
             }
             
             let sortedApps = installedApps.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
-            
-            DispatchQueue.main.async {
-                self.appState.installedApplications = sortedApps
-            }
+            appState.installedApplications = sortedApps
         }
     }
-    
+
     func getInstalledProfilerApps() async {
         do {
             let apps = await profilerApps.getInstalledApps()
@@ -168,6 +212,7 @@ class ApplicationsInfoManager: ObservableObject {
                 ]
 
                 let arch = archMap[app["arch_kind"] as? String ?? ""] ?? "Unknown"
+                let path = app["path"] as? String ?? ""
                 
                 return InstalledApp(
                     id: UUID(),
@@ -176,17 +221,18 @@ class ApplicationsInfoManager: ObservableObject {
                     action: "",
                     arch: arch,
                     isSelfServe: false,
-                    path: app["path"] as? String ?? "",
+                    path: path,
                     type: "",
-                    bundleId: ""
+                    bundleId: "",
+                    iconUrl: "",
+                    actionText: "",
+                    iconPath: getIconPath(plistPath: "\(path)/Contents/Info.plist", appPath: path)
                 )
             }
             
             let sortedApps = installedApps.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
-
-            DispatchQueue.main.async {
-                self.appState.installedApplications = sortedApps
-            }
+            appState.installedApplications = sortedApps
         }
     }
 }
+

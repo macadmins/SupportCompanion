@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 struct Identity: View {
-    @EnvironmentObject var appState: AppStateManager
+    @Environment(AppStateManager.self) var appState
     
     var body: some View {
         let columns = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
@@ -26,7 +26,7 @@ struct Identity: View {
                     if !appState.ssoInfoManager.platformSSO.loginType.isEmpty {
                         PSSOCard()
                     }
-                    if appState.preferences.enableElevation {
+                    if appState.preferences.elevation.enableElevation {
                         ElevationCard()
                     }
                 }

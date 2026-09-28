@@ -9,8 +9,8 @@ import Foundation
 import SwiftUI
 
 struct TrayMenuView: View {
-    @EnvironmentObject var appState: AppStateManager
-    @ObservedObject var viewModel: CardGridViewModel
+    @Environment(AppStateManager.self) var appState
+    var viewModel: CardGridViewModel
     @Environment(\.colorScheme) var colorScheme
     @State private var brandLogo: Image? = nil
     @State private var showLogo: Bool = false
@@ -36,8 +36,8 @@ struct TrayMenuView: View {
                 }
 
             // Title Section
-            if !appState.preferences.brandName.isEmpty {
-                Text(appState.preferences.brandName)
+            if !appState.preferences.branding.brandName.isEmpty {
+                Text(appState.preferences.branding.brandName)
                     .font(.headline)
             }
             //Spacer()
@@ -54,13 +54,24 @@ struct TrayMenuView: View {
                     if !appState.preferences.hiddenCards.contains(Constants.Cards.storage) {
                         CompactStorageCard()
                     }
-                    if appState.preferences.mode == Constants.modes.munki || appState.preferences.mode == Constants.modes.intune {
+                    if viewModel.hasManagementMode {
                         if !appState.preferences.hiddenCards.contains(Constants.Cards.appPatchProgress) {
                             CompactPatchProgressCard()
                         }
                     }
-                    if appState.preferences.enableElevation && appState.preferences.showElevateTrayCard {
+                    if appState.preferences.elevation.enableElevation && appState.preferences.elevation.showElevateTrayCard {
                         CompactElevationCard()
+                    }
+                    if !appState.preferences.hiddenCards.contains(Constants.Cards.jamfInfo) && appState.preferences.mode == Constants.Modes.jamf {
+                        CompactJamfInfoCard()
+                    }
+                    if appState.preferences.mode == Constants.Modes.fleet {
+                        if !appState.preferences.hiddenCards.contains(Constants.Cards.fleetPolicies) {
+                            CompactFleetPoliciesCard()
+                        }
+                        if !appState.preferences.hiddenCards.contains(Constants.Cards.fleetInfo) {
+                            CompactFleetInfoCard()
+                        }
                     }
                 }
                 
@@ -130,7 +141,7 @@ struct TrayMenuView: View {
         if !appState.preferences.hiddenCards.contains(Constants.Cards.battery) { count += 1 }
         if !appState.preferences.hiddenCards.contains(Constants.Cards.deviceInfo) { count += 1 }
         if !appState.preferences.hiddenCards.contains(Constants.Cards.storage) { count += 1 }
-        if appState.preferences.mode == Constants.modes.munki || appState.preferences.mode == Constants.modes.intune {
+        if viewModel.hasManagementMode {
             if !appState.preferences.hiddenCards.contains(Constants.Cards.appPatchProgress) {
                 count += 1
             }
@@ -146,7 +157,7 @@ struct TrayMenuView: View {
             AppStateManager.shared.preferences.menuShowApps,
             AppStateManager.shared.preferences.menuShowSelfService,
             viewModel.isButtonVisible(Constants.Actions.HideStrings.changePassword),
-            appState.preferences.mode == Constants.modes.munki || appState.preferences.mode == Constants.modes.intune,
+            viewModel.hasManagementMode,
             viewModel.isButtonVisible(Constants.Actions.HideStrings.getSupport),
             viewModel.isButtonVisible(Constants.Actions.HideStrings.gatherLogs),
             viewModel.isButtonVisible(Constants.Actions.HideStrings.softwareUpdate),
@@ -160,7 +171,7 @@ struct TrayMenuView: View {
             showLogo = false
             return
         }
-        let base64Logo = colorScheme == .dark ? appState.preferences.brandLogo : appState.preferences.brandLogoLight.isEmpty ? appState.preferences.brandLogo : appState.preferences.brandLogoLight
+        let base64Logo = colorScheme == .dark ? appState.preferences.branding.brandLogo : appState.preferences.branding.brandLogoLight.isEmpty ? appState.preferences.branding.brandLogo : appState.preferences.branding.brandLogoLight
         showLogo = loadLogo(base64Logo: base64Logo)
         if showLogo {
             brandLogo = base64ToImage(base64Logo)
@@ -169,20 +180,20 @@ struct TrayMenuView: View {
 }
 
 struct ButtonSection: View {
-    @ObservedObject var viewModel: CardGridViewModel
+    var viewModel: CardGridViewModel
     let url = "supportcompanion://"
     let appState: AppStateManager
     
     var body: some View {
         let visibleButtons = [
             ScButton(Constants.TrayMenu.openApp, fontSize: 12, action: {
-                DispatchQueue.main.async {
-                        appState.showWindowCallback?()
-                }
+                Task { @MainActor in appState.showWindowCallback?() }
             }),
             viewModel.isButtonVisible(Constants.Actions.HideStrings.changePassword) ? viewModel.createChangePasswordButton(fontSize: 12) : nil,
-            viewModel.isButtonVisible(Constants.Actions.HideStrings.getSupport) ? ScButton(Constants.Actions.getSupport, fontSize: 12) { ActionHelpers.openSupportPage(url: appState.preferences.supportPageURL) } : nil,
-            (appState.preferences.mode == Constants.modes.munki || appState.preferences.mode == Constants.modes.intune)
+            viewModel.isButtonVisible(Constants.Actions.HideStrings.getSupport) && !appState.preferences.supportPageURL.isEmpty ? ScButton(
+                Constants.Actions.getSupport, fontSize: 12)
+            { await ActionHelpers.openSupportPage(url: appState.preferences.supportPageURL) } : nil,
+            (viewModel.hasManagementMode)
                 ? (viewModel.isButtonVisible(Constants.Actions.HideStrings.openManagementApp) ? viewModel.createOpenManagementAppButton(type: .default, fontSize: 12) : nil)
                 : nil,
             viewModel.isButtonVisible(Constants.Actions.HideStrings.gatherLogs) ? viewModel.createGatherLogsButton(fontSize: 12) : nil,
@@ -191,8 +202,10 @@ struct ButtonSection: View {
                 badgeNumber: appState.systemUpdateCache.updates.count,
                 helpText: appState.systemUpdateCache.updates.joined(separator: "\n"),
                 fontSize: 12)
-            { ActionHelpers.openSystemUpdates() } : nil,
-            (appState.preferences.mode == Constants.modes.munki || appState.preferences.mode == Constants.modes.intune)
+            { [hasBackgroundSecurityImprovement = appState.systemUpdateCache.hasBackgroundSecurityImprovement] in
+                hasBackgroundSecurityImprovement ? ActionHelpers.openBackgroundSecurityImprovements() : ActionHelpers.openSystemUpdates()
+            } : nil,
+            (appState.preferences.mode == Constants.Modes.munki || appState.preferences.mode == Constants.Modes.intune)
                 ? (viewModel.isButtonVisible(Constants.Actions.HideStrings.restartIntuneAgent) ? viewModel.createRestartIntuneAgentButton(fontSize: 12) : nil)
                 : nil
         ].compactMap { $0 } // Remove nil values

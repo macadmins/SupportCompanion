@@ -1,15 +1,12 @@
 {
   "fill" : {
-    "linear-gradient" : [
-      "extended-srgb:0.68627,0.32157,0.87059,1.00000",
-      "extended-srgb:0.00000,0.47843,1.00000,1.00000"
-    ]
+    "solid" : "srgb:0.43137,0.29412,0.96078,1.00000"
   },
   "groups" : [
     {
       "blend-mode-specializations" : [
         {
-          "value" : "overlay"
+          "value" : "normal"
         },
         {
           "appearance" : "dark",
@@ -25,7 +22,7 @@
         {
           "blend-mode-specializations" : [
             {
-              "value" : "normal"
+              "value" : "lighten"
             },
             {
               "appearance" : "tinted",
@@ -34,11 +31,16 @@
           ],
           "fill-specializations" : [
             {
+              "value" : {
+                "solid" : "extended-gray:1.00000,1.00000"
+              }
+            },
+            {
               "appearance" : "tinted",
               "value" : "automatic"
             }
           ],
-          "glass" : true,
+          "glass" : false,
           "hidden" : false,
           "image-name" : "support_agent_800dp_E3E3E3_FILL0_wght400_GRAD0_opsz48.png",
           "name" : "support_agent_800dp_E3E3E3_FILL0_wght400_GRAD0_opsz48",
@@ -78,6 +80,7 @@
         "kind" : "neutral",
         "opacity" : 0.5
       },
+      "specular" : true,
       "translucency" : {
         "enabled" : false,
         "value" : 0.5

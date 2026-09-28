@@ -1,16 +1,15 @@
 import SwiftUI
-import Combine
 import AppKit
 
 class TransparentWindowController: NSWindowController {
     private var appState: AppStateManager
-    private var cancellables = Set<AnyCancellable>()
+    private var positionObservation: ObservationToken?
 
     init(appState: AppStateManager) {
         self.appState = appState
         let initialSize = NSSize(width: 400, height: 500)
         let position = DesktopInfoPositionHelper.calculatePosition(
-            for: appState.preferences.desktopInfoWindowPosition,
+            for: appState.preferences.desktopInfo.desktopInfoWindowPosition,
             windowSize: initialSize
         )
 
@@ -32,7 +31,7 @@ class TransparentWindowController: NSWindowController {
 
         // Content view setup
         let contentView = TransparentView()
-            .environmentObject(appState)
+            .environment(appState)
             .background(
                 GeometryReader { geometry in
                     Color.clear
@@ -48,13 +47,10 @@ class TransparentWindowController: NSWindowController {
         window.contentView = NSHostingView(rootView: contentView)
         self.updateWindowPosition()
 
-        // Manually observe position changes
-        appState.preferences.$currentWindowPosition
-            .sink { [weak self] newPosition in
-                guard let self = self else { return }
-                self.updateWindowPosition()
-            }
-            .store(in: &cancellables)
+        // Move the window when the configured position changes
+        positionObservation = observeChanges(of: { appState.preferences.desktopInfo.desktopInfoWindowPosition }) { [weak self] _ in
+            self?.updateWindowPosition()
+        }
     }
 
     required init?(coder: NSCoder) {
@@ -66,11 +62,11 @@ class TransparentWindowController: NSWindowController {
         DispatchQueue.main.async { [weak self] in
             guard let window = self?.window else { return }
             let position = DesktopInfoPositionHelper.calculatePosition(
-                for: self?.appState.preferences.desktopInfoWindowPosition ?? "LowerRight",
+                for: self?.appState.preferences.desktopInfo.desktopInfoWindowPosition ?? "LowerRight",
                 windowSize: size
             )
             window.setContentSize(size)
-            let yOffset: CGFloat = self?.appState.preferences.desktopInfoWindowPosition.contains("Lower") == true ? 20 : -20
+            let yOffset: CGFloat = self?.appState.preferences.desktopInfo.desktopInfoWindowPosition.contains("Lower") == true ? 20 : -20
             window.setFrameOrigin(NSPoint(x: position.x, y: position.y + yOffset))
         }
     }
@@ -79,10 +75,10 @@ class TransparentWindowController: NSWindowController {
         DispatchQueue.main.async { [weak self] in
             guard let window = self?.window else { return }
             let position = DesktopInfoPositionHelper.calculatePosition(
-                for: self?.appState.preferences.desktopInfoWindowPosition ?? "LowerRight",
+                for: self?.appState.preferences.desktopInfo.desktopInfoWindowPosition ?? "LowerRight",
                 windowSize: window.frame.size
             )
-            let yOffset: CGFloat = self?.appState.preferences.desktopInfoWindowPosition.contains("Lower") == true ? 20 : -20
+            let yOffset: CGFloat = self?.appState.preferences.desktopInfo.desktopInfoWindowPosition.contains("Lower") == true ? 20 : -20
             window.setFrameOrigin(NSPoint(x: position.x, y: position.y + yOffset))
         }
     }

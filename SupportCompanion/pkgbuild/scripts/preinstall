@@ -7,7 +7,19 @@ if [[ -d "$v1AppPath" ]]; then
     # Check if the uninstall script exists
     uninstallScript="$v1AppPath/Contents/Resources/Uninstall.sh"
     if [[ -f "$uninstallScript" ]]; then
-        "$uninstallScript"
+        # This runs as root on every install, so only run it if it is still the script the 1.x
+        # installer left there: owned by root, and not writable by group or others. A file failing
+        # either test was put there by somebody else, and running it would hand them root.
+        owner=$(/usr/bin/stat -f '%u' "$uninstallScript")
+        mode=$(/usr/bin/stat -f '%Lp' "$uninstallScript")
+
+        if [[ "$owner" != "0" ]]; then
+            echo "Not running $uninstallScript: not owned by root."
+        elif (( 8#$mode & 8#022 )); then
+            echo "Not running $uninstallScript: writable by group or others."
+        else
+            "$uninstallScript"
+        fi
     else
         echo "Uninstall script not found at $uninstallScript."
     fi

@@ -99,12 +99,7 @@ struct ScCardCompact<Content: View>: View {
             Spacer() // Allow the card to expand vertically
         }
         .padding(.top) // Padding around the entire card
-        /*.background(
-            RoundedRectangle(cornerRadius: 10)
-                .fill(.ultraThinMaterial)
-        )*/
         .isGlass()
-        //.shadow(radius: 4) // Adjust shadow for better appearance
         .padding(5)
     }
 }

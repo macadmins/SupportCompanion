@@ -6,49 +6,122 @@
 //
 
 import Foundation
-import Combine
+import Observation
 import SwiftUI
 
-class AppStateManager: ObservableObject {
+@MainActor
+@Observable
+class AppStateManager {
     static let shared = AppStateManager()
-    lazy var systemUpdatesManager = SystemUpdatesManager(appState: self)
-    lazy var pendingMunkiUpdatesManager = PendingMunkiUpdatesManager(appState: self)
-    lazy var applicationsInfoManager = ApplicationsInfoManager(appState: self)
-    lazy var pendingIntuneUpdatesManager = PendingIntuneUpdatesManager(appState: self)
-    lazy var evergreenInfoManager = EvergreenInfoManager(appState: self)
-    lazy var elevationManager = ElevationManager(appState: self)
-    var jsonCardManager: JsonCardManager?
-    @Published var isRefreshing: Bool = false
-    @Published var deviceInfoManager = DeviceInfoManager.shared
-    @Published var storageInfoManager = StorageInfoManager.shared
-    @Published var mdmInfoManager = MdmInfoManager.shared
-    @Published var batteryInfoManager = BatteryInfoManager.shared
-    @Published var ssoInfoManager = SSOInfoManager.shared
-    @Published var userInfoManager = UserInfoManager.shared
-    @Published var preferences = Preferences()
-    @Published var installPercentage: Double = 0.0
-    @Published var installedAppsCount: Int = 0
-    @Published var pendingUpdatesCount: Int = 0
-    @Published var pendingMunkiUpdates: [PendingMunkiUpdate] = []
-    @Published var pendingIntuneUpdates: [PendingIntuneUpdate] = []
-    @Published var installedApplications: [InstalledApp] = []
-    @Published var systemUpdateCache: SystemUpdates = SystemUpdates(id: UUID(), count: 0, updates: [])
-    @Published var windowIsVisible: Bool = false
-    @Published var storageUsageColor: Color = Color(NSColor.controlAccentColor)
-    @Published var JsonCards: [JsonCard] = []
-    @Published var catalogs: [String] = []
-    @Published var isDemotionActive: Bool = false
-    @Published var timeToDemote: TimeInterval = 0
+    @ObservationIgnored lazy var systemUpdatesManager = SystemUpdatesManager(appState: self)
+    @ObservationIgnored lazy var pendingMunkiUpdatesManager = PendingMunkiUpdatesManager(appState: self)
+    @ObservationIgnored lazy var applicationsInfoManager = ApplicationsInfoManager(appState: self)
+    @ObservationIgnored lazy var pendingIntuneUpdatesManager = PendingIntuneUpdatesManager(appState: self)
+    @ObservationIgnored lazy var pendingJamfUpdatesManager = PendingJamfUpdatesManager(appState: self)
+    @ObservationIgnored lazy var pendingFleetUpdatesManager = PendingFleetUpdatesManager(appState: self)
+    @ObservationIgnored lazy var evergreenInfoManager = EvergreenInfoManager(appState: self)
+    // The shared one, never a fresh instance. The countdown lives on the manager, while the value it
+    // publishes lives here — so two managers mean two timers writing one `timeToDemote`, and stopping
+    // one leaves the other to write its own value straight back.
+    @ObservationIgnored lazy var elevationManager = ElevationManager.shared
+    @ObservationIgnored lazy var fleetSoftwareManager: FleetSoftwareManager = {
+        let manager = FleetSoftwareManager()
+        manager.onActionFinished = { [weak self] title, action, outcome in
+            self?.notifyFleetActionFinished(title, action: action, outcome: outcome)
+        }
+        manager.onCatalogUpdated = { [weak self] in
+            self?.pendingFleetUpdatesManager.publishCounts()
+        }
+        return manager
+    }()
+    /// Drives Fleet Desktop SSO sign-in, and reloads what the SSO gate blocked once it succeeds.
+    @ObservationIgnored lazy var fleetSSOController: FleetSSOController = {
+        let controller = FleetSSOController()
+        controller.onSignedIn = { [weak self] in
+            Task {
+                await self?.fleetSoftwareManager.refresh()
+                await self?.fleetDeviceManager.refresh()
+            }
+        }
+        return controller
+    }()
+    @ObservationIgnored lazy var fleetDeviceManager: FleetDeviceManager = {
+        let manager = FleetDeviceManager()
+        manager.onNewlyFailing = { [weak self] policies in
+            self?.notifyFleetPoliciesFailing(policies)
+        }
+        manager.onRefetchFinished = { [weak self] in
+            Task { await self?.fleetSoftwareManager.refresh() }
+        }
+        manager.onSignInRequired = { [weak self] in
+            self?.notifyFleetSignInRequired()
+        }
+        return manager
+    }()
+    @ObservationIgnored var jsonCardManager: JsonCardManager?
+    var isRefreshing: Bool = false
+    var jamfId: String = ""
+    let deviceInfoManager = DeviceInfoManager.shared
+    let storageInfoManager = StorageInfoManager.shared
+    let mdmInfoManager = MdmInfoManager.shared
+    let batteryInfoManager = BatteryInfoManager.shared
+    let ssoInfoManager = SSOInfoManager.shared
+    let userInfoManager = UserInfoManager.shared
+    let preferences = Preferences()
+    var installPercentage: Double = 0.0
+    var installedAppsCount: Int = 0
+    var pendingUpdatesCount: Int = 0
+    var pendingMunkiUpdates: [PendingMunkiUpdate] = []
+    var pendingIntuneUpdates: [PendingIntuneUpdate] = []
+    var pendingJamfUpdates: [PendingJamfUpdate] = []
+    var installedApplications: [InstalledApp] = []
+    var systemUpdateCache: SystemUpdates = SystemUpdates(id: UUID(), count: 0, updates: [], hasBackgroundSecurityImprovement: false)
+    var windowIsVisible: Bool = false
+    var storageUsageColor: Color = Color(NSColor.controlAccentColor)
+    var JsonCards: [JsonCard] = []
+    var catalogs: [String] = []
+    var isDemotionActive: Bool = false
+    var timeToDemote: TimeInterval = 0
+    @ObservationIgnored var jamfInfoManager: JamfInfoManager!
 
-    private var cancellables: Set<AnyCancellable> = Set<AnyCancellable>()
-    var showWindowCallback: (() -> Void)?
+    @ObservationIgnored private var customCardPathObservation: ObservationToken?
+    @ObservationIgnored var showWindowCallback: (() -> Void)?
+
+    /// The pending-updates manager for the configured mode, or nil when the mode has none (System Profiler).
+    /// Views and background tasks should go through this rather than checking the mode themselves.
+    var activeUpdatesManager: PendingUpdatesManager? {
+        switch preferences.mode {
+        case Constants.Modes.munki: return pendingMunkiUpdatesManager
+        case Constants.Modes.intune: return pendingIntuneUpdatesManager
+        case Constants.Modes.jamf: return pendingJamfUpdatesManager
+        case Constants.Modes.fleet: return pendingFleetUpdatesManager
+        default: return nil
+        }
+    }
+
+    /// Failing Fleet compliance checks, when the compliance card is shown.
+    var fleetFailingChecksCount: Int {
+        guard preferences.mode == Constants.Modes.fleet,
+              !preferences.hiddenCards.contains(Constants.Cards.fleetPolicies) else { return 0 }
+        // The ungated count when signed out, so the badge doesn't silently drop to zero
+        return fleetDeviceManager.failingChecksCount ?? 0
+    }
+
+    /// What needs the user's attention, for the menu bar dot and Dock badge: pending app updates, macOS
+    /// updates and failing compliance checks, each counted only when its card or button is shown.
+    var attentionCount: Int {
+        let appUpdates = preferences.hiddenCards.contains(Constants.Cards.pendingAppUpdates) ? 0 : pendingUpdatesCount
+        let systemUpdates = preferences.hiddenActions.contains(Constants.Actions.HideStrings.softwareUpdate) ? 0 : systemUpdateCache.count
+        return appUpdates + systemUpdates + fleetFailingChecksCount
+    }
 
     func startBackgroundTasks() {
-        if preferences.mode == Constants.modes.munki {
-            pendingMunkiUpdatesManager.startUpdateCheckTimer()
+        activeUpdatesManager?.startUpdateCheckTimer()
+        if preferences.mode == Constants.Modes.jamf && !preferences.hiddenCards.contains(Constants.Cards.jamfInfo) {
+            jamfInfoManager.startMonitoring()
         }
-        if preferences.mode == Constants.modes.intune {
-            pendingIntuneUpdatesManager.startUpdateCheckTimer()
+        if preferences.mode == Constants.Modes.fleet {
+            fleetDeviceManager.startMonitoring()
         }
         systemUpdatesManager.startMonitoring()
         storageInfoManager.startMonitoring()
@@ -56,52 +129,59 @@ class AppStateManager: ObservableObject {
     }
 
     func stopBackgroundTasks() {
-        pendingMunkiUpdatesManager.stopUpdateCheckTimer()
-        pendingIntuneUpdatesManager.stopUpdateCheckTimer()
+        // Stop every manager, not just the active one, in case the mode changed while running
+        for manager in [pendingMunkiUpdatesManager, pendingIntuneUpdatesManager, pendingJamfUpdatesManager, pendingFleetUpdatesManager] as [PendingUpdatesManager] {
+            manager.stopUpdateCheckTimer()
+        }
+        fleetDeviceManager.stopMonitoring()
         systemUpdatesManager.stopMonitoring()
         storageInfoManager.stopMonitoring()
         deviceInfoManager.stopMonitoring()
+        if !preferences.hiddenCards.contains(Constants.Cards.jamfInfo) && preferences.mode == Constants.Modes.jamf {
+            jamfInfoManager.stopMonitoring()
+        }
     }
-    
+
     init() {
-        // Forward changes from `SystemUpdatesManager`
-        systemUpdatesManager.objectWillChange
-            .sink { [weak self] _ in
-                self?.objectWillChange.send()
-            }
-            .store(in: &cancellables)
-        
-        storageInfoManager.objectWillChange
-            .sink { [weak self] _ in
-                self?.objectWillChange.send()
-            }
-            .store(in: &cancellables)
-        
-        deviceInfoManager.objectWillChange
-            .sink { [weak self] _ in
-                self?.objectWillChange.send()
-            }
-            .store(in: &cancellables)
-        
-        ssoInfoManager.objectWillChange
-            .sink { [weak self] _ in
-                self?.objectWillChange.send()
-            }
-            .store(in: &cancellables)
-        
-        userInfoManager.objectWillChange
-            .sink { [weak self] _ in
-                self?.objectWillChange.send()
-            }
-            .store(in: &cancellables)
+        // Initialize jamfInfoManager now that self exists
+        self.jamfInfoManager = JamfInfoManager(
+            jamfInfo: JamfInfo(lastCheckIn: "", lastInventory: "", url: "", jamfID: ""),
+            appStateManager: self
+        )
 
         setupCardManager()
+
+        // Reload custom cards when CustomCardPath changes (Preferences picks up external `defaults write` too)
+        customCardPathObservation = observeChanges(
+            of: { [unowned self] in self.preferences.customCardPath.trimmingCharacters(in: .whitespacesAndNewlines) },
+            onChange: { [weak self] path in self?.customCardPathChanged(to: path) }
+        )
+    }
+
+    private func customCardPathChanged(to path: String) {
+        Logger.shared.logDebug("CustomCardPath changed -> '\(path)'")
+
+        // If path is empty, tear down any existing manager and clear cards
+        guard !path.isEmpty else {
+            jsonCardManager?.stopWatching()
+            jsonCardManager = nil
+            JsonCards.removeAll()
+            return
+        }
+
+        // Ensure a manager exists, stop any current watcher, then load and start watching the new path
+        if jsonCardManager == nil {
+            jsonCardManager = JsonCardManager(appState: self)
+        }
+        jsonCardManager?.stopWatching()
+        jsonCardManager?.loadFromFile(path)
+        jsonCardManager?.watchFile(path)
     }
 
     func startDemotionTimer(duration: TimeInterval) {
         elevationManager.startDemotionTimer(duration: duration) { [weak self] remainingTime in
-            DispatchQueue.main.async {
-                guard let self = self else { return }
+            Task { @MainActor [weak self] in
+                guard let self else { return }
                 self.timeToDemote = remainingTime
                 self.isDemotionActive = remainingTime > 0
             }
@@ -116,7 +196,9 @@ class AppStateManager: ObservableObject {
 
     private func setupCardManager() {
         guard !preferences.customCardPath.isEmpty else { return }
-        jsonCardManager = JsonCardManager(appState: self)
+        if jsonCardManager == nil {
+            jsonCardManager = JsonCardManager(appState: self)
+        }
         jsonCardManager?.loadFromFile(preferences.customCardPath)
         jsonCardManager?.watchFile(preferences.customCardPath)
     }
@@ -125,19 +207,81 @@ class AppStateManager: ObservableObject {
         jsonCardManager?.loadFromFile(preferences.customCardPath)
     }
     
-    @MainActor
     func refreshAll() {
         isRefreshing = true
-        Task {
+        Task { @MainActor [weak self] in
+            guard let self = self else { return }
             await withTaskGroup(of: Void.self) { group in
-                group.addTask { self.deviceInfoManager.refresh() }
-                group.addTask { self.storageInfoManager.refresh() }
-                group.addTask { self.mdmInfoManager.refresh() }
-                group.addTask { self.systemUpdatesManager.refresh() }
-                group.addTask { self.batteryInfoManager.refresh() }
-                group.addTask { self.userInfoManager.refresh() }
+                group.addTask { @MainActor in await self.deviceInfoManager.refresh() }
+                group.addTask { @MainActor in self.storageInfoManager.refresh() }
+                group.addTask { @MainActor in self.mdmInfoManager.refresh() }
+                group.addTask { @MainActor in self.systemUpdatesManager.refresh() }
+                group.addTask { @MainActor in self.batteryInfoManager.refresh() }
+                group.addTask { @MainActor in self.userInfoManager.refresh() }
             }
             self.isRefreshing = false
         }
+    }
+
+    /// Off unless an administrator sets `FleetNotifySignIn`. Leads with the failing count when the
+    /// ungated summary has one: what's wrong is the news, and signing in is how to see it.
+    private func notifyFleetSignInRequired() {
+        guard preferences.fleetNotifySignIn, preferences.mode == Constants.Modes.fleet else { return }
+        let failing = fleetDeviceManager.failingChecksCount ?? 0
+        let message = failing > 0
+            ? String(format: Constants.Fleet.signInNotificationFailing, failing)
+            : Constants.Fleet.signInNotification
+        NotificationService(appState: self).sendNotification(
+            message: message,
+            buttonText: Constants.Fleet.signIn,
+            command: "open supportcompanion://fleetsignin",
+            notificationType: .generic
+        )
+    }
+
+    private func notifyFleetPoliciesFailing(_ policies: [FleetPolicy]) {
+        guard preferences.fleetNotifyPolicies,
+              !preferences.hiddenCards.contains(Constants.Cards.fleetPolicies),
+              let first = policies.first else { return }
+        let message = policies.count == 1
+            ? String(format: Constants.Fleet.policyFailingNotification, first.name)
+            : String(format: Constants.Fleet.policiesFailingNotification, policies.count, first.name)
+        NotificationService(appState: self).sendNotification(
+            message: message,
+            buttonText: Constants.Fleet.viewDetails,
+            command: "open supportcompanion://home",
+            notificationType: .generic
+        )
+    }
+
+    private func notifyFleetActionFinished(_ title: FleetSoftwareTitle, action: FleetSoftwareTitle.Action, outcome: FleetSoftwareManager.ActionOutcome) {
+        guard preferences.fleetNotifyInstallResults else { return }
+        if outcome == .appOpen {
+            // Without a bundle identifier the app can't be found to quit it, so there's no button
+            let canQuit = !title.bundleIdentifiers.isEmpty
+            NotificationService(appState: self).sendNotification(
+                message: String(format: Constants.Fleet.appOpenNotification, title.title),
+                buttonText: canQuit ? Constants.Fleet.quitAndUpdate : nil,
+                command: canQuit ? "\(NotificationService.fleetQuitAndRetryCommand)\(title.id)" : nil,
+                openURL: "supportcompanion://apps",
+                notificationType: .generic
+            )
+            return
+        }
+        let succeeded = outcome == .succeeded
+        let format: String
+        switch (action, succeeded) {
+        case (.install, true): format = Constants.Fleet.installedNotification
+        case (.update, true): format = Constants.Fleet.updatedNotification
+        case (.reinstall, true): format = Constants.Fleet.reinstalledNotification
+        case (.uninstall, true): format = Constants.Fleet.uninstalledNotification
+        case (.uninstall, false): format = Constants.Fleet.uninstallFailedNotification
+        case (_, false): format = Constants.Fleet.installFailedNotification
+        }
+        NotificationService(appState: self).sendNotification(
+            message: String(format: format, title.title),
+            openURL: "supportcompanion://apps",
+            notificationType: .generic
+        )
     }
 }

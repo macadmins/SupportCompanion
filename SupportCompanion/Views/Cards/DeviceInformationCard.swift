@@ -9,8 +9,8 @@ import Foundation
 import SwiftUI
 
 struct DeviceInformationCard: View {
-    @ObservedObject var viewModel: CardGridViewModel
-    @EnvironmentObject var appState: AppStateManager
+    var viewModel: CardGridViewModel
+    @Environment(AppStateManager.self) var appState
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
@@ -75,7 +75,7 @@ struct DeviceInfoSection: View {
 
             VStack(alignment: .leading, spacing: 5) {
                 ForEach(group.1, id: \.key) { item in
-                    if item.key != "lastRestartDays" {
+                    if item.key != Constants.DeviceInfo.Keys.lastRestartDays {
                         if item.key == Constants.DeviceInfo.Keys.lastRestart {
                             LastRestartRow(
                                 label: item.display,
@@ -165,11 +165,12 @@ struct LastRestartRow: View {
             HStack(spacing: 5) {
                 Text(formattedLastRestart)
                     .foregroundColor(color)
-                Image(systemName: "clock.fill")
-                    .foregroundColor(color)
+                //Image(systemName: "clock.fill")
+                //    .foregroundColor(color)
+                InfoHelp(text: Constants.ToolTips.deviceLastRebooted, icon: "clock.fill", color: color)
             }
             .font(.system(size: 14))
-            .help(Constants.ToolTips.deviceLastRebooted)
+            //.help(Constants.ToolTips.deviceLastRebooted)
         }
     }
 

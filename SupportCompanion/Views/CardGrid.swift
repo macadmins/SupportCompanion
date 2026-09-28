@@ -10,8 +10,8 @@ import SwiftUI
 import AlertToast
 
 struct CardGrid: View {
-    @ObservedObject var viewModel: CardGridViewModel
-    @EnvironmentObject var appState: AppStateManager
+    var viewModel: CardGridViewModel
+    @Environment(AppStateManager.self) var appState
     @State private var showRebootModal = false
     @State private var modalCountdown = Constants.RebootModal.countdown
     @State private var modalTitle = Constants.RebootModal.title
@@ -23,6 +23,11 @@ struct CardGrid: View {
         ]
         ZStack{
             ScrollView {
+                if showsFleetComplianceBanner {
+                    FleetComplianceBanner()
+                        .padding(.horizontal, 20)
+                }
+
                 LazyVGrid(
                     columns: columns,
                     alignment: .leading
@@ -31,7 +36,7 @@ struct CardGrid: View {
                     DeviceInformationCard(viewModel: viewModel)
                     
                     // Patching progress card
-                    if appState.preferences.mode == Constants.modes.munki || appState.preferences.mode == Constants.modes.intune {
+                    if appState.activeUpdatesManager != nil {
                         PatchingProgressCard(viewModel: viewModel)
                         PendingUpdatesCard(viewModel: viewModel)
                     }
@@ -47,7 +52,7 @@ struct CardGrid: View {
                         }
                     )
                     
-                    ForEach(getVisibleStacks(viewModel: viewModel), id: \.id) { stack in
+                    ForEach(viewModel.getVisibleStacks(viewModel: viewModel), id: \.id) { stack in
                         stack.view
                             .frame(maxWidth: .infinity)
                     }
@@ -65,7 +70,7 @@ struct CardGrid: View {
                 .padding(.horizontal, 20)
                 .padding(.bottom, 20)
                 .onAppear{
-                    if appState.preferences.customCardPath.isEmpty && appState.preferences.customCardsMenuLabel.isEmpty {
+                    if !appState.preferences.customCardPath.isEmpty && appState.preferences.customCardsMenuLabel.isEmpty {
                         appState.refreshJsonCards()
                     }
                 }
@@ -81,15 +86,18 @@ struct CardGrid: View {
             }
         }
         .onAppear {
-            if !appState.preferences.hiddenCards.contains(Constants.CardTitle.evergreen) {
+            if !appState.preferences.hiddenCards.contains(Constants.Cards.evergreen) && appState.preferences.mode == Constants.Modes.munki {
                 appState.evergreenInfoManager.refresh()
             }
-            if !appState.preferences.hiddenCards.contains(Constants.CardTitle.battery) {
+            if !appState.preferences.hiddenCards.contains(Constants.Cards.battery) {
                 appState.batteryInfoManager.startMonitoring()
+            }
+            if !appState.preferences.hiddenCards.contains(Constants.Cards.jamfInfo) && appState.preferences.mode == Constants.Modes.jamf {
+                appState.jamfInfoManager.refresh()
             }
         }
         .onDisappear {
-            if !appState.preferences.hiddenCards.contains(Constants.CardTitle.battery) {
+            if !appState.preferences.hiddenCards.contains(Constants.Cards.battery) {
                 appState.batteryInfoManager.stopMonitoring()
             }
         }
@@ -110,57 +118,18 @@ struct CardGrid: View {
     }
 }
 
-func getVisibleStacks(viewModel: CardGridViewModel) -> [(id: String, view: AnyView)] {
-    var visibleStacks: [(id: String, view: AnyView)] = []
-    
-    // Conditional logic to arrange Battery and Storage/Device stacks
-    if viewModel.isCardVisible(Constants.Cards.storage) && viewModel.isCardVisible(Constants.Cards.deviceManagement) {
-        // Both Storage and Device Management are visible: Split columns
-        visibleStacks.append(
-            (id: "StorageDeviceManagement",
-             view: AnyView(
-                StorageDeviceManagementStack(viewModel: viewModel)
-                    .frame(maxWidth: .infinity)
-                    .gridCellColumns(1)
-            ))
-        )
-        
-        visibleStacks.append(
-            (id: "BatteryEvergreen",
-             view: AnyView(
-                BatteryEvergreenStack(viewModel: viewModel)
-                    .frame(maxWidth: .infinity)
-                    .gridCellColumns(1)
-            ))
-        )
-    } else {
-        // Otherwise, span the grid
-        visibleStacks.append(
-            (id: "BatteryEvergreen",
-             view: AnyView(
-                BatteryEvergreenStack(viewModel: viewModel)
-                    .frame(maxWidth: .infinity)
-                    .gridCellColumns(2)
-            ))
-        )
-        
-        visibleStacks.append(
-            (id: "StorageDeviceManagement",
-             view: AnyView(
-                StorageDeviceManagementStack(viewModel: viewModel)
-                    .frame(maxWidth: .infinity)
-                    .gridCellColumns(2)
-            ))
-        )
+extension CardGrid {
+    private var showsFleetComplianceBanner: Bool {
+        appState.preferences.mode == Constants.Modes.fleet
+            && viewModel.isCardVisible(Constants.Cards.fleetPolicies)
+            && !appState.fleetDeviceManager.failingPolicies.isEmpty
     }
-
-    return visibleStacks
 }
 
 struct CardGridView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
-        .environmentObject(AppStateManager.shared)
+        .environment(AppStateManager.shared)
         .frame(width: 1500, height: 100)
     }
 }

@@ -6,12 +6,13 @@
 //
 
 import Foundation
+import Observation
 import Combine
 import SwiftUI
 
-class StorageInfoManager: ObservableObject {
-    @Environment(\.colorScheme) var colorScheme
-    
+@MainActor
+@Observable
+class StorageInfoManager {
     static let shared = StorageInfoManager(
         storageInfo: StorageInfo(
             id: UUID(),
@@ -21,7 +22,7 @@ class StorageInfoManager: ObservableObject {
         )
     )
     
-    @Published var storageInfo: StorageInfo
+    var storageInfo: StorageInfo
 
     init(storageInfo: StorageInfo) {
         self.storageInfo = storageInfo
@@ -44,24 +45,12 @@ class StorageInfoManager: ObservableObject {
         self.updateStorageInfo()
     }
     
-    func getPercentageColor(percentage: Double) -> Color {
-        if percentage < 50 {
-            return .ScGreen
-        } else if percentage < 80 {
-            return colorScheme == .light ? .orangeLight : .orange
-        } else {
-            return colorScheme == .light ? .redLight : .red
-        }
-    }
-    
     func updateStorageInfo(usagePercentage: Double = getStorageUsagePercentage()) {
-        DispatchQueue.main.async {
-            self.storageInfo = StorageInfo(
-                id: UUID(),
-                name: getStorageName(),
-                fileVault: isFileVaultEnabled(),
-                usage: usagePercentage
-            )
-        }
+        self.storageInfo = StorageInfo(
+            id: UUID(),
+            name: getStorageName(),
+            fileVault: isFileVaultEnabled(),
+            usage: usagePercentage
+        )
     }
 }

@@ -16,8 +16,7 @@ struct ScButton: View, Hashable {
     let disabled: Bool?
     var maxWidth: CGFloat? // New parameter for button width
     let fontSize: CGFloat?
-    @EnvironmentObject var preferences: Preferences
-    @EnvironmentObject var appState: AppStateManager
+    @Environment(AppStateManager.self) var appState
     @State private var isHovered = false
     @State private var showBadge = false
     @State private var isLoading = false
@@ -74,26 +73,28 @@ struct ScButton: View, Hashable {
                 }
                 .padding()
                 .frame(maxWidth: maxWidth ?? nil) // Keep consistent button size
-                .background(Color(NSColor(hex: appState.preferences.accentColor ?? "") ?? NSColor.controlAccentColor))
+                .background(Color(NSColor(hex: appState.preferences.branding.accentColor ?? "") ?? NSColor.controlAccentColor))
                 .foregroundColor(.white)
                 .cornerRadius(12)
                 .multilineTextAlignment(.leading)
             }
             .buttonStyle(PlainButtonStyle())
             .disabled(disabled ?? false || isLoading)
-
-            // Badge
-            if let badgeNumber = badgeNumber, badgeNumber > 0 {
-                Text("\(badgeNumber)")
-                    .font(.caption)
-                    .foregroundColor(.white)
-                    .padding(8)
-                    .background(Color.red)
-                    .clipShape(Circle())
-                    .offset(x: 10, y: -10)
-                    .opacity(showBadge ? 1.0 : 0.0) // Control visibility
-                    .scaleEffect(showBadge ? 1.0 : 0.5) // Add scaling effect
-                    .animation(.easeInOut(duration: 0.3), value: showBadge) // Smooth animation
+            .buttonStyle(PlainButtonStyle())
+            .disabled(disabled ?? false || isLoading)
+            .overlay(alignment: .topTrailing) {
+                if let badgeNumber = badgeNumber, badgeNumber > 0 {
+                    Text("\(badgeNumber)")
+                        .font(.caption.weight(.bold))
+                        .foregroundColor(.white)
+                        .padding(8)
+                        .background(Circle().fill(Color(red: 1, green: 0, blue: 0)))
+                        .clipShape(Circle())
+                        .offset(x: 10, y: -10)
+                        .opacity(showBadge ? 1 : 0)
+                        .scaleEffect(showBadge ? 1 : 0.5)
+                        .animation(.easeInOut(duration: 0.3), value: showBadge)
+                }
             }
         }
         .scaleEffect(isHovered ? 1.1 : 1.0) // Apply hover effect to the whole stack

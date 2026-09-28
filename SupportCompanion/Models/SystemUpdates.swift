@@ -11,8 +11,9 @@ struct SystemUpdates: Identifiable, Equatable {
     let id: UUID
     let count: Int
     let updates: [String]
+    let hasBackgroundSecurityImprovement: Bool
     
     static func == (lhs: SystemUpdates, rhs: SystemUpdates) -> Bool {
-        return lhs.count == rhs.count && lhs.updates == rhs.updates
+        return lhs.count == rhs.count && lhs.updates == rhs.updates && lhs.hasBackgroundSecurityImprovement == rhs.hasBackgroundSecurityImprovement
     }
 }
